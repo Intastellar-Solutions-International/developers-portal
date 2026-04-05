@@ -12,6 +12,9 @@ export default [
   route("sitemap.xml", "routes/sitemap-xml.tsx"),
   route("search", "routes/search.tsx"),
   route("changelog", "routes/changelog.tsx"),
+  ...prefix("consents", [
+    route("changelog", "routes/consents.changelog.tsx"),
+  ]),
   route("legal", "routes/legal.tsx", [
     index("routes/legal._index.tsx"),
     route("privacy", "routes/legal.privacy.tsx"),

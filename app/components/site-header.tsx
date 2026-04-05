@@ -201,8 +201,12 @@ export function SiteHeader({
             className="hidden items-center gap-0.5 lg:flex lg:gap-1"
             aria-label="Main"
           >
-            <NavLink to="/changelog" className={navLinkClass}>
-              Changelog
+            <NavLink
+              to="/consents/changelog"
+              className={navLinkClass}
+              title="Intastellar Consents — releases & versions"
+            >
+              Consents changelog
             </NavLink>
             <NavLink to="/docs" className={navLinkClass}>
               Docs
@@ -274,11 +278,12 @@ export function SiteHeader({
               aria-label="Main navigation"
             >
               <NavLink
-                to="/changelog"
+                to="/consents/changelog"
                 className={mobileNavLinkClass}
+                title="Intastellar Consents — releases & versions"
                 onClick={() => setMenuOpen(false)}
               >
-                Changelog
+                Consents changelog
               </NavLink>
               <NavLink
                 to="/docs"

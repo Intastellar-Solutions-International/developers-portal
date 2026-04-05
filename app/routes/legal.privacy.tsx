@@ -67,7 +67,8 @@ export default function LegalPrivacy() {
       <h3 className={h2}>What is inta.dev?</h3>
       <p className={p}>
         inta.dev hosts technical documentation, a search index over those docs, a
-        product changelog, and optional sign-in via Intastellar Accounts to reach
+        changelog of Intastellar Consents releases, and optional sign-in via
+        Intastellar Accounts to reach
         profile and API key pages. You can use most of the site without an account.
       </p>
 

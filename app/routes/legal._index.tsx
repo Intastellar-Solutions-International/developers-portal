@@ -29,7 +29,8 @@ export default function LegalIndex() {
             inta.dev
           </strong>{" "}
           is the developer portal for Intastellar products (documentation, search,
-          changelog, and optional Intastellar Accounts sign-in). The policies below
+          the Intastellar Consents changelog, and optional Intastellar Accounts
+          sign-in). The policies below
           describe this site. Intastellar’s company-wide legal documents apply in
           addition where referenced.
         </p>

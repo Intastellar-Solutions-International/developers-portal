@@ -6,7 +6,7 @@ const STATIC_PATHS = [
   "/",
   "/docs",
   "/search",
-  "/changelog",
+  "/consents/changelog",
   "/legal",
   "/legal/privacy",
   "/legal/terms",

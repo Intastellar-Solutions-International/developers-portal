@@ -54,8 +54,8 @@ export default function LegalTerms() {
 
       <h3 className={h2}>The service</h3>
       <p className={p}>
-        inta.dev provides access to technical documentation, search, changelog
-        information, and optional account tools (such as profile and API keys)
+        inta.dev provides access to technical documentation, search, the Intastellar
+        Consents changelog, and optional account tools (such as profile and API keys)
         subject to configuration and availability. We may change or discontinue
         features with reasonable notice where practicable.
       </p>

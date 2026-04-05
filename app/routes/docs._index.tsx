@@ -104,10 +104,10 @@ export default function DocsIndex() {
           </kbd>
         </button>
         <Link
-          to="/changelog"
+          to="/consents/changelog"
           className="rounded-lg border border-transparent px-4 py-2.5 text-sm font-medium text-zinc-600 transition-colors hover:border-zinc-200 hover:bg-zinc-50 hover:text-brand dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/80 dark:hover:text-brand"
         >
-          Changelog
+          Consents changelog
         </Link>
         <Link
           to="/account/api-keys"

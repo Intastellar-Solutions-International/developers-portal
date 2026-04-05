@@ -15,6 +15,7 @@
       "routes/sitemap-xml": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/search": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/consents.changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal.privacy": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal.terms": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -75,6 +76,15 @@
         "parentId": "root",
         "file": "app/routes/changelog.tsx",
         "path": "changelog",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/consents.changelog": {
+        "id": "routes/consents.changelog",
+        "parentId": "root",
+        "file": "app/routes/consents.changelog.tsx",
+        "path": "consents/changelog",
         "config": {
           "runtime": "nodejs"
         }
@@ -258,6 +268,12 @@
         "file": "routes/changelog.tsx",
         "path": "changelog"
       },
+      "routes/consents.changelog": {
+        "id": "routes/consents.changelog",
+        "parentId": "root",
+        "file": "routes/consents.changelog.tsx",
+        "path": "consents/changelog"
+      },
       "routes/legal": {
         "id": "routes/legal",
         "parentId": "root",
@@ -382,6 +398,10 @@
           {
             "file": "routes/changelog.tsx",
             "path": "changelog"
+          },
+          {
+            "file": "routes/consents.changelog.tsx",
+            "path": "consents/changelog"
           },
           {
             "file": "routes/legal.tsx",
