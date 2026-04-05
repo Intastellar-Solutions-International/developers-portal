@@ -95,7 +95,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <IntastellarAuthProvider>
       <SiteHeader onOpenSearch={openSearch} />
-      <main>{children}</main>
+      <main className="pt-[3.75rem]">{children}</main>
       <SearchOverlay
         open={searchOpen}
         onClose={() => setSearchOpen(false)}

@@ -123,7 +123,7 @@ export function SiteHeader({
   }, [menuOpen]);
 
   return (
-    <header className="border-b border-zinc-600/40 bg-zinc-800">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-zinc-600/40 bg-zinc-800">
       <div className="mx-auto flex h-[3.75rem] max-w-6xl items-center justify-between gap-2 px-4 sm:gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
           <a

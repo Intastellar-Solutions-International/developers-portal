@@ -9,6 +9,10 @@
   --color-brand-foreground: #171717;
 }
 
+html {
+  scroll-padding-top: 4.5rem;
+}
+
 html,
 body {
   @apply bg-zinc-50 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50;
