@@ -1,29 +1,21 @@
 import { useEffect } from "react";
-import { createPortal } from "react-dom";
-import { useFetcher, useNavigate } from "react-router";
 
 import { SearchPanel } from "~/components/search-panel";
 import type { SearchDocument } from "~/lib/search-index.server";
 
-type SearchLoaderData = { documents: SearchDocument[] };
-
 export function SearchOverlay({
   open,
   onClose,
+  documents,
+  loading,
+  onNavigate,
 }: {
   open: boolean;
   onClose: () => void;
+  documents: SearchDocument[];
+  loading: boolean;
+  onNavigate: (href: string) => void;
 }) {
-  const fetcher = useFetcher<SearchLoaderData>();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!open) return;
-    fetcher.load("/search");
-    // Intentionally only when `open` changes — `fetcher` identity is not stable as a dependency.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -46,10 +38,7 @@ export function SearchOverlay({
 
   if (!open) return null;
 
-  const documents = fetcher.data?.documents ?? [];
-  const loading = fetcher.state === "loading" && !fetcher.data;
-
-  const overlay = (
+  return (
     <div
       className="fixed inset-0 z-[100] flex items-start justify-center bg-black/50 px-4 pt-[min(12vh,6rem)] pb-8"
       role="presentation"
@@ -73,17 +62,11 @@ export function SearchOverlay({
             autoFocus={open}
             onPick={(href) => {
               onClose();
-              navigate(href);
+              onNavigate(href);
             }}
           />
         )}
       </div>
     </div>
   );
-
-  if (typeof document !== "undefined") {
-    return createPortal(overlay, document.body);
-  }
-
-  return overlay;
 }

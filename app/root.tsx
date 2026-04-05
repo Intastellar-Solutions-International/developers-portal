@@ -6,12 +6,17 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useFetcher,
+  useNavigate,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import { SearchOverlay } from "./components/search-overlay";
 import { SiteHeader } from "./components/site-header";
+import type { SearchDocument } from "~/lib/search-index.server";
 import "./app.css";
+
+type SearchLoaderData = { documents: SearchDocument[] };
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -28,13 +33,19 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-/** Wraps all root `Layout` children (normal `App` or `ErrorBoundary`) so the header and search modal stay mounted and work after errors. */
+/**
+ * Header, search, and scroll restoration wrap all `Layout` children (`App` → `<Outlet />` or `ErrorBoundary`).
+ * Search data loading and navigation run here so router hooks match the root route context reliably.
+ */
 function RootShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
+  const fetcher = useFetcher<SearchLoaderData>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "k") return;
+      const isK = e.key.toLowerCase() === "k" || e.code === "KeyK";
+      if (!(e.metaKey || e.ctrlKey) || !isK) return;
       const t = e.target;
       if (
         t instanceof HTMLInputElement ||
@@ -44,17 +55,33 @@ function RootShell({ children }: { children: React.ReactNode }) {
         return;
       }
       e.preventDefault();
+      e.stopPropagation();
       setSearchOpen((open) => !open);
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
   }, []);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    fetcher.load("/search");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchOpen]);
+
+  const documents = fetcher.data?.documents ?? [];
+  const loading = fetcher.state === "loading" && !fetcher.data;
 
   return (
     <>
       <SiteHeader onOpenSearch={() => setSearchOpen(true)} />
       <main>{children}</main>
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        documents={documents}
+        loading={loading}
+        onNavigate={(href) => navigate(href)}
+      />
       <ScrollRestoration />
     </>
   );
