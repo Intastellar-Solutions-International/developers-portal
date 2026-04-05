@@ -11,6 +11,7 @@ export default [
   route("robots.txt", "routes/robots-txt.tsx"),
   route("sitemap.xml", "routes/sitemap-xml.tsx"),
   route("search", "routes/search.tsx"),
+  ...prefix("auth", [route("logout", "routes/auth.logout.tsx")]),
   route("changelog", "routes/changelog.tsx"),
   ...prefix("consents", [
     route("changelog", "routes/consents.changelog.tsx"),

@@ -1,4 +1,5 @@
 import {
+  data,
   Form,
   Link,
   useActionData,
@@ -14,7 +15,11 @@ import {
 } from "~/lib/api-keys.server";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
 import { isMongoConfigured } from "~/lib/mongodb.server";
-import { getResolvedPortalUser } from "~/lib/portal-user.server";
+import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
+import {
+  getResolvedPortalUser,
+  publicAccountToResolved,
+} from "~/lib/portal-user.server";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 
 export function meta(_: Route.MetaArgs) {
@@ -48,13 +53,34 @@ export type ApiKeysActionData =
   | { ok: true; plaintextKey?: string }
   | { ok: false; error: string };
 
-export async function action({ request }: Route.ActionArgs): Promise<ApiKeysActionData> {
-  const user = await getResolvedPortalUser(request);
-  if (!user) {
-    return { ok: false, error: "Sign in again to manage API keys." };
+function actionResponse(
+  body: ApiKeysActionData,
+  setCookieHeaders: string[],
+): ApiKeysActionData | ReturnType<typeof data> {
+  if (setCookieHeaders.length === 0) return body;
+  const headers = new Headers();
+  for (const c of setCookieHeaders) {
+    headers.append("Set-Cookie", c);
+  }
+  return data(body, { headers });
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const { account, setCookieHeaders } =
+    await resolvePortalSessionForRequest(request);
+  const user = publicAccountToResolved(account);
+
+  if (!user?.email) {
+    return actionResponse(
+      { ok: false, error: "Sign in again to manage API keys." },
+      setCookieHeaders,
+    );
   }
   if (!isMongoConfigured()) {
-    return { ok: false, error: "Database is not configured on the server." };
+    return actionResponse(
+      { ok: false, error: "Database is not configured on the server." },
+      setCookieHeaders,
+    );
   }
 
   const form = await request.formData();
@@ -64,21 +90,24 @@ export async function action({ request }: Route.ActionArgs): Promise<ApiKeysActi
     const keyId = String(form.get("keyId") ?? "");
     const result = await revokeApiKey(user.accountId, user.email, keyId);
     if (!result.ok) {
-      return { ok: false, error: result.error };
+      return actionResponse({ ok: false, error: result.error }, setCookieHeaders);
     }
-    return { ok: true };
+    return actionResponse({ ok: true }, setCookieHeaders);
   }
 
   if (intent === "create") {
     const label = String(form.get("label") ?? "");
     const result = await createApiKey(user.accountId, user.email, label);
     if (!result.ok) {
-      return { ok: false, error: result.error };
+      return actionResponse({ ok: false, error: result.error }, setCookieHeaders);
     }
-    return { ok: true, plaintextKey: result.plaintextKey };
+    return actionResponse(
+      { ok: true, plaintextKey: result.plaintextKey },
+      setCookieHeaders,
+    );
   }
 
-  return { ok: false, error: "Unknown action." };
+  return actionResponse({ ok: false, error: "Unknown action." }, setCookieHeaders);
 }
 
 function formatCreated(iso: string) {

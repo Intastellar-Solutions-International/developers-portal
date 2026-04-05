@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  data,
   isRouteErrorResponse,
   Links,
   Meta,
@@ -24,18 +25,27 @@ import {
   isAnalyticsEnabled,
 } from "~/lib/analytics";
 import { OPEN_SEARCH_EVENT } from "~/lib/search-overlay-context";
+import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import { IntastellarAuthProvider } from "~/providers/intastellar-auth-provider";
 import "./app.css";
 
 type SearchLoaderData = { documents: SearchDocument[] };
 
 /** Same rule as `getIntastellarClientConfig()` — embedded in SSR payload so SSO UI never disagrees with the server. */
-export async function loader(_: Route.LoaderArgs) {
-  return {
-    ssoConfigured: Boolean(
-      String(import.meta.env.VITE_INTASTELLAR_CLIENT_ID ?? "").trim(),
-    ),
-  };
+export async function loader({ request }: Route.LoaderArgs) {
+  const ssoConfigured = Boolean(
+    String(import.meta.env.VITE_INTASTELLAR_CLIENT_ID ?? "").trim(),
+  );
+  const { account, setCookieHeaders } =
+    await resolvePortalSessionForRequest(request);
+  const headers = new Headers();
+  for (const c of setCookieHeaders) {
+    headers.append("Set-Cookie", c);
+  }
+  return data(
+    { ssoConfigured, portalAccount: account },
+    { headers },
+  );
 }
 
 export const links: Route.LinksFunction = () => [

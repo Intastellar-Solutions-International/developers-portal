@@ -1,15 +1,15 @@
-import type { ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 
-import { getPortalAccountSession } from "./intastellar-verify.server";
-import { isMongoConfigured } from "./mongodb.server";
-import { ensureUserFromIntastellar } from "./user-accounts.server";
+import {
+  getPortalAccountSnapshot,
+  type PublicPortalAccount,
+} from "./portal-account.server";
 
 export type PortalAuthProvider = "intastellar" | "github";
 
 /**
- * Authenticated portal user for server loaders/actions.
- * - `accountId` is set when MongoDB is configured and the account row was ensured.
- * - Without Mongo, Intastellar session is still valid for UI, but API key storage stays email-scoped only.
+ * Authenticated portal user for server loaders/actions (API keys, etc.).
+ * Prefer data loaded via MongoDB when the portal session or Intastellar bridge applies.
  */
 export type ResolvedPortalUser = {
   accountId: ObjectId | null;
@@ -18,29 +18,32 @@ export type ResolvedPortalUser = {
   authProvider: PortalAuthProvider;
 };
 
+export function publicAccountToResolved(
+  account: PublicPortalAccount | null,
+): ResolvedPortalUser | null {
+  if (!account) return null;
+  let accountId: ObjectId | null = null;
+  if (account.accountId) {
+    try {
+      accountId = new ObjectId(account.accountId);
+    } catch {
+      accountId = null;
+    }
+  }
+  return {
+    accountId,
+    email: account.email,
+    displayName: account.displayName,
+    authProvider: "intastellar",
+  };
+}
+
 /**
- * Resolve the current user from the request (Intastellar cookie today; GitHub session can be added here).
+ * Resolve user for child routes without issuing Set-Cookie (root loader mints session).
  */
 export async function getResolvedPortalUser(
   request: Request,
 ): Promise<ResolvedPortalUser | null> {
-  const session = await getPortalAccountSession(request);
-  if (!session) return null;
-
-  if (!isMongoConfigured()) {
-    return {
-      accountId: null,
-      email: session.email,
-      displayName: session.displayName,
-      authProvider: "intastellar",
-    };
-  }
-
-  const accountId = await ensureUserFromIntastellar(session);
-  return {
-    accountId,
-    email: session.email,
-    displayName: session.displayName,
-    authProvider: "intastellar",
-  };
+  const { account } = await getPortalAccountSnapshot(request);
+  return publicAccountToResolved(account);
 }
