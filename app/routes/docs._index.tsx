@@ -1,0 +1,57 @@
+import { Link, data, useLoaderData } from "react-router";
+
+import type { Route } from "./+types/docs._index";
+import { listProducts } from "~/lib/docs.server";
+
+export async function loader(_: Route.LoaderArgs) {
+  const products = await listProducts();
+  if (products.length === 0) {
+    throw data("No documentation published yet.", { status: 404 });
+  }
+  return { products };
+}
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Documentation · inta.dev" },
+    {
+      name: "description",
+      content: "Documentation for Intastellar developer products.",
+    },
+  ];
+}
+
+export default function DocsIndex() {
+  const { products } = useLoaderData<typeof loader>();
+
+  return (
+    <div>
+      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+        Documentation
+      </h1>
+      <p className="mt-2 max-w-2xl text-zinc-600 dark:text-zinc-400">
+        Guides and references for Intastellar products. Choose a product to
+        get started.
+      </p>
+      <ul className="mt-10 grid gap-4 sm:grid-cols-2">
+        {products.map((p) => (
+          <li key={p.slug}>
+            <Link
+              to={`/docs/${p.slug}`}
+              className="block rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+            >
+              <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
+                {p.title}
+              </h2>
+              {p.description ? (
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  {p.description}
+                </p>
+              ) : null}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

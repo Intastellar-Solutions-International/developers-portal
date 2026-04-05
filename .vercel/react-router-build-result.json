@@ -1,0 +1,264 @@
+{
+  "buildManifest": {
+    "serverBundles": {
+      "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0": {
+        "id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+        "file": "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    },
+    "routeIdToServerBundleId": {
+      "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs.$product._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs.$product.$": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.profile": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.api-keys": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "app/root.tsx",
+        "path": "",
+        "config": {}
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "app/routes/home.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.layout": {
+        "id": "routes/docs.layout",
+        "parentId": "root",
+        "file": "app/routes/docs.layout.tsx",
+        "config": {}
+      },
+      "routes/docs._index": {
+        "id": "routes/docs._index",
+        "parentId": "routes/docs.layout",
+        "file": "app/routes/docs._index.tsx",
+        "path": "docs",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.$product": {
+        "id": "routes/docs.$product",
+        "parentId": "routes/docs.layout",
+        "file": "app/routes/docs.$product.tsx",
+        "path": "docs/:product",
+        "config": {}
+      },
+      "routes/docs.$product._index": {
+        "id": "routes/docs.$product._index",
+        "parentId": "routes/docs.$product",
+        "file": "app/routes/docs.$product._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.$product.$": {
+        "id": "routes/docs.$product.$",
+        "parentId": "routes/docs.$product",
+        "file": "app/routes/docs.$product.$.tsx",
+        "path": "*",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account": {
+        "id": "routes/account",
+        "parentId": "root",
+        "file": "app/routes/account.tsx",
+        "path": "account",
+        "config": {}
+      },
+      "routes/account._index": {
+        "id": "routes/account._index",
+        "parentId": "routes/account",
+        "file": "app/routes/account._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.profile": {
+        "id": "routes/account.profile",
+        "parentId": "routes/account",
+        "file": "app/routes/account.profile.tsx",
+        "path": "profile",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.api-keys": {
+        "id": "routes/account.api-keys",
+        "parentId": "routes/account",
+        "file": "app/routes/account.api-keys.tsx",
+        "path": "api-keys",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    }
+  },
+  "reactRouterConfig": {
+    "appDirectory": "/Users/felix/developers-portal/app",
+    "basename": "/",
+    "buildDirectory": "/Users/felix/developers-portal/build",
+    "future": {
+      "unstable_optimizeDeps": false,
+      "unstable_passThroughRequests": false,
+      "unstable_subResourceIntegrity": false,
+      "unstable_trailingSlashAwareDataRequests": false,
+      "unstable_previewServerPrerendering": false,
+      "v8_middleware": false,
+      "v8_splitRouteModules": false,
+      "v8_viteEnvironmentApi": false
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "root.tsx",
+        "path": ""
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "routes/home.tsx",
+        "index": true
+      },
+      "routes/docs.layout": {
+        "id": "routes/docs.layout",
+        "parentId": "root",
+        "file": "routes/docs.layout.tsx"
+      },
+      "routes/docs._index": {
+        "id": "routes/docs._index",
+        "parentId": "routes/docs.layout",
+        "file": "routes/docs._index.tsx",
+        "path": "docs",
+        "index": true
+      },
+      "routes/docs.$product": {
+        "id": "routes/docs.$product",
+        "parentId": "routes/docs.layout",
+        "file": "routes/docs.$product.tsx",
+        "path": "docs/:product"
+      },
+      "routes/docs.$product._index": {
+        "id": "routes/docs.$product._index",
+        "parentId": "routes/docs.$product",
+        "file": "routes/docs.$product._index.tsx",
+        "index": true
+      },
+      "routes/docs.$product.$": {
+        "id": "routes/docs.$product.$",
+        "parentId": "routes/docs.$product",
+        "file": "routes/docs.$product.$.tsx",
+        "path": "*"
+      },
+      "routes/account": {
+        "id": "routes/account",
+        "parentId": "root",
+        "file": "routes/account.tsx",
+        "path": "account"
+      },
+      "routes/account._index": {
+        "id": "routes/account._index",
+        "parentId": "routes/account",
+        "file": "routes/account._index.tsx",
+        "index": true
+      },
+      "routes/account.profile": {
+        "id": "routes/account.profile",
+        "parentId": "routes/account",
+        "file": "routes/account.profile.tsx",
+        "path": "profile"
+      },
+      "routes/account.api-keys": {
+        "id": "routes/account.api-keys",
+        "parentId": "routes/account",
+        "file": "routes/account.api-keys.tsx",
+        "path": "api-keys"
+      }
+    },
+    "routeDiscovery": {
+      "mode": "lazy",
+      "manifestPath": "/__manifest"
+    },
+    "serverBuildFile": "index.js",
+    "serverModuleFormat": "esm",
+    "ssr": true,
+    "allowedActionOrigins": false,
+    "unstable_routeConfig": [
+      {
+        "id": "root",
+        "path": "",
+        "file": "root.tsx",
+        "children": [
+          {
+            "file": "routes/home.tsx",
+            "index": true
+          },
+          {
+            "file": "routes/docs.layout.tsx",
+            "children": [
+              {
+                "file": "routes/docs._index.tsx",
+                "index": true,
+                "path": "docs"
+              },
+              {
+                "file": "routes/docs.$product.tsx",
+                "children": [
+                  {
+                    "file": "routes/docs.$product._index.tsx",
+                    "index": true
+                  },
+                  {
+                    "file": "routes/docs.$product.$.tsx",
+                    "path": "*"
+                  }
+                ],
+                "path": "docs/:product"
+              }
+            ]
+          },
+          {
+            "file": "routes/account.tsx",
+            "children": [
+              {
+                "file": "routes/account._index.tsx",
+                "index": true
+              },
+              {
+                "file": "routes/account.profile.tsx",
+                "path": "profile"
+              },
+              {
+                "file": "routes/account.api-keys.tsx",
+                "path": "api-keys"
+              }
+            ],
+            "path": "account"
+          }
+        ]
+      }
+    ]
+  },
+  "viteConfig": {
+    "build": {
+      "assetsDir": "assets"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+import {
+  type RouteConfig,
+  index,
+  layout,
+  prefix,
+  route,
+} from "@react-router/dev/routes";
+
+export default [
+  index("routes/home.tsx"),
+  ...prefix("docs", [
+    layout("routes/docs.layout.tsx", [
+      index("routes/docs._index.tsx"),
+      route(":product", "routes/docs.$product.tsx", [
+        index("routes/docs.$product._index.tsx"),
+        route("*", "routes/docs.$product.$.tsx"),
+      ]),
+    ]),
+  ]),
+  route("account", "routes/account.tsx", [
+    index("routes/account._index.tsx"),
+    route("profile", "routes/account.profile.tsx"),
+    route("api-keys", "routes/account.api-keys.tsx"),
+  ]),
+] satisfies RouteConfig;
