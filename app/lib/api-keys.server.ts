@@ -1,6 +1,6 @@
 import { createHmac, randomBytes } from "node:crypto";
 
-import { type Collection, ObjectId } from "mongodb";
+import { type Collection, type Filter, ObjectId } from "mongodb";
 
 import { getCollection } from "./mongodb.server";
 
@@ -8,6 +8,8 @@ const COLLECTION = "api_keys";
 const KEY_PREFIX = "inta_live_";
 
 export type ApiKeyRecord = {
+  /** Set for keys created after user_accounts rollout; legacy rows omit this. */
+  ownerAccountId?: ObjectId | null;
   ownerEmail: string;
   label: string;
   keyHash: string;
@@ -45,6 +47,8 @@ function ensureIndexes(coll: Collection<ApiKeyRecord>) {
       .createIndexes([
         { key: { ownerEmail: 1, revokedAt: 1 } },
         { key: { ownerEmail: 1, createdAt: -1 } },
+        { key: { ownerAccountId: 1, revokedAt: 1 } },
+        { key: { ownerAccountId: 1, createdAt: -1 } },
       ])
       .then(() => {})
       .catch(() => {
@@ -54,7 +58,54 @@ function ensureIndexes(coll: Collection<ApiKeyRecord>) {
   return indexesPromise;
 }
 
-export async function listApiKeysForOwner(
+function activeKeysFilter(
+  ownerAccountId: ObjectId | null,
+  emailNorm: string,
+): Filter<ApiKeyRecord> {
+  if (ownerAccountId) {
+    return {
+      revokedAt: null,
+      $or: [
+        { ownerAccountId },
+        {
+          ownerEmail: emailNorm,
+          $or: [
+            { ownerAccountId: { $exists: false } },
+            { ownerAccountId: null },
+          ],
+        },
+      ],
+    };
+  }
+  return { revokedAt: null, ownerEmail: emailNorm };
+}
+
+function revokeKeyFilter(
+  keyId: ObjectId,
+  ownerAccountId: ObjectId | null,
+  emailNorm: string,
+): Filter<ApiKeyRecord> {
+  const base: Filter<ApiKeyRecord> = { _id: keyId, revokedAt: null };
+  if (ownerAccountId) {
+    return {
+      ...base,
+      $or: [
+        { ownerAccountId },
+        {
+          ownerEmail: emailNorm,
+          $or: [
+            { ownerAccountId: { $exists: false } },
+            { ownerAccountId: null },
+          ],
+        },
+      ],
+    };
+  }
+  return { ...base, ownerEmail: emailNorm };
+}
+
+export async function listApiKeysForUser(
+  ownerAccountId: ObjectId | null,
   ownerEmail: string,
 ): Promise<ApiKeyListItem[]> {
   const coll = await getCollection<ApiKeyRecord>(COLLECTION);
@@ -62,10 +113,9 @@ export async function listApiKeysForOwner(
   await ensureIndexes(coll);
   const norm = ownerEmail.trim().toLowerCase();
   const docs = await coll
-    .find(
-      { ownerEmail: norm, revokedAt: null },
-      { projection: { _id: 1, label: 1, keyPrefix: 1, createdAt: 1 } },
-    )
+    .find(activeKeysFilter(ownerAccountId, norm), {
+      projection: { _id: 1, label: 1, keyPrefix: 1, createdAt: 1 },
+    })
     .sort({ createdAt: -1 })
     .toArray();
   return docs.map((d) => ({
@@ -81,6 +131,7 @@ export type CreateApiKeyResult =
   | { ok: false; error: string };
 
 export async function createApiKey(
+  ownerAccountId: ObjectId | null,
   ownerEmail: string,
   label: string,
 ): Promise<CreateApiKeyResult> {
@@ -111,14 +162,19 @@ export async function createApiKey(
 
   const norm = ownerEmail.trim().toLowerCase();
   const now = new Date();
-  const insertResult = await coll.insertOne({
+  const doc: ApiKeyRecord = {
     ownerEmail: norm,
     label: trimmedLabel,
     keyHash,
     keyPrefix,
     createdAt: now,
     revokedAt: null,
-  });
+  };
+  if (ownerAccountId) {
+    doc.ownerAccountId = ownerAccountId;
+  }
+
+  const insertResult = await coll.insertOne(doc);
 
   return {
     ok: true,
@@ -128,6 +184,7 @@ export async function createApiKey(
 }
 
 export async function revokeApiKey(
+  ownerAccountId: ObjectId | null,
   ownerEmail: string,
   keyId: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
@@ -142,10 +199,9 @@ export async function revokeApiKey(
     return { ok: false, error: "Invalid key id." };
   }
   const norm = ownerEmail.trim().toLowerCase();
-  const res = await coll.updateOne(
-    { _id: oid, ownerEmail: norm, revokedAt: null },
-    { $set: { revokedAt: new Date() } },
-  );
+  const res = await coll.updateOne(revokeKeyFilter(oid, ownerAccountId, norm), {
+    $set: { revokedAt: new Date() },
+  });
   if (res.matchedCount === 0) {
     return { ok: false, error: "Key not found or already revoked." };
   }

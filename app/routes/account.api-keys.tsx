@@ -9,12 +9,12 @@ import {
 import type { Route } from "./+types/account.api-keys";
 import {
   createApiKey,
-  listApiKeysForOwner,
+  listApiKeysForUser,
   revokeApiKey,
 } from "~/lib/api-keys.server";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
-import { getPortalAccountSession } from "~/lib/intastellar-verify.server";
 import { isMongoConfigured } from "~/lib/mongodb.server";
+import { getResolvedPortalUser } from "~/lib/portal-user.server";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 
 export function meta(_: Route.MetaArgs) {
@@ -25,21 +25,21 @@ export type ApiKeysLoaderData = {
   ssoConfigured: boolean;
   mongoConfigured: boolean;
   signedInOnServer: boolean;
-  keys: Awaited<ReturnType<typeof listApiKeysForOwner>>;
+  keys: Awaited<ReturnType<typeof listApiKeysForUser>>;
 };
 
 export async function loader({ request }: Route.LoaderArgs): Promise<ApiKeysLoaderData> {
   const ssoConfigured = getIntastellarClientConfig() != null;
   const mongoConfigured = isMongoConfigured();
-  const session = await getPortalAccountSession(request);
+  const user = await getResolvedPortalUser(request);
   const keys =
-    session && mongoConfigured
-      ? await listApiKeysForOwner(session.email)
+    user && mongoConfigured
+      ? await listApiKeysForUser(user.accountId, user.email)
       : [];
   return {
     ssoConfigured,
     mongoConfigured,
-    signedInOnServer: session != null,
+    signedInOnServer: user != null,
     keys,
   };
 }
@@ -49,8 +49,8 @@ export type ApiKeysActionData =
   | { ok: false; error: string };
 
 export async function action({ request }: Route.ActionArgs): Promise<ApiKeysActionData> {
-  const session = await getPortalAccountSession(request);
-  if (!session) {
+  const user = await getResolvedPortalUser(request);
+  if (!user) {
     return { ok: false, error: "Sign in again to manage API keys." };
   }
   if (!isMongoConfigured()) {
@@ -62,7 +62,7 @@ export async function action({ request }: Route.ActionArgs): Promise<ApiKeysActi
 
   if (intent === "revoke") {
     const keyId = String(form.get("keyId") ?? "");
-    const result = await revokeApiKey(session.email, keyId);
+    const result = await revokeApiKey(user.accountId, user.email, keyId);
     if (!result.ok) {
       return { ok: false, error: result.error };
     }
@@ -71,7 +71,7 @@ export async function action({ request }: Route.ActionArgs): Promise<ApiKeysActi
 
   if (intent === "create") {
     const label = String(form.get("label") ?? "");
-    const result = await createApiKey(session.email, label);
+    const result = await createApiKey(user.accountId, user.email, label);
     if (!result.ok) {
       return { ok: false, error: result.error };
     }
