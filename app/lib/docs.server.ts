@@ -37,8 +37,12 @@ export type SidebarSection = {
   items: SidebarItem[];
 };
 
+/** Flat order of doc pages as shown in the sidebar (for prev/next). */
+export type DocsNavLink = { href: string; label: string };
+
 const SIDEBAR_SECTION_ORDER = [
   "overview",
+  "accounts",
   "javascript",
   "wordpress",
   "integrations",
@@ -49,6 +53,7 @@ type SidebarSectionId = (typeof SIDEBAR_SECTION_ORDER)[number];
 
 const SIDEBAR_SECTION_LABEL: Record<SidebarSectionId, string> = {
   overview: "Overview",
+  accounts: "Sign in (Web)",
   javascript: "JavaScript",
   wordpress: "WordPress",
   integrations: "Integrations",
@@ -58,6 +63,7 @@ const SIDEBAR_SECTION_LABEL: Record<SidebarSectionId, string> = {
 function sidebarSectionId(relFromProduct: string): SidebarSectionId {
   const n = relFromProduct.split(path.sep).join("/");
   if (n === "index.mdx") return "overview";
+  if (n.startsWith("web/")) return "accounts";
   if (n.startsWith("javascript/")) return "javascript";
   if (n.startsWith("wordpress/")) return "wordpress";
   if (n === "google-tag-manager.mdx" || n === "shopify.mdx") {
@@ -252,6 +258,30 @@ export async function getSidebar(product: string): Promise<SidebarSection[]> {
   }
 
   return sections;
+}
+
+export async function getDocsNavFlat(product: string): Promise<DocsNavLink[]> {
+  const sections = await getSidebar(product);
+  const out: DocsNavLink[] = [];
+  for (const section of sections) {
+    for (const item of section.items) {
+      out.push({ href: item.href, label: item.label });
+    }
+  }
+  return out;
+}
+
+export function getAdjacentDocs(
+  ordered: DocsNavLink[],
+  currentPathname: string,
+): { prev?: DocsNavLink; next?: DocsNavLink } {
+  const path = currentPathname.split(/[?#]/)[0] ?? currentPathname;
+  const idx = ordered.findIndex((x) => x.href === path);
+  if (idx === -1) return {};
+  return {
+    prev: idx > 0 ? ordered[idx - 1] : undefined,
+    next: idx < ordered.length - 1 ? ordered[idx + 1] : undefined,
+  };
 }
 
 export type ProductSummary = {

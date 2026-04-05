@@ -28,7 +28,8 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+/** Wraps all root `Layout` children (normal `App` or `ErrorBoundary`) so the header and search modal stay mounted and work after errors. */
+function RootShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
@@ -50,6 +51,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
+    <>
+      <SiteHeader onOpenSearch={() => setSearchOpen(true)} />
+      <main>{children}</main>
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <ScrollRestoration />
+    </>
+  );
+}
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
@@ -58,10 +70,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="min-h-dvh antialiased">
-        <SiteHeader onOpenSearch={() => setSearchOpen(true)} />
-        <main>{children}</main>
-        <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
-        <ScrollRestoration />
+        <RootShell>{children}</RootShell>
         <Scripts />
       </body>
     </html>
@@ -89,14 +98,14 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
+    <div className="container mx-auto p-4 pt-16">
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre className="w-full overflow-x-auto p-4">
           <code>{stack}</code>
         </pre>
       )}
-    </main>
+    </div>
   );
 }

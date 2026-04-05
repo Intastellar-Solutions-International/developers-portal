@@ -66,6 +66,12 @@ export function Welcome() {
               Browse docs
             </Link>
             <Link
+              to="/docs/accounts-sign-in"
+              className="rounded-lg border border-white/25 bg-white/5 px-6 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:border-brand/60 hover:bg-brand/15"
+            >
+              Accounts sign-in
+            </Link>
+            <Link
               to="/account/profile"
               className="rounded-lg border border-brand/40 bg-transparent px-6 py-2.5 text-sm font-medium text-brand backdrop-blur-sm transition-colors hover:border-brand hover:bg-brand/10"
             >

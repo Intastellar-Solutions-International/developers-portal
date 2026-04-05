@@ -1,9 +1,28 @@
 import { data, Outlet, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/docs.$product";
-import { DocTableOfContents } from "~/components/doc-table-of-contents";
+import {
+  DocTableOfContents,
+  DocTableOfContentsMobile,
+} from "~/components/doc-table-of-contents";
+import { DocsMobileNav } from "~/components/docs-mobile-nav";
 import { DocsSidebar } from "~/components/docs-sidebar";
+import type { ExtraNavSection } from "~/components/docs-nav-sections";
+import { INTASTELLAR_SIGN_IN_WEB_DOCS } from "~/lib/docs-links";
 import { getSidebar, listProducts } from "~/lib/docs.server";
+
+const DOCS_EXTRA_SECTIONS: ExtraNavSection[] = [
+  {
+    heading: "Accounts",
+    items: [
+      {
+        href: INTASTELLAR_SIGN_IN_WEB_DOCS,
+        label: "Sign in (Web)",
+        external: true,
+      },
+    ],
+  },
+];
 
 export async function loader({ params }: Route.LoaderArgs) {
   const product = params.product;
@@ -20,9 +39,23 @@ export default function DocsProductLayout() {
 
   return (
     <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
-      <DocsSidebar product={product} sections={sidebar} />
+      <DocsSidebar
+        product={product}
+        sections={sidebar}
+        extraSections={
+          product === "accounts-sign-in" ? undefined : DOCS_EXTRA_SECTIONS
+        }
+      />
       <div className="flex min-w-0 flex-1 flex-col gap-10 xl:flex-row xl:gap-12">
-        <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <DocsMobileNav
+            product={product}
+            sections={sidebar}
+            extraSections={
+              product === "accounts-sign-in" ? undefined : DOCS_EXTRA_SECTIONS
+            }
+          />
+          <DocTableOfContentsMobile />
           <Outlet />
         </div>
         <DocTableOfContents />

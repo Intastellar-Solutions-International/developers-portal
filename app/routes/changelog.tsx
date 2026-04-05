@@ -151,7 +151,7 @@ export default function ChangelogPage() {
         </strong>{" "}
         are listed without release notes.
       </p>
-      <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+      {/* <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
         Optional env:{" "}
         <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
           CHANGELOG_GITHUB_REPO
@@ -162,7 +162,7 @@ export default function ChangelogPage() {
           GITHUB_TOKEN
         </code>{" "}
         for higher API rate limits on Vercel.
-      </p>
+      </p> */}
       {error && entries.length === 0 ? (
         <p className="mt-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
           {error}

@@ -2,6 +2,7 @@ import { Link, data, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/docs._index";
 import { listProducts } from "~/lib/docs.server";
+import { buildDocsHubMeta } from "~/lib/seo";
 
 export async function loader(_: Route.LoaderArgs) {
   const products = await listProducts();
@@ -11,14 +12,8 @@ export async function loader(_: Route.LoaderArgs) {
   return { products };
 }
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Documentation · inta.dev" },
-    {
-      name: "description",
-      content: "Documentation for Intastellar developer products.",
-    },
-  ];
+export function meta({ location }: Route.MetaArgs) {
+  return buildDocsHubMeta(location.pathname);
 }
 
 export default function DocsIndex() {

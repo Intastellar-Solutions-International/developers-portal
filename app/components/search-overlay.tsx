@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useFetcher, useNavigate } from "react-router";
 
 import { SearchPanel } from "~/components/search-panel";
@@ -17,9 +18,11 @@ export function SearchOverlay({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!open || fetcher.data) return;
+    if (!open) return;
     fetcher.load("/search");
-  }, [open, fetcher.data]);
+    // Intentionally only when `open` changes — `fetcher` identity is not stable as a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -46,7 +49,7 @@ export function SearchOverlay({
   const documents = fetcher.data?.documents ?? [];
   const loading = fetcher.state === "loading" && !fetcher.data;
 
-  return (
+  const overlay = (
     <div
       className="fixed inset-0 z-[100] flex items-start justify-center bg-black/50 px-4 pt-[min(12vh,6rem)] pb-8"
       role="presentation"
@@ -77,4 +80,10 @@ export function SearchOverlay({
       </div>
     </div>
   );
+
+  if (typeof document !== "undefined") {
+    return createPortal(overlay, document.body);
+  }
+
+  return overlay;
 }

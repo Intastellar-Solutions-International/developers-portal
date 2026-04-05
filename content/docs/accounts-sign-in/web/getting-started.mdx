@@ -1,0 +1,25 @@
+---
+title: Web sign-in — Getting started
+sidebar_label: Getting started
+description: Integrate Intastellar Accounts web sign-in. Overview on inta.dev; full reference on the Accounts developer portal.
+order: 10
+---
+
+This guide orients you for **web** sign-in with Intastellar Accounts. For every parameter, callback URL, and SDK method, use the hosted reference below.
+
+## Before you integrate
+
+1. **Register your application** in the Intastellar developer console (redirect URIs, client configuration).
+2. **Choose your flow** — typically authorization code with PKCE for public clients, or a confidential server-side exchange where applicable.
+3. **Handle sessions** — store tokens securely (httpOnly cookies or server-side session); avoid exposing long-lived secrets in the browser.
+
+## Canonical documentation
+
+Follow the full **Sign in (Web)** documentation for step-by-step integration, code samples, and troubleshooting:
+
+**[developers.intastellarsolutions.com — Identity / Sign in / Web](https://developers.intastellarsolutions.com/identity/sign-in/web/docs)**
+
+## Related on inta.dev
+
+- [Documentation home](/docs/accounts-sign-in) for this product
+- [Intastellar Consents (cookie banner)](/docs/cookie-banner) if you also need GDPR consent UI
