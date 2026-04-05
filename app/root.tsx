@@ -12,6 +12,7 @@ import {
 
 import type { Route } from "./+types/root";
 import { SearchOverlay } from "./components/search-overlay";
+import { SiteFooter } from "./components/site-footer";
 import { SiteHeader } from "./components/site-header";
 import type { SearchDocument } from "~/lib/search-index.server";
 import { OPEN_SEARCH_EVENT } from "~/lib/search-overlay-context";
@@ -94,8 +95,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
   return (
     <IntastellarAuthProvider>
-      <SiteHeader onOpenSearch={openSearch} />
-      <main className="pt-[3.75rem]">{children}</main>
+      <div className="flex min-h-dvh flex-col">
+        <SiteHeader onOpenSearch={openSearch} />
+        <main className="flex-1 pt-[3.75rem]">{children}</main>
+        <SiteFooter />
+      </div>
       <SearchOverlay
         open={searchOpen}
         onClose={() => setSearchOpen(false)}
