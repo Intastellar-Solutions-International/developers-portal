@@ -1,25 +1,13 @@
-import { createContext, useContext, type ReactNode } from "react";
+/**
+ * Opening the docs search overlay from arbitrary route chunks.
+ *
+ * React context can resolve to a different instance across lazy-loaded chunks,
+ * so we use a document event listened to in `root.tsx` (same place as overlay state).
+ */
 
-type SearchOverlayValue = {
-  openSearch: () => void;
-};
+export const OPEN_SEARCH_EVENT = "inta:open-search";
 
-const SearchOverlayContext = createContext<SearchOverlayValue | null>(null);
-
-export function SearchOverlayProvider({
-  children,
-  openSearch,
-}: {
-  children: ReactNode;
-  openSearch: () => void;
-}) {
-  return (
-    <SearchOverlayContext.Provider value={{ openSearch }}>
-      {children}
-    </SearchOverlayContext.Provider>
-  );
-}
-
-export function useOpenSearch(): (() => void) | undefined {
-  return useContext(SearchOverlayContext)?.openSearch;
+export function requestOpenSearch() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(OPEN_SEARCH_EVENT));
 }

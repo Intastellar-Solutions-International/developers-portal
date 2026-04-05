@@ -1,10 +1,8 @@
-"use client";
-
 import { Link } from "react-router";
 
 import { BRAND } from "~/lib/brand";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
-import { useOpenSearch } from "~/lib/search-overlay-context";
+import { requestOpenSearch } from "~/lib/search-overlay-context";
 
 function SearchIcon({ className }: { className?: string }) {
   return (
@@ -27,7 +25,6 @@ function SearchIcon({ className }: { className?: string }) {
 }
 
 export function Welcome() {
-  const openSearch = useOpenSearch();
   const vCb = getDefaultVersionSlug("cookie-banner");
   const vAcc = getDefaultVersionSlug("accounts-sign-in");
 
@@ -134,7 +131,7 @@ export function Welcome() {
             </Link>
             <button
               type="button"
-              onClick={() => openSearch?.()}
+              onClick={() => requestOpenSearch()}
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/25 bg-white/5 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:border-brand/50 hover:bg-brand/15"
             >
               <SearchIcon className="opacity-80" />

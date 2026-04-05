@@ -14,7 +14,7 @@ import type { Route } from "./+types/root";
 import { SearchOverlay } from "./components/search-overlay";
 import { SiteHeader } from "./components/site-header";
 import type { SearchDocument } from "~/lib/search-index.server";
-import { SearchOverlayProvider } from "~/lib/search-overlay-context";
+import { OPEN_SEARCH_EVENT } from "~/lib/search-overlay-context";
 import { IntastellarAuthProvider } from "~/providers/intastellar-auth-provider";
 import "./app.css";
 
@@ -81,6 +81,12 @@ function RootShell({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchOpen]);
 
+  useEffect(() => {
+    const open = () => setSearchOpen(true);
+    window.addEventListener(OPEN_SEARCH_EVENT, open);
+    return () => window.removeEventListener(OPEN_SEARCH_EVENT, open);
+  }, []);
+
   const documents = fetcher.data?.documents ?? [];
   const loading = fetcher.state === "loading" && !fetcher.data;
 
@@ -88,10 +94,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
   return (
     <IntastellarAuthProvider>
-      <SearchOverlayProvider openSearch={openSearch}>
-        <SiteHeader onOpenSearch={openSearch} />
-        <main>{children}</main>
-      </SearchOverlayProvider>
+      <SiteHeader onOpenSearch={openSearch} />
+      <main>{children}</main>
       <SearchOverlay
         open={searchOpen}
         onClose={() => setSearchOpen(false)}

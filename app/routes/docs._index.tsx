@@ -3,7 +3,7 @@ import { Link, data, useLoaderData } from "react-router";
 import type { Route } from "./+types/docs._index";
 import { listProducts } from "~/lib/docs.server";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
-import { useOpenSearch } from "~/lib/search-overlay-context";
+import { requestOpenSearch } from "~/lib/search-overlay-context";
 import { buildDocsHubMeta } from "~/lib/seo";
 
 const HUB_DESCRIPTION =
@@ -43,7 +43,6 @@ function SearchIcon({ className }: { className?: string }) {
 
 export default function DocsIndex() {
   const { products } = useLoaderData<typeof loader>();
-  const openSearch = useOpenSearch();
 
   const vCb = getDefaultVersionSlug("cookie-banner");
   const vAcc = getDefaultVersionSlug("accounts-sign-in");
@@ -95,7 +94,7 @@ export default function DocsIndex() {
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <button
           type="button"
-          onClick={() => openSearch?.()}
+          onClick={() => requestOpenSearch()}
           className="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:border-brand/50 hover:text-brand dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:border-brand/45"
         >
           <SearchIcon className="text-zinc-500 dark:text-zinc-400" />
