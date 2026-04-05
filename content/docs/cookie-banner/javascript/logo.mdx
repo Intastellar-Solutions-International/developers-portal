@@ -1,0 +1,22 @@
+---
+title: Add logo
+description: Show your logo in the JavaScript cookie banner.
+order: 40
+lastUpdated: "2026-04-05"
+---
+
+# Add logo (JavaScript)
+
+Set an **absolute HTTPS URL** to your logo in `window.INTA.settings.logo`:
+
+```js
+window.INTA = {
+  // ...
+  settings: {
+    // ...
+    logo: "https://yourdomain.com/path/to/logo.png",
+  },
+};
+```
+
+Use a square or wide logo asset that works on light and dark backgrounds, or adjust `color` / styling in [Customize](/docs/cookie-banner/javascript/customize) so contrast stays accessible.

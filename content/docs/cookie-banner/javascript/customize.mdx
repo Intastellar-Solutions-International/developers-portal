@@ -1,0 +1,24 @@
+---
+title: Customize
+description: Tune colours, layout, language direction, and branding for the JavaScript banner.
+order: 20
+lastUpdated: "2026-04-05"
+---
+
+# Customize
+
+The JavaScript banner reads configuration from `window.INTA` before `uc.js` runs. Common `settings` fields (see [Get Started](/docs/cookie-banner/javascript/getting-started)) include:
+
+| Field | Purpose |
+| --- | --- |
+| `rootDomain` | Your site’s root domain |
+| `company` | Display name for your organisation |
+| `arrange` | Layout direction, e.g. `ltr` |
+| `color` | Primary UI colour (hex) |
+| `logo` | Absolute URL to your logo image |
+| `design` | Banner presentation, e.g. `overlay` |
+| `gtagId` | Google tag / GA4 measurement ID when applicable |
+| `requiredCookies` | Cookies treated as strictly necessary |
+| `keepInLocalStorage` | Local storage keys to preserve |
+
+Add or adjust fields as documented for your account. The JavaScript build supports **custom banners** when you implement the script and apply the required CSS classes to your markup (see [the main documentation](/docs/cookie-banner#can-i-use-my-own-design)).

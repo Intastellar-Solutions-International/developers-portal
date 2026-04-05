@@ -1,0 +1,43 @@
+---
+title: Get Started
+description: Integrate Intastellar Consents on your website via JavaScript.
+order: 10
+lastUpdated: "2026-04-05"
+---
+
+# Get Started (JavaScript)
+
+Paste the snippet **just after the opening `<head>` tag** on every page (or in your root layout). This pattern matches the official [Intastellar Consents solution page](https://www.intastellarsolutions.com/solutions/cookie-consents).
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://yourdomain.com/privacy-policy",
+    settings: {
+      rootDomain: "yourdomain.com",
+      company: "yourcompany",
+      arrange: "ltr",
+      color: "#000000",
+      logo: "https://yourdomain.com/logo.png",
+      design: "overlay",
+      gtagId: "G-XXXXXXXXXX",
+      requiredCookies: [],
+      keepInLocalStorage: [],
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+Replace domain, company, colours, logo URL, and measurement IDs with your own values.
+
+## Privacy policy URL
+
+Use a valid privacy policy URL in configuration. You can set this via `policy_link` and/or `settings.privacy_policy` on `window.INTA` (see the [documentation home](/docs/cookie-banner)).
+
+## Related
+
+- [Customize](/docs/cookie-banner/javascript/customize)
+- [Customize iFrames](/docs/cookie-banner/javascript/iframes)
+- [Add logo](/docs/cookie-banner/javascript/logo)
+- [Try out](/docs/cookie-banner/javascript/try-out)
