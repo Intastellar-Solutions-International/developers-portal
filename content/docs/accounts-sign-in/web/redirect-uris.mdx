@@ -1,0 +1,42 @@
+---
+title: Redirect URIs and callbacks
+sidebar_label: Redirect URIs
+description: Register exact callback URLs for Intastellar Accounts web sign-in and avoid common redirect mismatch errors.
+order: 30
+---
+
+Intastellar only redirects to **pre-registered** URLs. A typo, wrong scheme, or trailing slash mismatch causes `redirect_uri_mismatch` or similar errors.
+
+## Rules of thumb
+
+1. **HTTPS in production** — `http://localhost` is often allowed for development; production should use `https://`.
+2. **Exact match** — `https://app.example.com/callback` and `https://app.example.com/callback/` are different paths; register the one you use in the authorize request.
+3. **No wildcards** in most setups — register each concrete callback path (or follow your console’s documented pattern if path templates are supported).
+4. **Query strings** — avoid putting dynamic query strings in the registered URI unless your registration explicitly allows it; prefer a fixed path and pass internal context via `state`.
+
+## Multiple environments
+
+Register separate redirect URIs (or separate clients) for:
+
+- Local development (`http://127.0.0.1:5173/auth/callback`, etc.)
+- Staging
+- Production
+
+This limits blast radius if a secret leaks in a non-production client.
+
+## SPA routers
+
+If you use hash routing (`/#/callback`), check whether your identity provider allows that pattern for redirects; many require **path-based** URLs (`/auth/callback`) for the OAuth callback.
+
+## After redirect
+
+On the callback route:
+
+1. Read `code` and `state` from the query string.
+2. Verify `state` against what you stored when you started the flow.
+3. Exchange the code at the token endpoint (see [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow)).
+4. Redirect the user to the final in-app destination (dashboard, return URL stored in `state`, etc.).
+
+## Next
+
+[Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies) for how to persist the signed-in user safely after a successful callback.

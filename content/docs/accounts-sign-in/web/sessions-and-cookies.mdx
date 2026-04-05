@@ -1,0 +1,37 @@
+---
+title: Sessions, cookies, and tokens
+sidebar_label: Sessions & cookies
+description: How Intastellar Accounts uses cookies such as inta_acc and inta_state, and how to combine them with your own session model.
+order: 40
+---
+
+After a successful sign-in you may see Intastellar-set cookies on domains used by the Accounts / identity experience. On **developers.intastellarsolutions.com**, privacy disclosures reference cookies including:
+
+| Cookie (examples) | Typical role |
+| ----------------- | ------------- |
+| `inta_acc` | Session-related token for the Accounts experience. |
+| `inta_state` | State for the sign-in / consent flow. |
+
+Exact behavior can evolve with the identity product; treat these as **Intastellar-managed** cookies on Intastellar-controlled hosts. Your integration should not depend on reading Intastellar cookies from your own origin unless documentation explicitly says you can.
+
+## Your application session
+
+For **your** site (`app.example.com`), prefer:
+
+1. **Your own session cookie** — opaque session ID, `HttpOnly`, `Secure`, `SameSite` appropriate for your topology (`Lax` or `Strict` for same-site; `None` only with `Secure` if you must cross sites).
+2. **Server-side session store** — map session id to user id, token expiry, and refresh handling.
+3. **Short-lived access token in memory** (SPA) — paired with a BFF or silent refresh pattern; avoid long-lived tokens in `localStorage` when possible.
+
+## ID token vs access token
+
+- **ID token** — JWT about the authentication event; use to establish who signed in; validate signature and claims (`iss`, `aud`, `exp`, `nonce` if used).
+- **Access token** — call Intastellar (or resource) APIs; treat as opaque unless you need to parse it.
+
+## Logout
+
+Clear **your** session cookie and, if required by your product policy, redirect the user through Intastellar’s **end-session** or logout endpoint so IdP cookies are cleared. See [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).
+
+## Next
+
+- [SPAs and JavaScript clients](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE and front-end constraints.
+- [Server-side (confidential) clients](/docs/accounts-sign-in/web/backend-exchange) — exchanging the code without exposing secrets.

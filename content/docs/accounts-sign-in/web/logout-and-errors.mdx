@@ -1,0 +1,45 @@
+---
+title: Logout, errors, and troubleshooting
+sidebar_label: Logout & errors
+description: End Intastellar Accounts sessions safely and interpret common OAuth errors from authorize and token endpoints.
+order: 70
+---
+
+## Logout
+
+1. **Clear your session** — delete or invalidate your application session cookie and server-side session record.
+2. **IdP logout (optional but recommended)** — if Intastellar provides an end-session or logout URL, redirect the user there with parameters specified in your integration guide (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, etc.) so SSO cookies on the identity domain are cleared.
+3. **Return URL** — send the user to a public page on your site after logout completes.
+
+Without step 2, the user may still be signed in to Intastellar and get a silent SSO on the next `authorize` redirect.
+
+## Common authorize errors
+
+| `error` (typical) | Meaning |
+| ----------------- | ------- |
+| `invalid_request` | Missing or invalid parameter (e.g. bad `redirect_uri`). |
+| `unauthorized_client` | Client not allowed for this flow or scope. |
+| `access_denied` | User cancelled or blocked consent. |
+| `invalid_scope` | Requested scope not allowed for the client. |
+
+Always show a safe message to the user and log `error_description` server-side for support.
+
+## Common token errors
+
+| `error` | Meaning |
+| ------- | ------- |
+| `invalid_grant` | Code expired, already used, or `redirect_uri` / PKCE mismatch. |
+| `invalid_client` | Wrong `client_id` / `client_secret`. |
+| `invalid_request` | Malformed body or missing field. |
+
+Authorization codes are usually **single-use** and short-lived. If the user double-submits the callback or you retry with the same code, expect `invalid_grant`.
+
+## Troubleshooting checklist
+
+- [Redirect URI](/docs/accounts-sign-in/web/redirect-uris) matches the registered value **exactly** (scheme, host, path, no extra query).
+- `state` matches the value you stored for this attempt.
+- PKCE: same `code_verifier` that produced the sent `code_challenge`.
+- Clock skew: ensure server time is correct for JWT `exp` validation.
+- CORS: token endpoint calls from the browser often fail by design — use your backend.
+
+For a full walkthrough of the happy path, see [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow).

@@ -1,25 +1,52 @@
 ---
 title: Web sign-in — Getting started
 sidebar_label: Getting started
-description: Integrate Intastellar Accounts web sign-in. Overview on inta.dev; full reference on the Accounts developer portal.
+description: Register your application, choose a client type, and plan redirects and sessions for Intastellar Accounts web sign-in.
 order: 10
 ---
 
-This guide orients you for **web** sign-in with Intastellar Accounts. For every parameter, callback URL, and SDK method, use the hosted reference below.
+Before you call any endpoint, configure an **OAuth/OIDC-style client** for your product in the Intastellar developer console (or equivalent registration UI your team uses).
 
-## Before you integrate
+## 1. Register your application
 
-1. **Register your application** in the Intastellar developer console (redirect URIs, client configuration).
-2. **Choose your flow** — typically authorization code with PKCE for public clients, or a confidential server-side exchange where applicable.
-3. **Handle sessions** — store tokens securely (httpOnly cookies or server-side session); avoid exposing long-lived secrets in the browser.
+Create an application record and capture:
 
-## Canonical documentation
+- **Client ID** — public identifier for your app (safe to ship in front-end code for public clients).
+- **Client secret** — only for **confidential** (server-side) clients; never expose in the browser or mobile app binaries.
+- **Redirect URIs** — exact HTTPS URLs where Intastellar may return the user after sign-in. See [Redirect URIs and callbacks](/docs/accounts-sign-in/web/redirect-uris).
 
-Follow the full **Sign in (Web)** documentation for step-by-step integration, code samples, and troubleshooting:
+Use separate client registrations for production and staging so redirect URIs and secrets stay isolated.
 
-**[developers.intastellarsolutions.com — Identity / Sign in / Web](https://developers.intastellarsolutions.com/identity/sign-in/web/docs)**
+## 2. Choose a flow
 
-## Related on inta.dev
+| Your app | Recommended approach |
+| -------- | -------------------- |
+| Single-page app (React, Vue, etc.) | Authorization code with **PKCE**; no client secret in the browser. |
+| Server-rendered site (session cookies) | Code flow: browser completes the redirect; your **server** exchanges the code using the client secret. |
+| Mobile / native | Same ideas as SPA: PKCE, custom URL scheme or HTTPS redirect. |
 
-- [Documentation home](/docs/accounts-sign-in) for this product
-- [Intastellar Consents (cookie banner)](/docs/cookie-banner) if you also need GDPR consent UI
+Details: [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow), [SPAs and JavaScript](/docs/accounts-sign-in/web/spa-and-javascript), [Server-side exchange](/docs/accounts-sign-in/web/backend-exchange).
+
+## 3. Endpoints and metadata
+
+Your console should list (or you obtain from discovery):
+
+- **Authorization endpoint** — user is sent here to sign in and approve scopes.
+- **Token endpoint** — your backend (or a secure BFF) exchanges the code for tokens.
+- **Issuer / JWKS** — for validating ID tokens when you use OpenID Connect.
+
+Placeholders in examples on this site are written as `AUTHORIZATION_ENDPOINT` and `TOKEN_ENDPOINT`; substitute the values from your environment.
+
+## 4. Plan sessions
+
+Decide how your site remembers the user after sign-in:
+
+- **HTTP-only, Secure cookies** set by your server (recommended for traditional web apps).
+- **Backend session** with only an opaque session id in the cookie.
+- **Short-lived access token** in memory for SPAs, with refresh via a **backend-for-frontend** when possible.
+
+See [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Next steps
+
+Continue with [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow) to implement the first redirect and callback.

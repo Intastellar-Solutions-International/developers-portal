@@ -1,0 +1,75 @@
+---
+title: Authorization code flow
+sidebar_label: Authorization code
+description: Build the authorize redirect, validate state and PKCE, and exchange the authorization code for tokens with Intastellar Accounts.
+order: 20
+---
+
+The **authorization code** flow is the standard pattern for web sign-in: the browser visits Intastellar, the user authenticates, and Intastellar redirects back to your site with a **code** you exchange for tokens.
+
+## Step 1 — Redirect the user to authorize
+
+Send the user’s browser to the authorization endpoint with query parameters (names follow common OAuth 2.0 / OIDC conventions; confirm exact names in your console):
+
+| Parameter | Purpose |
+| --------- | ------- |
+| `response_type` | Use `code` for this flow. |
+| `client_id` | Your registered client ID. |
+| `redirect_uri` | Must **exactly** match a registered URI. |
+| `scope` | Space-separated scopes (often includes `openid` for OIDC). |
+| `state` | Random, unguessable value; you verify it on return. |
+| `code_challenge` | PKCE: SHA-256 hash of `code_verifier`, Base64url-encoded (for public clients). |
+| `code_challenge_method` | Typically `S256`. |
+
+Example (line breaks for readability):
+
+```http
+GET AUTHORIZATION_ENDPOINT?
+  response_type=code
+  &client_id=YOUR_CLIENT_ID
+  &redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+  &scope=openid%20profile%20email
+  &state=RANDOM_STATE
+  &code_challenge=CODE_CHALLENGE
+  &code_challenge_method=S256
+```
+
+**Store** `state` and the raw `code_verifier` (for PKCE) server-side or in a secure, short-lived cookie so you can validate them on callback.
+
+## Step 2 — Handle the callback
+
+Intastellar redirects to your `redirect_uri` with:
+
+| Query param | Meaning |
+| ----------- | ------- |
+| `code` | One-time authorization code. |
+| `state` | Echo of the value you sent; **must match** stored `state`. |
+
+If the user denies access or an error occurs, you may receive `error` and `error_description` instead — handle these without treating them as success.
+
+## Step 3 — Exchange the code for tokens
+
+`POST` to the token endpoint (typically `application/x-www-form-urlencoded`):
+
+| Field | Purpose |
+| ----- | ------- |
+| `grant_type` | `authorization_code` |
+| `code` | The code from the callback. |
+| `redirect_uri` | Same URI as in step 1. |
+| `client_id` | Your client ID. |
+| `code_verifier` | PKCE: the original secret verifier (public clients). |
+| `client_secret` | Confidential clients only. |
+
+The response usually includes `access_token`, optional `refresh_token`, and an `id_token` when `openid` was requested. Validate the **ID token** (issuer, audience, expiry, signature) using JWKS from the issuer when you rely on claims in your app.
+
+## Security checklist
+
+- **Never** skip `state` verification — prevents CSRF on the callback.
+- Use **PKCE** for any client that cannot hold a client secret (SPAs, mobile).
+- Use **HTTPS** for every redirect URI in production.
+- Keep **refresh tokens** and **client secrets** only on servers you control.
+
+## Next
+
+- [Redirect URIs and callbacks](/docs/accounts-sign-in/web/redirect-uris) — tighten registration and avoid mismatch errors.
+- [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — how Intastellar and your app set cookies such as `inta_acc` and `inta_state`.

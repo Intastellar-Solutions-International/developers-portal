@@ -1,0 +1,33 @@
+---
+title: SPAs and JavaScript clients
+sidebar_label: SPAs & JavaScript
+description: Use PKCE without a client secret, protect tokens in the browser, and avoid common SPA pitfalls with Intastellar Accounts.
+order: 50
+---
+
+Single-page applications cannot safely store a **client secret**. Use the authorization code flow with **PKCE** only.
+
+## Flow summary
+
+1. Generate `code_verifier` (high-entropy random string) and derive `code_challenge` (S256).
+2. Store `code_verifier` where you can read it on callback — e.g. `sessionStorage` for the tab, or an encrypted cookie via a small BFF.
+3. Redirect to `AUTHORIZATION_ENDPOINT` with `code_challenge` / `code_challenge_method=S256`.
+4. On callback, send `code` + `code_verifier` to your **backend** (recommended) or to the token endpoint if the product allows public clients without a secret (confirm in console).
+
+## Prefer a backend-for-frontend (BFF)
+
+Even in a SPA, the **token exchange** and **refresh** are safer on a same-origin API:
+
+- Browser receives only an **opaque session cookie** from your API.
+- Refresh tokens never touch `localStorage`.
+- CORS and CSRF can be controlled on your domain.
+
+If you must handle tokens entirely in the browser, minimize lifetime, avoid `localStorage` for refresh tokens, and plan for XSS as a full compromise of the session.
+
+## CORS and iframes
+
+Do not embed the Intastellar login UI in a hidden iframe unless the product explicitly supports silent or embedded flows. Prefer full-page redirect for sign-in and sign-out.
+
+## Next
+
+[Server-side (confidential) clients](/docs/accounts-sign-in/web/backend-exchange) if you also serve a traditional backend.

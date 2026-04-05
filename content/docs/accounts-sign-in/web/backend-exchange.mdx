@@ -1,0 +1,40 @@
+---
+title: Server-side (confidential) clients
+sidebar_label: Backend exchange
+description: Exchange the authorization code on your server with client_id and client_secret for Intastellar Accounts web sign-in.
+order: 60
+---
+
+When you have a trusted server (Node, .NET, PHP, etc.), perform the **token exchange** there so the **client secret** never reaches the browser.
+
+## Sequence
+
+1. Browser completes the redirect flow and lands on your callback with `code` and `state`.
+2. Your **callback route** verifies `state`, then calls your **backend** (or runs server-side in the same request) to exchange the code.
+3. Backend `POST`s to `TOKEN_ENDPOINT` with `grant_type=authorization_code`, `code`, `redirect_uri`, `client_id`, and `client_secret`.
+4. Backend creates a **session** for the user (set cookie, store tokens server-side).
+5. Browser is redirected to the app with only your session cookie.
+
+## Example (conceptual)
+
+```http
+POST TOKEN_ENDPOINT
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code
+&code=AUTHORIZATION_CODE
+&redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+&client_id=YOUR_CLIENT_ID
+&client_secret=YOUR_CLIENT_SECRET
+```
+
+Add PKCE parameters if this client is configured as hybrid or if the authorization step used PKCE.
+
+## Secret storage
+
+- Load `client_secret` from environment variables or a secret manager.
+- Rotate secrets if exposed; use separate credentials per environment.
+
+## Next
+
+[Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).

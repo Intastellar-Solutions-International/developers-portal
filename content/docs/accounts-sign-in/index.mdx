@@ -1,21 +1,34 @@
 ---
 title: Intastellar Accounts — Sign in
-description: Add Intastellar Accounts sign-in to your web app. Guides on inta.dev; full API reference on the Accounts developer portal.
+description: Web sign-in with Intastellar Accounts on inta.dev — OAuth-style flows, PKCE, redirects, sessions, and security.
 order: 0
 ---
 
-Intastellar Accounts lets users sign in to your product with the same identity they use across Intastellar services.
+Intastellar Accounts is the identity layer for Intastellar products. This documentation describes how to add **web** sign-in so users can authenticate with the same account they use across Intastellar services.
 
-Use the **Sign in (Web)** section for integration steps, security notes, and links to the canonical hosted reference.
+## What you will build
 
-## On this site
+1. Send the user to Intastellar to sign in (authorization step).
+2. Receive them back on your site with a short-lived **authorization code**.
+3. Exchange that code for tokens (and optionally establish your own session).
+4. Keep the session secure in the browser and on your servers.
 
-- [Getting started (web)](/docs/accounts-sign-in/web/getting-started) — flows, setup, and when to use the full reference.
+## Guides (Sign in — Web)
 
-## Full reference (hosted)
+- [Getting started](/docs/accounts-sign-in/web/getting-started) — prerequisites, register an app, pick a flow.
+- [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow) — auth URL, `state`, PKCE, and the code exchange.
+- [Redirect URIs and callbacks](/docs/accounts-sign-in/web/redirect-uris) — allowed URLs, validation, and common mistakes.
+- [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — `inta_acc`, `inta_state`, and storage choices.
+- [SPAs and JavaScript clients](/docs/accounts-sign-in/web/spa-and-javascript) — public clients and PKCE in the browser.
+- [Server-side (confidential) clients](/docs/accounts-sign-in/web/backend-exchange) — exchanging the code on your backend.
+- [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors) — ending sessions and fixing typical issues.
 
-The complete web sign-in documentation (endpoints, SDK details, and advanced configuration) lives on the Accounts developer portal:
+## Related products
 
-**[Intastellar Accounts — Sign in (Web) documentation](https://developers.intastellarsolutions.com/identity/sign-in/web/docs)**
+- [Intastellar Consents (cookie banner)](/docs/cookie-banner) — GDPR consent UI if you also need a cookie banner on the same site.
 
-That site is the source of truth for API behavior; pages here focus on how it fits the **inta.dev** developer experience.
+## Note on the legacy docs URL
+
+Content that was previously published under  
+[developers.intastellarsolutions.com/identity/sign-in/web/docs](https://developers.intastellarsolutions.com/identity/sign-in/web/docs)  
+is maintained **here on inta.dev** as the developer platform for Intastellar. Use the guides above as the current reference.

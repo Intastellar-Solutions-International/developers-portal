@@ -8,17 +8,16 @@ import {
 import { DocsMobileNav } from "~/components/docs-mobile-nav";
 import { DocsSidebar } from "~/components/docs-sidebar";
 import type { ExtraNavSection } from "~/components/docs-nav-sections";
-import { INTASTELLAR_SIGN_IN_WEB_DOCS } from "~/lib/docs-links";
 import { getSidebar, listProducts } from "~/lib/docs.server";
 
-const DOCS_EXTRA_SECTIONS: ExtraNavSection[] = [
+/** Shown on other product docs; sign-in content lives on inta.dev only. */
+const DOCS_RELATED_SECTIONS: ExtraNavSection[] = [
   {
-    heading: "Accounts",
+    heading: "Related",
     items: [
       {
-        href: INTASTELLAR_SIGN_IN_WEB_DOCS,
-        label: "Sign in (Web)",
-        external: true,
+        href: "/docs/accounts-sign-in",
+        label: "Accounts — Sign in (Web)",
       },
     ],
   },
@@ -43,7 +42,7 @@ export default function DocsProductLayout() {
         product={product}
         sections={sidebar}
         extraSections={
-          product === "accounts-sign-in" ? undefined : DOCS_EXTRA_SECTIONS
+          product === "accounts-sign-in" ? undefined : DOCS_RELATED_SECTIONS
         }
       />
       <div className="flex min-w-0 flex-1 flex-col gap-10 xl:flex-row xl:gap-12">
@@ -52,7 +51,7 @@ export default function DocsProductLayout() {
             product={product}
             sections={sidebar}
             extraSections={
-              product === "accounts-sign-in" ? undefined : DOCS_EXTRA_SECTIONS
+              product === "accounts-sign-in" ? undefined : DOCS_RELATED_SECTIONS
             }
           />
           <DocTableOfContentsMobile />
