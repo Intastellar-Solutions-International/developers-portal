@@ -1,16 +1,18 @@
 import type { Route } from "./+types/sitemap-xml";
 import { getAllDocPathnamesForSitemap } from "~/lib/docs.server";
+import { getStaticPathnamesFromRoutes } from "~/lib/sitemap-static-paths.server";
 import { absoluteUrl } from "~/lib/site";
 
-const STATIC_PATHS = [
-  "/",
-  "/docs",
-  "/search",
-  "/consents/changelog",
-  "/legal",
-  "/legal/privacy",
-  "/legal/terms",
-] as const;
+function uniqueSortedPaths(paths: readonly string[]): string[] {
+  const set = new Set(paths);
+  const list = [...set];
+  list.sort((a, b) => {
+    if (a === "/") return -1;
+    if (b === "/") return 1;
+    return a.localeCompare(b, "en");
+  });
+  return list;
+}
 
 function escapeXml(s: string): string {
   return s
@@ -22,10 +24,12 @@ function escapeXml(s: string): string {
 }
 
 export async function loader(_args: Route.LoaderArgs) {
-  const docPaths = await getAllDocPathnamesForSitemap();
-  const urls = [...STATIC_PATHS, ...docPaths].map((p) =>
-    escapeXml(absoluteUrl(p)),
-  );
+  const [staticPaths, docPaths] = await Promise.all([
+    getStaticPathnamesFromRoutes(),
+    getAllDocPathnamesForSitemap(),
+  ]);
+  const pathnames = uniqueSortedPaths([...staticPaths, ...docPaths]);
+  const urls = pathnames.map((p) => escapeXml(absoluteUrl(p)));
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
