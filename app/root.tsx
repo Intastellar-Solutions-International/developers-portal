@@ -8,7 +8,9 @@ import {
   Scripts,
   ScrollRestoration,
   useFetcher,
+  useMatches,
   useNavigate,
+  useRouteLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -26,7 +28,10 @@ import {
 } from "~/lib/analytics";
 import { OPEN_SEARCH_EVENT } from "~/lib/search-overlay-context";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
-import { IntastellarAuthProvider } from "~/providers/intastellar-auth-provider";
+import {
+  IntastellarAuthProvider,
+  type RootLoaderData,
+} from "~/providers/intastellar-auth-provider";
 import "./app.css";
 
 type SearchLoaderData = { documents: SearchDocument[] };
@@ -137,6 +142,24 @@ export const links: Route.LinksFunction = () => [
 ];
 
 /**
+ * Resolves root loader data next to the data router (with `useMatches` fallback) and wraps the UI shell
+ * in `IntastellarAuthProvider` so consumers always see the same context instance as the header.
+ */
+function IntastellarAppShell({ children }: { children: React.ReactNode }) {
+  const fromRoute = useRouteLoaderData("root") as RootLoaderData | undefined;
+  const matches = useMatches();
+  const rootMatch = matches.find((m) => m.id === "root");
+  const rootLoaderData =
+    fromRoute ?? (rootMatch?.loaderData as RootLoaderData | undefined);
+
+  return (
+    <IntastellarAuthProvider rootLoaderData={rootLoaderData}>
+      {children}
+    </IntastellarAuthProvider>
+  );
+}
+
+/**
  * Header, search, and scroll restoration wrap all `Layout` children (`App` → `<Outlet />` or `ErrorBoundary`).
  * Search data loading and navigation run here so router hooks match the root route context reliably.
  */
@@ -183,7 +206,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   const openSearch = () => setSearchOpen(true);
 
   return (
-    <IntastellarAuthProvider>
+    <>
       <div className="flex min-h-dvh flex-col">
         <SiteHeader onOpenSearch={openSearch} />
         <main className="flex-1 pt-[3.75rem]">{children}</main>
@@ -197,7 +220,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         onNavigate={(href) => navigate(href)}
       />
       <ScrollRestoration />
-    </IntastellarAuthProvider>
+    </>
   );
 }
 
@@ -239,7 +262,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
             />
           </noscript>
         ) : null}
-        <RootShell>{children}</RootShell>
+        <IntastellarAppShell>
+          <RootShell>{children}</RootShell>
+        </IntastellarAppShell>
         <Scripts />
       </body>
     </html>

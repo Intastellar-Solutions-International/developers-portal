@@ -1,24 +1,33 @@
 import {
-  createContext,
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
-  useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { useRevalidator, useRouteLoaderData } from "react-router";
+import {
+  useMatches,
+  useRevalidator,
+  useRouteLoaderData,
+} from "react-router";
 import { useIntastellar } from "@intastellar/signin-sdk-react";
 import type { IntastellarUser } from "@intastellar/signin-sdk-react";
 
+import {
+  DEFAULT_UNCONFIGURED_AUTH,
+  IntastellarAuthContext,
+  SSO_BOOTSTRAPPING_AUTH,
+  type IntastellarAuthContextValue,
+} from "~/lib/intastellar-auth-context";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
 import { clearIntastellarBrowserSession } from "~/lib/intastellar-session";
 
-const noopSubscribe = () => () => {};
+export type { IntastellarAuthContextValue } from "~/lib/intastellar-auth-context";
 
-type RootLoaderData = {
+export type RootLoaderData = {
   ssoConfigured?: boolean;
   portalAccount?: {
     accountId: string;
@@ -52,6 +61,12 @@ function portalAccountToUser(
 /** If `getUsers()` never settles (CORS, ad blockers, network), the SDK stays `isLoading` forever — unblock the UI after this. */
 const SESSION_PROBE_MS = 10_000;
 
+/**
+ * After portal logout, Intastellar `getUsers()` may still return a user (third-party
+ * Accounts cookies). Ignore SDK session for UI until the user starts sign-in again.
+ */
+const IGNORE_SDK_AFTER_PORTAL_LOGOUT_KEY = "inta_portal_ignore_sdk";
+
 /** After sign-out, Intastellar `getUsers()` may still throw (e.g. Safari “Load failed”); don’t treat that as a blocking error. */
 function suppressBenignSignedOutError(
   isSignedIn: boolean,
@@ -71,52 +86,24 @@ function suppressBenignSignedOutError(
   return sdkError;
 }
 
-export type IntastellarAuthContextValue = {
-  /**
-   * `false` until the client has mounted. Keeps SSR + first client paint identical
-   * so `import.meta.env.VITE_*` cannot diverge between server and browser.
-   */
-  authReady: boolean;
-  configured: boolean;
-  isLoading: boolean;
-  isSignedIn: boolean;
-  users: IntastellarUser[];
-  error: string | null;
-  signin: (email?: string) => Promise<void>;
-  logout: () => void | Promise<void>;
-};
+function resolveRootLoaderData(
+  fromProp: RootLoaderData | undefined,
+  fromRoute: RootLoaderData | undefined,
+  matches: ReturnType<typeof useMatches>,
+): RootLoaderData | undefined {
+  if (fromProp !== undefined) return fromProp;
+  if (fromRoute !== undefined) return fromRoute;
+  const rootMatch = matches.find((m) => m.id === "root");
+  return rootMatch?.loaderData as RootLoaderData | undefined;
+}
 
-const noopAsync = async () => {};
-const noop = () => {};
-
-/** Before `authReady` — same on server and client (no env branch). */
-const ssoBootstrapping: IntastellarAuthContextValue = {
-  authReady: false,
-  configured: false,
-  isLoading: false,
-  isSignedIn: false,
-  users: [],
-  error: null,
-  signin: noopAsync,
-  logout: noop,
-};
-
-const defaultUnconfigured: IntastellarAuthContextValue = {
-  authReady: true,
-  configured: false,
-  isLoading: false,
-  isSignedIn: false,
-  users: [],
-  error: null,
-  signin: noopAsync,
-  logout: noop,
-};
-
-const IntastellarAuthContext =
-  createContext<IntastellarAuthContextValue>(ssoBootstrapping);
-
-function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
-  const rootData = useRouteLoaderData("root") as RootLoaderData | undefined;
+function IntastellarAuthEnabled({
+  children,
+  rootData,
+}: {
+  children: ReactNode;
+  rootData: RootLoaderData | undefined;
+}) {
   const revalidator = useRevalidator();
 
   const { clientId, appName } = getIntastellarClientConfig()!;
@@ -130,11 +117,34 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
     [clientId, appName],
   );
 
-  const { users, isLoading, error, signin, logout: sdkLogout, isSignedIn } =
-    useIntastellar(config);
+  const { users, isLoading, error, signin, isSignedIn } = useIntastellar(config);
 
   const portalAccount = rootData?.portalAccount ?? null;
   const serverSignedIn = Boolean(portalAccount?.email);
+
+  const [ignoreSdkSession, setIgnoreSdkSession] = useState(false);
+
+  useLayoutEffect(() => {
+    try {
+      setIgnoreSdkSession(
+        sessionStorage.getItem(IGNORE_SDK_AFTER_PORTAL_LOGOUT_KEY) === "1",
+      );
+    } catch {
+      /* private mode / no sessionStorage */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (portalAccount == null) return;
+    try {
+      if (sessionStorage.getItem(IGNORE_SDK_AFTER_PORTAL_LOGOUT_KEY) === "1") {
+        sessionStorage.removeItem(IGNORE_SDK_AFTER_PORTAL_LOGOUT_KEY);
+      }
+    } catch {
+      /* ignore */
+    }
+    setIgnoreSdkSession(false);
+  }, [portalAccount]);
 
   const portalSyncAttempts = useRef(0);
 
@@ -145,6 +155,7 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
   }, [portalAccount]);
 
   useEffect(() => {
+    if (ignoreSdkSession) return;
     if (
       portalAccount == null &&
       isSignedIn &&
@@ -155,7 +166,26 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
       portalSyncAttempts.current += 1;
       revalidator.revalidate();
     }
-  }, [portalAccount, isSignedIn, users.length, revalidator]);
+  }, [
+    ignoreSdkSession,
+    portalAccount,
+    isSignedIn,
+    users.length,
+    revalidator,
+  ]);
+
+  const signinWrapped = useCallback(
+    async (email?: string) => {
+      try {
+        sessionStorage.removeItem(IGNORE_SDK_AFTER_PORTAL_LOGOUT_KEY);
+      } catch {
+        /* ignore */
+      }
+      setIgnoreSdkSession(false);
+      await signin(email);
+    },
+    [signin],
+  );
 
   const logout = useCallback(async () => {
     try {
@@ -167,8 +197,13 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
       /* ignore */
     }
     clearIntastellarBrowserSession();
-    sdkLogout();
-  }, [sdkLogout]);
+    try {
+      sessionStorage.setItem(IGNORE_SDK_AFTER_PORTAL_LOGOUT_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    window.location.assign("/account/login");
+  }, []);
 
   const [sessionProbeTimedOut, setSessionProbeTimedOut] = useState(false);
 
@@ -185,24 +220,35 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
 
   const loadingBlocked = isLoading && sessionProbeTimedOut;
   const sdkLoading = isLoading && !sessionProbeTimedOut;
-  const effectiveLoading = serverSignedIn ? false : sdkLoading;
+  const ignoreSdkUi = ignoreSdkSession && !serverSignedIn;
+  const effectiveLoading = ignoreSdkUi
+    ? false
+    : serverSignedIn
+      ? false
+      : sdkLoading;
   const errorAfterSignedOutFilter = suppressBenignSignedOutError(
     isSignedIn,
     users,
     error,
   );
-  const effectiveError = serverSignedIn
+  const effectiveError = ignoreSdkUi
     ? null
-    : errorAfterSignedOutFilter ??
-      (loadingBlocked
-        ? "Could not verify your session (request timed out). Check your network, disable ad blockers for this site, or try Sign in — the Accounts API must be reachable from your browser."
-        : null);
+    : serverSignedIn
+      ? null
+      : errorAfterSignedOutFilter ??
+        (loadingBlocked
+          ? "Could not verify your session (request timed out). Check your network, disable ad blockers for this site, or try Sign in — the Accounts API must be reachable from your browser."
+          : null);
 
-  const effectiveSignedIn = serverSignedIn || isSignedIn;
+  const effectiveSignedIn = ignoreSdkUi
+    ? serverSignedIn
+    : serverSignedIn || isSignedIn;
   const effectiveUsers =
-    serverSignedIn && portalAccount
-      ? [portalAccountToUser(portalAccount)]
-      : users;
+    ignoreSdkUi && !serverSignedIn
+      ? []
+      : serverSignedIn && portalAccount
+        ? [portalAccountToUser(portalAccount)]
+        : users;
 
   const value = useMemo<IntastellarAuthContextValue>(
     () => ({
@@ -212,7 +258,7 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
       isSignedIn: effectiveSignedIn,
       users: effectiveUsers,
       error: effectiveError,
-      signin,
+      signin: signinWrapped,
       logout,
     }),
     [
@@ -220,7 +266,7 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
       effectiveSignedIn,
       effectiveUsers,
       effectiveError,
-      signin,
+      signinWrapped,
       logout,
     ],
   );
@@ -232,18 +278,35 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
   );
 }
 
-export function IntastellarAuthProvider({ children }: { children: ReactNode }) {
-  const rootData = useRouteLoaderData("root") as RootLoaderData | undefined;
-
-  const authReady = useSyncExternalStore(
-    noopSubscribe,
-    () => true,
-    () => false,
+export function IntastellarAuthProvider({
+  children,
+  rootLoaderData: rootLoaderDataProp,
+}: {
+  children: ReactNode;
+  /** When set (e.g. from `root` Layout), avoids relying on `useRouteLoaderData` alone inside nested trees. */
+  rootLoaderData?: RootLoaderData;
+}) {
+  const fromRoute = useRouteLoaderData("root") as RootLoaderData | undefined;
+  const matches = useMatches();
+  const rootData = resolveRootLoaderData(
+    rootLoaderDataProp,
+    fromRoute,
+    matches,
   );
+
+  const [authReady, setAuthReady] = useState(false);
+
+  useLayoutEffect(() => {
+    setAuthReady(true);
+  }, []);
+
+  useEffect(() => {
+    setAuthReady(true);
+  }, []);
 
   if (!authReady) {
     return (
-      <IntastellarAuthContext.Provider value={ssoBootstrapping}>
+      <IntastellarAuthContext.Provider value={SSO_BOOTSTRAPPING_AUTH}>
         {children}
       </IntastellarAuthContext.Provider>
     );
@@ -253,7 +316,7 @@ export function IntastellarAuthProvider({ children }: { children: ReactNode }) {
 
   if (!hasConfig) {
     return (
-      <IntastellarAuthContext.Provider value={defaultUnconfigured}>
+      <IntastellarAuthContext.Provider value={DEFAULT_UNCONFIGURED_AUTH}>
         {children}
       </IntastellarAuthContext.Provider>
     );
@@ -261,13 +324,15 @@ export function IntastellarAuthProvider({ children }: { children: ReactNode }) {
 
   if (getIntastellarClientConfig() === null) {
     return (
-      <IntastellarAuthContext.Provider value={defaultUnconfigured}>
+      <IntastellarAuthContext.Provider value={DEFAULT_UNCONFIGURED_AUTH}>
         {children}
       </IntastellarAuthContext.Provider>
     );
   }
 
-  return <IntastellarAuthEnabled>{children}</IntastellarAuthEnabled>;
+  return (
+    <IntastellarAuthEnabled rootData={rootData}>{children}</IntastellarAuthEnabled>
+  );
 }
 
 export function useIntastellarAuth(): IntastellarAuthContextValue {
