@@ -1,8 +1,18 @@
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { useIntastellar } from "@intastellar/signin-sdk-react";
 import type { IntastellarUser } from "@intastellar/signin-sdk-react";
 
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
+
+/** If `getUsers()` never settles (CORS, ad blockers, network), the SDK stays `isLoading` forever — unblock the UI after this. */
+const SESSION_PROBE_MS = 10_000;
 
 export type IntastellarAuthContextValue = {
   configured: boolean;
@@ -45,17 +55,38 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
   const { users, isLoading, error, signin, logout, isSignedIn } =
     useIntastellar(config);
 
+  const [sessionProbeTimedOut, setSessionProbeTimedOut] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading) return;
+    setSessionProbeTimedOut(false);
+    const id = window.setTimeout(() => setSessionProbeTimedOut(true), SESSION_PROBE_MS);
+    return () => window.clearTimeout(id);
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (!isLoading) setSessionProbeTimedOut(false);
+  }, [isLoading]);
+
+  const loadingBlocked = isLoading && sessionProbeTimedOut;
+  const effectiveLoading = isLoading && !sessionProbeTimedOut;
+  const effectiveError =
+    error ??
+    (loadingBlocked
+      ? "Could not verify your session (request timed out). Check your network, disable ad blockers for this site, or try Sign in — the Accounts API must be reachable from your browser."
+      : null);
+
   const value = useMemo<IntastellarAuthContextValue>(
     () => ({
       configured: true,
-      isLoading,
+      isLoading: effectiveLoading,
       isSignedIn,
       users,
-      error,
+      error: effectiveError,
       signin,
       logout,
     }),
-    [isLoading, isSignedIn, users, error, signin, logout],
+    [effectiveLoading, isSignedIn, users, effectiveError, signin, logout],
   );
 
   return (

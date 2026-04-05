@@ -85,11 +85,6 @@ export default function AccountProfile() {
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
               {user.email}
             </p>
-            {user.phone ? (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                {user.phone}
-              </p>
-            ) : null}
             <button
               type="button"
               onClick={logout}
