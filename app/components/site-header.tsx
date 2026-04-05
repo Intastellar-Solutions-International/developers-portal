@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router";
+import { Link, NavLink } from "react-router";
 
 import { BRAND } from "~/lib/brand";
 
@@ -11,27 +10,31 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
       : "text-zinc-400 hover:bg-white/10 hover:text-brand",
   ].join(" ");
 
-export function SiteHeader() {
-  const navigate = useNavigate();
+function SearchIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
+}
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "k") return;
-      const t = e.target;
-      if (
-        t instanceof HTMLInputElement ||
-        t instanceof HTMLTextAreaElement ||
-        (t instanceof HTMLElement && t.isContentEditable)
-      ) {
-        return;
-      }
-      e.preventDefault();
-      navigate("/search");
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [navigate]);
-
+export function SiteHeader({
+  onOpenSearch,
+}: {
+  onOpenSearch: () => void;
+}) {
   return (
     <header className="border-b border-zinc-600/40 bg-zinc-800">
       <div className="mx-auto flex h-[3.75rem] max-w-6xl items-center justify-between gap-4 px-4">
@@ -81,9 +84,6 @@ export function SiteHeader() {
           </Link>
         </div>
         <nav className="flex shrink-0 flex-wrap items-center justify-end gap-0.5 sm:gap-1">
-          <NavLink to="/search" className={navLinkClass}>
-            Search
-          </NavLink>
           <NavLink to="/changelog" className={navLinkClass}>
             Changelog
           </NavLink>
@@ -96,6 +96,15 @@ export function SiteHeader() {
           <NavLink to="/account/api-keys" className={navLinkClass}>
             API keys
           </NavLink>
+          <button
+            type="button"
+            onClick={onOpenSearch}
+            aria-label="Search documentation"
+            title="Search (⌘K)"
+            className="rounded-md p-2.5 text-zinc-400 transition-colors hover:bg-white/10 hover:text-brand"
+          >
+            <SearchIcon className="size-5" />
+          </button>
         </nav>
       </div>
     </header>

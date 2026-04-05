@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   isRouteErrorResponse,
   Links,
@@ -8,6 +9,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { SearchOverlay } from "./components/search-overlay";
 import { SiteHeader } from "./components/site-header";
 import "./app.css";
 
@@ -27,6 +29,26 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "k") return;
+      const t = e.target;
+      if (
+        t instanceof HTMLInputElement ||
+        t instanceof HTMLTextAreaElement ||
+        (t instanceof HTMLElement && t.isContentEditable)
+      ) {
+        return;
+      }
+      e.preventDefault();
+      setSearchOpen((open) => !open);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
     <html lang="en">
       <head>
@@ -36,8 +58,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="min-h-dvh antialiased">
-        <SiteHeader />
+        <SiteHeader onOpenSearch={() => setSearchOpen(true)} />
         <main>{children}</main>
+        <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
         <ScrollRestoration />
         <Scripts />
       </body>
