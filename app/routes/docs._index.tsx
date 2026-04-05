@@ -2,6 +2,7 @@ import { Link, data, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/docs._index";
 import { listProducts } from "~/lib/docs.server";
+import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
 import { buildDocsHubMeta } from "~/lib/seo";
 
 export async function loader(_: Route.LoaderArgs) {
@@ -32,7 +33,7 @@ export default function DocsIndex() {
         {products.map((p) => (
           <li key={p.slug}>
             <Link
-              to={`/docs/${p.slug}`}
+              to={docHref(p.slug, getDefaultVersionSlug(p.slug))}
               className="block rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:border-brand/50 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-brand/45"
             >
               <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">

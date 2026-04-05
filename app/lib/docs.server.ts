@@ -3,9 +3,13 @@ import path from "node:path";
 
 import matter from "gray-matter";
 
+import { docHref, parseDocsProductPath } from "./docs-versions";
 import { bundleDocMdx } from "./mdx.server";
+import { absoluteUrl } from "./site";
 
 const DOCS_ROOT = path.join(process.cwd(), "content", "docs");
+
+export type RelatedLink = { title: string; href: string };
 
 export type DocFrontmatter = {
   title: string;
@@ -15,6 +19,9 @@ export type DocFrontmatter = {
   draft?: boolean;
   /** String or YAML-parsed Date; overrides file mtime when valid */
   lastUpdated?: string | Date;
+  related?: RelatedLink[];
+  /** Absolute URL or site path (e.g. /og/cookie-banner.png) for Open Graph */
+  og_image?: string;
 };
 
 export type DocLoaderData = {
@@ -24,6 +31,9 @@ export type DocLoaderData = {
   /** ISO 8601 */
   lastUpdated: string;
   lastUpdatedSource: "frontmatter" | "file";
+  related: RelatedLink[];
+  /** Absolute URL for og:image when set in frontmatter */
+  ogImage?: string;
 };
 
 export type SidebarItem = {
@@ -118,6 +128,66 @@ function resolveLastUpdated(
   };
 }
 
+function coerceRelatedLinks(raw: unknown): RelatedLink[] {
+  if (!Array.isArray(raw)) return [];
+  const out: RelatedLink[] = [];
+  for (const row of raw) {
+    if (!row || typeof row !== "object") continue;
+    const o = row as Record<string, unknown>;
+    const title = typeof o.title === "string" ? o.title.trim() : "";
+    const href = typeof o.href === "string" ? o.href.trim() : "";
+    if (!title || !href) continue;
+    out.push({ title, href });
+  }
+  return out;
+}
+
+function resolveOgImageFromFrontmatter(raw: string | undefined): string | undefined {
+  if (!raw?.trim()) return undefined;
+  const t = raw.trim();
+  if (t.startsWith("http://") || t.startsWith("https://")) return t;
+  const pathPart = t.startsWith("/") ? t : `/${t}`;
+  return absoluteUrl(pathPart);
+}
+
+/** Version slug to use for sidebar links for the current request path. */
+export function resolveSidebarVersion(
+  product: string,
+  pathname: string,
+): string {
+  return parseDocsProductPath(pathname, product).version;
+}
+
+export type BreadcrumbItem = { label: string; href?: string };
+
+export async function getDocBreadcrumbs(
+  product: string,
+  version: string,
+  pathname: string,
+  docTitle: string,
+): Promise<BreadcrumbItem[]> {
+  const products = await listProducts();
+  const p = products.find((x) => x.slug === product);
+  const productTitle = p?.title ?? product;
+  const sections = await getSidebar(product, version);
+  let sectionLabel: string | undefined;
+  for (const sec of sections) {
+    if (sec.items.some((i) => i.href === pathname)) {
+      sectionLabel = sec.heading;
+      break;
+    }
+  }
+  const out: BreadcrumbItem[] = [
+    { label: "Documentation", href: "/docs" },
+    { label: productTitle, href: docHref(product, version) },
+  ];
+  if (sectionLabel) {
+    out.push({ label: sectionLabel });
+  }
+  out.push({ label: docTitle });
+  return out;
+}
+
 async function resolveDocFile(
   product: string,
   docPath: string | undefined,
@@ -175,6 +245,8 @@ export async function loadDoc(
   }
 
   const { lastUpdated, lastUpdatedSource } = resolveLastUpdated(fm, stat.mtime);
+  const related = coerceRelatedLinks(fm.related);
+  const ogImage = resolveOgImageFromFrontmatter(fm.og_image);
 
   return {
     title: fm.title,
@@ -182,6 +254,8 @@ export async function loadDoc(
     code: bundle.code,
     lastUpdated,
     lastUpdatedSource,
+    related,
+    ...(ogImage ? { ogImage } : {}),
   };
 }
 
@@ -198,15 +272,23 @@ async function readFrontmatterTitle(
   };
 }
 
-function filePathToHref(product: string, filePath: string): string {
+function filePathToHref(
+  product: string,
+  filePath: string,
+  version: string,
+): string {
   const rel = path.relative(path.join(DOCS_ROOT, product), filePath);
   const withoutExt = rel.replace(/\/index\.mdx$/i, "").replace(/\.mdx$/i, "");
-  if (!withoutExt || withoutExt === "index") return `/docs/${product}`;
+  if (!withoutExt || withoutExt === "index")
+    return docHref(product, version);
   const urlPath = withoutExt.split(path.sep).join("/");
-  return `/docs/${product}/${urlPath}`;
+  return docHref(product, version, urlPath);
 }
 
-export async function getSidebar(product: string): Promise<SidebarSection[]> {
+export async function getSidebar(
+  product: string,
+  version: string,
+): Promise<SidebarSection[]> {
   if (!isValidProductSlug(product)) return [];
 
   const base = path.join(DOCS_ROOT, product);
@@ -224,7 +306,7 @@ export async function getSidebar(product: string): Promise<SidebarSection[]> {
         const { title, order } = await readFrontmatterTitle(full);
         const rel = path.relative(base, full);
         collected.push({
-          href: filePathToHref(product, full),
+          href: filePathToHref(product, full, version),
           label: title,
           order,
           rel,
@@ -260,8 +342,11 @@ export async function getSidebar(product: string): Promise<SidebarSection[]> {
   return sections;
 }
 
-export async function getDocsNavFlat(product: string): Promise<DocsNavLink[]> {
-  const sections = await getSidebar(product);
+export async function getDocsNavFlat(
+  product: string,
+  version: string,
+): Promise<DocsNavLink[]> {
+  const sections = await getSidebar(product, version);
   const out: DocsNavLink[] = [];
   for (const section of sections) {
     for (const item of section.items) {

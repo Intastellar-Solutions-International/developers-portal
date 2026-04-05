@@ -10,13 +10,17 @@ export function buildDocPageMeta(opts: {
   pathname: string;
   /** ISO 8601 */
   modifiedTime?: string;
+  /** Absolute image URL for Open Graph / Twitter */
+  ogImage?: string;
 }): MetaDescriptor[] {
-  const { title, description, pathname, modifiedTime } = opts;
+  const { title, description, pathname, modifiedTime, ogImage } = opts;
   const pageTitle = `${title} · ${SITE_NAME}`;
   const url = absoluteUrl(pathname);
   const desc =
     description ??
     `${title} — Intastellar developer documentation on ${SITE_NAME}.`;
+
+  const twitterCard = ogImage ? "summary_large_image" : "summary";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -25,6 +29,7 @@ export function buildDocPageMeta(opts: {
     description: desc,
     url,
     ...(modifiedTime ? { dateModified: modifiedTime } : {}),
+    ...(ogImage ? { image: ogImage } : {}),
     author: {
       "@type": "Organization",
       name: "Intastellar Solutions",
@@ -44,7 +49,13 @@ export function buildDocPageMeta(opts: {
     { property: "og:url", content: url },
     { property: "og:type", content: "article" },
     { property: "og:site_name", content: SITE_NAME },
-    { name: "twitter:card", content: "summary" },
+    ...(ogImage
+      ? [
+          { property: "og:image", content: ogImage },
+          { name: "twitter:image", content: ogImage },
+        ]
+      : []),
+    { name: "twitter:card", content: twitterCard },
     { name: "twitter:title", content: pageTitle },
     { name: "twitter:description", content: desc },
     { "script:ld+json": jsonLd },

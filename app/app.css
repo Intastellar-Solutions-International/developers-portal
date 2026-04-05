@@ -19,7 +19,7 @@ body {
 }
 
 .docs-prose figure[data-rehype-pretty-code-figure] {
-  @apply my-6;
+  @apply relative my-6;
 }
 
 .docs-prose pre[data-theme] {

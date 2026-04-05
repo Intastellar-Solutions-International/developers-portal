@@ -1,11 +1,24 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
+import { Link, useNavigate } from "react-router";
 
 import { searchDocuments } from "~/lib/docs-search";
 import type { SearchDocument } from "~/lib/search-index.server";
 
 const resultClass =
   "block w-full rounded-lg border border-zinc-200 bg-white px-4 py-3 text-left transition-colors hover:border-brand/50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-brand/45";
+
+const resultClassActive =
+  "ring-2 ring-brand/35 border-brand/50 dark:border-brand/40";
+
+function hitClass(active: boolean) {
+  return [resultClass, active ? resultClassActive : ""].filter(Boolean).join(" ");
+}
 
 export function SearchPanel({
   documents,
@@ -19,8 +32,11 @@ export function SearchPanel({
   /** If set, result rows use buttons and call this instead of `<Link>`. */
   onPick?: (href: string) => void;
 }) {
+  const navigate = useNavigate();
   const [q, setQ] = useState("");
+  const [activeIndex, setActiveIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     if (autoFocus) {
@@ -30,7 +46,57 @@ export function SearchPanel({
   }, [autoFocus]);
 
   const results = useMemo(() => searchDocuments(q, documents), [q, documents]);
-  const list = q.trim() ? results : documents.slice(0, 12);
+  const defaultPreview = useMemo(() => documents.slice(0, 12), [documents]);
+  const list = useMemo(
+    () => (q.trim() ? results : defaultPreview),
+    [q, results, defaultPreview],
+  );
+
+  useEffect(() => {
+    setActiveIndex(-1);
+  }, [q]);
+
+  useEffect(() => {
+    if (activeIndex < 0 || !listRef.current) return;
+    const el = listRef.current.querySelector(
+      `[data-search-hit-index="${activeIndex}"]`,
+    );
+    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [activeIndex]);
+
+  function onResultsKeyDown(e: KeyboardEvent) {
+    if (documents.length === 0 || list.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((i) => {
+        if (i < 0) return 0;
+        return Math.min(list.length - 1, i + 1);
+      });
+      return;
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => (i <= 0 ? -1 : i - 1));
+      return;
+    }
+    if (e.key === "Home") {
+      e.preventDefault();
+      setActiveIndex(0);
+      return;
+    }
+    if (e.key === "End") {
+      e.preventDefault();
+      setActiveIndex(list.length - 1);
+      return;
+    }
+    if (e.key === "Enter" && activeIndex >= 0 && activeIndex < list.length) {
+      e.preventDefault();
+      const href = list[activeIndex]!.href;
+      if (onPick) onPick(href);
+      else navigate(href);
+    }
+  }
 
   const inner = (
     <>
@@ -41,6 +107,7 @@ export function SearchPanel({
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
+          onKeyDown={onResultsKeyDown}
           placeholder="Search docs…"
           autoComplete="off"
           spellCheck={false}
@@ -61,19 +128,21 @@ export function SearchPanel({
         </p>
       ) : null}
       <ul
+        ref={listRef}
         className={
           variant === "overlay"
             ? "mt-3 flex-1 space-y-2 overflow-y-auto px-4 pb-4"
             : "mt-8 space-y-2"
         }
       >
-        {list.map((hit) => (
-          <li key={hit.id}>
+        {list.map((hit, index) => (
+          <li key={hit.id} data-search-hit-index={index}>
             {onPick ? (
               <button
                 type="button"
-                className={resultClass}
+                className={hitClass(activeIndex === index)}
                 onClick={() => onPick(hit.href)}
+                onMouseEnter={() => setActiveIndex(index)}
               >
                 <span className="font-medium text-zinc-900 dark:text-zinc-50">
                   {hit.title}
@@ -88,7 +157,11 @@ export function SearchPanel({
                 ) : null}
               </button>
             ) : (
-              <Link to={hit.href} className={resultClass}>
+              <Link
+                to={hit.href}
+                className={hitClass(activeIndex === index)}
+                onMouseEnter={() => setActiveIndex(index)}
+              >
                 <span className="font-medium text-zinc-900 dark:text-zinc-50">
                   {hit.title}
                 </span>
@@ -141,7 +214,7 @@ export function SearchPanel({
             <kbd className="rounded border border-zinc-300 bg-zinc-100 px-1 py-0.5 font-mono text-[10px] dark:border-zinc-600 dark:bg-zinc-800">
               Ctrl+K
             </kbd>{" "}
-            from the page
+            from the page · Arrow keys and Enter to open a result
           </p>
         </div>
         {inner}
@@ -163,7 +236,8 @@ export function SearchPanel({
         <kbd className="rounded border border-zinc-300 bg-zinc-100 px-1.5 py-0.5 text-xs font-medium text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
           Ctrl+K
         </kbd>{" "}
-        opens the search overlay.
+        opens the search overlay. With the overlay open, use arrow keys and
+        Enter to choose a result.
       </p>
       {inner}
     </div>

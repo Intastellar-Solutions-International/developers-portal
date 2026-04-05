@@ -11,12 +11,17 @@ import matter from "gray-matter";
 const DOCS_ROOT = path.join(process.cwd(), "content", "docs");
 const OUT = path.join(process.cwd(), "public", "search-index.json");
 
+/** Keep in sync with app/lib/docs-versions.ts default version for each product. */
+const SEARCH_INDEX_VERSION = "v1";
+
 function filePathToHref(product, filePath) {
   const rel = path.relative(path.join(DOCS_ROOT, product), filePath);
   const n = rel.split(path.sep).join("/");
   const withoutExt = n.replace(/\/index\.mdx$/i, "").replace(/\.mdx$/i, "");
-  if (!withoutExt || withoutExt === "index") return `/docs/${product}`;
-  return `/docs/${product}/${withoutExt}`;
+  if (!withoutExt || withoutExt === "index") {
+    return `/docs/${product}/${SEARCH_INDEX_VERSION}`;
+  }
+  return `/docs/${product}/${SEARCH_INDEX_VERSION}/${withoutExt}`;
 }
 
 async function walk(dir, visit) {

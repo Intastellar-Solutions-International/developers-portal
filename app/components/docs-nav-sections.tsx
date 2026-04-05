@@ -27,11 +27,14 @@ const externalLinkClass =
 
 export function DocsNavSections({
   product,
+  productRootHref,
   sections,
   extraSections,
   onNavigate,
 }: {
   product: string;
+  /** Versioned product root, e.g. /docs/cookie-banner/v1 */
+  productRootHref: string;
   sections: SidebarSection[];
   extraSections?: ExtraNavSection[];
   onNavigate?: () => void;
@@ -53,7 +56,7 @@ export function DocsNavSections({
                   <NavLink
                     to={item.href}
                     className={linkClass}
-                    end={item.href === `/docs/${product}`}
+                    end={item.href === productRootHref}
                     onClick={onNavigate}
                   >
                     {item.label}

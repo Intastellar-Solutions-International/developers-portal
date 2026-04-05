@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useEffect, useId, useState } from "react";
 import { useLocation } from "react-router";
 
@@ -10,12 +11,17 @@ import {
 
 export function DocsMobileNav({
   product,
+  productRootHref,
   sections,
   extraSections,
+  end,
 }: {
   product: string;
+  productRootHref: string;
   sections: SidebarSection[];
   extraSections?: ExtraNavSection[];
+  /** Shown on the right of the mobile top bar (e.g. version switcher). */
+  end?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
@@ -47,6 +53,7 @@ export function DocsMobileNav({
           <MenuIcon className="size-5 text-zinc-500 dark:text-zinc-400" />
           Browse docs
         </button>
+        {end ? <div className="shrink-0">{end}</div> : null}
       </div>
 
       {open ? (
@@ -82,6 +89,7 @@ export function DocsMobileNav({
             >
               <DocsNavSections
                 product={product}
+                productRootHref={productRootHref}
                 sections={sections}
                 extraSections={extraSections}
                 onNavigate={() => setOpen(false)}
