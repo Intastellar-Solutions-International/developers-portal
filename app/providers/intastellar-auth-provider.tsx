@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -10,6 +11,7 @@ import { useIntastellar } from "@intastellar/signin-sdk-react";
 import type { IntastellarUser } from "@intastellar/signin-sdk-react";
 
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
+import { clearIntastellarBrowserSession } from "~/lib/intastellar-session";
 
 /** If `getUsers()` never settles (CORS, ad blockers, network), the SDK stays `isLoading` forever — unblock the UI after this. */
 const SESSION_PROBE_MS = 10_000;
@@ -52,8 +54,13 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
     [clientId, appName],
   );
 
-  const { users, isLoading, error, signin, logout, isSignedIn } =
+  const { users, isLoading, error, signin, logout: sdkLogout, isSignedIn } =
     useIntastellar(config);
+
+  const logout = useCallback(() => {
+    clearIntastellarBrowserSession();
+    sdkLogout();
+  }, [sdkLogout]);
 
   const [sessionProbeTimedOut, setSessionProbeTimedOut] = useState(false);
 
