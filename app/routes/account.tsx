@@ -15,9 +15,12 @@ export default function AccountLayout() {
         Account
       </h1>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        Developer profile and API keys (connect your auth provider here).
+        Intastellar SSO profile and developer API keys.
       </p>
-      <div className="mt-8 flex gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-700">
+      <div className="mt-8 flex flex-wrap gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-700">
+        <NavLink to="/account/login" className={tabClass}>
+          Sign in
+        </NavLink>
         <NavLink to="/account/profile" className={tabClass}>
           Profile
         </NavLink>

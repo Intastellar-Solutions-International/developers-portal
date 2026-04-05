@@ -1,0 +1,66 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+
+import type { Route } from "./+types/account.login";
+import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
+
+export function meta({}: Route.MetaArgs) {
+  return [{ title: "Sign in · inta.dev" }];
+}
+
+export default function AccountLogin() {
+  const navigate = useNavigate();
+  const { configured, isLoading, isSignedIn, signin, error } =
+    useIntastellarAuth();
+
+  useEffect(() => {
+    if (configured && isSignedIn) {
+      navigate("/account/profile", { replace: true });
+    }
+  }, [configured, isSignedIn, navigate]);
+
+  return (
+    <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
+      <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
+        Sign in
+      </h2>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Use your Intastellar account (SSO). Allow the popup if your browser
+        blocks it.
+      </p>
+
+      {!configured ? (
+        <p className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
+          SSO is not configured. Set{" "}
+          <code className="rounded bg-amber-100/80 px-1 font-mono text-xs dark:bg-amber-900/60">
+            VITE_INTASTELLAR_CLIENT_ID
+          </code>{" "}
+          (and optionally{" "}
+          <code className="rounded bg-amber-100/80 px-1 font-mono text-xs dark:bg-amber-900/60">
+            VITE_INTASTELLAR_APP_NAME
+          </code>
+          ) in your environment, then restart the dev server.
+        </p>
+      ) : (
+        <>
+          {error ? (
+            <p
+              className="mt-4 text-sm text-red-600 dark:text-red-400"
+              role="alert"
+            >
+              {error}
+            </p>
+          ) : null}
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={() => void signin()}
+            className="mt-6 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isLoading ? "Checking session…" : "Sign in with Intastellar"}
+          </button>
+        </>
+      )}
+    </section>
+  );
+}

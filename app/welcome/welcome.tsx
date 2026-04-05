@@ -72,7 +72,7 @@ export function Welcome() {
               Accounts sign-in
             </Link>
             <Link
-              to="/account/profile"
+              to="/account/login"
               className="rounded-lg border border-brand/40 bg-transparent px-6 py-2.5 text-sm font-medium text-brand backdrop-blur-sm transition-colors hover:border-brand hover:bg-brand/10"
             >
               Account

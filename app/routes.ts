@@ -21,6 +21,7 @@ export default [
   ]),
   route("account", "routes/account.tsx", [
     index("routes/account._index.tsx"),
+    route("login", "routes/account.login.tsx"),
     route("profile", "routes/account.profile.tsx"),
     route("api-keys", "routes/account.api-keys.tsx"),
   ]),

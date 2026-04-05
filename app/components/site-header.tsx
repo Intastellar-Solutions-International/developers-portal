@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router";
 
 import { BRAND } from "~/lib/brand";
+import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -30,11 +31,18 @@ function SearchIcon({ className }: { className?: string }) {
   );
 }
 
+const headerBtnClass =
+  "rounded-md px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-white/10 hover:text-brand disabled:cursor-not-allowed disabled:opacity-50";
+
 export function SiteHeader({
   onOpenSearch,
 }: {
   onOpenSearch: () => void;
 }) {
+  const { configured, isLoading, isSignedIn, users, signin, logout } =
+    useIntastellarAuth();
+  const user = users[0];
+
   return (
     <header className="border-b border-zinc-600/40 bg-zinc-800">
       <div className="mx-auto flex h-[3.75rem] max-w-6xl items-center justify-between gap-4 px-4">
@@ -90,6 +98,29 @@ export function SiteHeader({
           <NavLink to="/docs" className={navLinkClass}>
             Docs
           </NavLink>
+          {configured && !isSignedIn ? (
+            <button
+              type="button"
+              className={headerBtnClass}
+              disabled={isLoading}
+              onClick={() => void signin()}
+            >
+              {isLoading ? "…" : "Sign in"}
+            </button>
+          ) : null}
+          {configured && isSignedIn && user ? (
+            <>
+              <span
+                className="hidden max-w-[7rem] truncate px-2 text-xs text-zinc-500 sm:inline md:max-w-[10rem]"
+                title={user.email}
+              >
+                {user.name.first}
+              </span>
+              <button type="button" className={headerBtnClass} onClick={logout}>
+                Sign out
+              </button>
+            </>
+          ) : null}
           <NavLink to="/account/profile" className={navLinkClass}>
             Profile
           </NavLink>

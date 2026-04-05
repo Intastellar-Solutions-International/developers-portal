@@ -14,6 +14,7 @@ import type { Route } from "./+types/root";
 import { SearchOverlay } from "./components/search-overlay";
 import { SiteHeader } from "./components/site-header";
 import type { SearchDocument } from "~/lib/search-index.server";
+import { IntastellarAuthProvider } from "~/providers/intastellar-auth-provider";
 import "./app.css";
 
 type SearchLoaderData = { documents: SearchDocument[] };
@@ -27,6 +28,8 @@ export const links: Route.LinksFunction = () => [
   },
   { rel: "preconnect", href: "https://www.intastellarsolutions.com" },
   { rel: "preconnect", href: "https://www.intastellar-consents.com" },
+  { rel: "preconnect", href: "https://www.intastellaraccounts.com" },
+  { rel: "preconnect", href: "https://apis.intastellaraccounts.com" },
   {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
@@ -72,7 +75,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   const loading = fetcher.state === "loading" && !fetcher.data;
 
   return (
-    <>
+    <IntastellarAuthProvider>
       <SiteHeader onOpenSearch={() => setSearchOpen(true)} />
       <main>{children}</main>
       <SearchOverlay
@@ -83,7 +86,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         onNavigate={(href) => navigate(href)}
       />
       <ScrollRestoration />
-    </>
+    </IntastellarAuthProvider>
   );
 }
 
