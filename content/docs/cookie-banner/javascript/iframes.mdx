@@ -1,12 +1,12 @@
 ---
-title: Customize iFrames
-description: Notes for consent-aware behaviour when embedding content in iframes.
+title: iFrames
+description: Consent-aware patterns when embedding third parties in iframes.
 order: 30
 lastUpdated: "2026-04-05"
 ---
 
-# Customize iFrames
+# iFrames
 
-If you embed third-party content in `<iframe>` elements, ensure those embeds respect the same consent choices as your main page. Configure iframe-related behaviour in line with your Intastellar Consents setup and any vendor-specific requirements.
+Third-party `<iframe>` widgets (players, maps, chat) should only load once the matching purpose is allowed—same rules as scripts on the top-level page.
 
-For project-specific iframe steps, refer to your implementation checklist or support materials. The high-level flow on the [documentation home](/docs/cookie-banner) applies: load the banner early, block non-essential trackers until consent, then unlock iframe-backed tools when allowed.
+Wire iframe loading to your Intastellar Consents categories and each vendor’s docs. The overview on the [documentation home](/docs/cookie-banner) still applies: initialise the banner early, keep non-essential requests blocked until consent, then enable embeds when appropriate.

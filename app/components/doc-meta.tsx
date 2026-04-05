@@ -16,7 +16,7 @@ export function DocMeta({
 
   return (
     <p
-      className="mt-10 border-t border-zinc-200 pt-6 text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400"
+      className="mt-10 border-t border-zinc-200 pt-6 text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400"
       title={hint}
     >
       Last updated{" "}

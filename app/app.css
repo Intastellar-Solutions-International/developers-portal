@@ -8,7 +8,7 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-zinc-50 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
@@ -29,4 +29,9 @@ body {
 
 .anchor-link {
   @apply no-underline;
+}
+
+.docs-prose h2,
+.docs-prose h3 {
+  scroll-margin-top: 6rem;
 }

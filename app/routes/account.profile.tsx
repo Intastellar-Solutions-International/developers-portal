@@ -6,7 +6,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function AccountProfile() {
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+    <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
       <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
         Profile
       </h2>

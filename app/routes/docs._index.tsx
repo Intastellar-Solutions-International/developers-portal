@@ -38,7 +38,7 @@ export default function DocsIndex() {
           <li key={p.slug}>
             <Link
               to={`/docs/${p.slug}`}
-              className="block rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
+              className="block rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800"
             >
               <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
                 {p.title}

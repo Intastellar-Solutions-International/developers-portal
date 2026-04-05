@@ -32,6 +32,47 @@ export type SidebarItem = {
   order: number;
 };
 
+export type SidebarSection = {
+  heading: string;
+  items: SidebarItem[];
+};
+
+const SIDEBAR_SECTION_ORDER = [
+  "overview",
+  "javascript",
+  "wordpress",
+  "integrations",
+  "other",
+] as const;
+
+type SidebarSectionId = (typeof SIDEBAR_SECTION_ORDER)[number];
+
+const SIDEBAR_SECTION_LABEL: Record<SidebarSectionId, string> = {
+  overview: "Overview",
+  javascript: "JavaScript",
+  wordpress: "WordPress",
+  integrations: "Integrations",
+  other: "More",
+};
+
+function sidebarSectionId(relFromProduct: string): SidebarSectionId {
+  const n = relFromProduct.split(path.sep).join("/");
+  if (n === "index.mdx") return "overview";
+  if (n.startsWith("javascript/")) return "javascript";
+  if (n.startsWith("wordpress/")) return "wordpress";
+  if (n === "google-tag-manager.mdx" || n === "shopify.mdx") {
+    return "integrations";
+  }
+  if (!n.includes("/")) return "other";
+  return "other";
+}
+
+function sortSidebarItems(items: SidebarItem[]) {
+  return [...items].sort((a, b) =>
+    a.order !== b.order ? a.order - b.order : a.href.localeCompare(b.href, "en"),
+  );
+}
+
 function isValidProductSlug(slug: string) {
   return /^[a-z0-9][a-z0-9-]*$/.test(slug);
 }
@@ -159,12 +200,12 @@ function filePathToHref(product: string, filePath: string): string {
   return `/docs/${product}/${urlPath}`;
 }
 
-export async function getSidebar(product: string): Promise<SidebarItem[]> {
+export async function getSidebar(product: string): Promise<SidebarSection[]> {
   if (!isValidProductSlug(product)) return [];
 
   const base = path.join(DOCS_ROOT, product);
-  const entries = await fs.readdir(base, { withFileTypes: true }).catch(() => []);
-  const items: SidebarItem[] = [];
+  type Collected = SidebarItem & { rel: string };
+  const collected: Collected[] = [];
 
   async function walk(dir: string) {
     const list = await fs.readdir(dir, { withFileTypes: true });
@@ -175,22 +216,42 @@ export async function getSidebar(product: string): Promise<SidebarItem[]> {
         await walk(full);
       } else if (ent.isFile() && ent.name.endsWith(".mdx")) {
         const { title, order } = await readFrontmatterTitle(full);
-        items.push({
+        const rel = path.relative(base, full);
+        collected.push({
           href: filePathToHref(product, full),
           label: title,
           order,
+          rel,
         });
       }
     }
   }
 
   await walk(base);
-  items.sort((a, b) =>
-    a.order !== b.order
-      ? a.order - b.order
-      : a.href.localeCompare(b.href, "en"),
-  );
-  return items;
+
+  const buckets = new Map<SidebarSectionId, Collected[]>();
+  for (const id of SIDEBAR_SECTION_ORDER) {
+    buckets.set(id, []);
+  }
+  for (const row of collected) {
+    const id = sidebarSectionId(row.rel);
+    buckets.get(id)!.push(row);
+  }
+
+  const sections: SidebarSection[] = [];
+  for (const id of SIDEBAR_SECTION_ORDER) {
+    const raw = buckets.get(id) ?? [];
+    if (raw.length === 0) continue;
+    const items: SidebarItem[] = sortSidebarItems(
+      raw.map(({ href, label, order }) => ({ href, label, order })),
+    );
+    sections.push({
+      heading: SIDEBAR_SECTION_LABEL[id],
+      items,
+    });
+  }
+
+  return sections;
 }
 
 export type ProductSummary = {

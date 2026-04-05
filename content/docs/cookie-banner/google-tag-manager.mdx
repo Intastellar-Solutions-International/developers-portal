@@ -7,14 +7,10 @@ lastUpdated: "2026-04-05"
 
 # Google Tag Manager
 
-Integrate our solutions on your Website via Google Tag Manager.
+Use GTM to inject the same bootstrap you would add in HTML by hand.
 
-You are using Google Tagmanager and want to integrate our solution? Great with our Google Tagmanager Solution. Load the scripts from the [JavaScript Solution](/docs/cookie-banner/javascript/getting-started) via a **Custom HTML** tag.
+1. Create a **Custom HTML** tag with the `window.INTA` block and `uc.js` script from [Get Started (JavaScript)](/docs/cookie-banner/javascript/getting-started).
+2. Fire it on **Consent Initialization – All pages** (or your container’s equivalent) so the banner loads before analytics and ads.
+3. Add other tags with triggers that run **only after** consent state is available from Intastellar Consents—do not race the banner.
 
-1. Create a **Custom HTML** tag that contains the same `window.INTA` block and `uc.js` script as in [Get Started](/docs/cookie-banner/javascript/getting-started).
-2. Set the trigger to **Consent Initialization – All Pages** (or equivalent) so the banner initialises before other tags.
-3. After configuration, add your analytics and marketing tags with triggers that **only fire after** Intastellar Consents has applied the visitor’s choices.
-
-We recommend to only fire the other tags after our solution has fired.
-
-[← Back to documentation home](/docs/cookie-banner)
+[← Documentation home](/docs/cookie-banner)

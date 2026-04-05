@@ -7,7 +7,7 @@ lastUpdated: "2026-04-05"
 
 # Get Started (JavaScript)
 
-Paste the snippet **just after the opening `<head>` tag** on every page (or in your root layout). This pattern matches the official [Intastellar Consents solution page](https://www.intastellarsolutions.com/solutions/cookie-consents).
+Paste the snippet **immediately after** the opening `<head>` tag on each page (or once in your root layout). The same shape of config is shown on the public [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents) overview—swap in your real domains, IDs, and branding.
 
 ```html
 <script>
@@ -29,15 +29,15 @@ Paste the snippet **just after the opening `<head>` tag** on every page (or in y
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
-Replace domain, company, colours, logo URL, and measurement IDs with your own values.
+Replace placeholders with your domain, company name, colours, logo URL, and measurement IDs.
 
 ## Privacy policy URL
 
-Use a valid privacy policy URL in configuration. You can set this via `policy_link` and/or `settings.privacy_policy` on `window.INTA` (see the [documentation home](/docs/cookie-banner)).
+Set a reachable privacy policy URL. Use `policy_link` and/or `settings.privacy_policy` on `window.INTA`. Missing or invalid URLs are a common reason the banner stays hidden—see the [FAQ](/docs/cookie-banner#faq) on the docs home.
 
 ## Related
 
 - [Customize](/docs/cookie-banner/javascript/customize)
-- [Customize iFrames](/docs/cookie-banner/javascript/iframes)
+- [iFrames](/docs/cookie-banner/javascript/iframes)
 - [Add logo](/docs/cookie-banner/javascript/logo)
 - [Try out](/docs/cookie-banner/javascript/try-out)

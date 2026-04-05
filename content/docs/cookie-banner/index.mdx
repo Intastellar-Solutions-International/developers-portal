@@ -1,84 +1,129 @@
 ---
 title: Documentation
-description: Guides and examples to integrate Intastellar Consents Solutions on your website.
+description: Integrate Intastellar Consents (GDPR cookie banner) via JavaScript, WordPress, GTM, or Shopify.
 order: 0
 lastUpdated: "2026-04-05"
 ---
 
 # Documentation
 
-We have developed a cookie banner that is easy and quick to implement, and you have the option to customize it with just a few lines of code. This cookie banner is built with GDPR and privacy in the DNA from the core up. Use the banner in your next project and become GDPR compliant with just a few lines of code as far as your cookies are concerned.
+Intastellar Consents is a lightweight cookie banner you can drop in with a short script or WordPress plugin. It is built for **GDPR-aligned** consent: block non-essential cookies until the visitor chooses, then respect that choice across your stack.
 
-### Explore our guides and examples to integrate Intastellar Consents Solutions.
+Use these guides to implement it on your own site.
 
-This is a guide how you can implement the Intastellar Consents Solutions on your own website.
-
-**WordPress:** Get version **3.3.9** now — [Download the plugin (ZIP)](https://doc.intastellarsolutions.com/files/wordpress/gdpr/3.3.9/intastellar-consents.zip).
+**WordPress:** latest packaged build (**v3.3.9**) — [Download plugin (ZIP)](https://doc.intastellarsolutions.com/files/wordpress/gdpr/3.3.9/intastellar-consents.zip).
 
 ## Implemented by
 
-[![Cykelfærgen Flensborg Fjord](https://www.cykelfaergen.info/assets/logo/logo.svg)](https://www.bicycleferry.com)
-[![Læsø Pakkerejser](https://laesoe-booking.dk/images/logo.png)](https://laesoe-booking.dk)
-[![Team Jacobsen](https://teamjacobsen.dk/img-own/TB_logo_white_91x50.jpg)](https://teamjacobsen.dk)
-[![Læssø Efterskole](https://www.laesoe-efterskole.dk/wp-content/uploads/2023/09/cropped-cropped-cropped-cropped-cropped-LaesoeEfterskole_Logo_Farve-1.png)](https://www.laesoe-efterskole.dk)
-[![Klinik Fysioterapi, Nordborg](https://klinik-fysioterapi.dk/wp-content/uploads/2022/05/cropped-Logo-1-a-768x532.png)](https://klinik-fysioterapi.dk)
+<div className="not-prose my-8 grid grid-cols-2 place-items-center gap-x-6 gap-y-8 sm:grid-cols-3 md:grid-cols-5 md:gap-x-8">
+  <a
+    href="https://www.bicycleferry.com"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://www.cykelfaergen.info/assets/logo/logo.svg"
+      alt="Cykelfærgen Flensborg Fjord"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+  <a
+    href="https://laesoe-booking.dk"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://laesoe-booking.dk/images/logo.png"
+      alt="Læsø Pakkerejser"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+  <a
+    href="https://teamjacobsen.dk"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://teamjacobsen.dk/img-own/TB_logo_white_91x50.jpg"
+      alt="Team Jacobsen"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+  <a
+    href="https://www.laesoe-efterskole.dk"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://www.laesoe-efterskole.dk/wp-content/uploads/2023/09/cropped-cropped-cropped-cropped-cropped-LaesoeEfterskole_Logo_Farve-1.png"
+      alt="Læssø Efterskole"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+  <a
+    href="https://klinik-fysioterapi.dk"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://klinik-fysioterapi.dk/wp-content/uploads/2022/05/cropped-Logo-1-a-768x532.png"
+      alt="Klinik Fysioterapi, Nordborg"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+</div>
 
-## JavaScript solution
+## JavaScript
 
-Start implement our solutions on your Website via our JavaScript solution.
+For custom sites, add `window.INTA` plus `uc.js` in `<head>`. You can theme the UI and use a **fully custom banner** by pairing the script with the documented CSS hooks.
 
-You have coded your own website and want to integrate our solution? Great with our JavaScript Solution you have the posibility to integrate and customize your banner.
+[Get started (JavaScript)](/docs/cookie-banner/javascript/getting-started) · [Try sandbox (legacy host)](/docs/cookie-banner/javascript/try-out)
 
-The JavaScript version supports also custom banners.
+## Google Tag Manager
 
-[Get started (JavaScript)](/docs/cookie-banner/javascript/getting-started) · [Try now](/docs/cookie-banner/javascript/try-out)
-
-## Google Tagmanager
-
-Integrate our solutions on your Website via Google Tagmanager.
-
-You are using Google Tagmanager and want to integrate our solution? Great with our Google Tagmanager Solution. Load the scripts from the [JavaScript Solution](/docs/cookie-banner/javascript/getting-started) via a Custom HTML-Tag. Use **Consent Initialization - All pages** as trigger in GTM to initialize the banner. After you´ve config it, you can add new tags and triggers. We recommend to only fire the other tags, after our solution has fired.
+Load the same snippet from [JavaScript: Get started](/docs/cookie-banner/javascript/getting-started) in a **Custom HTML** tag. Use **Consent Initialization – All pages** (or equivalent) so the banner runs before analytics and marketing tags. Add other tags only **after** consent has been applied.
 
 [Get started (Google Tag Manager)](/docs/cookie-banner/google-tag-manager)
 
-## Wordpress
+## WordPress
 
-Integrate our solutions on your Wordpress Website.
+Use the plugin if you prefer configuration in wp-admin over code. Download from [cookie-solutions/downloads](https://www.intastellarsolutions.com/cookie-solutions/downloads) or install from [WordPress.org](https://wordpress.org/plugins/intastellar-gdpr-cookie-banner/).
 
-Your Website is build with Wordpress and you don´t want to code a banner? Our Wordpress plugin helps you with it. Download plugin from our website [here](https://www.intastellarsolutions.com/cookie-solutions/downloads) and begin to implement it. You can also install from the [WordPress plugin repository](https://wordpress.org/plugins/intastellar-gdpr-cookie-banner/).
-
-The Wordpress version does NOT support custom banners.
+The WordPress build does **not** support fully custom banner markup like the JavaScript integration.
 
 [Get started (WordPress)](/docs/cookie-banner/wordpress/getting-started)
 
-## Shopify Integration
+## Shopify
 
-Integrate our solutions on your Shopify Store.
-
-Install the Intastellar Consents app from the Shopify App Store and follow the setup instructions in the app settings.
+Install **Intastellar Consents** from the Shopify App Store and complete setup in the app.
 
 [Get started (Shopify)](/docs/cookie-banner/shopify)
 
-> By implementing the solution you are agreeing to the [Privacy policy of our cookiebanner](https://www.intastellarsolutions.com/about/legal/privacy/cookie-solutions/privacy-policy).
+> By implementing the solution you agree to the [cookie banner privacy policy](https://www.intastellarsolutions.com/about/legal/privacy/cookie-solutions/privacy-policy).
 
 ## FAQ
 
 [See more on the support site →](https://support.intastellarsolutions.com/gdpr-cookiebanner/faq)
 
-### Can I use my own design
+### Can I use my own design?
 
-Yes, it is possible to integrate our solution with your custom design. You just need to implement our script, and add a few css classes to you banner.
+Yes. Load the script, then style or replace the banner using the documented **CSS classes** so your layout stays on-brand.
 
-### I have trouble to get the cookie banner to show up on my site - what should I do?
+### The banner does not show — what should I check?
 
-If you have integrated our cookie banner via WordPress, make sure that you have provided a valid privacy policy under the section privacy policy or in the intro section. Read more under [Config](/docs/cookie-banner/wordpress/config).
+**WordPress:** Set a valid privacy policy URL in the plugin (**Intro** or **Privacy policy**). See [Config (WordPress)](/docs/cookie-banner/wordpress/config).
 
-If you have integrated via JavaScript check if your privacy policy contains under settings a valid privacy url. (See more under [JavaScript docs](/docs/cookie-banner/javascript/getting-started).)
+**JavaScript:** Ensure `policy_link` / `settings.privacy_policy` points to a real URL. See [Get Started (JavaScript)](/docs/cookie-banner/javascript/getting-started).
 
-### Where do I add a link to my privacy policy
+### Where do I put the privacy policy link?
 
-You can add a link to your privacy policy under `settings.privacy_policy` in the `window.INTA` object or via WordPress under the section "Intro" or "Privacy Policy".
+In JavaScript, use `settings.privacy_policy` (and/or `policy_link`) on `window.INTA`. In WordPress, use the **Intro** or **Privacy policy** fields in the plugin.
 
-## Help us build it!
+## Help us build it
 
-[![Intastellar Consents Solutions on Github](https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png)](https://github.com/felixaschultz/intastellar-cookie-solutions)
+[![Intastellar Consents on GitHub](https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png)](https://github.com/felixaschultz/intastellar-cookie-solutions)
