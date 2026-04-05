@@ -14,6 +14,7 @@ import type { Route } from "./+types/root";
 import { SearchOverlay } from "./components/search-overlay";
 import { SiteHeader } from "./components/site-header";
 import type { SearchDocument } from "~/lib/search-index.server";
+import { SearchOverlayProvider } from "~/lib/search-overlay-context";
 import { IntastellarAuthProvider } from "~/providers/intastellar-auth-provider";
 import "./app.css";
 
@@ -83,10 +84,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
   const documents = fetcher.data?.documents ?? [];
   const loading = fetcher.state === "loading" && !fetcher.data;
 
+  const openSearch = () => setSearchOpen(true);
+
   return (
     <IntastellarAuthProvider>
-      <SiteHeader onOpenSearch={() => setSearchOpen(true)} />
-      <main>{children}</main>
+      <SearchOverlayProvider openSearch={openSearch}>
+        <SiteHeader onOpenSearch={openSearch} />
+        <main>{children}</main>
+      </SearchOverlayProvider>
       <SearchOverlay
         open={searchOpen}
         onClose={() => setSearchOpen(false)}

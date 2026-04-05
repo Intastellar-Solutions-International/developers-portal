@@ -22,6 +22,10 @@ export type DocFrontmatter = {
   related?: RelatedLink[];
   /** Absolute URL or site path (e.g. /og/cookie-banner.png) for Open Graph */
   og_image?: string;
+  /** Order on /docs hub (lower first; default 100) */
+  hub_order?: number;
+  /** Short hub card line; falls back to description */
+  hub_tagline?: string;
 };
 
 export type DocLoaderData = {
@@ -373,6 +377,9 @@ export type ProductSummary = {
   slug: string;
   title: string;
   description?: string;
+  /** From frontmatter `hub_tagline`, else description */
+  cardSummary?: string;
+  hubOrder: number;
 };
 
 export async function listProducts(): Promise<ProductSummary[]> {
@@ -390,15 +397,27 @@ export async function listProducts(): Promise<ProductSummary[]> {
       const { data } = matter(raw);
       const fm = data as Partial<DocFrontmatter>;
       if (fm.draft === true && process.env.NODE_ENV === "production") continue;
+      const hubOrder =
+        typeof fm.hub_order === "number" && Number.isFinite(fm.hub_order)
+          ? fm.hub_order
+          : 100;
+      const tagline =
+        typeof fm.hub_tagline === "string" ? fm.hub_tagline.trim() : "";
       out.push({
         slug: d.name,
         title: fm.title ?? d.name,
         description: fm.description,
+        cardSummary: tagline || fm.description,
+        hubOrder,
       });
     } catch {
       /* skip products without index */
     }
   }
-  out.sort((a, b) => a.title.localeCompare(b.title, "en"));
+  out.sort((a, b) =>
+    a.hubOrder !== b.hubOrder
+      ? a.hubOrder - b.hubOrder
+      : a.title.localeCompare(b.title, "en"),
+  );
   return out;
 }

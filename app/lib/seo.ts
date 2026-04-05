@@ -62,15 +62,58 @@ export function buildDocPageMeta(opts: {
   ];
 }
 
-export function buildDocsHubMeta(pathname: string): MetaDescriptor[] {
+export function buildDocsHubMeta(
+  pathname: string,
+  opts?: { description?: string; ogImage?: string },
+): MetaDescriptor[] {
   const title = `Documentation · ${SITE_NAME}`;
   const desc =
+    opts?.description ??
     "Documentation for Intastellar developer products: Intastellar Consents, accounts sign-in, and APIs.";
   const url = absoluteUrl(pathname);
+  const ogImage = opts?.ogImage;
+  const twitterCard = ogImage ? "summary_large_image" : "summary";
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
+    name: title,
+    description: desc,
+    url,
+    ...(ogImage ? { image: ogImage } : {}),
+  };
+
+  return [
+    { title },
+    { name: "description", content: desc },
+    { tagName: "link", rel: "canonical", href: url },
+    { property: "og:title", content: title },
+    { property: "og:description", content: desc },
+    { property: "og:url", content: url },
+    { property: "og:type", content: "website" },
+    { property: "og:site_name", content: SITE_NAME },
+    ...(ogImage
+      ? [
+          { property: "og:image", content: ogImage },
+          { name: "twitter:image", content: ogImage },
+        ]
+      : []),
+    { name: "twitter:card", content: twitterCard },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: desc },
+    { "script:ld+json": jsonLd },
+  ];
+}
+
+export function buildHomePageMeta(pathname: string): MetaDescriptor[] {
+  const title = `inta.dev · Intastellar Developers`;
+  const desc =
+    "Documentation, API keys, and integration guides for Intastellar Consents and Intastellar Accounts on inta.dev.";
+  const url = absoluteUrl(pathname);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
     name: title,
     description: desc,
     url,
