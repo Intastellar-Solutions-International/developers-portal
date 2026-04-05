@@ -1,7 +1,10 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { Link } from "react-router";
 
+import { MdxPrettyCodeFigure } from "~/components/mdx-pretty-code-figure";
+
 export const mdxComponents = {
+  figure: MdxPrettyCodeFigure,
   a: (props: ComponentPropsWithoutRef<"a">) => {
     const { href, children, ...rest } = props;
     if (href?.startsWith("/")) {
