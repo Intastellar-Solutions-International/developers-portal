@@ -97,14 +97,13 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
     [clientId, appName],
   );
 
-  const { users, isLoading, error, signin, isSignedIn } = useIntastellar(config);
+  const { users, isLoading, error, signin, logout: sdkLogout, isSignedIn } =
+    useIntastellar(config);
 
   const logout = useCallback(() => {
     clearIntastellarBrowserSession();
-    if (typeof window !== "undefined") {
-      window.location.reload();
-    }
-  }, []);
+    sdkLogout();
+  }, [sdkLogout]);
 
   const [sessionProbeTimedOut, setSessionProbeTimedOut] = useState(false);
 

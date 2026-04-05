@@ -18,30 +18,32 @@ function intastellarCookieHostDomain(): string {
 
 const INTA_COOKIE_NAMES = ["inta_acc", "inta_state"] as const;
 
+/**
+ * Deletion must match how the cookie was set. The SDK sets `inta_acc` without
+ * `Secure`; only using `; Secure` on expire can fail to remove it on HTTPS.
+ */
+function cookieSecureSuffixes(): string[] {
+  if (typeof window === "undefined") return [""];
+  if (window.location.protocol === "https:") {
+    return ["", "; Secure"];
+  }
+  return [""];
+}
+
 /** Expire Intastellar SSO cookies on this site (all common domain/path variants). */
 export function clearIntastellarBrowserSession(): void {
   if (typeof document === "undefined") return;
 
   const expire = "expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0";
-  const secure =
-    typeof window !== "undefined" && window.location.protocol === "https:"
-      ? "; Secure"
-      : "";
-
-  const expireCookie = (attrs: string) =>
-    `${attrs}${secure ? `${secure}` : ""}`;
 
   for (const name of INTA_COOKIE_NAMES) {
-    document.cookie = expireCookie(`${name}=; ${expire}; path=/`);
-
-    const d = intastellarCookieHostDomain();
-    if (d) {
-      document.cookie = expireCookie(
-        `${name}=; ${expire}; path=/; domain=${d}`,
-      );
-      document.cookie = expireCookie(
-        `${name}=; ${expire}; path=/; domain=.${d}`,
-      );
+    for (const sec of cookieSecureSuffixes()) {
+      document.cookie = `${name}=; ${expire}; path=/${sec}`;
+      const d = intastellarCookieHostDomain();
+      if (d) {
+        document.cookie = `${name}=; ${expire}; path=/; domain=${d}${sec}`;
+        document.cookie = `${name}=; ${expire}; path=/; domain=.${d}${sec}`;
+      }
     }
   }
 
