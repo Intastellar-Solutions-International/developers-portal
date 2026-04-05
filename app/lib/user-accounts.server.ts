@@ -87,22 +87,22 @@ export async function ensureUserFromIntastellar(
   });
 
   if (existing) {
-    await coll.updateOne(
-      { _id: existing._id },
-      {
-        $set: {
-          primaryEmail: subject,
-          displayName: session.displayName,
-          updatedAt: now,
-        },
-      },
-    );
+    const $set: Record<string, unknown> = {
+      primaryEmail: subject,
+      displayName: session.displayName,
+      updatedAt: now,
+    };
+    if (session.imageUrl) {
+      $set.avatarUrl = session.imageUrl;
+    }
+    await coll.updateOne({ _id: existing._id }, { $set });
     return existing._id;
   }
 
   const insertResult = await coll.insertOne({
     primaryEmail: subject,
     displayName: session.displayName,
+    ...(session.imageUrl ? { avatarUrl: session.imageUrl } : {}),
     identities: [
       {
         provider: "intastellar",

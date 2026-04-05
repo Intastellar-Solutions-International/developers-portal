@@ -53,6 +53,7 @@ async function loadPortalAccountFromRequest(
         accountId: "",
         email: inta.email,
         displayName: inta.displayName,
+        avatarUrl: inta.imageUrl,
       },
       setCookieHeaders,
     };
@@ -86,6 +87,7 @@ async function loadPortalAccountFromRequest(
         accountId: accountId.toHexString(),
         email: inta.email,
         displayName: inta.displayName,
+        avatarUrl: inta.imageUrl,
       };
 
   if (options.issueSessionCookie) {

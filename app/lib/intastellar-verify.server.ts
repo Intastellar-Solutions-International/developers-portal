@@ -4,6 +4,8 @@ const VERIFY_URL = "https://apis.intastellaraccounts.com/verify";
 export type PortalAccountSession = {
   email: string;
   displayName: string;
+  /** Profile photo URL (same field as SDK `getUsers()` → `image`). */
+  imageUrl?: string;
 };
 
 function cookieValue(header: string | null, name: string): string | null {
@@ -49,6 +51,7 @@ export async function verifyIntastellarToken(
         user: {
           email?: string;
           name?: { first?: string; last?: string };
+          image?: string;
         };
       };
     };
@@ -60,7 +63,9 @@ export async function verifyIntastellarToken(
     const first = u.name?.first ?? "";
     const last = u.name?.last ?? "";
     const displayName = `${first} ${last}`.trim() || email;
-    return { email, displayName };
+    const imageUrl =
+      typeof u.image === "string" && u.image.trim() ? u.image.trim() : undefined;
+    return { email, displayName, imageUrl };
   } catch {
     return null;
   }
