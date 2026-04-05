@@ -39,7 +39,7 @@ export function SiteHeader({
 }: {
   onOpenSearch: () => void;
 }) {
-  const { configured, isLoading, isSignedIn, users, signin, logout } =
+  const { authReady, configured, isLoading, isSignedIn, users, signin, logout } =
     useIntastellarAuth();
   const user = users[0];
 
@@ -98,7 +98,7 @@ export function SiteHeader({
           <NavLink to="/docs" className={navLinkClass}>
             Docs
           </NavLink>
-          {configured && !isSignedIn ? (
+          {authReady && configured && !isSignedIn ? (
             <button
               type="button"
               className={headerBtnClass}
@@ -108,7 +108,7 @@ export function SiteHeader({
               {isLoading ? "…" : "Sign in"}
             </button>
           ) : null}
-          {configured && isSignedIn && user ? (
+          {authReady && configured && isSignedIn && user ? (
             <>
               <span
                 className="hidden max-w-[7rem] truncate px-2 text-xs text-zinc-500 sm:inline md:max-w-[10rem]"

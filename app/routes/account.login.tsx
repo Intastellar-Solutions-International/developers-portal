@@ -10,14 +10,13 @@ export function meta({}: Route.MetaArgs) {
 
 export default function AccountLogin() {
   const navigate = useNavigate();
-  const { configured, isLoading, isSignedIn, signin, error } =
+  const { authReady, configured, isLoading, isSignedIn, signin, error } =
     useIntastellarAuth();
 
   useEffect(() => {
-    if (configured && isSignedIn) {
-      navigate("/account/profile", { replace: true });
-    }
-  }, [configured, isSignedIn, navigate]);
+    if (!authReady || !configured || !isSignedIn) return;
+    navigate("/account/profile", { replace: true });
+  }, [authReady, configured, isSignedIn, navigate]);
 
   return (
     <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
@@ -29,7 +28,13 @@ export default function AccountLogin() {
         blocks it.
       </p>
 
-      {!configured ? (
+      {!authReady ? (
+        <div
+          className="mt-6 h-11 animate-pulse rounded-lg bg-zinc-200 dark:bg-zinc-700"
+          aria-busy="true"
+          aria-label="Loading"
+        />
+      ) : !configured ? (
         <p className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
           SSO is not configured. Set{" "}
           <code className="rounded bg-amber-100/80 px-1 font-mono text-xs dark:bg-amber-900/60">

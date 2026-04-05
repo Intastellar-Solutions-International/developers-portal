@@ -17,6 +17,7 @@
       "routes/docs.$product._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/docs.$product.$": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/account._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/account.profile": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/account.api-keys": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
@@ -107,6 +108,15 @@
         "parentId": "routes/account",
         "file": "app/routes/account._index.tsx",
         "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.login": {
+        "id": "routes/account.login",
+        "parentId": "routes/account",
+        "file": "app/routes/account.login.tsx",
+        "path": "login",
         "config": {
           "runtime": "nodejs"
         }
@@ -211,6 +221,12 @@
         "file": "routes/account._index.tsx",
         "index": true
       },
+      "routes/account.login": {
+        "id": "routes/account.login",
+        "parentId": "routes/account",
+        "file": "routes/account.login.tsx",
+        "path": "login"
+      },
       "routes/account.profile": {
         "id": "routes/account.profile",
         "parentId": "routes/account",
@@ -280,6 +296,10 @@
               {
                 "file": "routes/account._index.tsx",
                 "index": true
+              },
+              {
+                "file": "routes/account.login.tsx",
+                "path": "login"
               },
               {
                 "file": "routes/account.profile.tsx",

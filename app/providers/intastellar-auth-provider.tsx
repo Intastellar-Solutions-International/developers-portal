@@ -5,18 +5,29 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { useRouteLoaderData } from "react-router";
 import { useIntastellar } from "@intastellar/signin-sdk-react";
 import type { IntastellarUser } from "@intastellar/signin-sdk-react";
 
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
 import { clearIntastellarBrowserSession } from "~/lib/intastellar-session";
 
+const noopSubscribe = () => () => {};
+
+type RootLoaderData = { ssoConfigured?: boolean };
+
 /** If `getUsers()` never settles (CORS, ad blockers, network), the SDK stays `isLoading` forever — unblock the UI after this. */
 const SESSION_PROBE_MS = 10_000;
 
 export type IntastellarAuthContextValue = {
+  /**
+   * `false` until the client has mounted. Keeps SSR + first client paint identical
+   * so `import.meta.env.VITE_*` cannot diverge between server and browser.
+   */
+  authReady: boolean;
   configured: boolean;
   isLoading: boolean;
   isSignedIn: boolean;
@@ -29,7 +40,20 @@ export type IntastellarAuthContextValue = {
 const noopAsync = async () => {};
 const noop = () => {};
 
+/** Before `authReady` — same on server and client (no env branch). */
+const ssoBootstrapping: IntastellarAuthContextValue = {
+  authReady: false,
+  configured: false,
+  isLoading: false,
+  isSignedIn: false,
+  users: [],
+  error: null,
+  signin: noopAsync,
+  logout: noop,
+};
+
 const defaultUnconfigured: IntastellarAuthContextValue = {
+  authReady: true,
   configured: false,
   isLoading: false,
   isSignedIn: false,
@@ -40,7 +64,7 @@ const defaultUnconfigured: IntastellarAuthContextValue = {
 };
 
 const IntastellarAuthContext =
-  createContext<IntastellarAuthContextValue>(defaultUnconfigured);
+  createContext<IntastellarAuthContextValue>(ssoBootstrapping);
 
 function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
   const { clientId, appName } = getIntastellarClientConfig()!;
@@ -85,6 +109,7 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
 
   const value = useMemo<IntastellarAuthContextValue>(
     () => ({
+      authReady: true,
       configured: true,
       isLoading: effectiveLoading,
       isSignedIn,
@@ -104,9 +129,33 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
 }
 
 export function IntastellarAuthProvider({ children }: { children: ReactNode }) {
-  const hasConfig = getIntastellarClientConfig() !== null;
+  const rootData = useRouteLoaderData("root") as RootLoaderData | undefined;
+
+  const authReady = useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
+
+  if (!authReady) {
+    return (
+      <IntastellarAuthContext.Provider value={ssoBootstrapping}>
+        {children}
+      </IntastellarAuthContext.Provider>
+    );
+  }
+
+  const hasConfig = rootData?.ssoConfigured === true;
 
   if (!hasConfig) {
+    return (
+      <IntastellarAuthContext.Provider value={defaultUnconfigured}>
+        {children}
+      </IntastellarAuthContext.Provider>
+    );
+  }
+
+  if (getIntastellarClientConfig() === null) {
     return (
       <IntastellarAuthContext.Provider value={defaultUnconfigured}>
         {children}

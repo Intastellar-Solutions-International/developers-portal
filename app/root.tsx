@@ -19,6 +19,15 @@ import "./app.css";
 
 type SearchLoaderData = { documents: SearchDocument[] };
 
+/** Same rule as `getIntastellarClientConfig()` — embedded in SSR payload so SSO UI never disagrees with the server. */
+export async function loader(_: Route.LoaderArgs) {
+  return {
+    ssoConfigured: Boolean(
+      String(import.meta.env.VITE_INTASTELLAR_CLIENT_ID ?? "").trim(),
+    ),
+  };
+}
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {

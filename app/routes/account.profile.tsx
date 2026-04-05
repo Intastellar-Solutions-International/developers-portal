@@ -8,8 +8,16 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function AccountProfile() {
-  const { configured, isLoading, isSignedIn, users, signin, logout, error } =
-    useIntastellarAuth();
+  const {
+    authReady,
+    configured,
+    isLoading,
+    isSignedIn,
+    users,
+    signin,
+    logout,
+    error,
+  } = useIntastellarAuth();
 
   const user = users[0];
 
@@ -19,7 +27,11 @@ export default function AccountProfile() {
         Profile
       </h2>
 
-      {!configured ? (
+      {!authReady ? (
+        <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
+          Loading session…
+        </p>
+      ) : !configured ? (
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
           Connect Intastellar SSO by setting{" "}
           <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-900">
