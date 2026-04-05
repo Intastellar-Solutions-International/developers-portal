@@ -78,8 +78,8 @@ export function DocTableOfContents() {
                   "block border-l-2 py-1.5 text-sm leading-snug transition-colors -ml-px",
                   h.depth === 3 ? "pl-5" : "pl-3",
                   activeId === h.id
-                    ? "border-violet-500 font-medium text-violet-700 dark:border-violet-400 dark:text-violet-300"
-                    : "border-transparent text-zinc-600 hover:border-zinc-300 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-100",
+                    ? "border-brand font-medium text-brand dark:text-brand"
+                    : "border-transparent text-zinc-600 hover:border-brand/40 hover:text-brand dark:text-zinc-400 dark:hover:border-brand/50 dark:hover:text-brand",
                 ].join(" ")}
                 onClick={(e) => {
                   e.preventDefault();

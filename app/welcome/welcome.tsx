@@ -10,11 +10,11 @@ export function Welcome() {
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-600/20 blur-3xl"
+        className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-brand/25 blur-3xl"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-blue-600/15 blur-3xl"
+        className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-brand/10 blur-3xl"
         aria-hidden
       />
       <div className="relative flex flex-col items-center px-4 pb-24 pt-16 sm:pt-20">
@@ -56,18 +56,18 @@ export function Welcome() {
           </h1>
           <p className="mt-4 max-w-md text-center text-base text-zinc-400">
             Documentation, API references, and account tools on{" "}
-            <span className="font-medium text-zinc-200">inta.dev</span>.
+            <span className="font-medium text-brand">inta.dev</span>.
           </p>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/docs"
-              className="rounded-lg bg-white px-6 py-2.5 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:bg-zinc-100"
+              className="rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover"
             >
               Browse docs
             </Link>
             <Link
               to="/account/profile"
-              className="rounded-lg border border-white/20 bg-white/5 px-6 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
+              className="rounded-lg border border-brand/40 bg-transparent px-6 py-2.5 text-sm font-medium text-brand backdrop-blur-sm transition-colors hover:border-brand hover:bg-brand/10"
             >
               Account
             </Link>

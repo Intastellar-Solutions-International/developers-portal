@@ -13,8 +13,8 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
   [
     "block rounded-md px-2 py-1.5 text-sm transition-colors",
     isActive
-      ? "bg-zinc-200 font-medium text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
-      : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50",
+      ? "bg-brand/15 font-medium text-brand dark:bg-brand/20 dark:text-brand"
+      : "text-zinc-600 hover:bg-zinc-100 hover:text-brand dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-brand",
   ].join(" ");
 
 export function DocsSidebar({
