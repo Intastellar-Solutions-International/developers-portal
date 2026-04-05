@@ -15,6 +15,13 @@ import { SearchOverlay } from "./components/search-overlay";
 import { SiteFooter } from "./components/site-footer";
 import { SiteHeader } from "./components/site-header";
 import type { SearchDocument } from "~/lib/search-index.server";
+import {
+  gtagConfigScript,
+  gtmBootstrapScript,
+  GA_MEASUREMENT_ID,
+  GTM_CONTAINER_ID,
+  isAnalyticsEnabled,
+} from "~/lib/analytics";
 import { OPEN_SEARCH_EVENT } from "~/lib/search-overlay-context";
 import { IntastellarAuthProvider } from "~/providers/intastellar-auth-provider";
 import "./app.css";
@@ -41,6 +48,8 @@ export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://www.intastellar-consents.com" },
   { rel: "preconnect", href: "https://www.intastellaraccounts.com" },
   { rel: "preconnect", href: "https://apis.intastellaraccounts.com" },
+  { rel: "dns-prefetch", href: "https://www.googletagmanager.com" },
+  { rel: "dns-prefetch", href: "https://www.google-analytics.com" },
   {
     rel: "apple-touch-icon",
     href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-57x57.png",
@@ -182,6 +191,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const analytics = isAnalyticsEnabled();
+
   return (
     <html lang="en">
       <head>
@@ -189,8 +200,34 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        {analytics ? (
+          <>
+            <script
+              // GTM — must run early; safe to SSR as static bootstrap
+              dangerouslySetInnerHTML={{ __html: gtmBootstrapScript() }}
+            />
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            />
+            <script
+              dangerouslySetInnerHTML={{ __html: gtagConfigScript() }}
+            />
+          </>
+        ) : null}
       </head>
       <body className="min-h-dvh antialiased">
+        {analytics ? (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${GTM_CONTAINER_ID}`}
+              height="0"
+              width="0"
+              title="Google Tag Manager"
+              style={{ display: "none", visibility: "hidden" }}
+            />
+          </noscript>
+        ) : null}
         <RootShell>{children}</RootShell>
         <Scripts />
       </body>
