@@ -11,6 +11,8 @@
     },
     "routeIdToServerBundleId": {
       "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/robots-txt": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/sitemap-xml": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/search": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -22,7 +24,8 @@
       "routes/account._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/account.login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/account.profile": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/account.api-keys": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+      "routes/account.api-keys": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/$": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
       "root": {
@@ -36,6 +39,24 @@
         "parentId": "root",
         "file": "app/routes/home.tsx",
         "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/robots-txt": {
+        "id": "routes/robots-txt",
+        "parentId": "root",
+        "file": "app/routes/robots-txt.tsx",
+        "path": "robots.txt",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/sitemap-xml": {
+        "id": "routes/sitemap-xml",
+        "parentId": "root",
+        "file": "app/routes/sitemap-xml.tsx",
+        "path": "sitemap.xml",
         "config": {
           "runtime": "nodejs"
         }
@@ -175,6 +196,15 @@
         "config": {
           "runtime": "nodejs"
         }
+      },
+      "routes/$": {
+        "id": "routes/$",
+        "parentId": "root",
+        "file": "app/routes/$.tsx",
+        "path": "*",
+        "config": {
+          "runtime": "nodejs"
+        }
       }
     }
   },
@@ -203,6 +233,18 @@
         "parentId": "root",
         "file": "routes/home.tsx",
         "index": true
+      },
+      "routes/robots-txt": {
+        "id": "routes/robots-txt",
+        "parentId": "root",
+        "file": "routes/robots-txt.tsx",
+        "path": "robots.txt"
+      },
+      "routes/sitemap-xml": {
+        "id": "routes/sitemap-xml",
+        "parentId": "root",
+        "file": "routes/sitemap-xml.tsx",
+        "path": "sitemap.xml"
       },
       "routes/search": {
         "id": "routes/search",
@@ -299,6 +341,12 @@
         "parentId": "routes/account",
         "file": "routes/account.api-keys.tsx",
         "path": "api-keys"
+      },
+      "routes/$": {
+        "id": "routes/$",
+        "parentId": "root",
+        "file": "routes/$.tsx",
+        "path": "*"
       }
     },
     "routeDiscovery": {
@@ -318,6 +366,14 @@
           {
             "file": "routes/home.tsx",
             "index": true
+          },
+          {
+            "file": "routes/robots-txt.tsx",
+            "path": "robots.txt"
+          },
+          {
+            "file": "routes/sitemap-xml.tsx",
+            "path": "sitemap.xml"
           },
           {
             "file": "routes/search.tsx",
@@ -390,6 +446,10 @@
               }
             ],
             "path": "account"
+          },
+          {
+            "file": "routes/$.tsx",
+            "path": "*"
           }
         ]
       }

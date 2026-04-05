@@ -3,7 +3,7 @@ import path from "node:path";
 
 import matter from "gray-matter";
 
-import { docHref, parseDocsProductPath } from "./docs-versions";
+import { docHref, getDefaultVersionSlug, parseDocsProductPath } from "./docs-versions";
 import { bundleDocMdx } from "./mdx.server";
 import { absoluteUrl } from "./site";
 
@@ -381,6 +381,65 @@ export type ProductSummary = {
   cardSummary?: string;
   hubOrder: number;
 };
+
+async function walkDocsTree(
+  dir: string,
+  visit: (filePath: string) => Promise<void>,
+) {
+  const list = await fs.readdir(dir, { withFileTypes: true });
+  for (const e of list) {
+    if (e.name.startsWith("_")) continue;
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) await walkDocsTree(full, visit);
+    else await visit(full);
+  }
+}
+
+function mdxFileToPathname(product: string, filePath: string): string {
+  const rel = path.relative(path.join(DOCS_ROOT, product), filePath);
+  const n = rel.split(path.sep).join("/");
+  const withoutExt = n.replace(/\/index\.mdx$/i, "").replace(/\.mdx$/i, "");
+  const version = getDefaultVersionSlug(product);
+  if (!withoutExt || withoutExt === "index") {
+    return docHref(product, version);
+  }
+  return docHref(product, version, withoutExt);
+}
+
+/** Public doc URL pathnames (default version only) for sitemap generation. */
+export async function getAllDocPathnamesForSitemap(): Promise<string[]> {
+  const isProd = process.env.NODE_ENV === "production";
+  const entries = await fs.readdir(DOCS_ROOT, { withFileTypes: true }).catch(
+    () => [],
+  );
+  const pathnames = new Set<string>();
+
+  for (const ent of entries) {
+    if (!ent.isDirectory() || ent.name.startsWith("_")) continue;
+    const product = ent.name;
+    if (!isValidProductSlug(product)) continue;
+    const indexPath = path.join(DOCS_ROOT, product, "index.mdx");
+    try {
+      const raw = await fs.readFile(indexPath, "utf8");
+      const { data } = matter(raw);
+      const fm = data as Partial<DocFrontmatter>;
+      if (isProd && fm.draft === true) continue;
+    } catch {
+      continue;
+    }
+
+    await walkDocsTree(path.join(DOCS_ROOT, product), async (filePath) => {
+      if (!filePath.endsWith(".mdx")) return;
+      const raw = await fs.readFile(filePath, "utf8");
+      const { data } = matter(raw);
+      const fm = data as Partial<DocFrontmatter>;
+      if (isProd && fm.draft === true) return;
+      pathnames.add(mdxFileToPathname(product, filePath));
+    });
+  }
+
+  return [...pathnames].sort();
+}
 
 export async function listProducts(): Promise<ProductSummary[]> {
   const entries = await fs.readdir(DOCS_ROOT, { withFileTypes: true }).catch(

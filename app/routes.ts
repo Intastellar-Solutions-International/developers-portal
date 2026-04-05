@@ -8,6 +8,8 @@ import {
 
 export default [
   index("routes/home.tsx"),
+  route("robots.txt", "routes/robots-txt.tsx"),
+  route("sitemap.xml", "routes/sitemap-xml.tsx"),
   route("search", "routes/search.tsx"),
   route("changelog", "routes/changelog.tsx"),
   route("legal", "routes/legal.tsx", [
@@ -30,4 +32,5 @@ export default [
     route("profile", "routes/account.profile.tsx"),
     route("api-keys", "routes/account.api-keys.tsx"),
   ]),
+  route("*", "routes/$.tsx"),
 ] satisfies RouteConfig;
