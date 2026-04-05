@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
+import { CORPORATE_LEGAL } from "~/lib/legal-links";
 import { requestOpenSearch } from "~/lib/search-overlay-context";
 
 const linkClass =
@@ -20,7 +21,7 @@ export function SiteFooter() {
       role="contentinfo"
     >
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8">
           <div className="sm:col-span-2 lg:col-span-1">
             <p className="text-sm font-semibold text-zinc-100">inta.dev</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-zinc-400">
@@ -88,6 +89,39 @@ export function SiteFooter() {
                 <Link to="/account/api-keys" className={linkClass}>
                   API keys
                 </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className={headingClass}>Legal</p>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              <li>
+                <Link to="/legal" className={linkClass}>
+                  Legal overview
+                </Link>
+              </li>
+              <li>
+                <Link to="/legal/privacy" className={linkClass}>
+                  Privacy (inta.dev)
+                </Link>
+              </li>
+              <li>
+                <Link to="/legal/terms" className={linkClass}>
+                  Terms (inta.dev)
+                </Link>
+              </li>
+              <li>
+                <a
+                  href={CORPORATE_LEGAL.dpa}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className={linkClass}
+                >
+                  DPA (corporate)
+                  <span className="ml-0.5 text-xs opacity-70" aria-hidden>
+                    ↗
+                  </span>
+                </a>
               </li>
             </ul>
           </div>

@@ -10,6 +10,11 @@ export default [
   index("routes/home.tsx"),
   route("search", "routes/search.tsx"),
   route("changelog", "routes/changelog.tsx"),
+  route("legal", "routes/legal.tsx", [
+    index("routes/legal._index.tsx"),
+    route("privacy", "routes/legal.privacy.tsx"),
+    route("terms", "routes/legal.terms.tsx"),
+  ]),
   ...prefix("docs", [
     layout("routes/docs.layout.tsx", [
       index("routes/docs._index.tsx"),

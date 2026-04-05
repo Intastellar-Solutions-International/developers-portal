@@ -13,6 +13,9 @@
       "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/search": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal.privacy": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal.terms": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/docs._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/docs.$product._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/docs.$product.$": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -51,6 +54,40 @@
         "parentId": "root",
         "file": "app/routes/changelog.tsx",
         "path": "changelog",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal": {
+        "id": "routes/legal",
+        "parentId": "root",
+        "file": "app/routes/legal.tsx",
+        "path": "legal",
+        "config": {}
+      },
+      "routes/legal._index": {
+        "id": "routes/legal._index",
+        "parentId": "routes/legal",
+        "file": "app/routes/legal._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal.privacy": {
+        "id": "routes/legal.privacy",
+        "parentId": "routes/legal",
+        "file": "app/routes/legal.privacy.tsx",
+        "path": "privacy",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal.terms": {
+        "id": "routes/legal.terms",
+        "parentId": "routes/legal",
+        "file": "app/routes/legal.terms.tsx",
+        "path": "terms",
         "config": {
           "runtime": "nodejs"
         }
@@ -179,6 +216,30 @@
         "file": "routes/changelog.tsx",
         "path": "changelog"
       },
+      "routes/legal": {
+        "id": "routes/legal",
+        "parentId": "root",
+        "file": "routes/legal.tsx",
+        "path": "legal"
+      },
+      "routes/legal._index": {
+        "id": "routes/legal._index",
+        "parentId": "routes/legal",
+        "file": "routes/legal._index.tsx",
+        "index": true
+      },
+      "routes/legal.privacy": {
+        "id": "routes/legal.privacy",
+        "parentId": "routes/legal",
+        "file": "routes/legal.privacy.tsx",
+        "path": "privacy"
+      },
+      "routes/legal.terms": {
+        "id": "routes/legal.terms",
+        "parentId": "routes/legal",
+        "file": "routes/legal.terms.tsx",
+        "path": "terms"
+      },
       "routes/docs.layout": {
         "id": "routes/docs.layout",
         "parentId": "root",
@@ -265,6 +326,24 @@
           {
             "file": "routes/changelog.tsx",
             "path": "changelog"
+          },
+          {
+            "file": "routes/legal.tsx",
+            "children": [
+              {
+                "file": "routes/legal._index.tsx",
+                "index": true
+              },
+              {
+                "file": "routes/legal.privacy.tsx",
+                "path": "privacy"
+              },
+              {
+                "file": "routes/legal.terms.tsx",
+                "path": "terms"
+              }
+            ],
+            "path": "legal"
           },
           {
             "file": "routes/docs.layout.tsx",
