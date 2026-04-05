@@ -22,6 +22,25 @@ type RootLoaderData = { ssoConfigured?: boolean };
 /** If `getUsers()` never settles (CORS, ad blockers, network), the SDK stays `isLoading` forever — unblock the UI after this. */
 const SESSION_PROBE_MS = 10_000;
 
+/** After sign-out, Intastellar `getUsers()` may still throw (e.g. Safari “Load failed”); don’t treat that as a blocking error. */
+function suppressBenignSignedOutError(
+  isSignedIn: boolean,
+  users: IntastellarUser[],
+  sdkError: string | null,
+): string | null {
+  if (sdkError == null || isSignedIn || users.length > 0) return sdkError;
+  const m = sdkError.toLowerCase();
+  if (
+    m.includes("load failed") ||
+    m.includes("failed to fetch") ||
+    m.includes("networkerror") ||
+    m.includes("network error")
+  ) {
+    return null;
+  }
+  return sdkError;
+}
+
 export type IntastellarAuthContextValue = {
   /**
    * `false` until the client has mounted. Keeps SSR + first client paint identical
@@ -78,13 +97,14 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
     [clientId, appName],
   );
 
-  const { users, isLoading, error, signin, logout: sdkLogout, isSignedIn } =
-    useIntastellar(config);
+  const { users, isLoading, error, signin, isSignedIn } = useIntastellar(config);
 
   const logout = useCallback(() => {
     clearIntastellarBrowserSession();
-    sdkLogout();
-  }, [sdkLogout]);
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
+  }, []);
 
   const [sessionProbeTimedOut, setSessionProbeTimedOut] = useState(false);
 
@@ -101,8 +121,13 @@ function IntastellarAuthEnabled({ children }: { children: ReactNode }) {
 
   const loadingBlocked = isLoading && sessionProbeTimedOut;
   const effectiveLoading = isLoading && !sessionProbeTimedOut;
+  const errorAfterSignedOutFilter = suppressBenignSignedOutError(
+    isSignedIn,
+    users,
+    error,
+  );
   const effectiveError =
-    error ??
+    errorAfterSignedOutFilter ??
     (loadingBlocked
       ? "Could not verify your session (request timed out). Check your network, disable ad blockers for this site, or try Sign in — the Accounts API must be reachable from your browser."
       : null);

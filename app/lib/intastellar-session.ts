@@ -23,14 +23,25 @@ export function clearIntastellarBrowserSession(): void {
   if (typeof document === "undefined") return;
 
   const expire = "expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0";
+  const secure =
+    typeof window !== "undefined" && window.location.protocol === "https:"
+      ? "; Secure"
+      : "";
+
+  const expireCookie = (attrs: string) =>
+    `${attrs}${secure ? `${secure}` : ""}`;
 
   for (const name of INTA_COOKIE_NAMES) {
-    document.cookie = `${name}=; ${expire}; path=/`;
+    document.cookie = expireCookie(`${name}=; ${expire}; path=/`);
 
     const d = intastellarCookieHostDomain();
     if (d) {
-      document.cookie = `${name}=; ${expire}; path=/; domain=${d}`;
-      document.cookie = `${name}=; ${expire}; path=/; domain=.${d}`;
+      document.cookie = expireCookie(
+        `${name}=; ${expire}; path=/; domain=${d}`,
+      );
+      document.cookie = expireCookie(
+        `${name}=; ${expire}; path=/; domain=.${d}`,
+      );
     }
   }
 
