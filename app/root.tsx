@@ -42,6 +42,75 @@ export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://www.intastellaraccounts.com" },
   { rel: "preconnect", href: "https://apis.intastellaraccounts.com" },
   {
+    rel: "apple-touch-icon",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-57x57.png",
+    sizes: "57x57",
+  },
+  {
+    rel: "apple-touch-icon",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-60x60.png",
+    sizes: "60x60",
+  },
+  {
+    rel: "apple-touch-icon",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-72x72.png",
+    sizes: "72x72",
+  },
+  {
+    rel: "apple-touch-icon",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-76x76.png",
+    sizes: "76x76",
+  },
+  {
+    rel: "apple-touch-icon",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-114x114.png",
+    sizes: "114x114",
+  },
+  {
+    rel: "apple-touch-icon",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-120x120.png",
+    sizes: "120x120",
+  },
+  {
+    rel: "apple-touch-icon",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-144x144.png",
+    sizes: "144x144",
+  },
+  {
+    rel: "apple-touch-icon",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-152x152.png",
+    sizes: "152x152",
+  },
+  {
+    rel: "apple-touch-icon",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/apple-icon-180x180.png",
+    sizes: "180x180",
+  },
+  {
+    rel: "icon",
+    type: "image/png",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/android-icon-192x192.png",
+    sizes: "192x192",
+  },
+  {
+    rel: "icon",
+    type: "image/png",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/favicon-32x32.png",
+    sizes: "32x32",
+  },
+  {
+    rel: "icon",
+    type: "image/png",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/favicon-96x96.png",
+    sizes: "96x96",
+  },
+  {
+    rel: "icon",
+    type: "image/png",
+    href: "https://www.intastellarsolutions.com/assets/icons/fav/favicon-16x16.png",
+    sizes: "16x16",
+  },
+  {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
