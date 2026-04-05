@@ -1,4 +1,5 @@
-import { Link, NavLink } from "react-router";
+import { useEffect } from "react";
+import { Link, NavLink, useNavigate } from "react-router";
 
 import { BRAND } from "~/lib/brand";
 
@@ -11,6 +12,26 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   ].join(" ");
 
 export function SiteHeader() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "k") return;
+      const t = e.target;
+      if (
+        t instanceof HTMLInputElement ||
+        t instanceof HTMLTextAreaElement ||
+        (t instanceof HTMLElement && t.isContentEditable)
+      ) {
+        return;
+      }
+      e.preventDefault();
+      navigate("/search");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [navigate]);
+
   return (
     <header className="border-b border-zinc-600/40 bg-zinc-800">
       <div className="mx-auto flex h-[3.75rem] max-w-6xl items-center justify-between gap-4 px-4">
@@ -60,6 +81,12 @@ export function SiteHeader() {
           </Link>
         </div>
         <nav className="flex shrink-0 flex-wrap items-center justify-end gap-0.5 sm:gap-1">
+          <NavLink to="/search" className={navLinkClass}>
+            Search
+          </NavLink>
+          <NavLink to="/changelog" className={navLinkClass}>
+            Changelog
+          </NavLink>
           <NavLink to="/docs" className={navLinkClass}>
             Docs
           </NavLink>

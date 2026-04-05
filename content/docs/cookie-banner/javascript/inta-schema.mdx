@@ -1,0 +1,60 @@
+---
+title: INTA reference
+description: JSON Schema for the window.INTA configuration object (JavaScript integration).
+order: 15
+lastUpdated: "2026-04-05"
+---
+
+# `window.INTA` (JSON Schema)
+
+`window.INTA` is the global **JavaScript object** Intastellar Consents reads before `uc.js` runs. Define it in an inline `<script>` in `<head>`, then load the CDN script (see [Get Started](/docs/cookie-banner/javascript/getting-started)).
+
+## Machine-readable schema
+
+- **JSON Schema file:** [`/schemas/window-inta.json`](/schemas/window-inta.json)  
+- **`$id`:** `https://inta.dev/schemas/window-inta.json`
+
+Use it with editors, validators, or codegen tools that support JSON Schema Draft 2020-12.
+
+## Shape (summary)
+
+| Path | Type | Notes |
+| --- | --- | --- |
+| `policy_link` | string (URI) | Privacy policy URL |
+| `settings` | object | Banner UI and behaviour |
+| `settings.rootDomain` | string | Root domain |
+| `settings.company` | string | Display name |
+| `settings.arrange` | `"ltr"` \| `"rtl"` | Layout direction |
+| `settings.color` | string | Primary colour (e.g. hex) |
+| `settings.logo` | string (URI) | Logo URL |
+| `settings.design` | string | e.g. `overlay` |
+| `settings.gtagId` | string | Google / GA4 ID when applicable |
+| `settings.privacy_policy` | string (URI) | Privacy URL (often required for the banner to show) |
+| `settings.requiredCookies` | string[] | Strictly necessary cookies |
+| `settings.keepInLocalStorage` | string[] | localStorage keys to keep |
+
+The schema sets `additionalProperties: true` on the root and on `settings`, so **extra keys** your account or version expects are still valid—validate in your pipeline if you need a closed world.
+
+## Example
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://example.com/privacy",
+    settings: {
+      rootDomain: "example.com",
+      company: "Example ApS",
+      arrange: "ltr",
+      color: "#111827",
+      logo: "https://example.com/logo.svg",
+      design: "overlay",
+      gtagId: "G-XXXXXXXXXX",
+      requiredCookies: [],
+      keepInLocalStorage: [],
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+For field semantics beyond this reference, see [Customize](/docs/cookie-banner/javascript/customize) and the [documentation home](/docs/cookie-banner).

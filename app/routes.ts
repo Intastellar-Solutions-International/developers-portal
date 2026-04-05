@@ -8,6 +8,8 @@ import {
 
 export default [
   index("routes/home.tsx"),
+  route("search", "routes/search.tsx"),
+  route("changelog", "routes/changelog.tsx"),
   ...prefix("docs", [
     layout("routes/docs.layout.tsx", [
       index("routes/docs._index.tsx"),

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inta.dev/schemas/window-inta.json",
+  "title": "window.INTA",
+  "description": "Configuration for Intastellar Consents. Set this object on window before loading https://consents.cdn.intastellarsolutions.com/uc.js. Additional vendor-specific keys may exist; unknown properties are allowed.",
+  "type": "object",
+  "properties": {
+    "policy_link": {
+      "type": "string",
+      "description": "URL of your privacy policy (HTTPS recommended).",
+      "format": "uri"
+    },
+    "settings": {
+      "type": "object",
+      "description": "UI and behaviour settings consumed by the banner script.",
+      "properties": {
+        "rootDomain": {
+          "type": "string",
+          "description": "Site root domain (e.g. example.com)."
+        },
+        "company": {
+          "type": "string",
+          "description": "Organisation or product name shown in the banner."
+        },
+        "arrange": {
+          "type": "string",
+          "description": "Layout direction.",
+          "enum": ["ltr", "rtl"]
+        },
+        "color": {
+          "type": "string",
+          "description": "Primary UI colour (typically CSS hex, e.g. #000000)."
+        },
+        "logo": {
+          "type": "string",
+          "description": "Absolute URL to a logo image.",
+          "format": "uri"
+        },
+        "design": {
+          "type": "string",
+          "description": "Banner presentation preset (e.g. overlay)."
+        },
+        "gtagId": {
+          "type": "string",
+          "description": "Google tag / GA4 measurement ID when using Google integration."
+        },
+        "privacy_policy": {
+          "type": "string",
+          "description": "Privacy policy URL; often used together with or instead of policy_link.",
+          "format": "uri"
+        },
+        "requiredCookies": {
+          "type": "array",
+          "description": "Cookie names treated as strictly necessary.",
+          "items": { "type": "string" }
+        },
+        "keepInLocalStorage": {
+          "type": "array",
+          "description": "localStorage keys to preserve across consent flows.",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
