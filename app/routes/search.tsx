@@ -1,8 +1,8 @@
-import MiniSearch from "minisearch";
 import { useMemo, useState } from "react";
 import { Link, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/search";
+import { searchDocuments } from "~/lib/docs-search";
 import { readSearchIndex } from "~/lib/search-index.server";
 
 export async function loader(_: Route.LoaderArgs) {
@@ -21,21 +21,10 @@ export default function SearchPage() {
   const { documents } = useLoaderData<typeof loader>();
   const [q, setQ] = useState("");
 
-  const mini = useMemo(() => {
-    const m = new MiniSearch({
-      fields: ["title", "description", "text", "product"],
-      storeFields: ["title", "href", "product", "description"],
-      idField: "id",
-    });
-    m.addAll(documents);
-    return m;
-  }, [documents]);
-
-  const results = useMemo(() => {
-    const query = q.trim();
-    if (!query) return [];
-    return mini.search(query, { prefix: true, fuzzy: 0.2 });
-  }, [q, mini]);
+  const results = useMemo(
+    () => searchDocuments(q, documents),
+    [q, documents],
+  );
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
