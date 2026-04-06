@@ -269,13 +269,6 @@ function SiteHeaderInner({
             className="hidden items-center gap-0.5 lg:flex lg:gap-1"
             aria-label="Main"
           >
-            <NavLink
-              to="/changelog"
-              className={navLinkClass}
-              title="Consents & Sign-In — npm and GitHub releases"
-            >
-              Changelog
-            </NavLink>
             <NavLink to="/docs" className={navLinkClass}>
               Docs
             </NavLink>
