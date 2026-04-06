@@ -210,7 +210,8 @@ export default function StatusPage() {
           STATUS_CHECK_EXTRA_JSON
         </code>{" "}
         (append). A check is “passing” when the response status is below 500.
-        Timelines, the incident log, and latency trends use the last{" "}
+        The incident log lists cron runs where any target failed, with the probe’s error text when
+        stored. Timelines, the incident log, and latency trends use the last{" "}
         <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">STATUS_HISTORY_POINTS</code>{" "}
         stored runs (14-day TTL in Mongo). Display times are UTC. New cron rows include per-target{" "}
         <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">latencyMs</code>; older rows only

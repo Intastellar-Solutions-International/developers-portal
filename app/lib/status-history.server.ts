@@ -9,7 +9,14 @@ import { STATUS_HISTORY_COLLECTION } from "./mongodb-schema.server";
 export type StatusHistoryRow = {
   checkedAt: Date;
   overallOk: boolean;
-  results: Array<{ id: string; ok: boolean; latencyMs?: number }>;
+  results: Array<{
+    id: string;
+    ok: boolean;
+    latencyMs?: number;
+    /** From `StatusProbeResult.error` when the check failed. */
+    error?: string | null;
+    statusCode?: number | null;
+  }>;
 };
 
 export type StatusTimelinePoint = {
@@ -20,10 +27,16 @@ export type StatusTimelinePoint = {
   latencyMs?: number;
 };
 
+export type StatusIncidentFailure = {
+  id: string;
+  /** Developer-facing reason from the probe (or a fallback for older stored rows). */
+  summary: string;
+};
+
 export type StatusIncident = {
   checkedAt: string;
   checkedAtLabel: string;
-  failedIds: string[];
+  failures: StatusIncidentFailure[];
 };
 
 function historyMaxPoints(): number {
@@ -52,6 +65,8 @@ export async function appendStatusHistoryRun(
       id: r.id,
       ok: r.ok,
       latencyMs: r.latencyMs,
+      error: r.error,
+      statusCode: r.statusCode,
     })),
   });
   return true;
@@ -95,6 +110,18 @@ export async function getStatusTimelines(
   return out;
 }
 
+function incidentFailureSummary(r: {
+  error?: string | null;
+  statusCode?: number | null;
+}): string {
+  const msg = r.error?.trim();
+  if (msg) return msg;
+  if (r.statusCode != null) {
+    return `HTTP ${r.statusCode} — we mark 5xx and unreachable responses as a failed check.`;
+  }
+  return "No successful HTTP response (timeout, DNS, TLS, or network error).";
+}
+
 /**
  * Recent runs where at least one target failed (newest first).
  */
@@ -118,7 +145,10 @@ export async function getRecentStatusIncidents(
     out.push({
       checkedAt: iso,
       checkedAtLabel: formatDateTimeMediumUtc(iso),
-      failedIds: failed.map((f) => f.id),
+      failures: failed.map((f) => ({
+        id: f.id,
+        summary: incidentFailureSummary(f),
+      })),
     });
     if (out.length >= limit) break;
   }

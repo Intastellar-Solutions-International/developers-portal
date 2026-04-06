@@ -16,8 +16,10 @@ export function StatusIncidentLog({ incidents, targetNames }: Props) {
           Incident log
         </h2>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          No failed checks in recent stored history. Incidents appear when a cron run records
-          one or more targets as down.
+          An <strong className="font-medium text-zinc-800 dark:text-zinc-200">incident</strong> is
+          a stored cron run where at least one target was <strong className="font-medium">down</strong>{" "}
+          (HTTP 5xx, timeout, or no response — same rules as the live checks). If everything in
+          recent history passed, this list stays empty.
         </p>
       </section>
     );
@@ -32,7 +34,9 @@ export function StatusIncidentLog({ incidents, targetNames }: Props) {
         Incident log
       </h2>
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-        Recent runs where at least one target failed (newest first). Times are UTC.
+        Each row is one cron run where at least one check failed (newest first). Times are UTC.
+        Messages come from the probe when available; older history rows may only show a generic
+        reason.
       </p>
       <ul className="mt-4 divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
         {incidents.map((ev) => (
@@ -48,9 +52,14 @@ export function StatusIncidentLog({ incidents, targetNames }: Props) {
                 Degraded
               </span>
             </div>
-            <ul className="mt-2 list-inside list-disc text-sm text-zinc-600 dark:text-zinc-400">
-              {ev.failedIds.map((id) => (
-                <li key={id}>{targetNames[id] ?? id}</li>
+            <ul className="mt-3 space-y-3 text-sm">
+              {ev.failures.map((f) => (
+                <li key={f.id} className="border-l-2 border-red-200 pl-3 dark:border-red-900/60">
+                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                    {targetNames[f.id] ?? f.id}
+                  </p>
+                  <p className="mt-0.5 text-zinc-600 dark:text-zinc-400">{f.summary}</p>
+                </li>
               ))}
             </ul>
           </li>
