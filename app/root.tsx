@@ -132,7 +132,7 @@ function pathnameSupportsHreflang(pathname: string): boolean {
   return roots.some((r) => bare === r || bare.startsWith(`${r}/`));
 }
 
-/** `hreflang` alternates for crawlers (Ahrefs, Google) — only where `/de` and `/da` mirrors exist. */
+/** `hreflang` alternates for crawlers (Ahrefs, Google) — localized route mirrors. */
 function LocaleAlternateLinks() {
   const { pathname, search } = useLocation();
   if (!pathnameSupportsHreflang(pathname)) return null;

@@ -17,8 +17,8 @@ import { absoluteUrl } from "./site";
 
 const DOCS_ROOT = path.join(process.cwd(), "content", "docs");
 
-/** `content/docs/de`, `content/docs/da` — not product slugs. */
-const LOCALE_ROOT_DIRS = new Set<string>(["de", "da"]);
+/** `content/docs/{locale}` — not product slugs. */
+const LOCALE_ROOT_DIRS = new Set<string>(["de", "da", "fr", "nl"]);
 
 export type RelatedLink = { title: string; href: string };
 

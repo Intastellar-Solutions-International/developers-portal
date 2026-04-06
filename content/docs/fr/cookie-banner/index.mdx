@@ -1,0 +1,149 @@
+---
+title: Intastellar Consents
+description: Intégrer Intastellar Consents (bandeau cookies RGPD) via JavaScript, WordPress, GTM ou Shopify.
+hub_order: 10
+hub_tagline: Bandeau cookies et CMP — JS, WordPress, GTM, Shopify.
+order: 0
+lastUpdated: "2026-04-05"
+---
+
+# Documentation
+
+Intastellar Consents est un bandeau cookies léger que vous intégrez avec un court script ou le plugin WordPress. Il vise un consentement **aligné RGPD** : bloquer les cookies non essentiels jusqu’au choix du visiteur, puis respecter cette décision sur l’ensemble de votre stack.
+
+Suivez ces guides pour l’implémenter sur votre site.
+
+**WordPress :** build packagé actuel (**v3.3.9**) — [Télécharger le plugin (ZIP)](https://doc.intastellarsolutions.com/files/wordpress/gdpr/3.3.9/intastellar-consents.zip).
+
+## Ils l’utilisent
+
+<div className="not-prose my-8 grid grid-cols-2 place-items-center gap-x-6 gap-y-8 sm:grid-cols-3 md:grid-cols-5 md:gap-x-8">
+  <a
+    href="https://www.bicycleferry.com"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://www.cykelfaergen.info/assets/logo/logo.svg"
+      alt="Cykelfærgen Flensborg Fjord"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+  <a
+    href="https://laesoe-booking.dk"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://laesoe-booking.dk/images/logo.png"
+      alt="Læsø Pakkerejser"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+  <a
+    href="https://teamjacobsen.dk"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://teamjacobsen.dk/img-own/TB_logo_white_91x50.jpg"
+      alt="Team Jacobsen"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+  <a
+    href="https://www.laesoe-efterskole.dk"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://www.laesoe-efterskole.dk/wp-content/uploads/2023/09/cropped-cropped-cropped-cropped-cropped-LaesoeEfterskole_Logo_Farve-1.png"
+      alt="Læssø Efterskole"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+  <a
+    href="https://klinik-fysioterapi.dk"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://klinik-fysioterapi.dk/wp-content/uploads/2022/05/cropped-Logo-1-a-768x532.png"
+      alt="Klinik Fysioterapi, Nordborg"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+  <a
+    href="https://www.asasoftware.aero"
+    target="_blank"
+    rel="noreferrer noopener"
+    className="flex h-16 w-full max-w-[10.5rem] items-center justify-center rounded-lg bg-zinc-600 p-3 dark:bg-zinc-700"
+  >
+    <img
+      src="https://asasoftware.aero/wp-content/uploads/2020/04/ASA.svg"
+      alt="ASA Software"
+      className="max-h-10 w-full object-contain object-center"
+    />
+  </a>
+</div>
+
+## JavaScript
+
+Pour des sites sur mesure, ajoutez `window.INTA` et `uc.js` dans le `<head>`. Vous pouvez thématiser l’interface et utiliser un **bandeau entièrement personnalisé** en combinant le script avec les **hooks CSS** documentés.
+
+[Premiers pas (JavaScript)](/docs/cookie-banner/javascript/getting-started) · [Essayer la sandbox (héritée)](/docs/cookie-banner/javascript/try-out)
+
+## Google Tag Manager
+
+Chargez le même extrait que dans [JavaScript : premiers pas](/docs/cookie-banner/javascript/getting-started) dans une balise **HTML personnalisé**. Utilisez **Consent Initialization – All pages** (ou l’équivalent) pour que le bandeau s’exécute avant les balises analytics et marketing. Déclenchez les autres balises **après** application du consentement.
+
+[Premiers pas (Google Tag Manager)](/docs/cookie-banner/google-tag-manager)
+
+## WordPress
+
+Utilisez le plugin si vous préférez configurer dans wp-admin plutôt qu’en code. Téléchargement depuis [cookie-solutions/downloads](https://www.intastellarsolutions.com/cookie-solutions/downloads) ou installation via [WordPress.org](https://wordpress.org/plugins/intastellar-gdpr-cookie-banner/).
+
+La version WordPress ne prend **pas** en charge le même balisage de bandeau entièrement personnalisé que l’intégration JavaScript.
+
+[Premiers pas (WordPress)](/docs/cookie-banner/wordpress/getting-started)
+
+## Shopify
+
+Il n’existe **pas encore d’app dans le Shopify App Store**. Ajoutez le script de consentement en modifiant **`theme.liquid`** du thème (Liquid) — le même extrait **`window.INTA`** que pour l’intégration JavaScript.
+
+[Shopify (thème / Liquid)](/docs/cookie-banner/shopify)
+
+> En implémentant la solution, vous acceptez la [politique de confidentialité du bandeau cookies](https://www.intastellarsolutions.com/about/legal/privacy/cookie-solutions/privacy-policy).
+
+## FAQ
+
+[En savoir plus sur le site d’assistance →](https://support.intastellarsolutions.com/gdpr-cookiebanner/faq)
+
+### Puis-je utiliser mon propre design ?
+
+Oui. Chargez le script, puis stylisez ou remplacez le bandeau avec les **classes CSS** documentées pour rester aligné avec votre marque.
+
+### Le bandeau n’apparaît pas — que vérifier ?
+
+**WordPress :** renseignez une URL de politique de confidentialité valide dans le plugin (**Intro** ou **Confidentialité**). Voir [Configuration (WordPress)](/docs/cookie-banner/wordpress/config).
+
+**JavaScript :** vérifiez que `policy_link` / `settings.privacy_policy` pointe vers une URL réelle. Voir [Premiers pas (JavaScript)](/docs/cookie-banner/javascript/getting-started).
+
+**Shopify :** placez l’extrait dans **`layout/theme.liquid`** et définissez `policy_link` sur une URL de politique joignable (par ex. la page confidentialité de la boutique). Voir [Shopify](/docs/cookie-banner/shopify).
+
+### Où indiquer le lien vers la politique de confidentialité ?
+
+En JavaScript : `settings.privacy_policy` et/ou `policy_link` sur `window.INTA`. Dans WordPress : champs **Intro** ou **Confidentialité** du plugin.
+
+## Contribuer
+
+[![Intastellar Consents sur GitHub](https://www.intastellarsolutions.com/assets/icons/GitHub-Mark/PNG/GitHub-Mark-64px.png)](https://github.com/felixaschultz/intastellar-cookie-solutions)
+
+- [Changelog](/changelog) — Intastellar Consents (GitHub) et Intastellar Sign-In (npm + GitHub)
+- [Rechercher toute la doc](/search)
+- [Schéma JSON `window.INTA`](/docs/cookie-banner/javascript/inta-schema)

@@ -39,7 +39,7 @@ const systemRoutes: RouteConfigEntry[] = [
   route("api/status/uptime/badge", "routes/api.status.uptime-badge.tsx"),
 ];
 
-/** User-facing routes mirrored under `/de` and `/da` for SEO (English stays unprefixed). */
+/** User-facing routes mirrored under `/de`, `/da`, `/fr`, `/nl` for SEO (English stays unprefixed). */
 const localizedAppRoutes: RouteConfigEntry[] = [
   index("routes/home.tsx"),
   route("search", "routes/search.tsx"),
@@ -80,4 +80,6 @@ export default [
   ...localizedAppRoutes,
   ...prefix("de", suffixRouteIds(localizedAppRoutes, "de")),
   ...prefix("da", suffixRouteIds(localizedAppRoutes, "da")),
+  ...prefix("fr", suffixRouteIds(localizedAppRoutes, "fr")),
+  ...prefix("nl", suffixRouteIds(localizedAppRoutes, "nl")),
 ] satisfies RouteConfig;

@@ -1,0 +1,68 @@
+---
+title: Shopify
+description: Ajouter Intastellar Consents à une boutique Shopify en modifiant le layout Liquid du thème (sans application).
+order: 70
+lastUpdated: "2026-04-06"
+related:
+  - title: Premiers pas (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Personnaliser l’apparence et le comportement
+    href: /docs/cookie-banner/javascript/customize
+---
+
+# Shopify
+
+Il n’y a **pas encore de fiche publique sur le Shopify App Store**. Vous pouvez toutefois utiliser **Intastellar Consents** sur une boutique Shopify en ajoutant le même **extrait JavaScript** que sur tout autre site — dans le layout **Liquid** de votre thème pour qu’il se charge sur toutes les pages vitrine.
+
+## Ajouter l’extrait dans `theme.liquid`
+
+1. Dans l’admin Shopify, allez dans **Boutique en ligne → Thèmes**.
+2. Sur le thème actif, choisissez **⋯ → Modifier le code**.
+3. Sous **Mise en page**, ouvrez **`theme.liquid`** (ou le layout principal de votre thème).
+4. Collez le **bloc de configuration** et la **balise script** de [Premiers pas (JavaScript)](/docs/cookie-banner/javascript/getting-started) **juste après** la balise d’ouverture `<head>` (avant `{{ content_for_header }}` convient, tant que les deux scripts s’exécutent dans `<head>`).
+
+Utilisez votre **domaine boutique** (ou domaine personnalisé principal) pour `settings.rootDomain`, le **slug entreprise Intastellar**, l’**URL de confidentialité**, le **logo**, les couleurs et éventuellement **`gtagId`**, comme dans le [guide JavaScript](/docs/cookie-banner/javascript/getting-started) et le [schéma `window.INTA`](/docs/cookie-banner/javascript/inta-schema).
+
+Forme d’exemple (placeholders uniquement — copiez l’extrait complet depuis le guide JS) :
+
+```liquid
+<head>
+  <script>
+    window.INTA = {
+      policy_link: "https://your-shop-domain.com/policies/privacy-policy",
+      settings: {
+        rootDomain: "your-shop-domain.com",
+        company: "yourcompany",
+        arrange: "ltr",
+        color: "#000000",
+        logo: "https://cdn.shopify.com/.../your-logo.png",
+        design: "overlay",
+        gtagId: "G-XXXXXXXXXX",
+        requiredCookies: [],
+        keepInLocalStorage: [],
+      },
+    };
+  </script>
+  <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+  {{ content_for_header }}
+```
+
+Shopify sert souvent les assets via `cdn.shopify.com` ; votre **logo** peut provenir de **Contenu → Fichiers** ou des assets du thème. Utilisez une URL **https**.
+
+## Paiement et comptes clients
+
+Les domaines **checkout** et **compte client** diffèrent de l’hôte vitrine. L’extrait standard **`theme.liquid`** couvre uniquement le thème **Boutique en ligne**. Pour le bandeau sur le checkout ou la nouvelle UI compte client, il faut un **emplacement ou une configuration supplémentaire** là où Shopify autorise les scripts (éventuellement Shopify Plus ou extensions checkout prises en charge) — intégration **distincte**.
+
+## Application Shopify (à venir)
+
+Une **application Shopify** est prévue pour une installation et une configuration plus simple depuis l’admin. Jusqu’à publication, la **modification du thème** est le parcours pris en charge.
+
+## Politique de confidentialité
+
+En implémentant la solution, vous acceptez la [politique de confidentialité du bandeau cookies](https://www.intastellarsolutions.com/about/legal/privacy/cookie-solutions/privacy-policy).
+
+## Voir aussi
+
+- [Premiers pas (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- [Personnaliser](/docs/cookie-banner/javascript/customize)
+- [Accueil documentation](/docs/cookie-banner)

@@ -10,7 +10,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   /**
    * Resolve copy in the loader so the document embeds final strings. Calling `translatePath` only on
    * the client during hydration has produced English fallbacks (e.g. “Account” vs “Konto”) while
-   * `loaderData.locale` was still `"de"`, likely from module graph / chunk boundaries for `de.ts`.
+   * client-side `translatePath` could fall back to English during hydration; embedding strings avoids that.
    */
   return {
     locale,

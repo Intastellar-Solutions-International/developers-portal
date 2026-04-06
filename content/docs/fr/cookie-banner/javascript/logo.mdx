@@ -1,0 +1,22 @@
+---
+title: Ajouter un logo
+description: Afficher votre logo dans le bandeau cookies JavaScript.
+order: 40
+lastUpdated: "2026-04-05"
+---
+
+# Ajouter un logo (JavaScript)
+
+Indiquez une **URL HTTPS absolue** vers votre logo dans `window.INTA.settings.logo` :
+
+```js
+window.INTA = {
+  // ...
+  settings: {
+    // ...
+    logo: "https://yourdomain.com/path/to/logo.png",
+  },
+};
+```
+
+Utilisez un logo carré ou horizontal lisible sur fond clair et foncé, ou ajustez `color` / le style dans [Personnaliser](/docs/cookie-banner/javascript/customize) pour garder un contraste accessible.

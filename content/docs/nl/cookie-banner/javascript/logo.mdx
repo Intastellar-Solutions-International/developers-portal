@@ -1,0 +1,22 @@
+---
+title: Logo toevoegen
+description: Uw logo tonen in de JavaScript-cookiebanner.
+order: 40
+lastUpdated: "2026-04-05"
+---
+
+# Logo toevoegen (JavaScript)
+
+Zet een **absolute HTTPS-URL** naar uw logo in `window.INTA.settings.logo`:
+
+```js
+window.INTA = {
+  // ...
+  settings: {
+    // ...
+    logo: "https://yourdomain.com/path/to/logo.png",
+  },
+};
+```
+
+Gebruik een vierkant of breed logo dat op lichte en donkere achtergronden werkt, of pas `color` / styling aan in [Aanpassen](/docs/cookie-banner/javascript/customize) voor voldoende contrast.

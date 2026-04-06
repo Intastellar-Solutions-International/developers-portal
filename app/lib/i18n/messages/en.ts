@@ -1,4 +1,4 @@
-/** Widen translated leaves to `string` so `de` / `da` can supply different copy. */
+/** Widen translated leaves to `string` so locale files can supply different copy. */
 type DeepStringTree<T> = {
   [K in keyof T]: T[K] extends string
     ? string
@@ -7,7 +7,7 @@ type DeepStringTree<T> = {
       : T[K];
 };
 
-/** English UI strings — structure mirrored in `de.ts` and `da.ts`. */
+/** English UI strings — structure mirrored in `de.ts`, `da.ts`, `fr.ts`, and `nl.ts`. */
 export const en = {
   meta: {
     homeTitle: "inta.dev · Intastellar Developers",
@@ -19,6 +19,8 @@ export const en = {
     en: "English",
     de: "Deutsch",
     da: "Dansk",
+    fr: "Français",
+    nl: "Nederlands",
   },
   nav: {
     docs: "Docs",

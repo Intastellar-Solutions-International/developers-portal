@@ -8,4 +8,16 @@ export default defineConfig({
     tsconfigPaths: true,
     dedupe: ["react", "react-dom"],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          const n = id.replace(/\\/g, "/");
+          if (n.includes("/lib/i18n/messages/") && /\.[cm]?tsx?$/.test(n)) {
+            return "i18n-messages";
+          }
+        },
+      },
+    },
+  },
 });

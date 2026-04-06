@@ -42,7 +42,7 @@ export function unlocalizedDocPath(
 }
 
 /**
- * Canonical doc URL for a locale (English unprefixed, `de`/`da` as `/de/docs/...`).
+ * Canonical doc URL for a locale (English unprefixed; other locales as `/{locale}/docs/...`).
  */
 export function docHref(
   locale: Locale,

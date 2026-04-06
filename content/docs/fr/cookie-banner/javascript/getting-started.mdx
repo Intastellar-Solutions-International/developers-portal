@@ -1,0 +1,49 @@
+---
+title: Premiers pas
+description: Intégrer Intastellar Consents sur votre site via JavaScript.
+order: 10
+lastUpdated: "2026-04-05"
+related:
+  - title: Schéma JSON window.INTA
+    href: /docs/cookie-banner/javascript/inta-schema
+  - title: Personnaliser l’apparence et le comportement
+    href: /docs/cookie-banner/javascript/customize
+---
+
+# Premiers pas (JavaScript)
+
+Insérez l’extrait **juste après** la balise d’ouverture `<head>` sur chaque page (ou une fois dans le layout racine). La même forme de configuration figure sur la page publique [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents) — remplacez les valeurs fictives par vos domaines, identifiants et branding réels.
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://yourdomain.com/privacy-policy",
+    settings: {
+      rootDomain: "yourdomain.com",
+      company: "yourcompany",
+      arrange: "ltr",
+      color: "#000000",
+      logo: "https://yourdomain.com/logo.png",
+      design: "overlay",
+      gtagId: "G-XXXXXXXXXX",
+      requiredCookies: [],
+      keepInLocalStorage: [],
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+Remplacez les valeurs par votre domaine, nom d’entreprise, couleurs, URL du logo et identifiants de mesure.
+
+## URL de la politique de confidentialité
+
+Indiquez une URL de confidentialité joignable. Utilisez `policy_link` et/ou `settings.privacy_policy` sur `window.INTA`. Des URL manquantes ou invalides sont une cause fréquente d’absence de bandeau — voir la [FAQ](/docs/cookie-banner#faq) sur la page d’accueil de la documentation.
+
+## Voir aussi
+
+- [Référence `window.INTA` (schéma JSON)](/docs/cookie-banner/javascript/inta-schema)
+- [Personnaliser](/docs/cookie-banner/javascript/customize)
+- [iFrames](/docs/cookie-banner/javascript/iframes)
+- [Ajouter un logo](/docs/cookie-banner/javascript/logo)
+- [Essayer](/docs/cookie-banner/javascript/try-out)

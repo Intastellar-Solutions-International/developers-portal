@@ -40,7 +40,7 @@ export async function loader(_args: Route.LoaderArgs) {
     getStaticPathnamesFromRoutes(),
     getAllDocPathnamesForSitemap(),
   ]);
-  /** `staticPaths` already includes `/de/…` and `/da/…` from the route tree. */
+  /** `staticPaths` includes localized prefixes from the route tree. */
   const localizedDocs = expandPathnamesForAllLocales(docPathsUnloc);
   const pathnames = uniqueSortedPaths([...staticPaths, ...localizedDocs]);
   const urls = pathnames.map((p) => escapeXml(absoluteUrl(p)));

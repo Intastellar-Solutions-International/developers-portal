@@ -1,0 +1,24 @@
+---
+title: Aanpassen
+description: Kleuren, lay-out, tekstrichting en branding voor de JavaScript-banner.
+order: 20
+lastUpdated: "2026-04-05"
+---
+
+# Aanpassen
+
+De JavaScript-banner leest de configuratie uit `window.INTA` voordat `uc.js` draait. Zie de volledige [**JSON-schema-referentie**](/docs/cookie-banner/javascript/inta-schema). Veelgebruikte `settings`-velden (zie [Aan de slag](/docs/cookie-banner/javascript/getting-started)):
+
+| Veld | Doel |
+| --- | --- |
+| `rootDomain` | Rootdomein van uw site |
+| `company` | Weergavenaam van uw organisatie |
+| `arrange` | Lay-outrichting, bijv. `ltr` |
+| `color` | Primaire UI-kleur (hex) |
+| `logo` | Absolute URL naar het logo |
+| `design` | Bannerweergave, bijv. `overlay` |
+| `gtagId` | Google Tag / GA4-meet-ID indien van toepassing |
+| `requiredCookies` | Als strikt noodzakelijk behandelde cookies |
+| `keepInLocalStorage` | Te behouden localStorage-sleutels |
+
+Vul velden aan of pas ze aan volgens de documentatie voor uw account. Voor een volledig eigen UI houdt u het script en past u de gedocumenteerde **CSS-klassen** toe op uw markup (zie de FAQ op de [documentatie-startpagina](/docs/cookie-banner#faq)).

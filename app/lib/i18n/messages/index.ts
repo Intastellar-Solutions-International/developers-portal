@@ -2,8 +2,10 @@ import type { Locale } from "~/lib/i18n/locale";
 import { da } from "./da";
 import { de } from "./de";
 import { en, type MessageTree } from "./en";
+import { fr } from "./fr";
+import { nl } from "./nl";
 
-const trees: Record<Locale, MessageTree> = { en, de, da };
+const trees: Record<Locale, MessageTree> = { en, de, da, fr, nl };
 
 function getLeaf(obj: unknown, path: string): string | undefined {
   const parts = path.split(".");

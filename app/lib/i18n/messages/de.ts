@@ -11,6 +11,8 @@ export const de: MessageTree = {
     en: "English",
     de: "Deutsch",
     da: "Dansk",
+    fr: "Français",
+    nl: "Nederlands",
   },
   nav: {
     docs: "Dokumentation",

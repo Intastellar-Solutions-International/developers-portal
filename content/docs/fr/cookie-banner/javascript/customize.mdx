@@ -1,0 +1,24 @@
+---
+title: Personnaliser
+description: Couleurs, mise en page, direction du texte et image de marque du bandeau JavaScript.
+order: 20
+lastUpdated: "2026-04-05"
+---
+
+# Personnaliser
+
+Le bandeau JavaScript lit la configuration dans `window.INTA` avant l’exécution de `uc.js`. Voir la [**référence du schéma JSON**](/docs/cookie-banner/javascript/inta-schema). Champs `settings` courants (voir [Premiers pas](/docs/cookie-banner/javascript/getting-started)) :
+
+| Champ | Rôle |
+| --- | --- |
+| `rootDomain` | Domaine racine du site |
+| `company` | Nom affiché de l’organisation |
+| `arrange` | Direction de mise en page, ex. `ltr` |
+| `color` | Couleur principale de l’UI (hex) |
+| `logo` | URL absolue du logo |
+| `design` | Présentation du bandeau, ex. `overlay` |
+| `gtagId` | ID de mesure Google Tag / GA4 si applicable |
+| `requiredCookies` | Cookies traités comme strictement nécessaires |
+| `keepInLocalStorage` | Clés localStorage à conserver |
+
+Complétez ou adaptez les champs selon la documentation de votre compte. Pour une UI entièrement maison, gardez le script et appliquez les **classes CSS** documentées à votre balisage (voir la FAQ sur la [page d’accueil de la documentation](/docs/cookie-banner#faq)).

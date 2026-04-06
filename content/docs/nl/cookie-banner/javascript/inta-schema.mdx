@@ -1,0 +1,60 @@
+---
+title: INTA-referentie
+description: JSON-schema voor het configuratieobject `window.INTA` (JavaScript-integratie).
+order: 15
+lastUpdated: "2026-04-05"
+---
+
+# `window.INTA` (JSON-schema)
+
+`window.INTA` is het globale **JavaScript-object** dat Intastellar Consents inleest vóór `uc.js` draait. Definieer het in een inline-`<script>` in `<head>`, laad daarna het CDN-script (zie [Aan de slag](/docs/cookie-banner/javascript/getting-started)).
+
+## Machineleesbaar schema
+
+- **JSON-schema-bestand:** [`/schemas/window-inta.json`](/schemas/window-inta.json)  
+- **`$id`:** `https://inta.dev/schemas/window-inta.json`
+
+Gebruik het met editors, validators of codegen-tools die JSON Schema Draft 2020-12 ondersteunen.
+
+## Structuur (beknopt)
+
+| Pad | Type | Opmerkingen |
+| --- | --- | --- |
+| `policy_link` | string (URI) | URL privacybeleid |
+| `settings` | object | Banner-UI en gedrag |
+| `settings.rootDomain` | string | Rootdomein |
+| `settings.company` | string | Weergavenaam |
+| `settings.arrange` | `"ltr"` \| `"rtl"` | Tekstrichting |
+| `settings.color` | string | Primaire kleur (bijv. hex) |
+| `settings.logo` | string (URI) | Logo-URL |
+| `settings.design` | string | bijv. `overlay` |
+| `settings.gtagId` | string | Google / GA4-ID indien van toepassing |
+| `settings.privacy_policy` | string (URI) | Privacy-URL (vaak nodig om de banner te tonen) |
+| `settings.requiredCookies` | string[] | Strikt noodzakelijke cookies |
+| `settings.keepInLocalStorage` | string[] | Te behouden localStorage-sleutels |
+
+Het schema zet `additionalProperties: true` op root en `settings`, zodat **extra sleutels** die uw account of versie verwacht nog steeds geldig zijn — valideer in uw pipeline als u een gesloten schema nodig hebt.
+
+## Voorbeeld
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://example.com/privacy",
+    settings: {
+      rootDomain: "example.com",
+      company: "Example ApS",
+      arrange: "ltr",
+      color: "#111827",
+      logo: "https://example.com/logo.svg",
+      design: "overlay",
+      gtagId: "G-XXXXXXXXXX",
+      requiredCookies: [],
+      keepInLocalStorage: [],
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+Voor veldsemantiek buiten deze referentie: [Aanpassen](/docs/cookie-banner/javascript/customize) en de [documentatie-startpagina](/docs/cookie-banner).

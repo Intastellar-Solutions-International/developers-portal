@@ -1,4 +1,4 @@
-export const SUPPORTED_LOCALES = ["en", "de", "da"] as const;
+export const SUPPORTED_LOCALES = ["en", "de", "da", "fr", "nl"] as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -9,12 +9,16 @@ export const LOCALE_FLAG_EMOJI: Record<Locale, string> = {
   en: "🇬🇧",
   de: "🇩🇪",
   da: "🇩🇰",
+  fr: "🇫🇷",
+  nl: "🇳🇱",
 };
 
 export function isLocale(value: string | undefined | null): value is Locale {
   return (
     value === "en" ||
     value === "de" ||
-    value === "da"
+    value === "da" ||
+    value === "fr" ||
+    value === "nl"
   );
 }

@@ -1,0 +1,16 @@
+---
+title: Google Tag Manager
+description: Charger Intastellar Consents via Google Tag Manager.
+order: 60
+lastUpdated: "2026-04-05"
+---
+
+# Google Tag Manager
+
+Utilisez GTM pour intégrer le même amorçage que vous mettriez manuellement dans le HTML.
+
+1. Créez une balise **HTML personnalisé** avec le bloc `window.INTA` et le script `uc.js` de [Premiers pas (JavaScript)](/docs/cookie-banner/javascript/getting-started).
+2. Déclenchez-la sur **Consent Initialization – All pages** (ou l’équivalent de votre conteneur) pour que le bandeau charge avant analytics et pubs.
+3. Autres balises avec des déclencheurs qui ne s’exécutent **qu’après** l’état de consentement d’Intastellar Consents — ne pas « courir » contre le bandeau.
+
+[← Accueil documentation](/docs/cookie-banner)
