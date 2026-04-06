@@ -364,6 +364,8 @@ export const de: MessageTree = {
     badgePlaceholder: "Verfügbarkeit",
     badgeCollecting: "Geplante Prüfungen werden erfasst…",
     badgeLink: "Systemstatus →",
+    badgeLogoAlt: "Intastellar Consents",
+    badgePoweredBy: "Bereitgestellt von inta.dev",
     uptimeJsonWidgetDescription:
       "In den letzten {{totalRuns}} geplanten Läufen waren {{passedRuns}} vollständig erfolgreich (alle Dienste normal).",
     uptimeJsonNoHistoryDescription:
@@ -371,7 +373,7 @@ export const de: MessageTree = {
     embedBadgeButton: "Badge einbinden",
     embedModalTitle: "Verfügbarkeits-Badge einbinden",
     embedModalIntro:
-      "Kopieren Sie ein iframe-Snippet oder die JSON-API-URL. Die Sprache entspricht dieser Seite; ?locale= in der URL anpassen (en, de, da, fr, nl).",
+      "Kopieren Sie ein iframe-Snippet oder die JSON-API-URL. Sprache: ?locale= (en, de, da, fr, nl). Erscheinungsbild: ?theme=light oder ?theme=dark für festes Hell-/Dunkelschema — ohne theme (oder theme=auto) folgt das Badge der Systemeinstellung des Besuchers.",
     embedIframeHeading: "iframe-Einbindung",
     embedIframeTitle: "Verfügbarkeits-Badge",
     embedJsonHeading: "JSON-API",

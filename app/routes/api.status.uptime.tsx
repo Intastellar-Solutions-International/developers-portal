@@ -13,7 +13,8 @@ import {
  *
  * Language for `widgetTitle`, `widgetDescription`, and URL fields: `?locale=de|da|fr|nl|en`
  * or `Accept-Language`; defaults to English. `badgeEmbedUrl` includes `?locale=` so iframe
- * badges stay aligned with the JSON locale.
+ * badges stay aligned with the JSON locale. Add `&theme=light` or `&theme=dark` on the badge
+ * URL to pin styling; omit for `prefers-color-scheme` (auto).
  */
 export async function loader({ request }: Route.LoaderArgs) {
   const locale = resolveLocaleForApiRequest(request);

@@ -1,14 +1,13 @@
+import type { StatusPageCopy } from "~/lib/status-page-copy.server";
 import type { StatusIncident } from "~/lib/status-history.server";
-import { useI18n } from "~/providers/i18n-provider";
 
 type Props = {
   incidents: StatusIncident[];
   targetNames: Record<string, string>;
+  copy: StatusPageCopy;
 };
 
-export function StatusIncidentLog({ incidents, targetNames }: Props) {
-  const { t } = useI18n();
-
+export function StatusIncidentLog({ incidents, targetNames, copy }: Props) {
   if (incidents.length === 0) {
     return (
       <section className="mt-10" aria-labelledby="status-incidents-heading">
@@ -16,10 +15,10 @@ export function StatusIncidentLog({ incidents, targetNames }: Props) {
           id="status-incidents-heading"
           className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
         >
-          {t("status.incidentHeading")}
+          {copy.incidentHeading}
         </h2>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          {t("status.incidentEmptyBody")}
+          {copy.incidentEmptyBody}
         </p>
       </section>
     );
@@ -31,10 +30,10 @@ export function StatusIncidentLog({ incidents, targetNames }: Props) {
         id="status-incidents-heading"
         className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
       >
-        {t("status.incidentHeading")}
+        {copy.incidentHeading}
       </h2>
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-        {t("status.incidentListIntro")}
+        {copy.incidentListIntro}
       </p>
       <ul className="mt-4 divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
         {incidents.map((ev) => (
@@ -47,7 +46,7 @@ export function StatusIncidentLog({ incidents, targetNames }: Props) {
                 {ev.checkedAtLabel}
               </time>
               <span className="text-xs font-medium uppercase tracking-wide text-red-600 dark:text-red-400">
-                {t("status.degraded")}
+                {copy.degraded}
               </span>
             </div>
             <ul className="mt-3 space-y-3 text-sm">

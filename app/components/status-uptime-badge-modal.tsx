@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from "react";
 
-import { useI18n } from "~/providers/i18n-provider";
+import type { StatusPageCopy } from "~/lib/status-page-copy.server";
+import type { Locale } from "~/lib/i18n/locale";
 
 function escapeHtmlAttr(s: string): string {
   return s
@@ -12,11 +13,14 @@ function escapeHtmlAttr(s: string): string {
 export function StatusUptimeBadgeModal({
   open,
   onClose,
+  copy,
+  locale,
 }: {
   open: boolean;
   onClose: () => void;
+  copy: StatusPageCopy;
+  locale: Locale;
 }) {
-  const { t, locale } = useI18n();
   const titleId = useId();
   const descId = useId();
   const [copied, setCopied] = useState<"iframe" | "json" | null>(null);
@@ -53,14 +57,14 @@ export function StatusUptimeBadgeModal({
     typeof window !== "undefined" ? window.location.origin : "";
   const badgeUrl = `${origin}/api/status/uptime/badge?locale=${locale}`;
   const jsonUrl = `${origin}/api/status/uptime?locale=${locale}`;
-  const iframeTitleEscaped = escapeHtmlAttr(t("status.embedIframeTitle"));
+  const iframeTitleEscaped = escapeHtmlAttr(copy.embedIframeTitle);
   const iframeSnippet =
     origin.length > 0
       ? `<iframe
   src="${badgeUrl}"
   title="${iframeTitleEscaped}"
   width="280"
-  height="112"
+  height="168"
   style="border:0;border-radius:10px;max-width:100%"
   loading="lazy"
 ></iframe>`
@@ -94,27 +98,27 @@ export function StatusUptimeBadgeModal({
             id={titleId}
             className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
           >
-            {t("status.embedModalTitle")}
+            {copy.embedModalTitle}
           </h2>
           <button
             type="button"
             onClick={onClose}
             className="shrink-0 rounded-md px-2 py-1 text-sm font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
           >
-            {t("status.embedModalClose")}
+            {copy.embedModalClose}
           </button>
         </div>
         <p
           id={descId}
           className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400"
         >
-          {t("status.embedModalIntro")}
+          {copy.embedModalIntro}
         </p>
 
         <section className="mt-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-              {t("status.embedIframeHeading")}
+              {copy.embedIframeHeading}
             </h3>
             <button
               type="button"
@@ -122,14 +126,12 @@ export function StatusUptimeBadgeModal({
               onClick={() => copyText(iframeSnippet, "iframe")}
               className="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
             >
-              {copied === "iframe"
-                ? t("status.embedCopied")
-                : t("status.embedCopy")}
+              {copied === "iframe" ? copy.embedCopied : copy.embedCopy}
             </button>
           </div>
           <pre className="mt-2 overflow-x-auto rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-[0.7rem] leading-relaxed text-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200">
             <code>
-              {iframeSnippet || t("status.embedOpenOnSite")}
+              {iframeSnippet || copy.embedOpenOnSite}
             </code>
           </pre>
         </section>
@@ -137,7 +139,7 @@ export function StatusUptimeBadgeModal({
         <section className="mt-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-              {t("status.embedJsonHeading")}
+              {copy.embedJsonHeading}
             </h3>
             <button
               type="button"
@@ -145,16 +147,14 @@ export function StatusUptimeBadgeModal({
               onClick={() => copyText(jsonUrl, "json")}
               className="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
             >
-              {copied === "json"
-                ? t("status.embedCopied")
-                : t("status.embedCopy")}
+              {copied === "json" ? copy.embedCopied : copy.embedCopy}
             </button>
           </div>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            {t("status.embedJsonHint")}
+            {copy.embedJsonHint}
           </p>
           <pre className="mt-2 overflow-x-auto rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-[0.7rem] leading-relaxed text-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200">
-            <code>{origin ? jsonUrl : t("status.embedOpenOnSite")}</code>
+            <code>{origin ? jsonUrl : copy.embedOpenOnSite}</code>
           </pre>
         </section>
       </div>

@@ -369,6 +369,8 @@ export const en = {
     badgePlaceholder: "Uptime",
     badgeCollecting: "Collecting scheduled checks…",
     badgeLink: "System status →",
+    badgeLogoAlt: "Intastellar Consents",
+    badgePoweredBy: "Powered by inta.dev",
     uptimeJsonWidgetDescription:
       "In the last {{totalRuns}} scheduled runs, {{passedRuns}} finished with every service responding normally.",
     uptimeJsonNoHistoryDescription:
@@ -376,7 +378,7 @@ export const en = {
     embedBadgeButton: "Embed badge",
     embedModalTitle: "Embed uptime badge",
     embedModalIntro:
-      "Copy an iframe snippet or the JSON API URL. Language matches this page; you can change ?locale= in the URL (en, de, da, fr, nl).",
+      "Copy an iframe snippet or the JSON API URL. Language matches this page; change ?locale= (en, de, da, fr, nl) or add ?theme=light / ?theme=dark to pin light or dark styling — omit theme (or use theme=auto) to follow the visitor’s system setting.",
     embedIframeHeading: "iframe embed",
     embedIframeTitle: "Uptime badge",
     embedJsonHeading: "JSON API",

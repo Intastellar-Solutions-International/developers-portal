@@ -1,16 +1,17 @@
+import { interpolate } from "~/lib/i18n/messages";
+import type { StatusPageCopy } from "~/lib/status-page-copy.server";
 import type { StatusTimelinePoint } from "~/lib/status-history.server";
-import { useI18n } from "~/providers/i18n-provider";
 
 type Props = {
   points: StatusTimelinePoint[];
   label: string;
+  copy: StatusPageCopy;
 };
 
 /**
  * Sparkline of `latencyMs` across stored cron runs (oldest left). Ignores points without latency.
  */
-export function StatusLatencyTrend({ points, label }: Props) {
-  const { t } = useI18n();
+export function StatusLatencyTrend({ points, label, copy }: Props) {
   const withLatency = points.filter(
     (p): p is StatusTimelinePoint & { latencyMs: number } =>
       typeof p.latencyMs === "number" && Number.isFinite(p.latencyMs),
@@ -19,7 +20,7 @@ export function StatusLatencyTrend({ points, label }: Props) {
   if (withLatency.length < 2) {
     return (
       <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-        {t("status.latencyNeedsTwoRuns")}
+        {copy.latencyNeedsTwoRuns}
       </p>
     );
   }
@@ -45,7 +46,7 @@ export function StatusLatencyTrend({ points, label }: Props) {
   return (
     <div className="mt-3">
       <p className="mb-1 text-[0.65rem] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-        {t("status.latencyResponseTime", { label })}
+        {interpolate(copy.latencyResponseTime, { label })}
       </p>
       <div className="flex max-w-md flex-wrap items-end gap-3">
         <svg
@@ -54,7 +55,7 @@ export function StatusLatencyTrend({ points, label }: Props) {
           height={h}
           viewBox={`0 0 ${w} ${h}`}
           role="img"
-          aria-label={t("status.latencyAriaTrend", {
+          aria-label={interpolate(copy.latencyAriaTrend, {
             label,
             min,
             max,
@@ -81,19 +82,19 @@ export function StatusLatencyTrend({ points, label }: Props) {
         <div className="text-[0.7rem] leading-tight text-zinc-500 dark:text-zinc-400">
           <div>
             <span className="text-zinc-400 dark:text-zinc-500">
-              {t("status.latencyMin")}{" "}
+              {copy.latencyMin}{" "}
             </span>
             {min} ms
           </div>
           <div>
             <span className="text-zinc-400 dark:text-zinc-500">
-              {t("status.latencyMax")}{" "}
+              {copy.latencyMax}{" "}
             </span>
             {max} ms
           </div>
           <div>
             <span className="text-zinc-400 dark:text-zinc-500">
-              {t("status.latencyLatest")}{" "}
+              {copy.latencyLatest}{" "}
             </span>
             {withLatency[withLatency.length - 1]!.latencyMs} ms
           </div>

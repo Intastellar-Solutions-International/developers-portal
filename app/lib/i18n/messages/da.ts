@@ -359,6 +359,8 @@ export const da: MessageTree = {
     badgePlaceholder: "Oppetid",
     badgeCollecting: "Indsamler planlagte tjek…",
     badgeLink: "Systemstatus →",
+    badgeLogoAlt: "Intastellar Consents",
+    badgePoweredBy: "Leveret af inta.dev",
     uptimeJsonWidgetDescription:
       "Af de seneste {{totalRuns}} planlagte kørsler var {{passedRuns}} fuldt succesfulde (alle tjenester svarede normalt).",
     uptimeJsonNoHistoryDescription:
@@ -366,7 +368,7 @@ export const da: MessageTree = {
     embedBadgeButton: "Indlejr badge",
     embedModalTitle: "Indlejr oppetids-badge",
     embedModalIntro:
-      "Kopiér et iframe-uddrag eller JSON-API-URL. Sprog følger denne side; skift ?locale= i URL’en (en, de, da, fr, nl).",
+      "Kopiér et iframe-uddrag eller JSON-API-URL. Sprog: ?locale= (en, de, da, fr, nl). Udseende: ?theme=light eller ?theme=dark for fast lys/mørk — uden theme (eller theme=auto) følger badge besøgerens systemindstilling.",
     embedIframeHeading: "iframe-indlejring",
     embedIframeTitle: "Oppetids-badge",
     embedJsonHeading: "JSON-API",

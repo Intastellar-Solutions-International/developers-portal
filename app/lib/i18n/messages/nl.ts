@@ -360,6 +360,8 @@ export const nl: MessageTree = {
     badgePlaceholder: "Beschikbaarheid",
     badgeCollecting: "Geplande controles verzamelen…",
     badgeLink: "Systeemstatus →",
+    badgeLogoAlt: "Intastellar Consents",
+    badgePoweredBy: "Mogelijk gemaakt door inta.dev",
     uptimeJsonWidgetDescription:
       "Van de laatste {{totalRuns}} geplande runs waren {{passedRuns}} volledig succesvol (alle services reageerden normaal).",
     uptimeJsonNoHistoryDescription:
@@ -367,7 +369,7 @@ export const nl: MessageTree = {
     embedBadgeButton: "Badge insluiten",
     embedModalTitle: "Uptime-badge insluiten",
     embedModalIntro:
-      "Kopieer een iframe-fragment of de JSON-API-URL. Taal volgt deze pagina; pas ?locale= in de URL aan (en, de, da, fr, nl).",
+      "Kopieer een iframe-fragment of de JSON-API-URL. Taal: ?locale= (en, de, da, fr, nl). Thema: ?theme=light of ?theme=dark voor vast licht of donker — zonder theme (of theme=auto) volgt de badge de systeeminstelling van de bezoeker.",
     embedIframeHeading: "iframe-insluiting",
     embedIframeTitle: "Uptime-badge",
     embedJsonHeading: "JSON-API",

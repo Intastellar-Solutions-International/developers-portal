@@ -360,6 +360,8 @@ export const fr: MessageTree = {
     badgePlaceholder: "Disponibilité",
     badgeCollecting: "Collecte des vérifications planifiées…",
     badgeLink: "État du système →",
+    badgeLogoAlt: "Intastellar Consents",
+    badgePoweredBy: "Propulsé par inta.dev",
     uptimeJsonWidgetDescription:
       "Sur les {{totalRuns}} dernières exécutions planifiées, {{passedRuns}} se sont terminées sans incident (tous les services ont répondu normalement).",
     uptimeJsonNoHistoryDescription:
@@ -367,7 +369,7 @@ export const fr: MessageTree = {
     embedBadgeButton: "Intégrer le badge",
     embedModalTitle: "Intégrer le badge de disponibilité",
     embedModalIntro:
-      "Copiez un extrait iframe ou l’URL de l’API JSON. La langue suit cette page ; modifiez ?locale= dans l’URL (en, de, da, fr, nl).",
+      "Copiez un extrait iframe ou l’URL de l’API JSON. Langue : ?locale= (en, de, da, fr, nl). Apparence : ?theme=light ou ?theme=dark pour forcer clair ou sombre — sans theme (ou theme=auto), le badge suit le réglage système du visiteur.",
     embedIframeHeading: "Intégration iframe",
     embedIframeTitle: "Badge de disponibilité",
     embedJsonHeading: "API JSON",
