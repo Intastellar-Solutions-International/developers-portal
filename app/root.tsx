@@ -237,7 +237,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <>
       <div className="flex min-h-dvh flex-col">
         <SiteHeader onOpenSearch={openSearch} />
-        <main className="flex-1 pt-[3.75rem]">{children}</main>
+        <main className="flex-1 pt-27">{children}</main>
         <SiteFooter />
       </div>
       <SearchOverlay
