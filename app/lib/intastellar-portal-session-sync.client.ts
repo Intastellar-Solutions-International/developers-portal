@@ -1,20 +1,11 @@
 /**
- * Client-only helpers — do not import from server modules.
- * POST the Intastellar bearer token so the server can mint `inta_portal_sess`
- * (works when `inta_acc` is not sent on requests due to cookie Domain quirks).
+ * Client-only — do not import from server modules.
+ * Session minting uses `useFetcher().submit` to `/auth/session` (React Router
+ * single-fetch / `.data`); a raw `fetch("/auth/session")` does not get the same
+ * response handling and `Set-Cookie` may never stick in dev.
  */
-export async function syncIntastellarPortalSession(token: string): Promise<boolean> {
-  const t = token.trim();
-  if (!t || t.length > 16_000) return false;
-  const res = await fetch("/auth/session", {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token: t }),
-  });
-  return res.ok;
-}
 
+/** SDK `inta_acc` is not HttpOnly, so it is visible on `document.cookie`. */
 export function readIntaAccFromDocument(): string | null {
   if (typeof document === "undefined") return null;
   const m = document.cookie.match(/(?:^|;\s*)inta_acc=([^;]*)/i);

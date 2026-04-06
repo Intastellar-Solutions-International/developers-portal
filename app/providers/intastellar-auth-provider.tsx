@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  useFetcher,
   useMatches,
   useRevalidator,
   useRouteLoaderData,
@@ -23,10 +24,7 @@ import {
   type IntastellarAuthContextValue,
 } from "~/lib/intastellar-auth-context";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
-import {
-  readIntaAccFromDocument,
-  syncIntastellarPortalSession,
-} from "~/lib/intastellar-portal-session-sync.client";
+import { readIntaAccFromDocument } from "~/lib/intastellar-portal-session-sync.client";
 import { clearIntastellarBrowserSession } from "~/lib/intastellar-session";
 
 export type { IntastellarAuthContextValue } from "~/lib/intastellar-auth-context";
@@ -109,15 +107,28 @@ function IntastellarAuthEnabled({
   rootData: RootLoaderData | undefined;
 }) {
   const revalidator = useRevalidator();
+  const sessionFetcher = useFetcher();
 
   const { clientId, appName } = getIntastellarClientConfig()!;
 
+  const submitPortalSessionToken = useCallback(
+    async (token: string) => {
+      const t = token.trim();
+      if (!t || t.length > 16_000) return;
+      await sessionFetcher.submit(
+        { token: t },
+        { method: "post", action: "/auth/session", encType: "application/json" },
+      );
+    },
+    [sessionFetcher.submit],
+  );
+
   const onIntastellarSignedIn = useCallback(
     async (account: IntastellarAccount) => {
-      await syncIntastellarPortalSession(account.token);
+      await submitPortalSessionToken(account.token);
       revalidator.revalidate();
     },
-    [revalidator.revalidate],
+    [submitPortalSessionToken, revalidator.revalidate],
   );
 
   const config = useMemo(
@@ -179,7 +190,7 @@ function IntastellarAuthEnabled({
       portalSyncAttempts.current += 1;
       void (async () => {
         const token = readIntaAccFromDocument();
-        if (token) await syncIntastellarPortalSession(token);
+        if (token) await submitPortalSessionToken(token);
         revalidator.revalidate();
       })();
     }
@@ -190,6 +201,7 @@ function IntastellarAuthEnabled({
     users.length,
     revalidator.state,
     revalidator.revalidate,
+    submitPortalSessionToken,
   ]);
 
   const signinWrapped = useCallback(
