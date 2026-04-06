@@ -5,15 +5,14 @@ import {
 } from "~/lib/format-datetime";
 import { getCollection } from "~/lib/mongodb.server";
 import { STATUS_MANUAL_INCIDENTS_COLLECTION } from "~/lib/mongodb-schema.server";
+import {
+  MANUAL_INCIDENT_SEVERITIES,
+  type ManualIncidentPublic,
+  type ManualIncidentSeverity,
+} from "~/lib/status-manual-incidents";
 
-export const MANUAL_INCIDENT_SEVERITIES = [
-  "investigating",
-  "identified",
-  "monitoring",
-  "resolved",
-] as const;
-
-export type ManualIncidentSeverity = (typeof MANUAL_INCIDENT_SEVERITIES)[number];
+export type { ManualIncidentPublic, ManualIncidentSeverity };
+export { MANUAL_INCIDENT_SEVERITIES };
 
 export type ManualIncidentRow = {
   _id: ObjectId;
@@ -24,18 +23,6 @@ export type ManualIncidentRow = {
   updatedAt: Date;
   authorEmail: string;
   resolvedAt: Date | null;
-};
-
-export type ManualIncidentPublic = {
-  id: string;
-  title: string;
-  body: string;
-  severity: ManualIncidentSeverity;
-  createdAt: string;
-  createdAtLabel: string;
-  authorEmail: string;
-  resolvedAt: string | null;
-  resolvedAtLabel: string | null;
 };
 
 function rowToPublic(row: ManualIncidentRow): ManualIncidentPublic {

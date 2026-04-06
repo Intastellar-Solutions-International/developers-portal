@@ -1,4 +1,4 @@
-import type { ManualIncidentPublic } from "~/lib/status-manual-incidents.server";
+import type { ManualIncidentPublic } from "~/lib/status-manual-incidents";
 import type { StatusPageCopy } from "~/lib/status-page-copy";
 import { interpolate } from "~/lib/i18n/messages";
 

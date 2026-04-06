@@ -9,6 +9,8 @@ import {
 import {
   MANUAL_INCIDENT_SEVERITIES,
   type ManualIncidentSeverity,
+} from "~/lib/status-manual-incidents";
+import {
   deleteManualIncidentById,
   insertManualIncident,
   listManualIncidentsForAdmin,
