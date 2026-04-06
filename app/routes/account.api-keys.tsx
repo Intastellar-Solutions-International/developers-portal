@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   data,
   Form,
@@ -10,10 +10,12 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/account.api-keys";
+import { copyToClipboard } from "~/lib/copy-to-clipboard";
 import {
   createApiKey,
   listApiKeysForUser,
   revokeApiKey,
+  updateApiKeySignInMetadata,
 } from "~/lib/api-keys.server";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
 import { isMongoConfigured } from "~/lib/mongodb.server";
@@ -48,7 +50,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   const { account, setCookieHeaders } =
     await resolvePortalSessionForRequest(request);
 
-  console.log("account", account);
   const user = publicAccountToResolved(account);
   const keys =
     user && mongoConfigured
@@ -114,7 +115,12 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (intent === "create") {
     const label = String(form.get("label") ?? "");
-    const result = await createApiKey(user.accountId, user.email, label);
+    const signInDomain = String(form.get("signInDomain") ?? "");
+    const signInLogoUrl = String(form.get("signInLogoUrl") ?? "");
+    const result = await createApiKey(user.accountId, user.email, label, {
+      signInDomain,
+      signInLogoUrl,
+    });
     if (!result.ok) {
       return actionResponse({ ok: false, error: result.error }, setCookieHeaders);
     }
@@ -122,6 +128,23 @@ export async function action({ request }: Route.ActionArgs) {
       { ok: true, plaintextKey: result.plaintextKey },
       setCookieHeaders,
     );
+  }
+
+  if (intent === "update_sign_in") {
+    const keyId = String(form.get("keyId") ?? "");
+    const signInDomain = String(form.get("signInDomain") ?? "");
+    const signInLogoUrl = String(form.get("signInLogoUrl") ?? "");
+    const result = await updateApiKeySignInMetadata(
+      user.accountId,
+      user.email,
+      keyId,
+      signInDomain,
+      signInLogoUrl,
+    );
+    if (!result.ok) {
+      return actionResponse({ ok: false, error: result.error }, setCookieHeaders);
+    }
+    return actionResponse({ ok: true }, setCookieHeaders);
   }
 
   return actionResponse({ ok: false, error: "Unknown action." }, setCookieHeaders);
@@ -146,6 +169,55 @@ const btnPrimaryClass =
   "rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:opacity-60";
 const btnDangerClass =
   "rounded-lg border border-red-300 px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-60 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40";
+const btnSecondaryClass =
+  "rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800";
+
+const inputClass =
+  "mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100";
+
+function KeyLogoThumb({ url }: { url: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return <span className="text-xs text-zinc-400">Unloaded</span>;
+  }
+  return (
+    <img
+      src={url}
+      alt=""
+      className="h-8 max-w-[6rem] object-contain object-left"
+      referrerPolicy="no-referrer"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+/** Session-only: full secret is not stored server-side; this lets users copy again until dismiss. */
+const REVEALED_KEY_STORAGE = "inta_portal_last_plain_api_key";
+
+function CopyApiKeyButton({ secret }: { secret: string }) {
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+
+  return (
+    <button
+      type="button"
+      className={btnSecondaryClass}
+      onClick={() => {
+        void (async () => {
+          const ok = await copyToClipboard(secret);
+          setState(ok ? "copied" : "failed");
+          window.setTimeout(() => setState("idle"), ok ? 2000 : 2500);
+        })();
+      }}
+    >
+      {state === "copied"
+        ? "Copied"
+        : state === "failed"
+          ? "Copy failed"
+          : "Copy key"}
+    </button>
+  );
+}
 
 export default function AccountApiKeys() {
   const {
@@ -160,6 +232,9 @@ export default function AccountApiKeys() {
   const revalidator = useRevalidator();
   const sessionSyncRef = useRef(0);
   const [sessionHardFail, setSessionHardFail] = useState(false);
+  /** Plaintext only exists right after create; kept in memory + sessionStorage until dismiss. */
+  const [revealedKey, setRevealedKey] = useState<string | null>(null);
+  const [editingKeyId, setEditingKeyId] = useState<string | null>(null);
   const {
     authReady,
     configured: clientConfigured,
@@ -171,6 +246,32 @@ export default function AccountApiKeys() {
     clientConfigured &&
     clientSignedIn &&
     !signedInOnServer;
+
+  useEffect(() => {
+    try {
+      const s = sessionStorage.getItem(REVEALED_KEY_STORAGE);
+      if (s) setRevealedKey(s);
+    } catch {
+      /* private mode */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (actionData?.ok === true && actionData.plaintextKey) {
+      setRevealedKey(actionData.plaintextKey);
+      try {
+        sessionStorage.setItem(REVEALED_KEY_STORAGE, actionData.plaintextKey);
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [actionData]);
+
+  useEffect(() => {
+    if (actionData?.ok !== true) return;
+    if ("plaintextKey" in actionData && actionData.plaintextKey) return;
+    setEditingKeyId(null);
+  }, [actionData]);
 
   useEffect(() => {
     if (!sessionUiMismatch) {
@@ -302,42 +403,117 @@ export default function AccountApiKeys() {
             </p>
           ) : null}
 
-          {actionData?.ok === true && actionData.plaintextKey ? (
+          {revealedKey ? (
             <div
               className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/50 dark:text-amber-50"
               role="status"
             >
-              <p className="font-medium">Copy this key now — it won’t be shown again.</p>
-              <pre className="mt-2 overflow-x-auto rounded bg-white/80 px-3 py-2 font-mono text-xs text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-                {actionData.plaintextKey}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <p className="font-medium sm:pt-0.5">
+                  Your new secret key — we only store a hash. Use{" "}
+                  <span className="whitespace-nowrap">Copy key</span> anytime; dismiss
+                  when you’re done (this tab won’t show it again after that).
+                </p>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <CopyApiKeyButton secret={revealedKey} />
+                  <button
+                    type="button"
+                    className={`${btnSecondaryClass} text-zinc-600 dark:text-zinc-300`}
+                    onClick={() => {
+                      setRevealedKey(null);
+                      try {
+                        sessionStorage.removeItem(REVEALED_KEY_STORAGE);
+                      } catch {
+                        /* ignore */
+                      }
+                    }}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+              <pre className="mt-3 overflow-x-auto rounded bg-white/80 px-3 py-2 font-mono text-xs text-zinc-900 select-all dark:bg-zinc-950 dark:text-zinc-100">
+                {revealedKey}
               </pre>
             </div>
           ) : null}
 
           {canUseKeys ? (
-            <Form method="post" className="flex flex-col gap-3 sm:flex-row sm:items-end">
-              <input type="hidden" name="intent" value="create" />
-              <div className="min-w-0 flex-1">
-                <label
-                  htmlFor="key-label"
-                  className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
-                >
-                  Label
-                </label>
-                <input
-                  id="key-label"
-                  name="label"
-                  type="text"
-                  required
-                  maxLength={120}
-                  placeholder="e.g. Production website"
-                  className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
-                />
-              </div>
-              <button type="submit" disabled={busy} className={btnPrimaryClass}>
-                {busy ? "…" : "Create key"}
-              </button>
-            </Form>
+            <div className="space-y-3">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                Optional <strong className="font-medium">Sign-in domain</strong> and{" "}
+                <strong className="font-medium">logo URL</strong> are used with Intastellar
+                Sign-In (hostname we store; logo must be{" "}
+                <code className="rounded bg-zinc-100 px-1 text-[0.7rem] dark:bg-zinc-900">
+                  https://
+                </code>
+                ).
+              </p>
+              <Form method="post" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <input type="hidden" name="intent" value="create" />
+                <div className="min-w-0 sm:col-span-2 lg:col-span-1">
+                  <label
+                    htmlFor="key-label"
+                    className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                  >
+                    Label <span className="text-red-600 dark:text-red-400">*</span>
+                  </label>
+                  <input
+                    id="key-label"
+                    name="label"
+                    type="text"
+                    required
+                    maxLength={120}
+                    placeholder="e.g. Production website"
+                    className={inputClass}
+                  />
+                </div>
+                <div className="min-w-0">
+                  <label
+                    htmlFor="key-sign-in-domain"
+                    className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                  >
+                    Sign-in domain
+                  </label>
+                  <input
+                    id="key-sign-in-domain"
+                    name="signInDomain"
+                    type="text"
+                    maxLength={253}
+                    placeholder="app.example.com"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+                <div className="min-w-0 sm:col-span-2 lg:col-span-1">
+                  <label
+                    htmlFor="key-sign-in-logo"
+                    className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                  >
+                    Logo URL
+                  </label>
+                  <input
+                    id="key-sign-in-logo"
+                    name="signInLogoUrl"
+                    type="url"
+                    inputMode="url"
+                    maxLength={2048}
+                    placeholder="https://cdn.example.com/logo.svg"
+                    className={inputClass}
+                    autoComplete="off"
+                  />
+                </div>
+                <div className="flex items-end sm:col-span-2 lg:col-span-1">
+                  <button
+                    type="submit"
+                    disabled={busy}
+                    className={`${btnPrimaryClass} w-full sm:w-auto`}
+                  >
+                    {busy ? "…" : "Create key"}
+                  </button>
+                </div>
+              </Form>
+            </div>
           ) : null}
 
           {canUseKeys && keys.length === 0 ? (
@@ -349,44 +525,143 @@ export default function AccountApiKeys() {
 
           {canUseKeys && keys.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[20rem] text-left text-sm">
+              <table className="w-full min-w-[36rem] text-left text-sm">
                 <thead>
                   <tr className="border-b border-zinc-200 text-zinc-500 dark:border-zinc-600 dark:text-zinc-400">
                     <th className="pb-2 pr-4 font-medium">Label</th>
                     <th className="pb-2 pr-4 font-medium">Key</th>
+                    <th className="pb-2 pr-4 font-medium">Sign-in domain</th>
+                    <th className="pb-2 pr-4 font-medium">Logo</th>
                     <th className="pb-2 pr-4 font-medium">Created</th>
-                    <th className="pb-2 font-medium" />
+                    <th className="pb-2 font-medium text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {keys.map((k) => (
-                    <tr
-                      key={k.id}
-                      className="border-b border-zinc-100 dark:border-zinc-700/80"
-                    >
-                      <td className="py-3 pr-4 text-zinc-900 dark:text-zinc-100">
-                        {k.label}
-                      </td>
-                      <td className="py-3 pr-4 font-mono text-xs text-zinc-600 dark:text-zinc-400">
-                        {k.keyPrefix}
-                      </td>
-                      <td className="py-3 pr-4 text-zinc-600 dark:text-zinc-400">
-                        {formatCreated(k.createdAt)}
-                      </td>
-                      <td className="py-3 text-right">
-                        <Form method="post" className="inline">
-                          <input type="hidden" name="intent" value="revoke" />
-                          <input type="hidden" name="keyId" value={k.id} />
-                          <button
-                            type="submit"
-                            disabled={busy}
-                            className={btnDangerClass}
-                          >
-                            Revoke
-                          </button>
-                        </Form>
-                      </td>
-                    </tr>
+                    <Fragment key={k.id}>
+                      <tr className="border-b border-zinc-100 dark:border-zinc-700/80">
+                        <td className="py-3 pr-4 text-zinc-900 dark:text-zinc-100">
+                          {k.label}
+                        </td>
+                        <td className="py-3 pr-4 font-mono text-xs text-zinc-600 dark:text-zinc-400">
+                          {k.keyPrefix}
+                        </td>
+                        <td className="max-w-[10rem] truncate py-3 pr-4 text-zinc-700 dark:text-zinc-300">
+                          {k.signInDomain ?? (
+                            <span className="text-zinc-400">—</span>
+                          )}
+                        </td>
+                        <td className="py-3 pr-4">
+                          {k.signInLogoUrl ? (
+                            <KeyLogoThumb url={k.signInLogoUrl} />
+                          ) : (
+                            <span className="text-zinc-400">—</span>
+                          )}
+                        </td>
+                        <td className="py-3 pr-4 text-zinc-600 dark:text-zinc-400">
+                          {formatCreated(k.createdAt)}
+                        </td>
+                        <td className="py-3 text-right">
+                          <div className="flex flex-wrap items-center justify-end gap-2">
+                            <button
+                              type="button"
+                              className={btnSecondaryClass}
+                              disabled={busy}
+                              onClick={() =>
+                                setEditingKeyId((id) =>
+                                  id === k.id ? null : k.id,
+                                )
+                              }
+                            >
+                              {editingKeyId === k.id ? "Close" : "Sign-in"}
+                            </button>
+                            <Form method="post" className="inline">
+                              <input type="hidden" name="intent" value="revoke" />
+                              <input type="hidden" name="keyId" value={k.id} />
+                              <button
+                                type="submit"
+                                disabled={busy}
+                                className={btnDangerClass}
+                              >
+                                Revoke
+                              </button>
+                            </Form>
+                          </div>
+                        </td>
+                      </tr>
+                      {editingKeyId === k.id ? (
+                        <tr className="border-b border-zinc-100 bg-zinc-50 dark:border-zinc-700/80 dark:bg-zinc-900/40">
+                          <td colSpan={6} className="px-4 py-4">
+                            <Form method="post" className="mx-auto max-w-2xl space-y-3">
+                              <input
+                                type="hidden"
+                                name="intent"
+                                value="update_sign_in"
+                              />
+                              <input type="hidden" name="keyId" value={k.id} />
+                              <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                                Intastellar Sign-In — domain &amp; logo for this
+                                key
+                              </p>
+                              <div className="grid gap-3 sm:grid-cols-2">
+                                <div>
+                                  <label
+                                    htmlFor={`edit-domain-${k.id}`}
+                                    className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                                  >
+                                    Sign-in domain
+                                  </label>
+                                  <input
+                                    id={`edit-domain-${k.id}`}
+                                    name="signInDomain"
+                                    type="text"
+                                    maxLength={253}
+                                    defaultValue={k.signInDomain ?? ""}
+                                    placeholder="app.example.com"
+                                    className={inputClass}
+                                    autoComplete="off"
+                                  />
+                                </div>
+                                <div>
+                                  <label
+                                    htmlFor={`edit-logo-${k.id}`}
+                                    className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                                  >
+                                    Logo URL (https)
+                                  </label>
+                                  <input
+                                    id={`edit-logo-${k.id}`}
+                                    name="signInLogoUrl"
+                                    type="url"
+                                    maxLength={2048}
+                                    defaultValue={k.signInLogoUrl ?? ""}
+                                    placeholder="https://…"
+                                    className={inputClass}
+                                    autoComplete="off"
+                                  />
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                <button
+                                  type="submit"
+                                  disabled={busy}
+                                  className={btnPrimaryClass}
+                                >
+                                  {busy ? "…" : "Save sign-in settings"}
+                                </button>
+                                <button
+                                  type="button"
+                                  className={btnSecondaryClass}
+                                  onClick={() => setEditingKeyId(null)}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </Form>
+                          </td>
+                        </tr>
+                      ) : null}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>

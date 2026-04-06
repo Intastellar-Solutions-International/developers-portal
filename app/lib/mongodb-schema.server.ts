@@ -53,6 +53,10 @@ const apiKeyJsonSchema = {
     keyPrefix: { bsonType: "string" },
     createdAt: { bsonType: "date" },
     revokedAt: { bsonType: ["date", "null"] },
+    /** Hostname for Intastellar Sign-In (e.g. app.example.com). */
+    signInDomain: { bsonType: ["string", "null"] },
+    /** HTTPS URL of logo shown in sign-in flows. */
+    signInLogoUrl: { bsonType: ["string", "null"] },
   },
   additionalProperties: true,
 } as const;
