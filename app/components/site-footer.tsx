@@ -5,7 +5,7 @@ import { CORPORATE_LEGAL } from "~/lib/legal-links";
 import { requestOpenSearch } from "~/lib/search-overlay-context";
 
 const linkClass =
-  "text-zinc-400 transition-colors hover:text-brand dark:text-zinc-400 dark:hover:text-brand";
+  "text-zinc-600 transition-colors hover:text-brand dark:text-zinc-400 dark:hover:text-brand";
 
 const headingClass =
   "text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-500";
@@ -17,14 +17,16 @@ export function SiteFooter() {
 
   return (
     <footer
-      className="border-t border-zinc-800 bg-zinc-900 text-zinc-400"
+      className="border-t border-zinc-200 bg-zinc-100 text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
       role="contentinfo"
     >
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-14">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8">
           <div className="sm:col-span-2 lg:col-span-1">
-            <p className="text-sm font-semibold text-zinc-100">inta.dev</p>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-zinc-400">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              inta.dev
+            </p>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
               Documentation, API keys, and integration guides for Intastellar
               Consents and Intastellar Accounts.
             </p>
@@ -60,7 +62,7 @@ export function SiteFooter() {
                   className={`${linkClass} text-left`}
                 >
                   Search docs
-                  <span className="ml-1 text-zinc-600" aria-hidden>
+                  <span className="ml-1 text-zinc-500 dark:text-zinc-600" aria-hidden>
                     ⌘K
                   </span>
                 </button>
@@ -157,7 +159,7 @@ export function SiteFooter() {
             </ul>
           </div>
         </div>
-        <p className="mt-12 border-t border-zinc-800 pt-8 text-center text-xs text-zinc-500">
+        <p className="mt-12 border-t border-zinc-200 pt-8 text-center text-xs text-zinc-500 dark:border-zinc-800">
           © {year} Intastellar Solutions. All rights reserved.
         </p>
       </div>

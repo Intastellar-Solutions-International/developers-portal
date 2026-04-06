@@ -28,12 +28,15 @@ import {
   isAnalyticsEnabled,
 } from "~/lib/analytics";
 import { OPEN_SEARCH_EVENT } from "~/lib/search-overlay-context";
+import { COLOR_SCHEME_STORAGE_KEY } from "~/lib/color-scheme";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import {
   IntastellarAuthProvider,
   type RootLoaderData,
 } from "~/providers/intastellar-auth-provider";
 import "./app.css";
+
+const colorSchemeBootScript = `(function(){try{var k=${JSON.stringify(COLOR_SCHEME_STORAGE_KEY)};var v=localStorage.getItem(k);var d=v==="dark"||(v!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
 
 type SearchLoaderData = { documents: SearchDocument[] };
 
@@ -244,6 +247,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script
+          // Apply stored / OS theme before paint (keeps Tailwind `dark:` in sync).
+          dangerouslySetInnerHTML={{ __html: colorSchemeBootScript }}
+        />
         <Meta />
         <Links />
         {analytics ? (

@@ -15,6 +15,7 @@
       "routes/sitemap-xml": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/search": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/auth.logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.session": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/consents.changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -77,6 +78,15 @@
         "parentId": "root",
         "file": "app/routes/auth.logout.tsx",
         "path": "auth/logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.session": {
+        "id": "routes/auth.session",
+        "parentId": "root",
+        "file": "app/routes/auth.session.tsx",
+        "path": "auth/session",
         "config": {
           "runtime": "nodejs"
         }
@@ -278,6 +288,12 @@
         "file": "routes/auth.logout.tsx",
         "path": "auth/logout"
       },
+      "routes/auth.session": {
+        "id": "routes/auth.session",
+        "parentId": "root",
+        "file": "routes/auth.session.tsx",
+        "path": "auth/session"
+      },
       "routes/changelog": {
         "id": "routes/changelog",
         "parentId": "root",
@@ -414,6 +430,10 @@
           {
             "file": "routes/auth.logout.tsx",
             "path": "auth/logout"
+          },
+          {
+            "file": "routes/auth.session.tsx",
+            "path": "auth/session"
           },
           {
             "file": "routes/changelog.tsx",
