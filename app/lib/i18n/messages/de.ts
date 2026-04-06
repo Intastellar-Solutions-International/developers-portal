@@ -150,4 +150,30 @@ export const de: MessageTree = {
     ql6Label: "Accounts — Authorization-Code-Flow",
     ql6Hint: "PKCE, Callback, Token-Austausch",
   },
+  search: {
+    inputAria: "Dokumentation durchsuchen",
+    placeholder: "Dokumentation durchsuchen…",
+    noIndexRun: "Kein Suchindex gefunden. Führen Sie aus",
+    noIndexOr: "(oder",
+    noIndexRestart: ") und starten Sie den Entwicklungsserver neu.",
+    noResults: "Keine Treffer. Kürzeren Begriff versuchen oder Rechtschreibung prüfen.",
+    title: "Dokumentation durchsuchen",
+    overlayHelp:
+      "Esc zum Schließen · ⌘K / Strg+K von der Seite · Pfeiltasten und Eingabe zum Öffnen",
+    pageIntro:
+      "Filtern nach Titel, Produkt-Slug und Seiteninhalt. Tastatur: ⌘K / Strg+K öffnet die Suchüberlagerung. In der Überlagerung Pfeiltasten und Eingabe zum Auswählen.",
+  },
+  profile: {
+    metaTitle: "Profil · inta.dev",
+    heading: "Profil",
+    loading: "Sitzung wird geladen…",
+    ssoBefore: "Verbinden Sie Intastellar SSO, indem Sie",
+    ssoAfter: "in Ihrer Umgebung setzen.",
+    seeSignInBefore: "Siehe die",
+    seeSignInAfter: "Seite für Details.",
+    signedOut:
+      "Sie sind abgemeldet. Melden Sie sich mit Ihrem Intastellar-Konto an, um Ihr Profil hier zu sehen.",
+    signInWithIntastellar: "Mit Intastellar anmelden",
+    openSignInPage: "Anmeldeseite öffnen",
+  },
 };

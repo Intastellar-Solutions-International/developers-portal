@@ -149,4 +149,30 @@ export const da: MessageTree = {
     ql6Label: "Accounts — authorization code-flow",
     ql6Hint: "PKCE, callback, token-udveksling",
   },
+  search: {
+    inputAria: "Søg i dokumentationen",
+    placeholder: "Søg i dokumentationen…",
+    noIndexRun: "Intet søgeindeks fundet. Kør",
+    noIndexOr: "(eller",
+    noIndexRestart: ") og genstart udviklingsserveren.",
+    noResults: "Ingen resultater. Prøv et kortere ord eller tjek stavning.",
+    title: "Søg i dokumentationen",
+    overlayHelp:
+      "Esc for at lukke · ⌘K / Ctrl+K fra siden · piletaster og Enter for at åbne",
+    pageIntro:
+      "Filtrér efter titel, produkt-slug og sideindhold. Tastatur: ⌘K / Ctrl+K åbner søge-overlay. I overlay bruger du piletaster og Enter for at vælge.",
+  },
+  profile: {
+    metaTitle: "Profil · inta.dev",
+    heading: "Profil",
+    loading: "Indlæser session…",
+    ssoBefore: "Forbind Intastellar SSO ved at sætte",
+    ssoAfter: "i dit miljø.",
+    seeSignInBefore: "Flere oplysninger finder du på",
+    seeSignInAfter: "siden.",
+    signedOut:
+      "Du er logget ud. Log ind med din Intastellar-konto for at se din profil her.",
+    signInWithIntastellar: "Log ind med Intastellar",
+    openSignInPage: "Åbn login-siden",
+  },
 };

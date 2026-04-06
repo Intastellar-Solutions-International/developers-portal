@@ -158,6 +158,32 @@ export const en = {
     ql6Label: "Accounts — Auth code flow",
     ql6Hint: "PKCE, callback, token exchange",
   },
+  search: {
+    inputAria: "Search documentation",
+    placeholder: "Search docs…",
+    noIndexRun: "No search index found. Run",
+    noIndexOr: "(or",
+    noIndexRestart: ") and restart the dev server.",
+    noResults: "No results. Try a shorter term or check spelling.",
+    title: "Search documentation",
+    overlayHelp:
+      "Esc to close · ⌘K / Ctrl+K from the page · Arrow keys and Enter to open a result",
+    pageIntro:
+      "Filter by title, product slug, and page content. Keyboard: ⌘K / Ctrl+K opens the search overlay. With the overlay open, use arrow keys and Enter to choose a result.",
+  },
+  profile: {
+    metaTitle: "Profile · inta.dev",
+    heading: "Profile",
+    loading: "Loading session…",
+    ssoBefore: "Connect Intastellar SSO by setting",
+    ssoAfter: "in your environment.",
+    seeSignInBefore: "See the",
+    seeSignInAfter: "page for details.",
+    signedOut:
+      "You are signed out. Sign in with your Intastellar account to see your profile here.",
+    signInWithIntastellar: "Sign in with Intastellar",
+    openSignInPage: "Open sign-in page",
+  },
 } as const;
 
 export type MessageTree = DeepStringTree<typeof en>;

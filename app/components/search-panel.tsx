@@ -35,7 +35,7 @@ export function SearchPanel({
   onPick?: (href: string) => void;
 }) {
   const navigate = useNavigate();
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const localizeHref = (href: string) =>
     href.startsWith("/") ? withLocalePrefix(href, locale) : href;
   const [q, setQ] = useState("");
@@ -106,14 +106,14 @@ export function SearchPanel({
   const inner = (
     <>
       <label className={variant === "overlay" ? "block p-4 pb-0" : "mt-6 block"}>
-        <span className="sr-only">Search</span>
+        <span className="sr-only">{t("search.inputAria")}</span>
         <input
           ref={inputRef}
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={onResultsKeyDown}
-          placeholder="Search docs…"
+          placeholder={t("search.placeholder")}
           autoComplete="off"
           spellCheck={false}
           className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-zinc-900 shadow-sm outline-none ring-brand focus:border-brand focus:ring-2 focus:ring-brand/30 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-50"
@@ -121,15 +121,15 @@ export function SearchPanel({
       </label>
       {documents.length === 0 ? (
         <p className="mt-4 text-sm text-amber-800 dark:text-amber-200">
-          No search index found. Run{" "}
+          {t("search.noIndexRun")}{" "}
           <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
             node scripts/build-search-index.mjs
           </code>{" "}
-          (or{" "}
+          {t("search.noIndexOr")}{" "}
           <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
             npm run build
           </code>
-          ) and restart the dev server.
+          {t("search.noIndexRestart")}
         </p>
       ) : null}
       <ul
@@ -191,7 +191,7 @@ export function SearchPanel({
               : "mt-8 text-sm text-zinc-600 dark:text-zinc-400"
           }
         >
-          No results. Try a shorter term or check spelling.
+          {t("search.noResults")}
         </p>
       ) : null}
     </>
@@ -205,21 +205,10 @@ export function SearchPanel({
             id="search-overlay-title"
             className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
           >
-            Search documentation
+            {t("search.title")}
           </h2>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            <kbd className="rounded border border-zinc-300 bg-zinc-100 px-1 py-0.5 font-mono text-[10px] dark:border-zinc-600 dark:bg-zinc-800">
-              Esc
-            </kbd>{" "}
-            to close ·{" "}
-            <kbd className="rounded border border-zinc-300 bg-zinc-100 px-1 py-0.5 font-mono text-[10px] dark:border-zinc-600 dark:bg-zinc-800">
-              ⌘K
-            </kbd>{" "}
-            /{" "}
-            <kbd className="rounded border border-zinc-300 bg-zinc-100 px-1 py-0.5 font-mono text-[10px] dark:border-zinc-600 dark:bg-zinc-800">
-              Ctrl+K
-            </kbd>{" "}
-            from the page · Arrow keys and Enter to open a result
+            {t("search.overlayHelp")}
           </p>
         </div>
         {inner}
@@ -230,19 +219,10 @@ export function SearchPanel({
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-        Search documentation
+        {t("search.title")}
       </h1>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        Filter by title, product slug, and page content. Keyboard:{" "}
-        <kbd className="rounded border border-zinc-300 bg-zinc-100 px-1.5 py-0.5 text-xs font-medium text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-          ⌘K
-        </kbd>{" "}
-        /{" "}
-        <kbd className="rounded border border-zinc-300 bg-zinc-100 px-1.5 py-0.5 text-xs font-medium text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-          Ctrl+K
-        </kbd>{" "}
-        opens the search overlay. With the overlay open, use arrow keys and
-        Enter to choose a result.
+        {t("search.pageIntro")}
       </p>
       {inner}
     </div>

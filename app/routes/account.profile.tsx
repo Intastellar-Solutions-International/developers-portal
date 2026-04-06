@@ -1,14 +1,22 @@
 import { Link } from "react-router";
 
 import type { Route } from "./+types/account.profile";
+import { translatePath } from "~/lib/i18n/messages";
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
-import { useLocalizedHref } from "~/providers/i18n-provider";
+import { useI18n, useLocalizedHref } from "~/providers/i18n-provider";
 
-export function meta({}: Route.MetaArgs) {
-  return [{ title: "Profile · inta.dev" }];
+export async function loader({ request }: Route.LoaderArgs) {
+  return { locale: resolveLocaleFromRequest(request) };
+}
+
+export function meta({ data }: Route.MetaArgs) {
+  if (!data) return [{ title: translatePath("en", "profile.metaTitle") }];
+  return [{ title: translatePath(data.locale, "profile.metaTitle") }];
 }
 
 export default function AccountProfile() {
+  const { t } = useI18n();
   const loginHref = useLocalizedHref("/account/login");
   const {
     authReady,
@@ -26,37 +34,37 @@ export default function AccountProfile() {
   return (
     <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
       <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
-        Profile
+        {t("profile.heading")}
       </h2>
 
       {!authReady ? (
         <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
-          Loading session…
+          {t("profile.loading")}
         </p>
       ) : !configured ? (
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-          Connect Intastellar SSO by setting{" "}
+          {t("profile.ssoBefore")}{" "}
           <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-900">
             VITE_INTASTELLAR_CLIENT_ID
           </code>{" "}
-          in your environment. See the{" "}
+          {t("profile.ssoAfter")}{" "}
+          {t("profile.seeSignInBefore")}{" "}
           <Link
             to={loginHref}
             className="font-medium text-brand hover:text-brand-hover"
           >
-            Sign in
+            {t("nav.signIn")}
           </Link>{" "}
-          page for details.
+          {t("profile.seeSignInAfter")}
         </p>
       ) : isLoading ? (
         <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
-          Loading session…
+          {t("profile.loading")}
         </p>
       ) : !isSignedIn || !user ? (
         <div className="mt-4">
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            You are signed out. Sign in with your Intastellar account to see
-            your profile here.
+            {t("profile.signedOut")}
           </p>
           {error ? (
             <p
@@ -73,13 +81,13 @@ export default function AccountProfile() {
               onClick={() => void signin()}
               className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:opacity-60"
             >
-              Sign in with Intastellar
+              {t("profile.signInWithIntastellar")}
             </button>
             <Link
               to={loginHref}
               className="rounded-lg border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:border-brand/50 hover:text-brand dark:border-zinc-600 dark:text-zinc-300"
             >
-              Open sign-in page
+              {t("profile.openSignInPage")}
             </Link>
           </div>
         </div>
@@ -104,7 +112,7 @@ export default function AccountProfile() {
               onClick={logout}
               className="mt-4 text-sm font-medium text-brand hover:text-brand-hover"
             >
-              Sign out
+              {t("nav.signOut")}
             </button>
           </div>
         </div>
