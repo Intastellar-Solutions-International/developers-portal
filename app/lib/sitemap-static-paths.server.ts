@@ -10,6 +10,7 @@ const SKIP_ROUTE_FILES = new Set([
   "routes/api.status.cron.tsx",
   "routes/api.status.json.tsx",
   "routes/api.status.uptime.tsx",
+  "routes/api.status.uptime-badge.tsx",
   "routes/$.tsx",
 ]);
 
