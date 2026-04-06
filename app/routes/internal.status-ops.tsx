@@ -17,6 +17,7 @@ import {
   updateManualIncident,
 } from "~/lib/status-manual-incidents.server";
 import {
+  notifySubscribersIncidentUpdate,
   notifySubscribersNewIncident,
   notifySubscribersNewMaintenance,
 } from "~/lib/status-notify-dispatch.server";
@@ -242,6 +243,9 @@ export async function action({ request }: Route.ActionArgs) {
     });
     if (!upd.ok) {
       return data({ error: upd.error }, { status: 400 });
+    }
+    if (!upd.skipped) {
+      await notifySubscribersIncidentUpdate(upd.notify);
     }
     return redirect("/internal/status-ops");
   }

@@ -9,6 +9,16 @@ export const MANUAL_INCIDENT_SEVERITIES = [
 
 export type ManualIncidentSeverity = (typeof MANUAL_INCIDENT_SEVERITIES)[number];
 
+/** Email payload after a persisted operator-notice update (server → notify dispatch). */
+export type ManualIncidentUpdateNotifyPayload = {
+  title: string;
+  body: string;
+  fromSeverity: ManualIncidentSeverity;
+  toSeverity: ManualIncidentSeverity;
+  affectedTargetIds?: string[];
+  updateMessage: string;
+};
+
 export type ManualIncidentUpdatePublic = {
   at: string;
   atLabel: string;

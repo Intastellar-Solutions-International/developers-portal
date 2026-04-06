@@ -13,11 +13,16 @@ import {
   MANUAL_INCIDENT_SEVERITIES,
   type ManualIncidentPublic,
   type ManualIncidentSeverity,
+  type ManualIncidentUpdateNotifyPayload,
   type ManualIncidentUpdatePublic,
 } from "~/lib/status-manual-incidents";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
-export type { ManualIncidentPublic, ManualIncidentSeverity };
+export type {
+  ManualIncidentPublic,
+  ManualIncidentSeverity,
+  ManualIncidentUpdateNotifyPayload,
+};
 export { MANUAL_INCIDENT_SEVERITIES };
 
 export type ManualIncidentUpdateRow = {
@@ -173,12 +178,17 @@ export async function insertManualIncident(opts: {
 
 const MANUAL_INCIDENT_UPDATE_MESSAGE_MAX = 8000;
 
+export type UpdateManualIncidentResult =
+  | { ok: true; skipped: true }
+  | { ok: true; skipped: false; notify: ManualIncidentUpdateNotifyPayload }
+  | { ok: false; error: string };
+
 export async function updateManualIncident(opts: {
   hexId: string;
   severity: ManualIncidentSeverity;
   message?: string;
   authorEmail: string;
-}): Promise<{ ok: true } | { ok: false; error: string }> {
+}): Promise<UpdateManualIncidentResult> {
   if (!MANUAL_INCIDENT_SEVERITIES.includes(opts.severity)) {
     return { ok: false, error: "Invalid severity." };
   }
@@ -204,7 +214,7 @@ export async function updateManualIncident(opts: {
   const fromSev = row.severity;
   const toSev = opts.severity;
   if (fromSev === toSev && !message) {
-    return { ok: true };
+    return { ok: true, skipped: true };
   }
   const now = new Date();
   const resolvedAt =
@@ -233,7 +243,20 @@ export async function updateManualIncident(opts: {
       $push: { updates: newEntry },
     },
   );
-  return { ok: true };
+  return {
+    ok: true,
+    skipped: false,
+    notify: {
+      title: row.title,
+      body: row.body,
+      fromSeverity: fromSev,
+      toSeverity: toSev,
+      ...(row.affectedTargetIds?.length
+        ? { affectedTargetIds: row.affectedTargetIds }
+        : {}),
+      updateMessage: message,
+    },
+  };
 }
 
 export async function deleteManualIncidentById(

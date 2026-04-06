@@ -288,6 +288,65 @@ ${ctaButton(statusUrl, "View status page")}
   });
 }
 
+export async function sendIncidentUpdateAlertEmail(opts: {
+  to: string;
+  unsubscribeToken: string | null;
+  title: string;
+  body: string;
+  fromSeverity: string;
+  toSeverity: string;
+  updateMessage: string;
+  monitorsLine: string | null;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const statusUrl = absoluteUrl("/status");
+  const subject = `Status update: ${opts.title}`.slice(0, 200);
+  const bodyShort =
+    opts.body.length > 2500 ? `${opts.body.slice(0, 2500)}…` : opts.body;
+  const sevTo = escapeHtml(opts.toSeverity);
+  const monitorsBlock = opts.monitorsLine
+    ? `<p style="margin:14px 0 0;font-size:13px;color:${TEXT_MUTED};"><strong style="color:${TEXT_DARK};">Monitors:</strong> ${escapeHtml(opts.monitorsLine)}</p>`
+    : "";
+  const statusChangeBlock =
+    opts.fromSeverity !== opts.toSeverity
+      ? `<p style="margin:0 0 16px;font-size:14px;color:${TEXT_BODY};">Status changed from <strong>${escapeHtml(opts.fromSeverity)}</strong> to <strong>${escapeHtml(opts.toSeverity)}</strong>.</p>`
+      : "";
+  const messageBlock = opts.updateMessage.trim()
+    ? `<div style="margin:0 0 20px;padding:16px 18px;background:#fafafa;border-radius:8px;border:1px solid ${BORDER};font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;font-size:13px;line-height:1.55;color:${TEXT_BODY};white-space:pre-wrap;">${escapeHtml(
+        opts.updateMessage.length > 4000
+          ? `${opts.updateMessage.slice(0, 4000)}…`
+          : opts.updateMessage,
+      )}</div>`
+    : "";
+  const contextBlock = `<p style="margin:0 0 8px;font-size:12px;font-weight:600;color:${TEXT_MUTED};letter-spacing:0.02em;">Original notice (excerpt)</p>
+<div style="margin:0 0 20px;padding:14px 16px;background:#fafafa;border-radius:8px;border:1px solid ${BORDER};font-size:13px;line-height:1.55;color:${TEXT_MUTED};white-space:pre-wrap;">${escapeHtml(bodyShort)}</div>`;
+  const bodyHtml = `
+<p style="margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:${BRAND_GOLD};">Operator notice — update</p>
+<p style="margin:0 0 6px;"><span style="display:inline-block;padding:3px 10px;border-radius:999px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:600;">${sevTo}</span></p>
+<p style="margin:0 0 16px;font-size:18px;font-weight:600;color:${TEXT_DARK};line-height:1.3;">${escapeHtml(opts.title)}</p>
+${statusChangeBlock}
+${messageBlock}
+${contextBlock}
+${monitorsBlock}
+${ctaButton(statusUrl, "View status page")}
+`;
+  const pre =
+    opts.updateMessage.trim().slice(0, 140) ||
+    (opts.fromSeverity !== opts.toSeverity
+      ? `${opts.fromSeverity} → ${opts.toSeverity}`
+      : "Operator notice updated");
+  const footerHtml = alertFooterHtml(opts.unsubscribeToken);
+  const html = wrapStatusEmailLayout({
+    preheader: pre,
+    bodyHtml,
+    footerHtml,
+  });
+  return sendResendEmail({
+    to: opts.to,
+    subject,
+    html,
+  });
+}
+
 export async function sendProbeFailureAlertEmail(opts: {
   to: string;
   unsubscribeToken: string | null;
