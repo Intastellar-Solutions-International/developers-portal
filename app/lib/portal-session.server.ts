@@ -2,15 +2,13 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 import { ObjectId } from "mongodb";
 
+/** Legacy signed cookie (pre–React Router session); cleared on login / logout. */
 export const PORTAL_SESSION_COOKIE = "inta_portal_sess";
 
-/**
- * When MongoDB is off, we still need an HttpOnly cookie the server can read on
- * every request — `inta_acc` is often not sent (SDK uses `domain=localhost`, etc.).
- */
+/** Legacy SSO snapshot cookie; cleared when migrating to `inta_portal_session`. */
 export const PORTAL_SSO_SNAPSHOT_COOKIE = "inta_portal_sso";
 
-/** 30 days */
+/** 30 days — must match verification logic for legacy tokens. */
 const MAX_AGE_SEC = 60 * 60 * 24 * 30;
 
 function sessionSecret(): Buffer | null {
@@ -46,37 +44,11 @@ export function readPortalSessionTokenFromRequest(request: Request): string | nu
   return t || null;
 }
 
-export function signPortalSessionToken(accountId: ObjectId): string | null {
-  const sec = sessionSecret();
-  if (!sec) return null;
-  const exp = Math.floor(Date.now() / 1000) + MAX_AGE_SEC;
-  const hexId = accountId.toHexString();
-  const payload = `${hexId}.${exp}`;
-  const sig = createHmac("sha256", sec).update(payload).digest("base64url");
-  return `${payload}.${sig}`;
-}
-
 export type SsoSnapshotSession = {
   email: string;
   displayName: string;
   imageUrl?: string;
 };
-
-export function signSsoSnapshotToken(session: SsoSnapshotSession): string | null {
-  const sec = sessionSecret();
-  if (!sec) return null;
-  const exp = Math.floor(Date.now() / 1000) + MAX_AGE_SEC;
-  const inner = JSON.stringify({
-    v: 1 as const,
-    email: session.email,
-    displayName: session.displayName,
-    ...(session.imageUrl ? { imageUrl: session.imageUrl } : {}),
-  });
-  const b64 = Buffer.from(inner, "utf8").toString("base64url");
-  const payload = `${b64}.${exp}`;
-  const sig = createHmac("sha256", sec).update(payload).digest("base64url");
-  return `${payload}.${sig}`;
-}
 
 export function verifySsoSnapshotToken(token: string): SsoSnapshotSession | null {
   const sec = sessionSecret();
@@ -122,37 +94,6 @@ export function readSsoSnapshotTokenFromRequest(request: Request): string | null
   return t || null;
 }
 
-export function serializeSsoSnapshotSetCookie(
-  request: Request,
-  session: SsoSnapshotSession,
-): string | null {
-  const token = signSsoSnapshotToken(session);
-  if (!token) return null;
-  const secure = requestIsHttps(request);
-  const attrs = [
-    `${PORTAL_SSO_SNAPSHOT_COOKIE}=${encodeURIComponent(token)}`,
-    "Path=/",
-    `Max-Age=${MAX_AGE_SEC}`,
-    "HttpOnly",
-    "SameSite=Lax",
-  ];
-  if (secure) attrs.push("Secure");
-  return attrs.join("; ");
-}
-
-export function serializeSsoSnapshotClearCookie(request: Request): string {
-  const secure = requestIsHttps(request);
-  const attrs = [
-    `${PORTAL_SSO_SNAPSHOT_COOKIE}=`,
-    "Path=/",
-    "Max-Age=0",
-    "HttpOnly",
-    "SameSite=Lax",
-  ];
-  if (secure) attrs.push("Secure");
-  return attrs.join("; ");
-}
-
 export function verifyPortalSessionToken(token: string): ObjectId | null {
   const sec = sessionSecret();
   if (!sec) return null;
@@ -196,18 +137,13 @@ function requestIsHttps(request: Request): boolean {
   }
 }
 
-/** `Set-Cookie` value for a new portal session (HttpOnly). */
-export function serializePortalSessionSetCookie(
-  request: Request,
-  accountId: ObjectId,
-): string | null {
-  const token = signPortalSessionToken(accountId);
-  if (!token) return null;
+/** Expire legacy `inta_portal_sess`. */
+export function serializePortalSessionClearCookie(request: Request): string {
   const secure = requestIsHttps(request);
   const attrs = [
-    `${PORTAL_SESSION_COOKIE}=${encodeURIComponent(token)}`,
+    `${PORTAL_SESSION_COOKIE}=`,
     "Path=/",
-    `Max-Age=${MAX_AGE_SEC}`,
+    "Max-Age=0",
     "HttpOnly",
     "SameSite=Lax",
   ];
@@ -215,11 +151,11 @@ export function serializePortalSessionSetCookie(
   return attrs.join("; ");
 }
 
-/** `Set-Cookie` to clear the portal session. */
-export function serializePortalSessionClearCookie(request: Request): string {
+/** Expire legacy `inta_portal_sso`. */
+export function serializeSsoSnapshotClearCookie(request: Request): string {
   const secure = requestIsHttps(request);
   const attrs = [
-    `${PORTAL_SESSION_COOKIE}=`,
+    `${PORTAL_SSO_SNAPSHOT_COOKIE}=`,
     "Path=/",
     "Max-Age=0",
     "HttpOnly",

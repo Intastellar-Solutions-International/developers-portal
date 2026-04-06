@@ -5,17 +5,19 @@ import {
   serializePortalSessionClearCookie,
   serializeSsoSnapshotClearCookie,
 } from "~/lib/portal-session.server";
+import { destroyPortalSession, getPortalSession } from "~/sessions.server";
 
 export function loader() {
   return redirect("/account/login");
 }
 
 /**
- * POST: clears HttpOnly portal session cookie. Call before SDK logout so the
- * browser can’t keep a valid `inta_portal_sess` after Intastellar signs out.
+ * POST: destroys the signed portal session cookie and clears legacy cookies.
  */
 export async function action({ request }: Route.ActionArgs) {
+  const session = await getPortalSession(request.headers.get("Cookie"));
   const headers = new Headers();
+  headers.append("Set-Cookie", await destroyPortalSession(request, session));
   headers.append("Set-Cookie", serializePortalSessionClearCookie(request));
   headers.append("Set-Cookie", serializeSsoSnapshotClearCookie(request));
   return new Response(null, { status: 204, headers });

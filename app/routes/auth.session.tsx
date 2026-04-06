@@ -4,10 +4,13 @@ import type { Route } from "./+types/auth.session";
 import { verifyIntastellarToken } from "~/lib/intastellar-verify.server";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import {
-  serializePortalSessionSetCookie,
+  serializePortalSessionClearCookie,
   serializeSsoSnapshotClearCookie,
-  serializeSsoSnapshotSetCookie,
 } from "~/lib/portal-session.server";
+import {
+  commitPortalSession,
+  getPortalSession,
+} from "~/sessions.server";
 import { ensureUserFromIntastellar } from "~/lib/user-accounts.server";
 
 export function loader() {
@@ -15,9 +18,8 @@ export function loader() {
 }
 
 /**
- * POST JSON `{ "token": "<inta bearer>" }` — verifies with Intastellar, then when
- * MongoDB is configured issues HttpOnly `inta_portal_sess` so loaders see the user
- * without relying on the browser sending `inta_acc`.
+ * POST JSON `{ "token": "<inta bearer>" }` — verifies with Intastellar, then commits a
+ * signed cookie session (see https://reactrouter.com/explanation/sessions-and-cookies).
  */
 export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST") {
@@ -36,53 +38,42 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ ok: false as const, error: "bad_token" }, { status: 400 });
   }
 
-  const session = await verifyIntastellarToken(token);
-  if (!session) {
+  const verified = await verifyIntastellarToken(token);
+  if (!verified) {
     return data({ ok: false as const, error: "verify_failed" }, { status: 401 });
   }
 
-  if (!isMongoConfigured()) {
-    const snap = serializeSsoSnapshotSetCookie(request, {
-      email: session.email,
-      displayName: session.displayName,
-      imageUrl: session.imageUrl,
-    });
-    if (!snap) {
-      return data(
-        { ok: false as const, error: "session_unconfigured" },
-        { status: 503 },
-      );
-    }
-    const headers = new Headers();
-    headers.append("Set-Cookie", snap);
-    return data({ ok: true as const }, { headers });
-  }
-
-  const accountId = await ensureUserFromIntastellar(session);
-  if (!accountId) {
-    const snap = serializeSsoSnapshotSetCookie(request, {
-      email: session.email,
-      displayName: session.displayName,
-      imageUrl: session.imageUrl,
-    });
-    if (!snap) {
-      return data({ ok: false as const, error: "db_unavailable" }, { status: 503 });
-    }
-    const headers = new Headers();
-    headers.append("Set-Cookie", snap);
-    return data({ ok: true as const }, { headers });
-  }
-
-  const cookie = serializePortalSessionSetCookie(request, accountId);
-  if (!cookie) {
-    return data(
-      { ok: false as const, error: "session_unconfigured" },
-      { status: 503 },
-    );
+  const portalSession = await getPortalSession(request.headers.get("Cookie"));
+  portalSession.set("email", verified.email);
+  portalSession.set("displayName", verified.displayName);
+  if (verified.imageUrl) {
+    portalSession.set("avatarUrl", verified.imageUrl);
+  } else {
+    portalSession.unset("avatarUrl");
   }
 
   const headers = new Headers();
-  headers.append("Set-Cookie", cookie);
+
+  if (!isMongoConfigured()) {
+    portalSession.unset("accountId");
+    headers.append("Set-Cookie", await commitPortalSession(request, portalSession));
+    headers.append("Set-Cookie", serializePortalSessionClearCookie(request));
+    headers.append("Set-Cookie", serializeSsoSnapshotClearCookie(request));
+    return data({ ok: true as const }, { headers });
+  }
+
+  const accountId = await ensureUserFromIntastellar(verified);
+  if (!accountId) {
+    portalSession.unset("accountId");
+    headers.append("Set-Cookie", await commitPortalSession(request, portalSession));
+    headers.append("Set-Cookie", serializePortalSessionClearCookie(request));
+    headers.append("Set-Cookie", serializeSsoSnapshotClearCookie(request));
+    return data({ ok: true as const }, { headers });
+  }
+
+  portalSession.set("accountId", accountId.toHexString());
+  headers.append("Set-Cookie", await commitPortalSession(request, portalSession));
+  headers.append("Set-Cookie", serializePortalSessionClearCookie(request));
   headers.append("Set-Cookie", serializeSsoSnapshotClearCookie(request));
   return data({ ok: true as const }, { headers });
 }
