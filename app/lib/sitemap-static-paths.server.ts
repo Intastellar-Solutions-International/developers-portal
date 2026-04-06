@@ -7,6 +7,8 @@ const SKIP_ROUTE_FILES = new Set([
   "routes/robots-txt.tsx",
   "routes/sitemap-xml.tsx",
   "routes/changelog.tsx",
+  "routes/api.status.cron.tsx",
+  "routes/api.status.json.tsx",
   "routes/$.tsx",
 ]);
 

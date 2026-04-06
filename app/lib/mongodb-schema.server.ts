@@ -6,6 +6,9 @@ export const USER_ACCOUNTS_COLLECTION = "user_accounts";
 /** Hashed developer API keys; optional `ownerAccountId` links to `user_accounts`. */
 export const API_KEYS_COLLECTION = "api_keys";
 
+/** Latest uptime snapshot written by `/api/status/cron` (single doc `_id: "current"`). */
+export const STATUS_SNAPSHOT_COLLECTION = "platform_status";
+
 /**
  * MongoDB JSON Schema validators (`createCollection` / `collMod`).
  * @see https://www.mongodb.com/docs/manual/reference/operator/query/jsonSchema/
@@ -121,6 +124,12 @@ async function ensureApiKeysCollection(db: Db): Promise<void> {
   await db.collection(API_KEYS_COLLECTION).createIndexes(API_KEY_INDEXES);
 }
 
+async function ensureStatusSnapshotCollection(db: Db): Promise<void> {
+  if (!(await collectionExists(db, STATUS_SNAPSHOT_COLLECTION))) {
+    await db.createCollection(STATUS_SNAPSHOT_COLLECTION);
+  }
+}
+
 /**
  * Creates collections (with JSON Schema validators) and indexes for portal data.
  * Idempotent; safe to call on every DB handle acquisition.
@@ -132,6 +141,7 @@ export async function ensureMongoDbSchema(db: Db): Promise<void> {
       try {
         await ensureUserAccountsCollection(db);
         await ensureApiKeysCollection(db);
+        await ensureStatusSnapshotCollection(db);
       } catch (err) {
         if (process.env.NODE_ENV !== "production") {
           console.warn("[mongodb] ensureMongoDbSchema failed:", err);

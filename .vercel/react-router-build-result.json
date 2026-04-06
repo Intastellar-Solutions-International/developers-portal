@@ -17,6 +17,9 @@
       "routes/auth.logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/auth.session": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/status": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.cron": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.json": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/consents.changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal.privacy": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -96,6 +99,33 @@
         "parentId": "root",
         "file": "app/routes/changelog.tsx",
         "path": "changelog",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/status": {
+        "id": "routes/status",
+        "parentId": "root",
+        "file": "app/routes/status.tsx",
+        "path": "status",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.cron": {
+        "id": "routes/api.status.cron",
+        "parentId": "root",
+        "file": "app/routes/api.status.cron.tsx",
+        "path": "api/status/cron",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.json": {
+        "id": "routes/api.status.json",
+        "parentId": "root",
+        "file": "app/routes/api.status.json.tsx",
+        "path": "api/status.json",
         "config": {
           "runtime": "nodejs"
         }
@@ -300,6 +330,24 @@
         "file": "routes/changelog.tsx",
         "path": "changelog"
       },
+      "routes/status": {
+        "id": "routes/status",
+        "parentId": "root",
+        "file": "routes/status.tsx",
+        "path": "status"
+      },
+      "routes/api.status.cron": {
+        "id": "routes/api.status.cron",
+        "parentId": "root",
+        "file": "routes/api.status.cron.tsx",
+        "path": "api/status/cron"
+      },
+      "routes/api.status.json": {
+        "id": "routes/api.status.json",
+        "parentId": "root",
+        "file": "routes/api.status.json.tsx",
+        "path": "api/status.json"
+      },
       "routes/consents.changelog": {
         "id": "routes/consents.changelog",
         "parentId": "root",
@@ -438,6 +486,18 @@
           {
             "file": "routes/changelog.tsx",
             "path": "changelog"
+          },
+          {
+            "file": "routes/status.tsx",
+            "path": "status"
+          },
+          {
+            "file": "routes/api.status.cron.tsx",
+            "path": "api/status/cron"
+          },
+          {
+            "file": "routes/api.status.json.tsx",
+            "path": "api/status.json"
           },
           {
             "file": "routes/consents.changelog.tsx",

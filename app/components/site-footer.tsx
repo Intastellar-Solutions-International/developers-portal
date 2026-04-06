@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 
+import { StatusFooterLink } from "~/components/status-footer-link";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
 import { requestOpenSearch } from "~/lib/search-overlay-context";
@@ -81,6 +82,9 @@ export function SiteFooter() {
                 <Link to="/changelog" className={linkClass}>
                   Changelog
                 </Link>
+              </li>
+              <li>
+                <StatusFooterLink />
               </li>
               <li>
                 <Link to="/account/login" className={linkClass}>

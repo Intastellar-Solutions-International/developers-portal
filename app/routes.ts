@@ -16,6 +16,9 @@ export default [
     route("session", "routes/auth.session.tsx"),
   ]),
   route("changelog", "routes/changelog.tsx"),
+  route("status", "routes/status.tsx"),
+  route("api/status/cron", "routes/api.status.cron.tsx"),
+  route("api/status.json", "routes/api.status.json.tsx"),
   ...prefix("consents", [
     route("changelog", "routes/consents.changelog.tsx"),
   ]),
