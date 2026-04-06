@@ -11,6 +11,10 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/account.api-keys";
+import { translateApiKeyServerError } from "~/lib/i18n/api-key-errors.server";
+import type { Locale } from "~/lib/i18n/locale";
+import { translatePath } from "~/lib/i18n/messages";
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { copyToClipboard } from "~/lib/copy-to-clipboard";
 import { formatDateTimeMediumShort } from "~/lib/format-datetime";
 import {
@@ -27,13 +31,15 @@ import {
 } from "~/lib/portal-account.server";
 import { publicAccountToResolved } from "~/lib/portal-user.server";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
-import { useLocalizedHref } from "~/providers/i18n-provider";
+import { useI18n, useLocalizedHref } from "~/providers/i18n-provider";
 
-export function meta(_: Route.MetaArgs) {
-  return [{ title: "API keys · inta.dev" }];
+export function meta({ data }: Route.MetaArgs) {
+  if (!data) return [{ title: translatePath("en", "apiKeys.metaTitle") }];
+  return [{ title: translatePath(data.locale, "apiKeys.metaTitle") }];
 }
 
 export type ApiKeysLoaderData = {
+  locale: Locale;
   ssoConfigured: boolean;
   mongoConfigured: boolean;
   signedInOnServer: boolean;
@@ -49,6 +55,7 @@ function loaderHeadersFromSetCookie(setCookieHeaders: string[]): Headers {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const locale = resolveLocaleFromRequest(request);
   const ssoConfigured = getIntastellarClientConfig() != null;
   const mongoConfigured = isMongoConfigured();
   const { account, setCookieHeaders } =
@@ -60,6 +67,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       ? await listApiKeysForUser(user.accountId, user.email)
       : [];
   const payload: ApiKeysLoaderData = {
+    locale,
     ssoConfigured,
     mongoConfigured,
     signedInOnServer: user != null,
@@ -93,19 +101,32 @@ function actionResponse(
 }
 
 export async function action({ request }: Route.ActionArgs) {
+  const locale = resolveLocaleFromRequest(request);
   const { account, setCookieHeaders } =
     await resolvePortalSessionForRequest(request);
   const user = publicAccountToResolved(account);
 
   if (!user?.email) {
     return actionResponse(
-      { ok: false, error: "Sign in again to manage API keys." },
+      {
+        ok: false,
+        error: translateApiKeyServerError(
+          locale,
+          "Sign in again to manage API keys.",
+        ),
+      },
       setCookieHeaders,
     );
   }
   if (!isMongoConfigured()) {
     return actionResponse(
-      { ok: false, error: "Database is not configured on the server." },
+      {
+        ok: false,
+        error: translateApiKeyServerError(
+          locale,
+          "Database is not configured on the server.",
+        ),
+      },
       setCookieHeaders,
     );
   }
@@ -122,7 +143,11 @@ export async function action({ request }: Route.ActionArgs) {
     );
     if (!result.ok) {
       return actionResponse(
-        { ok: false, error: result.error, revealKeyId: keyId },
+        {
+          ok: false,
+          error: translateApiKeyServerError(locale, result.error),
+          revealKeyId: keyId,
+        },
         setCookieHeaders,
       );
     }
@@ -140,7 +165,13 @@ export async function action({ request }: Route.ActionArgs) {
     const keyId = String(form.get("keyId") ?? "");
     const result = await revokeApiKey(user.accountId, user.email, keyId);
     if (!result.ok) {
-      return actionResponse({ ok: false, error: result.error }, setCookieHeaders);
+      return actionResponse(
+        {
+          ok: false,
+          error: translateApiKeyServerError(locale, result.error),
+        },
+        setCookieHeaders,
+      );
     }
     return actionResponse({ ok: true }, setCookieHeaders);
   }
@@ -154,7 +185,13 @@ export async function action({ request }: Route.ActionArgs) {
       signInLogoUrl,
     });
     if (!result.ok) {
-      return actionResponse({ ok: false, error: result.error }, setCookieHeaders);
+      return actionResponse(
+        {
+          ok: false,
+          error: translateApiKeyServerError(locale, result.error),
+        },
+        setCookieHeaders,
+      );
     }
     return actionResponse(
       {
@@ -178,12 +215,24 @@ export async function action({ request }: Route.ActionArgs) {
       signInLogoUrl,
     );
     if (!result.ok) {
-      return actionResponse({ ok: false, error: result.error }, setCookieHeaders);
+      return actionResponse(
+        {
+          ok: false,
+          error: translateApiKeyServerError(locale, result.error),
+        },
+        setCookieHeaders,
+      );
     }
     return actionResponse({ ok: true }, setCookieHeaders);
   }
 
-  return actionResponse({ ok: false, error: "Unknown action." }, setCookieHeaders);
+  return actionResponse(
+    {
+      ok: false,
+      error: translateApiKeyServerError(locale, "Unknown action."),
+    },
+    setCookieHeaders,
+  );
 }
 
 function formatCreated(iso: string) {
@@ -207,9 +256,12 @@ const inputClass =
   "mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100";
 
 function KeyLogoThumb({ url }: { url: string }) {
+  const { t } = useI18n();
   const [failed, setFailed] = useState(false);
   if (failed) {
-    return <span className="text-xs text-zinc-400">Unloaded</span>;
+    return (
+      <span className="text-xs text-zinc-400">{t("apiKeys.logoUnloaded")}</span>
+    );
   }
   return (
     <img
@@ -271,6 +323,7 @@ function IconEyeOff({ className }: { className?: string }) {
 }
 
 function CopyApiKeyButton({ secret }: { secret: string }) {
+  const { t } = useI18n();
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
 
   return (
@@ -286,10 +339,10 @@ function CopyApiKeyButton({ secret }: { secret: string }) {
       }}
     >
       {state === "copied"
-        ? "Copied"
+        ? t("apiKeys.copied")
         : state === "failed"
-          ? "Copy failed"
-          : "Copy key"}
+          ? t("apiKeys.copyFailed")
+          : t("apiKeys.copyKey")}
     </button>
   );
 }
@@ -322,6 +375,7 @@ export default function AccountApiKeys() {
     configured: clientConfigured,
     isSignedIn: clientSignedIn,
   } = useIntastellarAuth();
+  const { t } = useI18n();
   const loginHref = useLocalizedHref("/account/login");
 
   const sessionUiMismatch =
@@ -444,98 +498,103 @@ export default function AccountApiKeys() {
   return (
     <section className={panelClass}>
       <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
-        API keys
+        {t("apiKeys.heading")}
       </h2>
 
       {!authReady ? (
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Loading…</p>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          {t("apiKeys.loading")}
+        </p>
       ) : !ssoConfigured ? (
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-          Set{" "}
+          {t("apiKeys.setSsoBefore")}{" "}
           <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-900">
             VITE_INTASTELLAR_CLIENT_ID
           </code>{" "}
-          to enable sign-in, then configure MongoDB below.
+          {t("apiKeys.setSsoAfterCode")}
+          {t("apiKeys.setSsoAfter")}
         </p>
       ) : !clientConfigured || !clientSignedIn ? (
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
           <Link to={loginHref} className={linkClass}>
-            Sign in
+            {t("nav.signIn")}
           </Link>{" "}
-          with Intastellar to create and revoke keys. Keys are tied to your
-          account email.
+          {t("apiKeys.signInToManageAfter")}
         </p>
       ) : !mongoConfigured ? (
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-          Add{" "}
+          {t("apiKeys.mongoBeforeUri")}{" "}
           <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-900">
             MONGODB_URI
           </code>{" "}
-          (Atlas connection string) to your server environment. Optional:{" "}
+          {t("apiKeys.mongoAfterUri")}{" "}
           <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-900">
             MONGODB_DB
           </code>{" "}
-          (default{" "}
+          {t("apiKeys.mongoBeforeDb")}
+          {t("apiKeys.mongoDefaultWord")}{" "}
           <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-900">
             inta_portal
           </code>
-          ),{" "}
+          {t("apiKeys.mongoAfterDb")}{" "}
           <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-900">
             API_KEY_PEPPER
           </code>{" "}
-          (required in production — hashing and encrypted-at-rest reveal in this
-          portal).
+          {t("apiKeys.mongoAfterPepper")}
         </p>
       ) : !signedInOnServer ? (
         <div className="mt-4 space-y-3 text-sm text-amber-800 dark:text-amber-200">
           {sessionUiMismatch && revalidator.state !== "idle" ? (
             <p className="text-zinc-600 dark:text-zinc-400">
-              Syncing your session with the server…
+              {t("apiKeys.sessionSyncing")}
             </p>
           ) : null}
           {sessionUiMismatch && sessionHardFail ? (
             <div className="space-y-2">
               <p>
-                Signed in in the app, but the API keys request still has no portal
-                session cookie. Common causes: stale loader cache,{" "}
-                <code className="mx-1 text-xs">localhost</code> vs{" "}
-                <code className="text-xs">127.0.0.1</code>, or missing{" "}
-                <code className="text-xs">SESSION_SECRET</code> in production (the
-                signed session cookie cannot be created).
+                {t("apiKeys.sessionHardFailP1")}{" "}
+                <code className="mx-1 text-xs">localhost</code>{" "}
+                {t("apiKeys.sessionHardFailVs")}{" "}
+                <code className="text-xs">127.0.0.1</code>
+                {t("apiKeys.sessionHardFailP2")}{" "}
+                <code className="text-xs">SESSION_SECRET</code>{" "}
+                {t("apiKeys.sessionHardFailP3")}
               </p>
               <ul className="list-inside list-disc space-y-1 text-zinc-700 dark:text-zinc-300">
+                <li>{t("apiKeys.sessionHardFailBulletRefresh")}</li>
                 <li>
-                  Hard-refresh this page (full reload), or open API keys in a new
-                  tab.
+                  {t("apiKeys.sessionHardFailBulletHostOpen")}
+                  <code className="text-xs">localhost</code>{" "}
+                  {t("apiKeys.sessionHardFailVs")}{" "}
+                  <code className="text-xs">127.0.0.1</code>
+                  {t("apiKeys.sessionHardFailBulletHostClose")}
                 </li>
                 <li>
-                  Use one host only for dev (
-                  <code className="text-xs">localhost</code> or{" "}
-                  <code className="text-xs">127.0.0.1</code>).
-                </li>
-                <li>
-                  Set <code className="text-xs">SESSION_SECRET</code> in production.
+                  {t("apiKeys.sessionHardFailBulletSecretBefore")}
+                  {t("apiKeys.sessionHardFailBulletSecretBefore").trim() ? (
+                    <>{" "}</>
+                  ) : null}
+                  <code className="text-xs">SESSION_SECRET</code>{" "}
+                  {t("apiKeys.sessionHardFailBulletSecretAfter")}
                 </li>
               </ul>
               <p>
                 <Link to={loginHref} className={linkClass}>
-                  Sign in again
+                  {t("apiKeys.signInAgain")}
                 </Link>
               </p>
             </div>
           ) : sessionUiMismatch ? (
             <p className="text-zinc-600 dark:text-zinc-400">
-              Aligning server session with your account… If this persists, reload
-              the page.
+              {t("apiKeys.sessionAligning")}
             </p>
           ) : (
             <p>
-              The server could not verify your session cookie. Try refreshing this
-              page after sign-in, or{" "}
+              {t("apiKeys.sessionVerifyBefore")}{" "}
               <Link to={loginHref} className={linkClass}>
-                sign out and sign in again
+                {t("apiKeys.sessionVerifyLink")}
               </Link>
-              .
+              {t("apiKeys.sessionVerifyAfter")}
             </p>
           )}
         </div>
@@ -557,17 +616,16 @@ export default function AccountApiKeys() {
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <p className="font-medium sm:pt-0.5">
-                  Key created. The full secret is in the table below — use{" "}
-                  <span className="whitespace-nowrap">Copy key</span> there. You
-                  can hide it with the eye icon; open the eye anytime while signed in
-                  to reveal and copy again (we keep an encrypted copy server-side).
+                  {t("apiKeys.newKeyBanner", {
+                    copyKey: t("apiKeys.copyKey"),
+                  })}
                 </p>
                 <button
                   type="button"
                   className={`${btnSecondaryClass} shrink-0 text-zinc-600 dark:text-zinc-300`}
                   onClick={() => setShowNewKeyBanner(false)}
                 >
-                  Dismiss
+                  {t("apiKeys.dismiss")}
                 </button>
               </div>
             </div>
@@ -576,13 +634,11 @@ export default function AccountApiKeys() {
           {canUseKeys ? (
             <div className="space-y-3">
               <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                Optional <strong className="font-medium">Sign-in domain</strong> and{" "}
-                <strong className="font-medium">logo URL</strong> are used with Intastellar
-                Sign-In (hostname we store; logo must be{" "}
+                {t("apiKeys.optionalHintBeforeHttps")}
                 <code className="rounded bg-zinc-100 px-1 text-[0.7rem] dark:bg-zinc-900">
                   https://
                 </code>
-                ).
+                {t("apiKeys.optionalHintAfterHttps")}
               </p>
               <Form method="post" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <input type="hidden" name="intent" value="create" />
@@ -591,7 +647,10 @@ export default function AccountApiKeys() {
                     htmlFor="key-label"
                     className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
                   >
-                    Label <span className="text-red-600 dark:text-red-400">*</span>
+                    {t("apiKeys.labelField")}{" "}
+                    <span className="text-red-600 dark:text-red-400">
+                      {t("apiKeys.requiredMark")}
+                    </span>
                   </label>
                   <input
                     id="key-label"
@@ -599,7 +658,7 @@ export default function AccountApiKeys() {
                     type="text"
                     required
                     maxLength={120}
-                    placeholder="e.g. Production website"
+                    placeholder={t("apiKeys.placeholderLabel")}
                     className={inputClass}
                   />
                 </div>
@@ -608,14 +667,14 @@ export default function AccountApiKeys() {
                     htmlFor="key-sign-in-domain"
                     className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
                   >
-                    Sign-in domain
+                    {t("apiKeys.signInDomain")}
                   </label>
                   <input
                     id="key-sign-in-domain"
                     name="signInDomain"
                     type="text"
                     maxLength={253}
-                    placeholder="app.example.com"
+                    placeholder={t("apiKeys.placeholderDomain")}
                     className={inputClass}
                     autoComplete="off"
                   />
@@ -625,7 +684,7 @@ export default function AccountApiKeys() {
                     htmlFor="key-sign-in-logo"
                     className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
                   >
-                    Logo URL
+                    {t("apiKeys.logoUrl")}
                   </label>
                   <input
                     id="key-sign-in-logo"
@@ -633,7 +692,7 @@ export default function AccountApiKeys() {
                     type="url"
                     inputMode="url"
                     maxLength={2048}
-                    placeholder="https://cdn.example.com/logo.svg"
+                    placeholder={t("apiKeys.placeholderLogo")}
                     className={inputClass}
                     autoComplete="off"
                   />
@@ -644,7 +703,7 @@ export default function AccountApiKeys() {
                     disabled={busy}
                     className={`${btnPrimaryClass} w-full sm:w-auto`}
                   >
-                    {busy ? "…" : "Create key"}
+                    {busy ? t("apiKeys.busyEllipsis") : t("apiKeys.createKey")}
                   </button>
                 </div>
               </Form>
@@ -653,9 +712,7 @@ export default function AccountApiKeys() {
 
           {canUseKeys && keys.length === 0 ? (
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              No keys yet. Create one to get a secret for your servers or tooling.
-              We store a hash for validation and an encrypted copy so you can reveal
-              and copy it later from this page.
+              {t("apiKeys.emptyList")}
             </p>
           ) : null}
 
@@ -664,12 +721,20 @@ export default function AccountApiKeys() {
               <table className="w-full min-w-[36rem] text-left text-sm">
                 <thead>
                   <tr className="border-b border-zinc-200 text-zinc-500 dark:border-zinc-600 dark:text-zinc-400">
-                    <th className="pb-2 pr-4 font-medium">Label</th>
-                    <th className="pb-2 pr-4 font-medium">Key</th>
-                    <th className="pb-2 pr-4 font-medium">Sign-in domain</th>
-                    <th className="pb-2 pr-4 font-medium">Logo</th>
-                    <th className="pb-2 pr-4 font-medium">Created</th>
-                    <th className="pb-2 font-medium text-right">Actions</th>
+                    <th className="pb-2 pr-4 font-medium">
+                      {t("apiKeys.colLabel")}
+                    </th>
+                    <th className="pb-2 pr-4 font-medium">{t("apiKeys.colKey")}</th>
+                    <th className="pb-2 pr-4 font-medium">
+                      {t("apiKeys.colSignInDomain")}
+                    </th>
+                    <th className="pb-2 pr-4 font-medium">{t("apiKeys.colLogo")}</th>
+                    <th className="pb-2 pr-4 font-medium">
+                      {t("apiKeys.colCreated")}
+                    </th>
+                    <th className="pb-2 font-medium text-right">
+                      {t("apiKeys.colActions")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -693,7 +758,7 @@ export default function AccountApiKeys() {
                                   <button
                                     type="button"
                                     className={btnIconClass}
-                                    aria-label="Hide key"
+                                    aria-label={t("apiKeys.hideKey")}
                                     onClick={() =>
                                       setVisibleSecrets((p) => {
                                         const { [k.id]: _, ...rest } = p;
@@ -718,13 +783,13 @@ export default function AccountApiKeys() {
                                     disabled={revealFetcher.state !== "idle"}
                                     aria-label={
                                       revealingKeyId === k.id
-                                        ? "Loading…"
-                                        : "Reveal key to copy"
+                                        ? t("apiKeys.revealLoading")
+                                        : t("apiKeys.revealKey")
                                     }
                                   >
                                     {revealingKeyId === k.id ? (
                                       <span className="text-xs font-medium text-zinc-500">
-                                        …
+                                        {t("apiKeys.busyEllipsis")}
                                       </span>
                                     ) : (
                                       <IconEye className="h-4 w-4" />
@@ -739,8 +804,7 @@ export default function AccountApiKeys() {
                               </pre>
                             ) : !k.canReveal ? (
                               <p className="text-[0.65rem] leading-snug text-zinc-500 dark:text-zinc-400">
-                                No encrypted secret on file (usually an older key).
-                                Create a new key to enable reveal and copy later.
+                                {t("apiKeys.noSecretStored")}
                               </p>
                             ) : null}
                             {revealFetcher.state === "idle" &&
@@ -809,8 +873,7 @@ export default function AccountApiKeys() {
                               />
                               <input type="hidden" name="keyId" value={k.id} />
                               <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                                Intastellar Sign-In — domain &amp; logo for this
-                                key
+                                {t("apiKeys.editSignInTitle")}
                               </p>
                               <div className="grid gap-3 sm:grid-cols-2">
                                 <div>
@@ -818,7 +881,7 @@ export default function AccountApiKeys() {
                                     htmlFor={`edit-domain-${k.id}`}
                                     className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
                                   >
-                                    Sign-in domain
+                                    {t("apiKeys.signInDomain")}
                                   </label>
                                   <input
                                     id={`edit-domain-${k.id}`}
@@ -826,7 +889,7 @@ export default function AccountApiKeys() {
                                     type="text"
                                     maxLength={253}
                                     defaultValue={k.signInDomain ?? ""}
-                                    placeholder="app.example.com"
+                                    placeholder={t("apiKeys.placeholderDomain")}
                                     className={inputClass}
                                     autoComplete="off"
                                   />
@@ -836,7 +899,7 @@ export default function AccountApiKeys() {
                                     htmlFor={`edit-logo-${k.id}`}
                                     className="block text-xs font-medium text-zinc-600 dark:text-zinc-400"
                                   >
-                                    Logo URL (https)
+                                    {t("apiKeys.logoUrlHttps")}
                                   </label>
                                   <input
                                     id={`edit-logo-${k.id}`}
@@ -844,7 +907,7 @@ export default function AccountApiKeys() {
                                     type="url"
                                     maxLength={2048}
                                     defaultValue={k.signInLogoUrl ?? ""}
-                                    placeholder="https://…"
+                                    placeholder={t("apiKeys.placeholderLogoShort")}
                                     className={inputClass}
                                     autoComplete="off"
                                   />
@@ -856,14 +919,16 @@ export default function AccountApiKeys() {
                                   disabled={busy}
                                   className={btnPrimaryClass}
                                 >
-                                  {busy ? "…" : "Save sign-in settings"}
+                                  {busy
+                                    ? t("apiKeys.busyEllipsis")
+                                    : t("apiKeys.saveSignInSettings")}
                                 </button>
                                 <button
                                   type="button"
                                   className={btnSecondaryClass}
                                   onClick={() => setEditingKeyId(null)}
                                 >
-                                  Cancel
+                                  {t("apiKeys.cancel")}
                                 </button>
                               </div>
                             </Form>

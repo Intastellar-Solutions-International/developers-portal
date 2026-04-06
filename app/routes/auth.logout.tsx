@@ -1,14 +1,17 @@
 import { redirect } from "react-router";
 
 import type { Route } from "./+types/auth.logout";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import {
   serializePortalSessionClearCookie,
   serializeSsoSnapshotClearCookie,
 } from "~/lib/portal-session.server";
 import { destroyPortalSession, getPortalSession } from "~/sessions.server";
 
-export function loader() {
-  return redirect("/account/login");
+export function loader({ request }: Route.LoaderArgs) {
+  const locale = resolveLocaleFromRequest(request);
+  return redirect(withLocalePrefix("/account/login", locale));
 }
 
 /**

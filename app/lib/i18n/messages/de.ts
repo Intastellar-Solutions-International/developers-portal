@@ -176,4 +176,114 @@ export const de: MessageTree = {
     signInWithIntastellar: "Mit Intastellar anmelden",
     openSignInPage: "Anmeldeseite öffnen",
   },
+  account: {
+    layoutTitle: "Konto",
+    layoutDescription:
+      "Intastellar-SSO-Profil und Entwickler-API-Schlüssel.",
+  },
+  apiKeys: {
+    metaTitle: "API-Schlüssel · inta.dev",
+    heading: "API-Schlüssel",
+    loading: "Wird geladen…",
+    setSsoBefore: "Setzen Sie",
+    setSsoAfterCode: "in Ihrer Umgebung, ",
+    setSsoAfter:
+      "um die Anmeldung zu aktivieren, und konfigurieren Sie MongoDB unten.",
+    signInToManageAfter:
+      "mit Intastellar, um Schlüssel zu erstellen und zu widerrufen. Schlüssel sind an die E-Mail Ihres Kontos gebunden.",
+    mongoBeforeUri: "Fügen Sie",
+    mongoAfterUri:
+      "(Atlas-Verbindungszeichenfolge) in Ihre Serverumgebung ein. Optional:",
+    mongoBeforeDb: "(",
+    mongoDefaultWord: "Standard",
+    mongoAfterDb: "),",
+    mongoAfterPepper:
+      "(in Produktion erforderlich — Hashing und verschlüsselte Speicherung für die erneute Anzeige in diesem Portal).",
+    sessionSyncing: "Sitzung wird mit dem Server synchronisiert…",
+    sessionHardFailP1:
+      "In der App angemeldet, aber die API-Schlüssel-Anfrage hat kein Portal-Sitzungs-Cookie. Häufige Ursachen: veralteter Loader-Cache,",
+    sessionHardFailVs: "vs.",
+    sessionHardFailP2: ", oder fehlendes",
+    sessionHardFailP3:
+      "in Produktion (das signierte Sitzungs-Cookie kann nicht erstellt werden).",
+    sessionHardFailBulletRefresh:
+      "Seite hart neu laden (vollständiger Reload) oder API-Schlüssel in einem neuen Tab öffnen.",
+    sessionHardFailBulletHostOpen:
+      "In der Entwicklung nur einen Host verwenden (",
+    sessionHardFailBulletHostClose: ").",
+    sessionHardFailBulletSecretBefore: "",
+    sessionHardFailBulletSecretAfter: "in Produktion setzen.",
+    signInAgain: "Erneut anmelden",
+    sessionAligning:
+      "Server-Sitzung wird mit Ihrem Konto abgeglichen… Falls das anhält, laden Sie die Seite neu.",
+    sessionVerifyBefore:
+      "Der Server konnte Ihr Sitzungs-Cookie nicht prüfen. Versuchen Sie nach der Anmeldung, diese Seite zu aktualisieren, oder",
+    sessionVerifyLink: "melden Sie sich ab und wieder an",
+    sessionVerifyAfter: ".",
+    newKeyBanner:
+      "Schlüssel erstellt. Der vollständige Geheimtext steht in der Tabelle unten — nutzen Sie dort {{copyKey}}. Sie können ihn mit dem Augen-Symbol ausblenden; öffnen Sie das Auge jederzeit bei angemeldeter Sitzung, um erneut anzuzeigen und zu kopieren (wir speichern serverseitig eine verschlüsselte Kopie).",
+    dismiss: "Schließen",
+    optionalHintBeforeHttps:
+      "Optionale Anmeldedomain und Logo-URL werden mit Intastellar Sign-In verwendet (wir speichern den Hostnamen; Logo muss ",
+    optionalHintAfterHttps: " sein).",
+    labelField: "Bezeichnung",
+    requiredMark: "*",
+    placeholderLabel: "z. B. Produktions-Website",
+    signInDomain: "Anmeldedomain",
+    logoUrl: "Logo-URL",
+    placeholderDomain: "app.beispiel.de",
+    placeholderLogo: "https://cdn.beispiel.de/logo.svg",
+    createKey: "Schlüssel erstellen",
+    busyEllipsis: "…",
+    emptyList:
+      "Noch keine Schlüssel. Erstellen Sie einen, um ein Geheimnis für Server oder Tools zu erhalten. Wir speichern einen Hash zur Prüfung und eine verschlüsselte Kopie, damit Sie ihn später auf dieser Seite erneut anzeigen und kopieren können.",
+    colLabel: "Bezeichnung",
+    colKey: "Schlüssel",
+    colSignInDomain: "Anmeldedomain",
+    colLogo: "Logo",
+    colCreated: "Erstellt",
+    colActions: "Aktionen",
+    copyKey: "Schlüssel kopieren",
+    copied: "Kopiert",
+    copyFailed: "Kopieren fehlgeschlagen",
+    logoUnloaded: "Nicht geladen",
+    hideKey: "Schlüssel ausblenden",
+    revealKey: "Schlüssel anzeigen zum Kopieren",
+    revealLoading: "Wird geladen…",
+    noSecretStored:
+      "Kein verschlüsseltes Geheimnis gespeichert (meist ein älterer Schlüssel). Erstellen Sie einen neuen Schlüssel, um Anzeige und Kopieren zu ermöglichen.",
+    openSignInRow: "Anmeldung",
+    closeEditor: "Schließen",
+    revoke: "Widerrufen",
+    editSignInTitle: "Intastellar Sign-In — Domain und Logo für diesen Schlüssel",
+    logoUrlHttps: "Logo-URL (https)",
+    placeholderLogoShort: "https://…",
+    saveSignInSettings: "Anmelde-Einstellungen speichern",
+    cancel: "Abbrechen",
+    errors: {
+      signInAgain:
+        "Melden Sie sich erneut an, um API-Schlüssel zu verwalten.",
+      dbNotConfiguredOnServer:
+        "Die Datenbank ist auf dem Server nicht konfiguriert.",
+      unknownAction: "Unbekannte Aktion.",
+      dbNotConfigured: "Datenbank ist nicht konfiguriert.",
+      enterLabel: "Geben Sie eine Bezeichnung für diesen Schlüssel ein.",
+      domainInvalidCreate:
+        "Die Anmeldedomain scheint ungültig. Verwenden Sie einen Hostnamen wie app.beispiel.de (Sie können eine vollständige https-URL einfügen — wir speichern nur den Host).",
+      logoInvalidCreateImage:
+        "Das Anmelde-Logo muss eine gültige https://-Bild-URL sein (oder leer bleiben).",
+      pepperMissing:
+        "Serverfehlkonfiguration: Setzen Sie API_KEY_PEPPER (langes zufälliges Geheimnis) in Produktion.",
+      invalidKeyId: "Ungültige Schlüssel-ID.",
+      keyNotFound: "Schlüssel nicht gefunden oder bereits widerrufen.",
+      noEncryptedOnFile:
+        "Für diesen Schlüssel liegt kein verschlüsseltes Geheimnis vor (meist vor Einführung der Anzeige-Funktion). Erstellen Sie einen neuen Schlüssel.",
+      decryptFailed:
+        "Entschlüsselung fehlgeschlagen (Servergeheimnis könnte sich geändert haben). Erstellen Sie einen neuen Schlüssel.",
+      domainInvalidUpdate:
+        "Die Anmeldedomain scheint ungültig. Verwenden Sie einen Hostnamen wie app.beispiel.de.",
+      logoInvalidUpdateUrl:
+        "Das Anmelde-Logo muss eine gültige https://-URL sein oder leer bleiben.",
+    },
+  },
 };

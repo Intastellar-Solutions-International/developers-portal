@@ -184,6 +184,112 @@ export const en = {
     signInWithIntastellar: "Sign in with Intastellar",
     openSignInPage: "Open sign-in page",
   },
+  account: {
+    layoutTitle: "Account",
+    layoutDescription:
+      "Intastellar SSO profile and developer API keys.",
+  },
+  apiKeys: {
+    metaTitle: "API keys · inta.dev",
+    heading: "API keys",
+    loading: "Loading…",
+    setSsoBefore: "Set",
+    setSsoAfterCode: "",
+    setSsoAfter: "to enable sign-in, then configure MongoDB below.",
+    signInToManageAfter:
+      "with Intastellar to create and revoke keys. Keys are tied to your account email.",
+    mongoBeforeUri: "Add",
+    mongoAfterUri:
+      "(Atlas connection string) to your server environment. Optional:",
+    mongoBeforeDb: "(",
+    mongoDefaultWord: "default",
+    mongoAfterDb: "),",
+    mongoAfterPepper:
+      "(required in production — hashing and encrypted-at-rest reveal in this portal).",
+    sessionSyncing: "Syncing your session with the server…",
+    sessionHardFailP1:
+      "Signed in in the app, but the API keys request still has no portal session cookie. Common causes: stale loader cache,",
+    sessionHardFailVs: "vs",
+    sessionHardFailP2: ", or missing",
+    sessionHardFailP3:
+      "in production (the signed session cookie cannot be created).",
+    sessionHardFailBulletRefresh:
+      "Hard-refresh this page (full reload), or open API keys in a new tab.",
+    sessionHardFailBulletHostOpen: "Use one host only for dev (",
+    sessionHardFailBulletHostClose: ").",
+    sessionHardFailBulletSecretBefore: "Set",
+    sessionHardFailBulletSecretAfter: "in production.",
+    signInAgain: "Sign in again",
+    sessionAligning:
+      "Aligning server session with your account… If this persists, reload the page.",
+    sessionVerifyBefore:
+      "The server could not verify your session cookie. Try refreshing this page after sign-in, or",
+    sessionVerifyLink: "sign out and sign in again",
+    sessionVerifyAfter: ".",
+    newKeyBanner:
+      "Key created. The full secret is in the table below — use {{copyKey}} there. You can hide it with the eye icon; open the eye anytime while signed in to reveal and copy again (we keep an encrypted copy server-side).",
+    dismiss: "Dismiss",
+    optionalHintBeforeHttps:
+      "Optional Sign-in domain and logo URL are used with Intastellar Sign-In (hostname we store; logo must be ",
+    optionalHintAfterHttps: ").",
+    labelField: "Label",
+    requiredMark: "*",
+    placeholderLabel: "e.g. Production website",
+    signInDomain: "Sign-in domain",
+    logoUrl: "Logo URL",
+    placeholderDomain: "app.example.com",
+    placeholderLogo: "https://cdn.example.com/logo.svg",
+    createKey: "Create key",
+    busyEllipsis: "…",
+    emptyList:
+      "No keys yet. Create one to get a secret for your servers or tooling. We store a hash for validation and an encrypted copy so you can reveal and copy it later from this page.",
+    colLabel: "Label",
+    colKey: "Key",
+    colSignInDomain: "Sign-in domain",
+    colLogo: "Logo",
+    colCreated: "Created",
+    colActions: "Actions",
+    copyKey: "Copy key",
+    copied: "Copied",
+    copyFailed: "Copy failed",
+    logoUnloaded: "Unloaded",
+    hideKey: "Hide key",
+    revealKey: "Reveal key to copy",
+    revealLoading: "Loading…",
+    noSecretStored:
+      "No encrypted secret on file (usually an older key). Create a new key to enable reveal and copy later.",
+    openSignInRow: "Sign-in",
+    closeEditor: "Close",
+    revoke: "Revoke",
+    editSignInTitle: "Intastellar Sign-In — domain & logo for this key",
+    logoUrlHttps: "Logo URL (https)",
+    placeholderLogoShort: "https://…",
+    saveSignInSettings: "Save sign-in settings",
+    cancel: "Cancel",
+    errors: {
+      signInAgain: "Sign in again to manage API keys.",
+      dbNotConfiguredOnServer: "Database is not configured on the server.",
+      unknownAction: "Unknown action.",
+      dbNotConfigured: "Database is not configured.",
+      enterLabel: "Enter a label for this key.",
+      domainInvalidCreate:
+        "Sign-in domain looks invalid. Use a hostname such as app.example.com (you may paste a full https URL — we store the host only).",
+      logoInvalidCreateImage:
+        "Sign-in logo must be a valid https:// image URL (or leave it blank).",
+      pepperMissing:
+        "Server misconfiguration: set API_KEY_PEPPER (long random secret) in production.",
+      invalidKeyId: "Invalid key id.",
+      keyNotFound: "Key not found or already revoked.",
+      noEncryptedOnFile:
+        "This key has no encrypted secret on file (usually created before reveal support). Create a new key to use reveal and copy later.",
+      decryptFailed:
+        "Could not decrypt this key (server secret may have changed). Create a new key.",
+      domainInvalidUpdate:
+        "Sign-in domain looks invalid. Use a hostname such as app.example.com.",
+      logoInvalidUpdateUrl:
+        "Sign-in logo must be a valid https:// URL or left blank.",
+    },
+  },
 } as const;
 
 export type MessageTree = DeepStringTree<typeof en>;

@@ -175,4 +175,110 @@ export const da: MessageTree = {
     signInWithIntastellar: "Log ind med Intastellar",
     openSignInPage: "Åbn login-siden",
   },
+  account: {
+    layoutTitle: "Konto",
+    layoutDescription:
+      "Intastellar SSO-profil og udvikler-API-nøgler.",
+  },
+  apiKeys: {
+    metaTitle: "API-nøgler · inta.dev",
+    heading: "API-nøgler",
+    loading: "Indlæser…",
+    setSsoBefore: "Angiv",
+    setSsoAfterCode: "i dit miljø, ",
+    setSsoAfter: "for at aktivere login, og konfigurer MongoDB nedenfor.",
+    signInToManageAfter:
+      "med Intastellar for at oprette og tilbagekalde nøgler. Nøgler er knyttet til din kontos e-mail.",
+    mongoBeforeUri: "Tilføj",
+    mongoAfterUri:
+      "(Atlas-forbindelsesstreng) til dit servermiljø. Valgfrit:",
+    mongoBeforeDb: "(",
+    mongoDefaultWord: "standard",
+    mongoAfterDb: "),",
+    mongoAfterPepper:
+      "(påkrævet i produktion — hashing og krypteret lagring til visning igen i denne portal).",
+    sessionSyncing: "Synkroniserer din session med serveren…",
+    sessionHardFailP1:
+      "Logget ind i appen, men API-nøgle-anmodningen har intet portal-session-cookie. Almindelige årsager: forældet loader-cache,",
+    sessionHardFailVs: "vs.",
+    sessionHardFailP2: ", eller manglende",
+    sessionHardFailP3:
+      "i produktion (det signerede session-cookie kan ikke oprettes).",
+    sessionHardFailBulletRefresh:
+      "Genindlæs siden hårdt (fuld reload), eller åbn API-nøgler i en ny fane.",
+    sessionHardFailBulletHostOpen: "Brug kun én vært i udvikling (",
+    sessionHardFailBulletHostClose: ").",
+    sessionHardFailBulletSecretBefore: "Angiv",
+    sessionHardFailBulletSecretAfter: "i produktion.",
+    signInAgain: "Log ind igen",
+    sessionAligning:
+      "Justerer server-session med din konto… Hvis det fortsætter, genindlæs siden.",
+    sessionVerifyBefore:
+      "Serveren kunne ikke bekræfte dit session-cookie. Prøv at opdatere siden efter login, eller",
+    sessionVerifyLink: "log ud og log ind igen",
+    sessionVerifyAfter: ".",
+    newKeyBanner:
+      "Nøgle oprettet. Den fulde hemmelighed står i tabellen nedenfor — brug {{copyKey}} dér. Du kan skjule den med øje-ikonet; åbn øjet når som helst mens du er logget ind for at vise og kopiere igen (vi gemmer en krypteret kopi på serveren).",
+    dismiss: "Luk",
+    optionalHintBeforeHttps:
+      "Valgfrit log ind-domæne og logo-URL bruges med Intastellar Sign-In (vi gemmer værtsnavnet; logo skal være ",
+    optionalHintAfterHttps: ").",
+    labelField: "Etiket",
+    requiredMark: "*",
+    placeholderLabel: "f.eks. produktionswebsite",
+    signInDomain: "Log ind-domæne",
+    logoUrl: "Logo-URL",
+    placeholderDomain: "app.eksempel.dk",
+    placeholderLogo: "https://cdn.eksempel.dk/logo.svg",
+    createKey: "Opret nøgle",
+    busyEllipsis: "…",
+    emptyList:
+      "Ingen nøgler endnu. Opret én for at få en hemmelighed til servere eller værktøjer. Vi gemmer en hash til validering og en krypteret kopi, så du kan vise og kopiere den senere fra denne side.",
+    colLabel: "Etiket",
+    colKey: "Nøgle",
+    colSignInDomain: "Log ind-domæne",
+    colLogo: "Logo",
+    colCreated: "Oprettet",
+    colActions: "Handlinger",
+    copyKey: "Kopiér nøgle",
+    copied: "Kopieret",
+    copyFailed: "Kopiering mislykkedes",
+    logoUnloaded: "Ikke indlæst",
+    hideKey: "Skjul nøgle",
+    revealKey: "Vis nøgle for at kopiere",
+    revealLoading: "Indlæser…",
+    noSecretStored:
+      "Ingen krypteret hemmelighed på fil (ofte en ældre nøgle). Opret en ny nøgle for at kunne vise og kopiere senere.",
+    openSignInRow: "Log ind",
+    closeEditor: "Luk",
+    revoke: "Tilbagekald",
+    editSignInTitle: "Intastellar Sign-In — domæne og logo for denne nøgle",
+    logoUrlHttps: "Logo-URL (https)",
+    placeholderLogoShort: "https://…",
+    saveSignInSettings: "Gem log ind-indstillinger",
+    cancel: "Annuller",
+    errors: {
+      signInAgain: "Log ind igen for at administrere API-nøgler.",
+      dbNotConfiguredOnServer: "Databasen er ikke konfigureret på serveren.",
+      unknownAction: "Ukendt handling.",
+      dbNotConfigured: "Databasen er ikke konfigureret.",
+      enterLabel: "Angiv en etiket for denne nøgle.",
+      domainInvalidCreate:
+        "Log ind-domænet ser ugyldigt ud. Brug et værtsnavn som app.eksempel.dk (du kan indsætte en fuld https-URL — vi gemmer kun værten).",
+      logoInvalidCreateImage:
+        "Log ind-logo skal være en gyldig https://-billede-URL (eller stå tom).",
+      pepperMissing:
+        "Serverfejl: angiv API_KEY_PEPPER (lang tilfældig hemmelighed) i produktion.",
+      invalidKeyId: "Ugyldigt nøgle-id.",
+      keyNotFound: "Nøgle ikke fundet eller allerede tilbagekaldt.",
+      noEncryptedOnFile:
+        "Denne nøgle har ingen krypteret hemmelighed på fil (ofte oprettet før visning). Opret en ny nøgle.",
+      decryptFailed:
+        "Kunne ikke dekryptere denne nøgle (serverhemmelighed kan være ændret). Opret en ny nøgle.",
+      domainInvalidUpdate:
+        "Log ind-domænet ser ugyldigt ud. Brug et værtsnavn som app.eksempel.dk.",
+      logoInvalidUpdateUrl:
+        "Log ind-logo skal være en gyldig https://-URL eller stå tom.",
+    },
+  },
 };

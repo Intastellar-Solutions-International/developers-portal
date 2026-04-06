@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 
 import type { Route } from "./+types/account.login";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
+import { useLocalizedHref } from "~/providers/i18n-provider";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Sign in · inta.dev" }];
@@ -10,13 +11,14 @@ export function meta({}: Route.MetaArgs) {
 
 export default function AccountLogin() {
   const navigate = useNavigate();
+  const profileHref = useLocalizedHref("/account/profile");
   const { authReady, configured, isLoading, isSignedIn, signin, error } =
     useIntastellarAuth();
 
   useEffect(() => {
     if (!authReady || !configured || !isSignedIn) return;
-    navigate("/account/profile", { replace: true });
-  }, [authReady, configured, isSignedIn, navigate]);
+    navigate(profileHref, { replace: true });
+  }, [authReady, configured, isSignedIn, navigate, profileHref]);
 
   return (
     <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
