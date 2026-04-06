@@ -34,6 +34,11 @@ Always show a safe message to the user and log `error_description` server-side f
 
 Authorization codes are usually **single-use** and short-lived. If the user double-submits the callback or you retry with the same code, expect `invalid_grant`.
 
+## React SDK (popup)
+
+- **Popup blocked** — the SDK opens a new window; browsers may block it. Allow popups for your origin or use a flow that does not rely on `window.open` if your product supports it.
+- **Still “signed in” after portal logout** — third-party cookies or IdP session can make `getUsers()` return a user until IdP logout or cookie cleanup; see [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+
 ## Troubleshooting checklist
 
 - [Redirect URI](/docs/accounts-sign-in/web/redirect-uris) matches the registered value **exactly** (scheme, host, path, no extra query).

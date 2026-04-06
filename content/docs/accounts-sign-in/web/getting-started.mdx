@@ -1,52 +1,62 @@
 ---
 title: Web sign-in — Getting started
 sidebar_label: Getting started
-description: Register your application, choose a client type, and plan redirects and sessions for Intastellar Accounts web sign-in.
+description: Register your Intastellar client, choose public vs confidential, and plan redirects and sessions.
 order: 10
 ---
 
-Before you call any endpoint, configure an **OAuth/OIDC-style client** for your product in the Intastellar developer console (or equivalent registration UI your team uses).
+Intastellar Sign-In supports more than one integration style. Pick the path that matches your stack:
+
+| You are building… | Start here |
+| ----------------- | ---------- |
+| **React** app | [Intastellar Sign-In — React SDK and plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) — aligns with the [official npm package](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme). |
+| **JS without React** | [JavaScript without React](/docs/accounts-sign-in/web/javascript-without-react) — migrated from the former developers-site JS docs. |
+| **Custom OAuth code flow** (any server) | Continue below, then [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow). |
+
+The sections below focus on **registering a client** and planning **redirects / sessions** for **your** applications. They complement the SDK-focused guide, which uses **illustrative** code only.
 
 ## 1. Register your application
 
-Create an application record and capture:
+Create an **OAuth/OIDC-style client** in the Intastellar registration flow your team uses. Capture:
 
-- **Client ID** — public identifier for your app (safe to ship in front-end code for public clients).
-- **Client secret** — only for **confidential** (server-side) clients; never expose in the browser or mobile app binaries.
-- **Redirect URIs** — exact HTTPS URLs where Intastellar may return the user after sign-in. See [Redirect URIs and callbacks](/docs/accounts-sign-in/web/redirect-uris).
+- **Client ID** — public identifier (safe in front-end code for **public** clients).
+- **Client secret** — only for **confidential** (server-side) clients; never ship it in the browser or app binaries.
+- **Redirect / login URIs** — exact URLs Intastellar may use when returning the user or completing sign-in. See [Redirect URIs and callbacks](/docs/accounts-sign-in/web/redirect-uris).
 
-Use separate client registrations for production and staging so redirect URIs and secrets stay isolated.
+Use **separate** clients (or isolated redirect lists) for production and staging.
 
 ## 2. Choose a flow
 
 | Your app | Recommended approach |
 | -------- | -------------------- |
-| Single-page app (React, Vue, etc.) | Authorization code with **PKCE**; no client secret in the browser. |
-| Server-rendered site (session cookies) | Code flow: browser completes the redirect; your **server** exchanges the code using the client secret. |
-| Mobile / native | Same ideas as SPA: PKCE, custom URL scheme or HTTPS redirect. |
+| **React** | [`@intastellar/signin-sdk-react`](https://www.npmjs.com/package/@intastellar/signin-sdk-react) — see [integrating React and JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript). |
+| **Vanilla JS** | [JavaScript without React](/docs/accounts-sign-in/web/javascript-without-react). |
+| **SPA (custom)** | Authorization code with **PKCE**; no client secret in the browser. |
+| **Server-rendered site** | Browser completes redirect; your **server** exchanges the code with the **client secret**. |
+| **Mobile / native** | PKCE, custom scheme or HTTPS redirect. |
 
 Details: [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow), [SPAs and JavaScript](/docs/accounts-sign-in/web/spa-and-javascript), [Server-side exchange](/docs/accounts-sign-in/web/backend-exchange).
 
 ## 3. Endpoints and metadata
 
-Your console should list (or you obtain from discovery):
+Your registration or Intastellar’s guide should list (or link to discovery for):
 
-- **Authorization endpoint** — user is sent here to sign in and approve scopes.
-- **Token endpoint** — your backend (or a secure BFF) exchanges the code for tokens.
-- **Issuer / JWKS** — for validating ID tokens when you use OpenID Connect.
+- **Authorization endpoint** — user signs in (for code-flow integrations).
+- **Token endpoint** — exchange code for tokens.
+- **Issuer / JWKS** — for validating ID tokens with OpenID Connect.
 
-Placeholders in examples on this site are written as `AUTHORIZATION_ENDPOINT` and `TOKEN_ENDPOINT`; substitute the values from your environment.
+Examples in these guides use placeholders such as `AUTHORIZATION_ENDPOINT` and `TOKEN_ENDPOINT`.
 
 ## 4. Plan sessions
 
-Decide how your site remembers the user after sign-in:
+Decide how **your origin** remembers the user:
 
-- **HTTP-only, Secure cookies** set by your server (recommended for traditional web apps).
-- **Backend session** with only an opaque session id in the cookie.
-- **Short-lived access token** in memory for SPAs, with refresh via a **backend-for-frontend** when possible.
+- **HttpOnly session cookies** from your server (typical for traditional apps).
+- **Opaque session id** plus server-side store.
+- **Short-lived access token in memory** for SPAs, with a **BFF** when possible.
 
-See [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+If you use the **SDK**, it may set **first-party** cookies on your domain; combine that with your own session if you need server-rendered pages—see [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
 
 ## Next steps
 
-Continue with [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow) to implement the first redirect and callback.
+[Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow) — for hand-rolled authorize + callback + token integrations.

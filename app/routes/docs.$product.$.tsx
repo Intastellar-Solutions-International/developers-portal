@@ -12,7 +12,7 @@ import {
   getDocsNavFlat,
   loadDoc,
 } from "~/lib/docs.server";
-import { parseDocSplat } from "~/lib/docs-versions";
+import { docHref, parseDocSplat } from "~/lib/docs-versions";
 import { buildDocPageMeta } from "~/lib/seo";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
@@ -21,6 +21,15 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const parsed = parseDocSplat(product, splat);
   if ("redirect" in parsed) throw redirect(parsed.redirect);
   const { version, docPath } = parsed;
+
+  if (
+    product === "accounts-sign-in" &&
+    docPath === "javascript/plain-html-and-js"
+  ) {
+    throw redirect(
+      docHref(product, version, "web/javascript-without-react"),
+    );
+  }
 
   const doc = await loadDoc(product, docPath);
   if (!doc) throw data("Not found", { status: 404 });

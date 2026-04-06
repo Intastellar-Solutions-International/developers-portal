@@ -7,9 +7,17 @@ order: 20
 
 The **authorization code** flow is the standard pattern for web sign-in: the browser visits Intastellar, the user authenticates, and Intastellar redirects back to your site with a **code** you exchange for tokens.
 
+## React SDK (popup) vs this guide
+
+If you use **`@intastellar/signin-sdk-react`**, sign-in typically runs in a **popup**: Intastellar returns a token to your page via `postMessage`, the SDK verifies it, and optional hooks (e.g. `loginCallback`) run. You do **not** manually build the `GET` authorize URL and `POST` token request in that mode.
+
+Use this page when you implement the **authorize + callback + token** sequence yourself (non-React, mobile, or custom server). For the **React SDK** or **plain JS** path, see [Intastellar Sign-In — React SDK and plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+Parameter names below follow **common** OAuth 2.0 / OIDC usage — confirm **exact** names, scopes, and discovery URLs in your Intastellar client registration and integration guide.
+
 ## Step 1 — Redirect the user to authorize
 
-Send the user’s browser to the authorization endpoint with query parameters (names follow common OAuth 2.0 / OIDC conventions; confirm exact names in your console):
+Send the user’s browser to the authorization endpoint with query parameters:
 
 | Parameter | Purpose |
 | --------- | ------- |
@@ -72,4 +80,4 @@ The response usually includes `access_token`, optional `refresh_token`, and an `
 ## Next
 
 - [Redirect URIs and callbacks](/docs/accounts-sign-in/web/redirect-uris) — tighten registration and avoid mismatch errors.
-- [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — how Intastellar and your app set cookies such as `inta_acc` and `inta_state`.
+- [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — SDK cookies on your origin and your own session model.

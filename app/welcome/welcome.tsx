@@ -245,8 +245,8 @@ export function Welcome() {
               Intastellar Accounts
             </h2>
             <p className="mt-2 flex-1 text-sm leading-relaxed text-violet-950/70 dark:text-violet-100/70">
-              OAuth-style sign-in, PKCE, sessions, and security patterns for your
-              apps and sites.
+              React SDK on inta.dev, OAuth-style flows, PKCE, sessions, and
+              security patterns for your apps and sites.
             </p>
             <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-800 dark:text-violet-200">
               Open documentation

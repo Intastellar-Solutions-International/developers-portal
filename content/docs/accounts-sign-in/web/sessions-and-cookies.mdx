@@ -1,37 +1,44 @@
 ---
 title: Sessions, cookies, and tokens
 sidebar_label: Sessions & cookies
-description: How Intastellar Accounts uses cookies such as inta_acc and inta_state, and how to combine them with your own session model.
+description: SDK cookies on your origin, IdP hosts, and how to design your own session for Intastellar Sign-In.
 order: 40
 ---
 
-After a successful sign-in you may see Intastellar-set cookies on domains used by the Accounts / identity experience. On **developers.intastellarsolutions.com**, privacy disclosures reference cookies including:
+Treat cookies and tokens in three layers: **Intastellar-hosted** (login UI), **your site’s origin** (SDK or your session), and **your backend** (opaque sessions, verification).
 
-| Cookie (examples) | Typical role |
-| ----------------- | ------------- |
-| `inta_acc` | Session-related token for the Accounts experience. |
-| `inta_state` | State for the sign-in / consent flow. |
+## On your site’s origin
 
-Exact behavior can evolve with the identity product; treat these as **Intastellar-managed** cookies on Intastellar-controlled hosts. Your integration should not depend on reading Intastellar cookies from your own origin unless documentation explicitly says you can.
+When you use **`@intastellar/signin-sdk-react`** or a **vanilla** flow that mirrors it, the integration may set **first-party** cookies after sign-in so the tab remembers the user. Exact names and semantics are defined by the **SDK and Intastellar’s documentation** ([npm readme](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme), [JavaScript without React](/docs/accounts-sign-in/web/javascript-without-react))—do not assume they match another project’s deployment.
 
-## Your application session
+Your application code should treat them as **SDK-managed** unless Intastellar tells you otherwise.
 
-For **your** site (`app.example.com`), prefer:
+## Your own session cookie (recommended pattern)
 
-1. **Your own session cookie** — opaque session ID, `HttpOnly`, `Secure`, `SameSite` appropriate for your topology (`Lax` or `Strict` for same-site; `None` only with `Secure` if you must cross sites).
-2. **Server-side session store** — map session id to user id, token expiry, and refresh handling.
-3. **Short-lived access token in memory** (SPA) — paired with a BFF or silent refresh pattern; avoid long-lived tokens in `localStorage` when possible.
+If you run a **backend** or **BFF**, prefer:
+
+1. **Opaque session id** in an **HttpOnly**, **Secure** cookie, with `SameSite` suited to your topology.
+2. **Server-side store** mapping that id to user id, expiry, and refresh handling.
+3. Establish or refresh that session only after your server **trusts** the sign-in outcome (e.g. token validation per your integration guide).
+
+See [integrating React and JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) for a high-level “optional server session” pattern using **example** URLs only.
+
+## On Intastellar-controlled hosts
+
+While the user signs in at Intastellar, the **identity host** may set **its own** cookies (SSO, session). Those are **not** readable from your origin’s JavaScript. Rely on **tokens**, **your session**, or the **SDK**, not on reading IdP cookies cross-site.
 
 ## ID token vs access token
 
-- **ID token** — JWT about the authentication event; use to establish who signed in; validate signature and claims (`iss`, `aud`, `exp`, `nonce` if used).
-- **Access token** — call Intastellar (or resource) APIs; treat as opaque unless you need to parse it.
+When you use OAuth-style **token** responses (manual code flow):
+
+- **ID token** — JWT about the authentication event; validate `iss`, `aud`, `exp`, signature (and `nonce` if used).
+- **Access token** — call APIs; treat as opaque unless you need to parse it.
 
 ## Logout
 
-Clear **your** session cookie and, if required by your product policy, redirect the user through Intastellar’s **end-session** or logout endpoint so IdP cookies are cleared. See [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).
+Clear **your** session and follow **SDK / Intastellar** guidance for signing out. If an **end-session** URL is available, redirecting there clears IdP SSO cookies on the identity domain. See [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).
 
 ## Next
 
-- [SPAs and JavaScript clients](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE and front-end constraints.
-- [Server-side (confidential) clients](/docs/accounts-sign-in/web/backend-exchange) — exchanging the code without exposing secrets.
+- [SPAs and JavaScript clients](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE and SDK overview.
+- [Server-side (confidential) clients](/docs/accounts-sign-in/web/backend-exchange) — code exchange without exposing secrets.

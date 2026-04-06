@@ -7,6 +7,8 @@ order: 60
 
 When you have a trusted server (Node, .NET, PHP, etc.), perform the **token exchange** there so the **client secret** never reaches the browser.
 
+This is the right model for **custom** OAuth code integrations. The **React SDK** and **plain JS** paths (popup / script integration) are separate—see [Intastellar Sign-In — React SDK and plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
 ## Sequence
 
 1. Browser completes the redirect flow and lands on your callback with `code` and `state`.

@@ -1,36 +1,38 @@
 ---
 title: Intastellar Accounts — Sign in
-description: Web sign-in with Intastellar Accounts on inta.dev — OAuth-style flows, PKCE, redirects, sessions, and security.
+description: Web sign-in with Intastellar Accounts — React SDK, plain JS, OAuth-style flows, PKCE, redirects, and sessions.
 hub_order: 20
-hub_tagline: OAuth-style web sign-in — PKCE, redirects, sessions, and security.
+hub_tagline: Web sign-in — React & JS SDK, OAuth-style flows, PKCE, redirects, and sessions.
 order: 0
 ---
 
-Intastellar Accounts is the identity layer for Intastellar products. This documentation describes how to add **web** sign-in so users can authenticate with the same account they use across Intastellar services.
+**Intastellar Accounts** is the identity layer for Intastellar products. These guides explain how to add **web sign-in** so people can use the same account across Intastellar services.
 
-## What you will build
+**inta.dev** hosts this documentation, search, and may offer **signed-in tools** (such as developer credentials) depending on the product—implementation details stay in your own deployment docs.
 
-1. Send the user to Intastellar to sign in (authorization step).
-2. Receive them back on your site with a short-lived **authorization code**.
-3. Exchange that code for tokens (and optionally establish your own session).
-4. Keep the session secure in the browser and on your servers.
+## What you can build
+
+**In your own sites and apps:**
+
+1. Use the **React SDK** ([integrating React and JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript)) or **JavaScript without React** ([JavaScript without React](/docs/accounts-sign-in/web/javascript-without-react)) for browser sign-in, **or**
+2. Implement an **OAuth-style authorization code** flow (often with **PKCE**) for custom stacks—see the web guides below.
 
 ## Guides (Sign in — Web)
 
-- [Getting started](/docs/accounts-sign-in/web/getting-started) — prerequisites, register an app, pick a flow.
-- [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow) — auth URL, `state`, PKCE, and the code exchange.
+- [Intastellar Sign-In — React SDK and plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) — **React** patterns with **placeholder** examples; links to [npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme).
+- [JavaScript without React](/docs/accounts-sign-in/web/javascript-without-react) — **migrated** from the former `developers.intastellarsolutions.com/…/js-docs` page: popup, `postMessage` handshake, `IntastellarAPI`, limits of the npm package without React.
+- [Getting started](/docs/accounts-sign-in/web/getting-started) — register a client, choose public vs confidential, plan redirects and sessions.
+- [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow) — auth URL, `state`, PKCE, and code exchange (custom integrations).
 - [Redirect URIs and callbacks](/docs/accounts-sign-in/web/redirect-uris) — allowed URLs, validation, and common mistakes.
-- [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — `inta_acc`, `inta_state`, and storage choices.
-- [SPAs and JavaScript clients](/docs/accounts-sign-in/web/spa-and-javascript) — public clients and PKCE in the browser.
+- [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — your origin, SDK, and your session model.
+- [SPAs and JavaScript clients](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE and SDK path.
 - [Server-side (confidential) clients](/docs/accounts-sign-in/web/backend-exchange) — exchanging the code on your backend.
-- [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors) — ending sessions and fixing typical issues.
+- [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors) — ending sessions and typical issues.
 
-## Related products
+## Related
 
-- [Intastellar Consents (cookie banner)](/docs/cookie-banner) — GDPR consent UI if you also need a cookie banner on the same site.
+- [Intastellar Consents (cookie banner)](/docs/cookie-banner) — consent UI if you also need a banner on the same property.
 
-## Note on the legacy docs URL
+## Legacy developer URL
 
-Content that was previously published under  
-[developers.intastellarsolutions.com/identity/sign-in/web/docs](https://developers.intastellarsolutions.com/identity/sign-in/web/docs)  
-is maintained **here on inta.dev** as the developer platform for Intastellar. Use the guides above as the current reference.
+Older links may point at **`developers.intastellarsolutions.com`** (including **`…/identity/sign-in/web/docs/js-docs`**). Prefer **HTTPS redirects** to **inta.dev**; the **plain HTML / JavaScript** guide above is the home for that content. Update **OAuth client redirect / login URIs** so they match the live URLs you serve.

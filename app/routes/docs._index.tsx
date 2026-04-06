@@ -7,7 +7,7 @@ import { requestOpenSearch } from "~/lib/search-overlay-context";
 import { buildDocsHubMeta } from "~/lib/seo";
 
 const HUB_DESCRIPTION =
-  "Ship Intastellar Consents (cookie banner) and Intastellar Accounts web sign-in: JavaScript, WordPress, OAuth-style flows, API keys, and integration patterns on inta.dev.";
+  "Ship Intastellar Consents (cookie banner) and Intastellar Accounts web sign-in — JavaScript, WordPress, React SDK, plain HTML/JS, OAuth-style flows, and integration patterns on inta.dev.";
 
 export async function loader(_: Route.LoaderArgs) {
   const products = await listProducts();
@@ -59,8 +59,18 @@ export default function DocsIndex() {
       href: docHref("cookie-banner", vCb, "wordpress/getting-started"),
     },
     {
+      label: "Accounts — React & plain JS",
+      hint: "SDK on npm, HTML/JS on inta.dev, placeholder examples",
+      href: docHref("accounts-sign-in", vAcc, "web/integrating-react-and-javascript"),
+    },
+    {
+      label: "Accounts — JS without React",
+      hint: "Migrated js-docs: popup handshake, IntastellarAPI",
+      href: docHref("accounts-sign-in", vAcc, "web/javascript-without-react"),
+    },
+    {
       label: "Accounts — Get started",
-      hint: "Register app, redirects, first flow",
+      hint: "Register client, SDK vs manual OAuth, flows",
       href: docHref("accounts-sign-in", vAcc, "web/getting-started"),
     },
     {

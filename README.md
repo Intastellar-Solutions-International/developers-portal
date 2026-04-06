@@ -1,87 +1,30 @@
-# Welcome to React Router!
+# Intastellar Developers (`inta.dev`)
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Developer documentation and tools for **Intastellar** products. Public site: **https://inta.dev**.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## Documentation
 
-## Features
+Guides live under **`/docs`** (versioned URLs). Sign-in content distinguishes:
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- **React & JS without React** — [`@intastellar/signin-sdk-react`](https://www.npmjs.com/package/@intastellar/signin-sdk-react) plus **`/docs/accounts-sign-in/v1/web/javascript-without-react`** on inta.dev (migrated from the former developers-site sign-in JS docs).
+- **OAuth-style code flow** — for custom server and mobile integrations.
 
-## Getting Started
+Traffic from older developer hostnames should **redirect** to inta.dev; update **OAuth client URIs** to match your live URLs.
 
-### Installation
-
-Install the dependencies:
+## Development
 
 ```bash
 npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
+Set **your** client id and other secrets per your environment (see internal runbooks). Production requires proper session and database configuration for any signed-in features you enable.
 
 ```bash
 npm run build
+npm run start
 ```
 
-## Deployment
+## Stack
 
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+React Router 7, React 19, Tailwind CSS, MDX docs.

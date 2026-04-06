@@ -5,9 +5,11 @@ description: Use PKCE without a client secret, protect tokens in the browser, an
 order: 50
 ---
 
-Single-page applications cannot safely store a **client secret**. Use the authorization code flow with **PKCE** only.
+Single-page applications cannot safely store a **client secret**. Use the authorization code flow with **PKCE** only, **or** use the official **`@intastellar/signin-sdk-react`** package if you target React and Intastellar supports it for your client — the SDK uses a **popup** and token verification instead of you wiring the authorize URL and token `POST` by hand.
 
-## Flow summary
+For React and vanilla JS patterns (with **placeholder** examples only), see [Intastellar Sign-In — React SDK and plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Flow summary (manual code + PKCE)
 
 1. Generate `code_verifier` (high-entropy random string) and derive `code_challenge` (S256).
 2. Store `code_verifier` where you can read it on callback — e.g. `sessionStorage` for the tab, or an encrypted cookie via a small BFF.

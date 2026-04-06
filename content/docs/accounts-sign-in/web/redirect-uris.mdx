@@ -5,7 +5,9 @@ description: Register exact callback URLs for Intastellar Accounts web sign-in a
 order: 30
 ---
 
-Intastellar only redirects to **pre-registered** URLs. A typo, wrong scheme, or trailing slash mismatch causes `redirect_uri_mismatch` or similar errors.
+Intastellar only completes sign-in return flows to **pre-registered** URLs (or URIs your client registration allows for the **login URI** used by the React SDK). A typo, wrong scheme, or trailing slash mismatch causes `redirect_uri_mismatch` or similar errors.
+
+If you **change the public hostname** of your app (for example after a domain migration), update your Intastellar client so allowed **redirect / login** entries match the **new** origin and paths. SDKs often derive a **login URI** from the current page (`hostname`, `port`, `pathname`) unless you override it—register the values you actually send.
 
 ## Rules of thumb
 
