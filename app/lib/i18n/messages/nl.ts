@@ -284,4 +284,75 @@ export const nl: MessageTree = {
         "Inloglogo moet een geldige https://-URL zijn of leeg blijven.",
     },
   },
+  status: {
+    metaTitle: "Systeemstatus · inta.dev",
+    metaDescription:
+      "Beschikbaarheidscontroles voor openbare Intastellar-endpoints (Consents, CDN, inta.dev).",
+    heading: "Systeemstatus",
+    introBeforeLink:
+      "Geautomatiseerde HTTP-controles vanaf inta.dev. Machineleesbare momentopname:",
+    introAfterLink: ".",
+    ariaUptimeStored: "Beschikbaarheid uit opgeslagen geplande controles",
+    uptimeWord: "beschikbaarheid",
+    uptimeStoredRunsBefore:
+      "We voeren deze controles automatisch volgens een schema uit. Van de laatste",
+    uptimeStoredRunsMid: "runs waren",
+    uptimeStoredRunsAfter:
+      "volledig succesvol (alle services reageerden normaal in die run).",
+    devLiveProbeBefore: "Ontwikkelmodus:",
+    devLiveProbeStrong: "live-controle",
+    devLiveProbeAfter:
+      "(niet opgeslagen). In productie geldt de laatste door de cron geschreven momentopname.",
+    ariaUptimeDev: "Beschikbaarheid alleen uit ontwikkelingscontrole",
+    onThisPageLoad: "bij het laden van deze pagina",
+    devUptimeNote:
+      "Ontwikkelmodus — niet gemiddeld over opgeslagen geschiedenis. Productie toont beschikbaarheid uit geplande cron-runs.",
+    uptimePending:
+      "Het beschikbaarheidspercentage verschijnt hier nadat de status-cron minstens één rij naar de geschiedenis heeft geschreven (tijdlijnen gebruiken dezelfde opslag).",
+    noSnapshotCron:
+      "Nog geen momentopname. Roep de cron-route één keer aan (zie Vercel Cron) of wacht op de volgende geplande run.",
+    noSnapshotMongo:
+      "MongoDB is niet geconfigureerd — momentopnamen worden niet opgeslagen. In ontwikkeling voert deze pagina controles uit bij elke load; stel MONGODB_URI en CRON_SECRET in op Vercel voor productiemonitoring.",
+    allChecksPassing: "Alle controles geslaagd",
+    someChecksFailing: "Sommige controles mislukken",
+    updated: "Bijgewerkt",
+    storedUtc: " (opgeslagen, UTC)",
+    utcOnly: " (UTC)",
+    httpStatus: "HTTP {{code}}",
+    noResponse: "Geen antwoord",
+    footnoteAria: "Technische details voor beheer van deze statuspagina",
+    footnoteTitle: "Voetnoot — hosting en configuratie",
+    footnoteP1Before: "Deze pagina is openbaar. Onderstaande is bedoeld voor",
+    footnoteP1Strong: "teams die inta.dev uitrollen",
+    footnoteP1After: "(omgevingsvariabelen, gegevensbewaring).",
+    footnoteP2a: "Configureer doelen met",
+    footnoteP2b: "(volledige vervanging) of",
+    footnoteP2c:
+      "(toevoegen). Een controle telt als geslaagd als de HTTP-status onder 500 is. Het incidentlog toont opgeslagen cron-runs waarbij een doel faalde, inclusief probetekst indien opgeslagen. Tijdlijnen, incidentlog en latentietrends gebruiken de laatste",
+    footnoteP2d:
+      "runs (14 dagen TTL in Mongo). Het kop-beschikbaarheidspercentage gebruikt hetzelfde venster: het deel runs waarin alle doelen slaagden. Tijden op deze pagina zijn UTC. Nieuwe geschiedenisrijen slaan per doel",
+    footnoteP2e:
+      " op; oudere rijen sturen nog steeds omhoog/omlaag-segmenten tot ze verlopen.",
+    incidentHeading: "Incidentlog",
+    incidentEmptyBody:
+      "Een incident is een opgeslagen cron-run waarin minstens één doel uitviel (HTTP 5xx, time-out of geen antwoord — dezelfde regels als live controles). Als recente geschiedenis overal slaagde, blijft deze lijst leeg.",
+    incidentListIntro:
+      "Elke rij is één cron-run waarin minstens één controle faalde (nieuwste eerst). Tijden in UTC. Berichten komen van de probe indien beschikbaar; oudere geschiedenis kan alleen een generieke reden tonen.",
+    degraded: "Verstoord",
+    timelineNoHistory:
+      "Nog geen geschiedenis. Zodra MongoDB en cron runs opslaan, verschijnen recente controles hier.",
+    timelineCurrentCheckDev: "Alleen huidige controle (dev)",
+    timelineRecentChecks: "Recente controles ({{count}})",
+    timelineAriaSummary: "{{n}} controles: {{ups}} OK, {{fails}} mislukt",
+    timelineTooltipUp: "{{time}} — OK",
+    timelineTooltipDown: "{{time}} — Mislukt",
+    latencyNeedsTwoRuns:
+      "Responstijd-trend heeft minstens twee opgeslagen runs met latentie nodig (nadat de volgende cron latencyMs schrijft).",
+    latencyResponseTime: "Responstijd ({{label}})",
+    latencyAriaTrend:
+      "Latentietrend voor {{label}}: {{min}}–{{max}} ms over {{n}} controles",
+    latencyMin: "Min",
+    latencyMax: "Max",
+    latencyLatest: "Laatste",
+  },
 };

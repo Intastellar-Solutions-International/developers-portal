@@ -284,4 +284,75 @@ export const fr: MessageTree = {
         "Le logo doit être une URL https:// valide ou rester vide.",
     },
   },
+  status: {
+    metaTitle: "État du système · inta.dev",
+    metaDescription:
+      "Vérifications de disponibilité des points d’accès publics Intastellar (Consents, CDN, inta.dev).",
+    heading: "État du système",
+    introBeforeLink:
+      "Vérifications HTTP automatisées depuis inta.dev. Instantané lisible par machine :",
+    introAfterLink: ".",
+    ariaUptimeStored: "Disponibilité à partir des vérifications planifiées stockées",
+    uptimeWord: "disponibilité",
+    uptimeStoredRunsBefore:
+      "Nous exécutons ces vérifications automatiquement selon un planning. Sur les",
+    uptimeStoredRunsMid: "dernières exécutions, ",
+    uptimeStoredRunsAfter:
+      "se sont terminées sans incident (tous les services ont répondu normalement pendant l’exécution).",
+    devLiveProbeBefore: "Mode développement : affichage d’une sonde",
+    devLiveProbeStrong: "en direct",
+    devLiveProbeAfter:
+      "(non enregistrée). En production, c’est le dernier instantané écrit par la tâche cron qui s’applique.",
+    ariaUptimeDev: "Disponibilité issue uniquement d’une vérification de développement",
+    onThisPageLoad: "sur ce chargement de page",
+    devUptimeNote:
+      "Mode développement — pas de moyenne sur l’historique stocké. En production, la disponibilité affichée provient des exécutions cron planifiées.",
+    uptimePending:
+      "Le pourcentage de disponibilité s’affichera ici après qu’au moins une ligne ait été écrite dans l’historique par le cron de statut (les chronologies utilisent le même stockage).",
+    noSnapshotCron:
+      "Pas encore d’instantané. Déclenchez la route cron une fois (voir Vercel Cron) ou attendez la prochaine exécution planifiée.",
+    noSnapshotMongo:
+      "MongoDB n’est pas configuré — les instantanés ne sont pas stockés. En développement, cette page exécute des vérifications à chaque chargement ; définissez MONGODB_URI et CRON_SECRET sur Vercel pour la surveillance en production.",
+    allChecksPassing: "Toutes les vérifications OK",
+    someChecksFailing: "Certaines vérifications échouent",
+    updated: "Mis à jour",
+    storedUtc: " (stocké, UTC)",
+    utcOnly: " (UTC)",
+    httpStatus: "HTTP {{code}}",
+    noResponse: "Pas de réponse",
+    footnoteAria: "Détails techniques pour l’exploitation de cette page de statut",
+    footnoteTitle: "Note — hébergement et configuration",
+    footnoteP1Before: "Cette page est publique. Les informations ci-dessous s’adressent aux",
+    footnoteP1Strong: "équipes qui déploient inta.dev",
+    footnoteP1After: "(variables d’environnement, conservation des données).",
+    footnoteP2a: "Configurez les cibles avec",
+    footnoteP2b: "(remplacement complet) ou",
+    footnoteP2c:
+      "(ajout). Une vérification est considérée comme réussie lorsque le statut HTTP est strictement inférieur à 500. Le journal d’incidents liste les exécutions cron stockées où une cible a échoué, avec le texte d’erreur de la sonde lorsqu’il est enregistré. Les chronologies, le journal et les tendances de latence utilisent les",
+    footnoteP2d:
+      "dernières exécutions (TTL 14 jours dans Mongo). Le pourcentage de disponibilité en tête utilise la même fenêtre : la fraction d’exécutions où toutes les cibles ont réussi. Les heures sur cette page sont en UTC. Les nouvelles lignes d’historique enregistrent par cible",
+    footnoteP2e:
+      " ; les lignes plus anciennes alimentent encore les segments haut/bas jusqu’à expiration.",
+    incidentHeading: "Journal des incidents",
+    incidentEmptyBody:
+      "Un incident est une exécution cron stockée où au moins une cible était indisponible (HTTP 5xx, délai dépassé ou pas de réponse — mêmes règles que les vérifications en direct). Si tout l’historique récent a réussi, cette liste reste vide.",
+    incidentListIntro:
+      "Chaque ligne est une exécution cron où au moins une vérification a échoué (les plus récentes en premier). Heures en UTC. Les messages proviennent de la sonde lorsque c’est possible ; les entrées plus anciennes peuvent n’indiquer qu’une raison générique.",
+    degraded: "Dégradé",
+    timelineNoHistory:
+      "Pas encore d’historique. Une fois MongoDB et le cron enregistrés, les vérifications récentes apparaissent ici.",
+    timelineCurrentCheckDev: "Vérification actuelle uniquement (dev)",
+    timelineRecentChecks: "Vérifications récentes ({{count}})",
+    timelineAriaSummary: "{{n}} vérifications : {{ups}} OK, {{fails}} en échec",
+    timelineTooltipUp: "{{time}} — OK",
+    timelineTooltipDown: "{{time}} — Échec",
+    latencyNeedsTwoRuns:
+      "La tendance des temps de réponse nécessite au moins deux exécutions stockées avec latence (après que le prochain cron ait écrit latencyMs).",
+    latencyResponseTime: "Temps de réponse ({{label}})",
+    latencyAriaTrend:
+      "Tendance de latence pour {{label}} : {{min}}–{{max}} ms sur {{n}} vérifications",
+    latencyMin: "Min",
+    latencyMax: "Max",
+    latencyLatest: "Dernier",
+  },
 };

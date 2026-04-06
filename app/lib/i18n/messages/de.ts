@@ -288,4 +288,75 @@ export const de: MessageTree = {
         "Das Anmelde-Logo muss eine gültige https://-URL sein oder leer bleiben.",
     },
   },
+  status: {
+    metaTitle: "Systemstatus · inta.dev",
+    metaDescription:
+      "Verfügbarkeitsprüfungen für öffentliche Intastellar-Endpunkte (Consents, CDN, inta.dev).",
+    heading: "Systemstatus",
+    introBeforeLink:
+      "Automatisierte HTTP-Prüfungen von inta.dev. Maschinenlesbare Momentaufnahme:",
+    introAfterLink: ".",
+    ariaUptimeStored: "Verfügbarkeit aus gespeicherten geplanten Prüfungen",
+    uptimeWord: "Verfügbarkeit",
+    uptimeStoredRunsBefore:
+      "Wir führen diese Prüfungen automatisch nach Zeitplan aus. Von den letzten",
+    uptimeStoredRunsMid: "Läufen waren",
+    uptimeStoredRunsAfter:
+      "vollständig erfolgreich (alle Dienste haben in diesem Lauf normal geantwortet).",
+    devLiveProbeBefore: "Entwicklungsmodus:",
+    devLiveProbeStrong: "Live-Prüfung",
+    devLiveProbeAfter:
+      "(nicht gespeichert). In Produktion gilt die letzte vom Cron geschriebene Momentaufnahme.",
+    ariaUptimeDev: "Verfügbarkeit nur aus Entwicklungsprüfung",
+    onThisPageLoad: "bei diesem Seitenaufruf",
+    devUptimeNote:
+      "Entwicklungsmodus — nicht über gespeicherte Historie gemittelt. In Produktion zeigt die Seite die Verfügbarkeit aus geplanten Cron-Läufen.",
+    uptimePending:
+      "Der Verfügbarkeitsprozentwert erscheint hier, sobald der Status-Cron mindestens einen Eintrag in die Historie geschrieben hat (Zeitlinien nutzen denselben Speicher).",
+    noSnapshotCron:
+      "Noch keine Momentaufnahme. Cron-Route einmal auslösen (siehe Vercel Cron) oder auf den nächsten Lauf warten.",
+    noSnapshotMongo:
+      "MongoDB ist nicht konfiguriert — Momentaufnahmen werden nicht gespeichert. In der Entwicklung führt diese Seite Prüfungen bei jedem Laden aus; setzen Sie MONGODB_URI und CRON_SECRET auf Vercel für Produktionsüberwachung.",
+    allChecksPassing: "Alle Prüfungen bestanden",
+    someChecksFailing: "Einige Prüfungen fehlgeschlagen",
+    updated: "Aktualisiert",
+    storedUtc: " (gespeichert, UTC)",
+    utcOnly: " (UTC)",
+    httpStatus: "HTTP {{code}}",
+    noResponse: "Keine Antwort",
+    footnoteAria: "Technische Details für Betrieb dieser Statusseite",
+    footnoteTitle: "Fußnote — Hosting und Konfiguration",
+    footnoteP1Before: "Diese Seite ist öffentlich. Die folgenden Angaben richten sich an",
+    footnoteP1Strong: "Teams, die inta.dev bereitstellen",
+    footnoteP1After: "(Umgebungsvariablen, Datenaufbewahrung).",
+    footnoteP2a: "Ziele konfigurieren mit",
+    footnoteP2b: "(vollständiger Ersatz) oder",
+    footnoteP2c:
+      "(anhängen). Eine Prüfung gilt als bestanden, wenn der HTTP-Status unter 500 liegt. Das Incident-Log zeigt gespeicherte Cron-Läufe, in denen mindestes ein Ziel fehlgeschlagen ist, inkl. Prüftext wenn gespeichert. Zeitlinien, Incident-Log und Latenz-Trends nutzen die letzten",
+    footnoteP2d:
+      "Läufe (14-Tage-TTL in Mongo). Die Kopf-Verfügbarkeit nutzt dasselbe Fenster: Anteil der Läufe, in denen alle Ziele bestanden haben. Zeiten auf dieser Seite sind UTC. Neue Historienzeilen speichern pro Ziel",
+    footnoteP2e:
+      "; ältere Zeilen steuern weiter Hoch/Tief-Segmente bis zum Ablauf.",
+    incidentHeading: "Incident-Protokoll",
+    incidentEmptyBody:
+      "Ein Incident ist ein gespeicherter Cron-Lauf, in dem mindestens ein Ziel ausgefallen ist (HTTP 5xx, Timeout oder keine Antwort — dieselben Regeln wie bei Live-Prüfungen). Wenn die jüngste Historie überall bestanden hat, bleibt diese Liste leer.",
+    incidentListIntro:
+      "Jede Zeile ist ein Cron-Lauf mit mindestens einer fehlgeschlagenen Prüfung (neueste zuerst). Zeiten in UTC. Meldungen stammen von der Prüfung wenn vorhanden; ältere Historienzeilen können nur einen generischen Grund zeigen.",
+    degraded: "Beeinträchtigt",
+    timelineNoHistory:
+      "Noch keine Historie. Sobald MongoDB und Cron Läufe speichern, erscheinen die letzten Prüfungen hier.",
+    timelineCurrentCheckDev: "Nur aktuelle Prüfung (Dev)",
+    timelineRecentChecks: "Letzte Prüfungen ({{count}})",
+    timelineAriaSummary: "{{n}} Prüfungen: {{ups}} OK, {{fails}} fehlgeschlagen",
+    timelineTooltipUp: "{{time}} — OK",
+    timelineTooltipDown: "{{time}} — Ausfall",
+    latencyNeedsTwoRuns:
+      "Antwortzeit-Trend braucht mindestens zwei gespeicherte Läufe mit Latenz (nachdem der nächste Cron latencyMs schreibt).",
+    latencyResponseTime: "Antwortzeit ({{label}})",
+    latencyAriaTrend:
+      "Latenz-Trend für {{label}}: {{min}}–{{max}} ms über {{n}} Prüfungen",
+    latencyMin: "Min",
+    latencyMax: "Max",
+    latencyLatest: "Zuletzt",
+  },
 };

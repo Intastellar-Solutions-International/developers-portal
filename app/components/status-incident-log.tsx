@@ -1,4 +1,5 @@
 import type { StatusIncident } from "~/lib/status-history.server";
+import { useI18n } from "~/providers/i18n-provider";
 
 type Props = {
   incidents: StatusIncident[];
@@ -6,6 +7,8 @@ type Props = {
 };
 
 export function StatusIncidentLog({ incidents, targetNames }: Props) {
+  const { t } = useI18n();
+
   if (incidents.length === 0) {
     return (
       <section className="mt-10" aria-labelledby="status-incidents-heading">
@@ -13,13 +16,10 @@ export function StatusIncidentLog({ incidents, targetNames }: Props) {
           id="status-incidents-heading"
           className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
         >
-          Incident log
+          {t("status.incidentHeading")}
         </h2>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          An <strong className="font-medium text-zinc-800 dark:text-zinc-200">incident</strong> is
-          a stored cron run where at least one target was <strong className="font-medium">down</strong>{" "}
-          (HTTP 5xx, timeout, or no response — same rules as the live checks). If everything in
-          recent history passed, this list stays empty.
+          {t("status.incidentEmptyBody")}
         </p>
       </section>
     );
@@ -31,12 +31,10 @@ export function StatusIncidentLog({ incidents, targetNames }: Props) {
         id="status-incidents-heading"
         className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
       >
-        Incident log
+        {t("status.incidentHeading")}
       </h2>
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-        Each row is one cron run where at least one check failed (newest first). Times are UTC.
-        Messages come from the probe when available; older history rows may only show a generic
-        reason.
+        {t("status.incidentListIntro")}
       </p>
       <ul className="mt-4 divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
         {incidents.map((ev) => (
@@ -49,7 +47,7 @@ export function StatusIncidentLog({ incidents, targetNames }: Props) {
                 {ev.checkedAtLabel}
               </time>
               <span className="text-xs font-medium uppercase tracking-wide text-red-600 dark:text-red-400">
-                Degraded
+                {t("status.degraded")}
               </span>
             </div>
             <ul className="mt-3 space-y-3 text-sm">

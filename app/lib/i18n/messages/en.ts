@@ -292,6 +292,78 @@ export const en = {
         "Sign-in logo must be a valid https:// URL or left blank.",
     },
   },
+  status: {
+    metaTitle: "System status · inta.dev",
+    metaDescription:
+      "Uptime checks for Intastellar public endpoints (Consents, CDN, inta.dev).",
+    heading: "System status",
+    introBeforeLink:
+      "Automated HTTP checks from inta.dev. Machine-readable snapshot:",
+    introAfterLink: ".",
+    ariaUptimeStored: "Uptime from stored scheduled checks",
+    uptimeWord: "uptime",
+    uptimeStoredRunsBefore:
+      "We run these checks automatically on a schedule. In the last",
+    uptimeStoredRunsMid: "runs,",
+    uptimeStoredRunsAfter:
+      "finished with every service responding normally (no failures in that run).",
+    devLiveProbeBefore: "Development mode: showing a",
+    devLiveProbeStrong: "live",
+    devLiveProbeAfter:
+      "probe (not saved). Production uses the last snapshot written by the cron job.",
+    ariaUptimeDev: "Uptime from development-only check",
+    onThisPageLoad: "on this page load",
+    devUptimeNote:
+      "Development mode — not averaged over stored history. Production shows uptime from scheduled cron runs.",
+    uptimePending:
+      "Uptime percentage will show here after the status cron has written at least one row to history (timelines use the same store).",
+    noSnapshotCron:
+      "No snapshot yet. Trigger the cron route once (see Vercel Cron) or wait for the next scheduled run.",
+    noSnapshotMongo:
+      "MongoDB is not configured — snapshots are not stored. In development, this page runs checks on each load; set MONGODB_URI and CRON_SECRET on Vercel for production monitoring.",
+    allChecksPassing: "All checks passing",
+    someChecksFailing: "Some checks failing",
+    updated: "Updated",
+    storedUtc: " (stored, UTC)",
+    utcOnly: " (UTC)",
+    httpStatus: "HTTP {{code}}",
+    noResponse: "No response",
+    footnoteAria:
+      "Technical details for people who operate this status page",
+    footnoteTitle: "Footnote — hosting and configuration",
+    footnoteP1Before: "This page is public. The details below are for",
+    footnoteP1Strong: "teams that deploy inta.dev",
+    footnoteP1After: "(environment variables, data retention).",
+    footnoteP2a: "Configure targets with",
+    footnoteP2b: "(full replace) or",
+    footnoteP2c:
+      "(append). A check counts as passing when the HTTP status is below 500. The incident log shows stored cron runs where any target failed, including probe error text when saved. Timelines, the incident log, and latency trends use the last",
+    footnoteP2d:
+      "runs (14-day TTL in Mongo). The headline uptime percentage uses the same window: the fraction of those runs where every target passed. Times on this page are UTC. New history rows store per-target",
+    footnoteP2e:
+      "; older rows still drive up/down segments until they expire.",
+    incidentHeading: "Incident log",
+    incidentEmptyBody:
+      "An incident is a stored cron run where at least one target was down (HTTP 5xx, timeout, or no response — same rules as the live checks). If everything in recent history passed, this list stays empty.",
+    incidentListIntro:
+      "Each row is one cron run where at least one check failed (newest first). Times are UTC. Messages come from the probe when available; older history rows may only show a generic reason.",
+    degraded: "Degraded",
+    timelineNoHistory:
+      "No history yet. After MongoDB and cron store runs, recent checks appear here.",
+    timelineCurrentCheckDev: "Current check only (dev)",
+    timelineRecentChecks: "Recent checks ({{count}})",
+    timelineAriaSummary: "{{n}} checks: {{ups}} up, {{fails}} down",
+    timelineTooltipUp: "{{time}} — Up",
+    timelineTooltipDown: "{{time}} — Down",
+    latencyNeedsTwoRuns:
+      "Response-time trend needs at least two stored runs with latency (after the next cron writes latencyMs).",
+    latencyResponseTime: "Response time ({{label}})",
+    latencyAriaTrend:
+      "Latency trend for {{label}}: {{min}}–{{max}} ms over {{n}} checks",
+    latencyMin: "Min",
+    latencyMax: "Max",
+    latencyLatest: "Latest",
+  },
 } as const;
 
 export type MessageTree = DeepStringTree<typeof en>;

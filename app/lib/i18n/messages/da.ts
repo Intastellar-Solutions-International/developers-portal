@@ -283,4 +283,75 @@ export const da: MessageTree = {
         "Log ind-logo skal være en gyldig https://-URL eller stå tom.",
     },
   },
+  status: {
+    metaTitle: "Systemstatus · inta.dev",
+    metaDescription:
+      "Oppetidskontroller for offentlige Intastellar-endepunkter (Consents, CDN, inta.dev).",
+    heading: "Systemstatus",
+    introBeforeLink:
+      "Automatiserede HTTP-tjek fra inta.dev. Maskinlæsbar snapshot:",
+    introAfterLink: ".",
+    ariaUptimeStored: "Oppetid fra gemte planlagte tjek",
+    uptimeWord: "oppetid",
+    uptimeStoredRunsBefore:
+      "Vi kører disse tjek automatisk efter en tidsplan. Af de seneste",
+    uptimeStoredRunsMid: "kørsler var",
+    uptimeStoredRunsAfter:
+      "fuldt succesfulde (alle tjenester svarede normalt i den kørsel).",
+    devLiveProbeBefore: "Udviklingstilstand:",
+    devLiveProbeStrong: "live-tjek",
+    devLiveProbeAfter:
+      "(ikke gemt). I produktion bruges det seneste snapshot fra cron-job.",
+    ariaUptimeDev: "Oppetid kun fra udviklingstjek",
+    onThisPageLoad: "ved denne sideindlæsning",
+    devUptimeNote:
+      "Udviklingstilstand — ikke gennemsnit over gemt historik. Produktion viser oppetid fra planlagte cron-kørsler.",
+    uptimePending:
+      "Oppetidsprocent vises her, når status-cron har skrevet mindst én række til historik (tidslinjer bruger samme lager).",
+    noSnapshotCron:
+      "Ingen snapshot endnu. Kør cron-ruten én gang (se Vercel Cron) eller vent på næste planlagte kørsel.",
+    noSnapshotMongo:
+      "MongoDB er ikke konfigureret — snapshots gemmes ikke. I udvikling kører denne side tjek ved hver indlæsning; angiv MONGODB_URI og CRON_SECRET på Vercel til produktionsovervågning.",
+    allChecksPassing: "Alle tjek bestået",
+    someChecksFailing: "Nogle tjek fejler",
+    updated: "Opdateret",
+    storedUtc: " (gemt, UTC)",
+    utcOnly: " (UTC)",
+    httpStatus: "HTTP {{code}}",
+    noResponse: "Intet svar",
+    footnoteAria: "Tekniske detaljer for drift af denne statusside",
+    footnoteTitle: "Fodnote — hosting og konfiguration",
+    footnoteP1Before: "Denne side er offentlig. Nedenstående er til",
+    footnoteP1Strong: "teams der udruller inta.dev",
+    footnoteP1After: "(miljøvariabler, dataopbevaring).",
+    footnoteP2a: "Konfigurér mål med",
+    footnoteP2b: "(fuld erstatning) eller",
+    footnoteP2c:
+      "(tilføj). Et tjek tæller som bestået når HTTP-status er under 500. Incident-loggen viser gemte cron-kørsler hvor et mål fejlede, inkl. prober-fejltekst når gemt. Tidslinjer, incident-log og latenstrends bruger de seneste",
+    footnoteP2d:
+      "kørsler (14 dages TTL i Mongo). Top-oppetidsprocenten bruger samme vindue: andelen af kørsler hvor alle mål bestod. Tider på siden er UTC. Nye historikrækker gemmer per-mål",
+    footnoteP2e:
+      "; ældre rækker styrer stadig op/ned-segmenter indtil udløb.",
+    incidentHeading: "Incident-log",
+    incidentEmptyBody:
+      "Et incident er en gemt cron-kørsel hvor mindst ét mål var nede (HTTP 5xx, timeout eller intet svar — samme regler som live-tjek). Hvis al nyere historik bestod, forbliver listen tom.",
+    incidentListIntro:
+      "Hver række er én cron-kørsel med mindst ét fejlet tjek (nyeste først). Tider i UTC. Beskeder kommer fra prober når tilgængeligt; ældre historik kan kun vise en generisk årsag.",
+    degraded: "Forringet",
+    timelineNoHistory:
+      "Ingen historik endnu. Når MongoDB og cron gemmer kørsler, vises seneste tjek her.",
+    timelineCurrentCheckDev: "Kun aktuelt tjek (dev)",
+    timelineRecentChecks: "Seneste tjek ({{count}})",
+    timelineAriaSummary: "{{n}} tjek: {{ups}} oppe, {{fails}} nede",
+    timelineTooltipUp: "{{time}} — Oppe",
+    timelineTooltipDown: "{{time}} — Nede",
+    latencyNeedsTwoRuns:
+      "Svartidstrend kræver mindst to gemte kørsler med latens (efter næste cron skriver latencyMs).",
+    latencyResponseTime: "Svartid ({{label}})",
+    latencyAriaTrend:
+      "Latens-trend for {{label}}: {{min}}–{{max}} ms over {{n}} tjek",
+    latencyMin: "Min",
+    latencyMax: "Maks",
+    latencyLatest: "Seneste",
+  },
 };

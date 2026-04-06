@@ -4,6 +4,8 @@ import type { Route } from "./+types/status";
 import { StatusIncidentLog } from "~/components/status-incident-log";
 import { StatusLatencyTrend } from "~/components/status-latency-trend";
 import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
+import { translatePath } from "~/lib/i18n/messages";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import {
   formatDateTimeMediumUtc,
@@ -20,8 +22,10 @@ import {
 import { overallOk, runStatusProbes } from "~/lib/status-probe.server";
 import { getLatestStatusSnapshot } from "~/lib/status-snapshot.server";
 import { getStatusTargets } from "~/lib/status-targets.server";
+import { useI18n } from "~/providers/i18n-provider";
 
-export async function loader(_: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
+  const locale = resolveLocaleFromRequest(request);
   const targetList = getStatusTargets();
   const targetNames = Object.fromEntries(
     targetList.map((t) => [t.id, t.name] as const),
@@ -91,6 +95,7 @@ export async function loader(_: Route.LoaderArgs) {
   }
 
   return {
+    locale,
     snapshot,
     source,
     mongoConfigured: isMongoConfigured(),
@@ -102,18 +107,19 @@ export async function loader(_: Route.LoaderArgs) {
   };
 }
 
-export function meta(_: Route.MetaArgs) {
+export function meta({ data }: Route.MetaArgs) {
+  const locale = data?.locale ?? "en";
   return [
-    { title: "System status · inta.dev" },
+    { title: translatePath(locale, "status.metaTitle") },
     {
       name: "description",
-      content:
-        "Uptime checks for Intastellar public endpoints (Consents, CDN, inta.dev).",
+      content: translatePath(locale, "status.metaDescription"),
     },
   ];
 }
 
 export default function StatusPage() {
+  const { t } = useI18n();
   const {
     snapshot,
     source,
@@ -128,23 +134,23 @@ export default function StatusPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-        System status
+        {t("status.heading")}
       </h1>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        Automated HTTP checks from inta.dev. Machine-readable snapshot:{" "}
+        {t("status.introBeforeLink")}{" "}
         <a
           href="/api/status.json"
           className="text-brand hover:text-brand-hover"
         >
           /api/status.json
         </a>
-        .
+        {t("status.introAfterLink")}
       </p>
 
       {uptime?.variant === "stored" ? (
         <div
           className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50/90 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-900/50"
-          aria-label="Uptime from stored scheduled checks"
+          aria-label={t("status.ariaUptimeStored")}
         >
           <p
             className={`text-4xl font-semibold tabular-nums tracking-tight ${
@@ -159,25 +165,25 @@ export default function StatusPage() {
               ? `${uptime.percent.toFixed(0)}%`
               : `${uptime.percent.toFixed(1)}%`}{" "}
             <span className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
-              uptime
+              {t("status.uptimeWord")}
             </span>
           </p>
           <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-            We run these checks automatically on a schedule. In the last{" "}
+            {t("status.uptimeStoredRunsBefore")}{" "}
             <strong className="font-medium text-zinc-700 dark:text-zinc-300">
               {uptime.totalRuns}
             </strong>{" "}
-            runs,{" "}
+            {t("status.uptimeStoredRunsMid")}{" "}
             <strong className="font-medium text-zinc-700 dark:text-zinc-300">
               {uptime.passedRuns}
             </strong>{" "}
-            finished with every service responding normally (no failures in that run).
+            {t("status.uptimeStoredRunsAfter")}
           </p>
         </div>
       ) : uptime?.variant === "dev" ? (
         <div
           className="mt-6 rounded-xl border border-amber-200/80 bg-amber-50/60 px-5 py-4 dark:border-amber-900/40 dark:bg-amber-950/30"
-          aria-label="Uptime from development-only check"
+          aria-label={t("status.ariaUptimeDev")}
         >
           <p
             className={`text-3xl font-semibold tabular-nums tracking-tight ${
@@ -188,33 +194,32 @@ export default function StatusPage() {
           >
             {uptime.percent}%{" "}
             <span className="text-base font-medium text-amber-900/80 dark:text-amber-200/80">
-              on this page load
+              {t("status.onThisPageLoad")}
             </span>
           </p>
           <p className="mt-2 text-xs text-amber-900/90 dark:text-amber-100/70">
-            Development mode — not averaged over stored history. Production shows uptime from
-            scheduled cron runs.
+            {t("status.devUptimeNote")}
           </p>
         </div>
       ) : snapshot && source === "mongodb" ? (
         <p className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-400">
-          Uptime percentage will show here after the status cron has written at least one row to
-          history (timelines use the same store).
+          {t("status.uptimePending")}
         </p>
       ) : null}
 
       {source === "live" ? (
         <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
-          Development mode: showing a <strong>live</strong> probe (not saved).
-          Production uses the last snapshot written by the cron job.
+          {t("status.devLiveProbeBefore")}{" "}
+          <strong>{t("status.devLiveProbeStrong")}</strong>{" "}
+          {t("status.devLiveProbeAfter")}
         </p>
       ) : null}
 
       {!snapshot && source === "none" ? (
         <p className="mt-8 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900/50 dark:text-zinc-300">
           {mongoConfigured
-            ? "No snapshot yet. Trigger the cron route once (see Vercel Cron) or wait for the next scheduled run."
-            : "MongoDB is not configured — snapshots are not stored. In development, this page runs checks on each load; set MONGODB_URI and CRON_SECRET on Vercel for production monitoring."}
+            ? t("status.noSnapshotCron")
+            : t("status.noSnapshotMongo")}
         </p>
       ) : null}
 
@@ -234,11 +239,15 @@ export default function StatusPage() {
                 }`}
                 aria-hidden
               />
-              {snapshot.overallOk ? "All checks passing" : "Some checks failing"}
+              {snapshot.overallOk
+                ? t("status.allChecksPassing")
+                : t("status.someChecksFailing")}
             </span>
             <span className="text-sm text-zinc-500 dark:text-zinc-400">
-              Updated {checkedAtLabel}
-              {source === "mongodb" ? " (stored, UTC)" : " (UTC)"}
+              {t("status.updated")} {checkedAtLabel}
+              {source === "mongodb"
+                ? t("status.storedUtc")
+                : t("status.utcOnly")}
             </span>
           </div>
 
@@ -275,7 +284,9 @@ export default function StatusPage() {
                           : "text-sm font-medium text-red-600 dark:text-red-400"
                       }
                     >
-                      {r.statusCode != null ? `HTTP ${r.statusCode}` : "No response"}
+                      {r.statusCode != null
+                        ? t("status.httpStatus", { code: r.statusCode })
+                        : t("status.noResponse")}
                     </span>
                     <span className="text-xs text-zinc-500 dark:text-zinc-400">
                       {r.latencyMs} ms
@@ -293,47 +304,43 @@ export default function StatusPage() {
       <footer
         className="mt-12 border-t border-zinc-200 pt-6 dark:border-zinc-700"
         role="note"
-        aria-label="Technical details for people who operate this status page"
+        aria-label={t("status.footnoteAria")}
       >
         <p
           id="status-page-footnote-label"
           className="text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500"
         >
-          Footnote — hosting and configuration
+          {t("status.footnoteTitle")}
         </p>
         <div
           className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400"
           aria-labelledby="status-page-footnote-label"
         >
           <p>
-            This page is public. The details below are for{" "}
+            {t("status.footnoteP1Before")}{" "}
             <strong className="font-medium text-zinc-600 dark:text-zinc-300">
-              teams that deploy inta.dev
+              {t("status.footnoteP1Strong")}
             </strong>{" "}
-            (environment variables, data retention).
+            {t("status.footnoteP1After")}
           </p>
           <p className="mt-2">
-            Configure targets with{" "}
+            {t("status.footnoteP2a")}{" "}
             <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
               STATUS_CHECK_TARGETS_JSON
             </code>{" "}
-            (full replace) or{" "}
+            {t("status.footnoteP2b")}{" "}
             <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
               STATUS_CHECK_EXTRA_JSON
             </code>{" "}
-            (append). A check counts as passing when the HTTP status is below 500. The incident log
-            shows stored cron runs where any target failed, including probe error text when saved.
-            Timelines, the incident log, and latency trends use the last{" "}
+            {t("status.footnoteP2c")}{" "}
             <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
               STATUS_HISTORY_POINTS
             </code>{" "}
-            runs (14-day TTL in Mongo). The headline uptime percentage uses the same window: the
-            fraction of those runs where every target passed. Times on this page are UTC. New history
-            rows store per-target{" "}
+            {t("status.footnoteP2d")}{" "}
             <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
               latencyMs
             </code>
-            ; older rows still drive up/down segments until they expire.
+            {t("status.footnoteP2e")}
           </p>
         </div>
       </footer>

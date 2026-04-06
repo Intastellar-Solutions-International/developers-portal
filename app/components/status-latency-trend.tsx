@@ -1,4 +1,5 @@
 import type { StatusTimelinePoint } from "~/lib/status-history.server";
+import { useI18n } from "~/providers/i18n-provider";
 
 type Props = {
   points: StatusTimelinePoint[];
@@ -9,6 +10,7 @@ type Props = {
  * Sparkline of `latencyMs` across stored cron runs (oldest left). Ignores points without latency.
  */
 export function StatusLatencyTrend({ points, label }: Props) {
+  const { t } = useI18n();
   const withLatency = points.filter(
     (p): p is StatusTimelinePoint & { latencyMs: number } =>
       typeof p.latencyMs === "number" && Number.isFinite(p.latencyMs),
@@ -17,8 +19,7 @@ export function StatusLatencyTrend({ points, label }: Props) {
   if (withLatency.length < 2) {
     return (
       <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-        Response-time trend needs at least two stored runs with latency (after the next cron
-        writes <code className="rounded bg-zinc-100 px-0.5 dark:bg-zinc-800">latencyMs</code>).
+        {t("status.latencyNeedsTwoRuns")}
       </p>
     );
   }
@@ -44,7 +45,7 @@ export function StatusLatencyTrend({ points, label }: Props) {
   return (
     <div className="mt-3">
       <p className="mb-1 text-[0.65rem] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-        Response time ({label})
+        {t("status.latencyResponseTime", { label })}
       </p>
       <div className="flex max-w-md flex-wrap items-end gap-3">
         <svg
@@ -53,7 +54,12 @@ export function StatusLatencyTrend({ points, label }: Props) {
           height={h}
           viewBox={`0 0 ${w} ${h}`}
           role="img"
-          aria-label={`Latency trend for ${label}: ${min}–${max} ms over ${n} checks`}
+          aria-label={t("status.latencyAriaTrend", {
+            label,
+            min,
+            max,
+            n,
+          })}
         >
           <line
             x1={pad}
@@ -74,15 +80,21 @@ export function StatusLatencyTrend({ points, label }: Props) {
         </svg>
         <div className="text-[0.7rem] leading-tight text-zinc-500 dark:text-zinc-400">
           <div>
-            <span className="text-zinc-400 dark:text-zinc-500">Min </span>
+            <span className="text-zinc-400 dark:text-zinc-500">
+              {t("status.latencyMin")}{" "}
+            </span>
             {min} ms
           </div>
           <div>
-            <span className="text-zinc-400 dark:text-zinc-500">Max </span>
+            <span className="text-zinc-400 dark:text-zinc-500">
+              {t("status.latencyMax")}{" "}
+            </span>
             {max} ms
           </div>
           <div>
-            <span className="text-zinc-400 dark:text-zinc-500">Latest </span>
+            <span className="text-zinc-400 dark:text-zinc-500">
+              {t("status.latencyLatest")}{" "}
+            </span>
             {withLatency[withLatency.length - 1]!.latencyMs} ms
           </div>
         </div>
