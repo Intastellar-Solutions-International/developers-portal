@@ -437,5 +437,8 @@ export const ptBr: MessageTree = {
     manualSeverityIdentified: "Identificado",
     manualSeverityMonitoring: "Monitorando",
     manualSeverityResolved: "Resolvido",
+    affectedMonitorsLabel: "Monitores",
+    subscribeRss: "Assinar (RSS)",
+    subscribeRssTitle: "Feed RSS de avisos do operador e manutenção agendada",
   },
 };

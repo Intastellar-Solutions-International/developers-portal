@@ -3,6 +3,10 @@ import { ObjectId } from "mongodb";
 import {
   formatDateTimeMediumUtc,
 } from "~/lib/format-datetime";
+import {
+  labelsForTargetIds,
+  normalizeAffectedTargetIds,
+} from "~/lib/status-affected-targets";
 import { getCollection } from "~/lib/mongodb.server";
 import { STATUS_MANUAL_INCIDENTS_COLLECTION } from "~/lib/mongodb-schema.server";
 import {
@@ -10,6 +14,7 @@ import {
   type ManualIncidentPublic,
   type ManualIncidentSeverity,
 } from "~/lib/status-manual-incidents";
+import { getStatusTargets } from "~/lib/status-targets.server";
 
 export type { ManualIncidentPublic, ManualIncidentSeverity };
 export { MANUAL_INCIDENT_SEVERITIES };
@@ -19,16 +24,21 @@ export type ManualIncidentRow = {
   title: string;
   body: string;
   severity: ManualIncidentSeverity;
+  affectedTargetIds?: string[];
   createdAt: Date;
   updatedAt: Date;
   authorEmail: string;
   resolvedAt: Date | null;
 };
 
-function rowToPublic(row: ManualIncidentRow): ManualIncidentPublic {
+function rowToPublic(
+  row: ManualIncidentRow,
+  targets: ReturnType<typeof getStatusTargets>,
+): ManualIncidentPublic {
   const iso = row.createdAt.toISOString();
   const res = row.resolvedAt;
   const resolvedIso = res ? res.toISOString() : null;
+  const ids = row.affectedTargetIds ?? [];
   return {
     id: row._id.toHexString(),
     title: row.title,
@@ -39,6 +49,8 @@ function rowToPublic(row: ManualIncidentRow): ManualIncidentPublic {
     authorEmail: row.authorEmail,
     resolvedAt: resolvedIso,
     resolvedAtLabel: resolvedIso ? formatDateTimeMediumUtc(resolvedIso) : null,
+    affectedTargetIds: ids,
+    affectedLabels: labelsForTargetIds(ids, targets),
   };
 }
 
@@ -49,12 +61,13 @@ export async function listManualIncidentsPublic(
     STATUS_MANUAL_INCIDENTS_COLLECTION,
   );
   if (!col) return [];
+  const targets = getStatusTargets();
   const rows = await col
     .find({})
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();
-  return rows.map(rowToPublic);
+  return rows.map((r) => rowToPublic(r, targets));
 }
 
 export async function listManualIncidentsForAdmin(
@@ -72,6 +85,7 @@ export async function insertManualIncident(opts: {
   body: string;
   severity: ManualIncidentSeverity;
   authorEmail: string;
+  affectedTargetIds?: string[];
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   const title = opts.title.trim();
   const body = opts.body.trim();
@@ -84,6 +98,11 @@ export async function insertManualIncident(opts: {
   if (!MANUAL_INCIDENT_SEVERITIES.includes(opts.severity)) {
     return { ok: false, error: "Invalid severity." };
   }
+  const validIds = new Set(getStatusTargets().map((t) => t.id));
+  const affectedTargetIds = normalizeAffectedTargetIds(
+    opts.affectedTargetIds ?? [],
+    validIds,
+  );
   const col = await getCollection<ManualIncidentRow>(
     STATUS_MANUAL_INCIDENTS_COLLECTION,
   );
@@ -95,6 +114,7 @@ export async function insertManualIncident(opts: {
     title,
     body,
     severity: opts.severity,
+    ...(affectedTargetIds.length ? { affectedTargetIds } : {}),
     createdAt: now,
     updatedAt: now,
     authorEmail: opts.authorEmail.trim().toLowerCase(),

@@ -2,7 +2,9 @@ import { ObjectId } from "mongodb";
 
 import { getCollection } from "~/lib/mongodb.server";
 import { STATUS_MAINTENANCE_DB_COLLECTION } from "~/lib/mongodb-schema.server";
+import { normalizeAffectedTargetIds } from "~/lib/status-affected-targets";
 import type { StatusMaintenanceWindow } from "~/lib/status-maintenance.server";
+import { getStatusTargets } from "~/lib/status-targets.server";
 
 export type MaintenanceWindowRow = {
   _id: ObjectId;
@@ -11,6 +13,8 @@ export type MaintenanceWindowRow = {
   summary?: string;
   startsAt: Date;
   endsAt: Date;
+  /** Monitor IDs from configured status targets. */
+  affectedTargetIds?: string[];
   createdAt: Date;
   updatedAt: Date;
   createdByEmail: string;
@@ -29,6 +33,9 @@ function rowToWindow(row: MaintenanceWindowRow): StatusMaintenanceWindow {
     summary: row.summary,
     startsAt: row.startsAt.toISOString(),
     endsAt: row.endsAt.toISOString(),
+    ...(row.affectedTargetIds?.length
+      ? { affectedTargetIds: row.affectedTargetIds }
+      : {}),
   };
 }
 
@@ -65,6 +72,7 @@ export async function insertMaintenanceWindow(opts: {
   summary?: string;
   startsAt: Date;
   endsAt: Date;
+  affectedTargetIds?: string[];
   createdByEmail: string;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   if (!isValidMaintenanceId(opts.id)) {
@@ -73,6 +81,11 @@ export async function insertMaintenanceWindow(opts: {
   if (opts.endsAt.getTime() <= opts.startsAt.getTime()) {
     return { ok: false, error: "End time must be after start time." };
   }
+  const validIds = new Set(getStatusTargets().map((t) => t.id));
+  const affectedTargetIds = normalizeAffectedTargetIds(
+    opts.affectedTargetIds ?? [],
+    validIds,
+  );
   const col = await getCollection<MaintenanceWindowRow>(
     STATUS_MAINTENANCE_DB_COLLECTION,
   );
@@ -86,6 +99,7 @@ export async function insertMaintenanceWindow(opts: {
       summary: opts.summary?.trim() || undefined,
       startsAt: opts.startsAt,
       endsAt: opts.endsAt,
+      ...(affectedTargetIds.length ? { affectedTargetIds } : {}),
       createdAt: now,
       updatedAt: now,
       createdByEmail: opts.createdByEmail.trim().toLowerCase(),

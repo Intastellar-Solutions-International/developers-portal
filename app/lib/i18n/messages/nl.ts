@@ -436,5 +436,8 @@ export const nl: MessageTree = {
     manualSeverityIdentified: "Geïdentificeerd",
     manualSeverityMonitoring: "Monitoring",
     manualSeverityResolved: "Opgelost",
+    affectedMonitorsLabel: "Monitors",
+    subscribeRss: "Abonneren (RSS)",
+    subscribeRssTitle: "RSS-feed met operatorberichten en gepland onderhoud",
   },
 };

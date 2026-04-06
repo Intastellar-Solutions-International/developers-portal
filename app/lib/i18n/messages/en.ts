@@ -445,6 +445,9 @@ export const en = {
     manualSeverityIdentified: "Identified",
     manualSeverityMonitoring: "Monitoring",
     manualSeverityResolved: "Resolved",
+    affectedMonitorsLabel: "Monitors",
+    subscribeRss: "Subscribe (RSS)",
+    subscribeRssTitle: "RSS feed of operator notices and scheduled maintenance",
   },
 } as const;
 

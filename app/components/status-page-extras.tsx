@@ -97,11 +97,44 @@ export function StatusMaintenanceSection({
                   {w.summary}
                 </p>
               ) : null}
+              {w.affectedLabels.length > 0 ? (
+                <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+                  <span className="font-medium text-zinc-600 dark:text-zinc-300">
+                    {copy.affectedMonitorsLabel}:{" "}
+                  </span>
+                  {w.affectedLabels.join(", ")}
+                </p>
+              ) : null}
             </li>
           ))}
         </ul>
       )}
     </section>
+  );
+}
+
+export function StatusSubscribeSection({
+  copy,
+  feedUrl,
+}: {
+  copy: StatusPageCopy;
+  feedUrl: string;
+}) {
+  return (
+    <div className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900/40">
+      <p className="text-xs text-zinc-600 dark:text-zinc-400">
+        <a
+          href={feedUrl}
+          className="inline-flex items-center rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
+          title={copy.subscribeRssTitle}
+        >
+          {copy.subscribeRss}
+        </a>
+        <span className="mt-2 block font-mono text-[0.7rem] text-zinc-500 dark:text-zinc-500">
+          {feedUrl}
+        </span>
+      </p>
+    </div>
   );
 }
 

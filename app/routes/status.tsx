@@ -7,6 +7,7 @@ import { StatusManualIncidents } from "~/components/status-manual-incidents";
 import {
   StatusDeploySection,
   StatusMaintenanceSection,
+  StatusSubscribeSection,
   StatusTrustSection,
 } from "~/components/status-page-extras";
 import { StatusUptimeBadgeModal } from "~/components/status-uptime-badge-modal";
@@ -37,6 +38,7 @@ import { getStatusDeployPublic } from "~/lib/status-deploy.server";
 import { listFutureMaintenanceWindowsFromMongo } from "~/lib/status-maintenance-db.server";
 import { getPublicMaintenanceWindows } from "~/lib/status-maintenance.server";
 import { listManualIncidentsPublic } from "~/lib/status-manual-incidents.server";
+import { absoluteUrl } from "~/lib/site";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -134,17 +136,26 @@ export async function loader({ request }: Route.LoaderArgs) {
     deploy,
     historyWindowSize,
     manualIncidents,
+    feedUrl: absoluteUrl("/api/status/feed.xml"),
   };
 }
 
 export function meta({ data, loaderData }: Route.MetaArgs) {
   const payload = loaderData ?? data;
   const locale = payload?.locale ?? "en";
+  const feedHref = absoluteUrl("/api/status/feed.xml");
   return [
     { title: translatePath(locale, "status.metaTitle") },
     {
       name: "description",
       content: translatePath(locale, "status.metaDescription"),
+    },
+    {
+      tagName: "link",
+      rel: "alternate",
+      type: "application/rss+xml",
+      title: translatePath(locale, "status.subscribeRssTitle"),
+      href: feedHref,
     },
   ];
 }
@@ -166,6 +177,7 @@ export default function StatusPage() {
     deploy,
     historyWindowSize,
     manualIncidents,
+    feedUrl,
   } = useLoaderData<typeof loader>();
   const copy = resolveStatusPageCopy(locale, copyFromLoader);
 
@@ -184,6 +196,8 @@ export default function StatusPage() {
         </a>
         {copy.introAfterLink}
       </p>
+
+      <StatusSubscribeSection copy={copy} feedUrl={feedUrl} />
 
       <StatusTrustSection copy={copy} historyMaxPoints={historyWindowSize} />
       <StatusMaintenanceSection copy={copy} windows={maintenance} />

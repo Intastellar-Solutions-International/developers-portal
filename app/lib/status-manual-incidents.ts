@@ -19,4 +19,8 @@ export type ManualIncidentPublic = {
   authorEmail: string;
   resolvedAt: string | null;
   resolvedAtLabel: string | null;
+  /** Monitor IDs from status targets (may be empty). */
+  affectedTargetIds: string[];
+  /** Human-readable monitor names aligned with `affectedTargetIds`. */
+  affectedLabels: string[];
 };

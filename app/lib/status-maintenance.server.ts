@@ -1,19 +1,46 @@
+import { labelsForTargetIds } from "~/lib/status-affected-targets";
+import { getStatusTargets } from "~/lib/status-targets.server";
+
 export type StatusMaintenanceWindow = {
   id: string;
   title: string;
   summary?: string;
   startsAt: string;
   endsAt: string;
+  /** Monitor IDs from `getStatusTargets()` this window may affect (optional). */
+  affectedTargetIds?: string[];
 };
 
 export type StatusMaintenanceWindowPublic = StatusMaintenanceWindow & {
   phase: "active" | "upcoming";
   startsAtLabel: string;
   endsAtLabel: string;
+  /** Resolved names for `affectedTargetIds` (same order). */
+  affectedLabels: string[];
 };
+
+function validTargetIdSet(): Set<string> {
+  return new Set(getStatusTargets().map((t) => t.id));
+}
+
+function parseAffectedTargetIds(
+  raw: unknown,
+  validIds: Set<string>,
+): string[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: string[] = [];
+  for (const x of raw) {
+    if (typeof x !== "string") continue;
+    const id = x.trim();
+    if (!validIds.has(id) || out.includes(id)) continue;
+    out.push(id);
+  }
+  return out.length ? out : undefined;
+}
 
 function parseMaintenanceJson(raw: string | undefined): StatusMaintenanceWindow[] {
   if (!raw?.trim()) return [];
+  const validIds = validTargetIdSet();
   try {
     const v = JSON.parse(raw) as unknown;
     if (!Array.isArray(v)) return [];
@@ -35,12 +62,17 @@ function parseMaintenanceJson(raw: string | undefined): StatusMaintenanceWindow[
       const endMs = Date.parse(endsAt);
       if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) continue;
       if (endMs <= startMs) continue;
+      const affectedTargetIds = parseAffectedTargetIds(
+        o.affectedTargetIds,
+        validIds,
+      );
       out.push({
         id,
         title,
         summary,
         startsAt: new Date(startMs).toISOString(),
         endsAt: new Date(endMs).toISOString(),
+        ...(affectedTargetIds ? { affectedTargetIds } : {}),
       });
     }
     return out;
@@ -74,6 +106,7 @@ export function getPublicMaintenanceWindows(
 ): StatusMaintenanceWindowPublic[] {
   const nowMs = options?.nowMs ?? Date.now();
   const mongo = options?.mongoWindows ?? [];
+  const targets = getStatusTargets();
   const windows = mergeMaintenanceById(
     getConfiguredMaintenanceWindows(),
     mongo,
@@ -85,11 +118,13 @@ export function getPublicMaintenanceWindows(
     if (endMs <= nowMs) continue;
     const phase =
       nowMs >= startMs && nowMs < endMs ? "active" : "upcoming";
+    const affectedLabels = labelsForTargetIds(w.affectedTargetIds, targets);
     views.push({
       ...w,
       phase,
       startsAtLabel: formatUtc(w.startsAt),
       endsAtLabel: formatUtc(w.endsAt),
+      affectedLabels,
     });
   }
   views.sort((a, b) => {

@@ -94,6 +94,9 @@ export type StatusPageCopy = {
   manualSeverityIdentified: string;
   manualSeverityMonitoring: string;
   manualSeverityResolved: string;
+  affectedMonitorsLabel: string;
+  subscribeRss: string;
+  subscribeRssTitle: string;
 };
 
 export function getStatusPageCopy(locale: Locale): StatusPageCopy {
@@ -190,6 +193,9 @@ export function getStatusPageCopy(locale: Locale): StatusPageCopy {
     manualSeverityIdentified: tp("status.manualSeverityIdentified"),
     manualSeverityMonitoring: tp("status.manualSeverityMonitoring"),
     manualSeverityResolved: tp("status.manualSeverityResolved"),
+    affectedMonitorsLabel: tp("status.affectedMonitorsLabel"),
+    subscribeRss: tp("status.subscribeRss"),
+    subscribeRssTitle: tp("status.subscribeRssTitle"),
   };
 }
 
@@ -206,7 +212,8 @@ export function resolveStatusPageCopy(
     typeof fromLoader.timelineRecentChecks === "string" &&
     typeof fromLoader.embedPreviewHeading === "string" &&
     typeof fromLoader.trustHeading === "string" &&
-    typeof fromLoader.manualNoticesHeading === "string"
+    typeof fromLoader.manualNoticesHeading === "string" &&
+    typeof fromLoader.subscribeRss === "string"
   ) {
     return fromLoader;
   }

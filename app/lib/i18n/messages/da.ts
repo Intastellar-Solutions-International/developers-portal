@@ -435,5 +435,8 @@ export const da: MessageTree = {
     manualSeverityIdentified: "Identificeret",
     manualSeverityMonitoring: "Overvåger",
     manualSeverityResolved: "Løst",
+    affectedMonitorsLabel: "Overvågninger",
+    subscribeRss: "Abonner (RSS)",
+    subscribeRssTitle: "RSS-feed med operatørmeddelelser og planlagt vedligeholdelse",
   },
 };

@@ -67,6 +67,14 @@ export function StatusManualIncidents({ incidents, copy }: Props) {
                 <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-300">
                   {ev.body}
                 </p>
+                {ev.affectedLabels.length > 0 ? (
+                  <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+                    <span className="font-medium text-zinc-600 dark:text-zinc-300">
+                      {copy.affectedMonitorsLabel}:{" "}
+                    </span>
+                    {ev.affectedLabels.join(", ")}
+                  </p>
+                ) : null}
                 <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
                   {interpolate(copy.manualPostedBy, { email: ev.authorEmail })}{" "}
                   ·{" "}

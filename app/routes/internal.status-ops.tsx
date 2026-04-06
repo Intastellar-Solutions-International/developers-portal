@@ -18,6 +18,16 @@ import {
 import { isStatusAdminEmail, statusAdminConfigured } from "~/lib/status-admin.server";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
+import { getStatusTargets } from "~/lib/status-targets.server";
+
+function labelsForMonitorIds(
+  ids: string[] | undefined,
+  monitors: { id: string; name: string }[],
+): string {
+  if (!ids?.length) return "";
+  const m = new Map(monitors.map((x) => [x.id, x.name] as const));
+  return ids.map((id) => m.get(id) ?? id).join(", ");
+}
 
 export function meta() {
   return [{ name: "robots", content: "noindex, nofollow" }];
@@ -30,6 +40,7 @@ type MaintenanceAdminSerialized = {
   startsAt: string;
   endsAt: string;
   createdByEmail: string;
+  affectedTargetIds?: string[];
 };
 
 type IncidentAdminSerialized = {
@@ -38,11 +49,13 @@ type IncidentAdminSerialized = {
   body: string;
   severity: string;
   createdAt: string;
+  affectedTargetIds?: string[];
 };
 
 type LoaderOk = {
   mode: "ok";
   email: string;
+  monitors: { id: string; name: string }[];
   maintenance: MaintenanceAdminSerialized[];
   incidents: IncidentAdminSerialized[];
 };
@@ -73,6 +86,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<LoaderData>
     listMaintenanceWindowsForAdmin(100),
     listManualIncidentsForAdmin(100),
   ]);
+  const monitors = getStatusTargets().map((t) => ({ id: t.id, name: t.name }));
   const maintenance: MaintenanceAdminSerialized[] = maintRows.map((w) => ({
     id: w.id,
     title: w.title,
@@ -80,6 +94,9 @@ export async function loader({ request }: Route.LoaderArgs): Promise<LoaderData>
     startsAt: w.startsAt.toISOString(),
     endsAt: w.endsAt.toISOString(),
     createdByEmail: w.createdByEmail,
+    ...(w.affectedTargetIds?.length
+      ? { affectedTargetIds: w.affectedTargetIds }
+      : {}),
   }));
   const incidents: IncidentAdminSerialized[] = incRows.map((e) => ({
     id: e._id.toHexString(),
@@ -87,8 +104,11 @@ export async function loader({ request }: Route.LoaderArgs): Promise<LoaderData>
     body: e.body,
     severity: e.severity,
     createdAt: e.createdAt.toISOString(),
+    ...(e.affectedTargetIds?.length
+      ? { affectedTargetIds: e.affectedTargetIds }
+      : {}),
   }));
-  return { mode: "ok", email, maintenance, incidents };
+  return { mode: "ok", email, monitors, maintenance, incidents };
 }
 
 type AdminGate =
@@ -128,6 +148,10 @@ export async function action({ request }: Route.ActionArgs) {
   const { email } = gate;
   const fd = await request.formData();
   const intent = String(fd.get("intent") ?? "");
+  const affectedTargets = fd
+    .getAll("affectedTargets")
+    .map((x) => String(x).trim())
+    .filter(Boolean);
 
   if (intent === "create-maintenance") {
     const id = String(fd.get("id") ?? "").trim();
@@ -143,6 +167,7 @@ export async function action({ request }: Route.ActionArgs) {
       summary: summary || undefined,
       startsAt,
       endsAt,
+      affectedTargetIds: affectedTargets,
       createdByEmail: email,
     });
     if (!ins.ok) {
@@ -172,6 +197,7 @@ export async function action({ request }: Route.ActionArgs) {
       title,
       body,
       severity,
+      affectedTargetIds: affectedTargets,
       authorEmail: email,
     });
     if (!ins.ok) {
@@ -273,7 +299,7 @@ export default function InternalStatusOps() {
     );
   }
 
-  const { email, maintenance, incidents } = loaderData;
+  const { email, monitors, maintenance, incidents } = loaderData;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -359,6 +385,29 @@ export default function InternalStatusOps() {
               />
             </label>
           </div>
+          {monitors.length > 0 ? (
+            <fieldset>
+              <legend className="text-sm text-zinc-600 dark:text-zinc-400">
+                May affect monitors (optional)
+              </legend>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+                {monitors.map((m) => (
+                  <label
+                    key={m.id}
+                    className="flex cursor-pointer items-center gap-2 text-sm text-zinc-800 dark:text-zinc-200"
+                  >
+                    <input
+                      type="checkbox"
+                      name="affectedTargets"
+                      value={m.id}
+                      className="rounded border-zinc-300 dark:border-zinc-600"
+                    />
+                    {m.name}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ) : null}
           <button
             type="submit"
             className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
@@ -384,6 +433,12 @@ export default function InternalStatusOps() {
                   <p className="font-mono text-xs text-zinc-500">
                     {w.startsAt} → {w.endsAt}
                   </p>
+                  {w.affectedTargetIds?.length ? (
+                    <p className="mt-1 text-xs text-zinc-500">
+                      Monitors:{" "}
+                      {labelsForMonitorIds(w.affectedTargetIds, monitors)}
+                    </p>
+                  ) : null}
                 </div>
                 <Form method="post">
                   <input type="hidden" name="intent" value="delete-maintenance" />
@@ -448,6 +503,29 @@ export default function InternalStatusOps() {
               ))}
             </select>
           </label>
+          {monitors.length > 0 ? (
+            <fieldset>
+              <legend className="text-sm text-zinc-600 dark:text-zinc-400">
+                Related monitors (optional)
+              </legend>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+                {monitors.map((m) => (
+                  <label
+                    key={m.id}
+                    className="flex cursor-pointer items-center gap-2 text-sm text-zinc-800 dark:text-zinc-200"
+                  >
+                    <input
+                      type="checkbox"
+                      name="affectedTargets"
+                      value={m.id}
+                      className="rounded border-zinc-300 dark:border-zinc-600"
+                    />
+                    {m.name}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ) : null}
           <button
             type="submit"
             className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
@@ -473,6 +551,12 @@ export default function InternalStatusOps() {
                   <p className="mt-1 text-xs text-zinc-500">
                     {ev.severity} · {ev.createdAt}
                   </p>
+                  {ev.affectedTargetIds?.length ? (
+                    <p className="mt-1 text-xs text-zinc-500">
+                      Monitors:{" "}
+                      {labelsForMonitorIds(ev.affectedTargetIds, monitors)}
+                    </p>
+                  ) : null}
                 </div>
                 <Form method="post">
                   <input type="hidden" name="intent" value="delete-incident" />

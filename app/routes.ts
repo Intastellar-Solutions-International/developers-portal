@@ -36,6 +36,7 @@ const systemRoutes: RouteConfigEntry[] = [
   route("internal/status-ops", "routes/internal.status-ops.tsx"),
   route("api/status/cron", "routes/api.status.cron.tsx"),
   route("api/status.json", "routes/api.status.json.tsx"),
+  route("api/status/feed.xml", "routes/api.status.feed.tsx"),
   route("api/status/uptime", "routes/api.status.uptime.tsx"),
   route("api/status/uptime/badge", "routes/api.status.uptime-badge.tsx"),
 ];
