@@ -144,6 +144,27 @@ function CloseIcon({ className }: { className?: string }) {
   );
 }
 
+function ExternalLinkGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+    </svg>
+  );
+}
+
 function SiteHeaderInner({
   onOpenSearch,
 }: {
@@ -187,50 +208,33 @@ function SiteHeaderInner({
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-zinc-200 bg-white dark:border-zinc-600/40 dark:bg-zinc-800">
       <div className="mx-auto flex h-[3.75rem] max-w-6xl items-center justify-between gap-2 px-4 sm:gap-4">
-        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
-          <a
-            href="https://www.intastellarsolutions.com"
-            target="_blank"
-            rel="noreferrer noopener"
-            className="shrink-0 opacity-90 transition-opacity hover:opacity-100"
-            title="Intastellar Solutions"
-          >
-            <img
-              src={BRAND.companyLogoBlack}
-              alt="Intastellar Solutions"
-              className="h-6 w-auto sm:h-7 dark:invert"
-            />
-          </a>
-          <span
-            className="hidden h-6 w-px shrink-0 bg-zinc-200 dark:bg-white/20 sm:block"
-            aria-hidden
-          />
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <Link
             to="/"
             className="min-w-0 shrink-0 transition-opacity hover:opacity-90"
-            title="Intastellar Developers"
+            title="Intastellar Developers — home"
           >
             <img
               src={BRAND.developersLogoWhite}
               alt="Intastellar Developers"
-              className="h-7 w-auto max-w-[9rem] object-left object-contain brightness-0 sm:h-8 sm:max-w-none dark:brightness-100"
+              className="h-7 w-auto max-w-[11rem] object-left object-contain brightness-0 sm:h-8 sm:max-w-[13rem] dark:brightness-100"
             />
           </Link>
           <span
-            className="hidden h-6 w-px shrink-0 bg-zinc-200 dark:bg-white/20 lg:block"
+            className="hidden h-5 w-px shrink-0 bg-zinc-200 dark:bg-white/20 sm:block"
             aria-hidden
           />
-          <Link
-            to={consentsDocsHref}
-            className="hidden min-w-0 shrink-0 transition-opacity hover:opacity-90 lg:block"
-            title="Intastellar Consents documentation"
+          <a
+            href="https://www.intastellarsolutions.com"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="hidden min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-500 transition-colors hover:text-brand dark:text-zinc-400 dark:hover:text-brand sm:inline-flex"
+            title="Intastellar Solutions (opens in new tab)"
           >
-            <img
-              src={BRAND.consentsProductLogoWhite}
-              alt="Intastellar Consents"
-              className="h-6 w-auto max-w-[10rem] object-left object-contain brightness-0 sm:h-7 dark:brightness-100"
-            />
-          </Link>
+            <span className="truncate">Intastellar Solutions</span>
+            <ExternalLinkGlyph className="size-3 shrink-0 opacity-70" />
+            <span className="sr-only"> (opens in new tab)</span>
+          </a>
         </div>
 
         <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
