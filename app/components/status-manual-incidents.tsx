@@ -67,6 +67,37 @@ export function StatusManualIncidents({ incidents, copy }: Props) {
                 <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-300">
                   {ev.body}
                 </p>
+                {ev.updates.length > 0 ? (
+                  <div className="mt-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                      {copy.manualUpdatesHeading}
+                    </p>
+                    <ul className="mt-2 space-y-3 border-l-2 border-zinc-200 pl-3 dark:border-zinc-600">
+                      {ev.updates.map((u, i) => (
+                        <li key={`${u.at}-${i}`}>
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                            {interpolate(copy.manualUpdateMeta, {
+                              atLabel: u.atLabel,
+                              email: u.authorEmail,
+                            })}
+                            {u.fromSeverity !== u.toSeverity ? (
+                              <>
+                                {" "}
+                                · {severityLabel(copy, u.fromSeverity)} →{" "}
+                                {severityLabel(copy, u.toSeverity)}
+                              </>
+                            ) : null}
+                          </p>
+                          {u.message.trim() ? (
+                            <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-300">
+                              {u.message}
+                            </p>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
                 {ev.affectedLabels.length > 0 ? (
                   <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
                     <span className="font-medium text-zinc-600 dark:text-zinc-300">

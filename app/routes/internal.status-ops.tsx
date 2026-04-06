@@ -14,7 +14,7 @@ import {
   deleteManualIncidentById,
   insertManualIncident,
   listManualIncidentsForAdmin,
-  updateManualIncidentSeverity,
+  updateManualIncident,
 } from "~/lib/status-manual-incidents.server";
 import {
   notifySubscribersNewIncident,
@@ -55,6 +55,7 @@ type IncidentAdminSerialized = {
   severity: string;
   createdAt: string;
   affectedTargetIds?: string[];
+  updatesCount: number;
 };
 
 type LoaderOk = {
@@ -109,6 +110,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<LoaderData>
     body: e.body,
     severity: e.severity,
     createdAt: e.createdAt.toISOString(),
+    updatesCount: e.updates?.length ?? 0,
     ...(e.affectedTargetIds?.length
       ? { affectedTargetIds: e.affectedTargetIds }
       : {}),
@@ -227,13 +229,16 @@ export async function action({ request }: Route.ActionArgs) {
   if (intent === "update-incident-severity") {
     const incidentId = String(fd.get("incidentId") ?? "").trim();
     const severityRaw = String(fd.get("severity") ?? "");
+    const updateMessage = String(fd.get("updateMessage") ?? "");
     if (!MANUAL_INCIDENT_SEVERITIES.includes(severityRaw as ManualIncidentSeverity)) {
       return data({ error: "Invalid severity." }, { status: 400 });
     }
     const severity = severityRaw as ManualIncidentSeverity;
-    const upd = await updateManualIncidentSeverity({
+    const upd = await updateManualIncident({
       hexId: incidentId,
       severity,
+      message: updateMessage,
+      authorEmail: email,
     });
     if (!upd.ok) {
       return data({ error: upd.error }, { status: 400 });
@@ -592,11 +597,16 @@ export default function InternalStatusOps() {
                       {labelsForMonitorIds(ev.affectedTargetIds, monitors)}
                     </p>
                   ) : null}
+                  {ev.updatesCount > 0 ? (
+                    <p className="mt-1 text-xs text-zinc-500">
+                      {ev.updatesCount} update{ev.updatesCount === 1 ? "" : "s"} on record
+                    </p>
+                  ) : null}
                 </div>
-                <div className="flex shrink-0 flex-col items-stretch gap-2 sm:items-end">
+                <div className="flex shrink-0 flex-col items-stretch gap-2 sm:items-end sm:min-w-[220px]">
                   <Form
                     method="post"
-                    className="flex flex-col gap-2 sm:flex-row sm:items-center"
+                    className="flex w-full flex-col gap-2"
                   >
                     <input
                       type="hidden"
@@ -604,12 +614,12 @@ export default function InternalStatusOps() {
                       value="update-incident-severity"
                     />
                     <input type="hidden" name="incidentId" value={ev.id} />
-                    <label className="flex flex-col gap-1 text-xs text-zinc-500 sm:items-end">
+                    <label className="flex flex-col gap-1 text-xs text-zinc-500">
                       <span className="sr-only">Status</span>
                       <select
                         name="severity"
                         defaultValue={ev.severity}
-                        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                        className="w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-800"
                       >
                         {MANUAL_INCIDENT_SEVERITIES.map((s) => (
                           <option key={s} value={s}>
@@ -617,6 +627,17 @@ export default function InternalStatusOps() {
                           </option>
                         ))}
                       </select>
+                    </label>
+                    <label className="flex flex-col gap-1 text-xs text-zinc-500">
+                      <span className="text-zinc-600 dark:text-zinc-400">
+                        Update message (optional)
+                      </span>
+                      <textarea
+                        name="updateMessage"
+                        rows={3}
+                        placeholder="What changed?"
+                        className="w-full resize-y rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                      />
                     </label>
                     <button
                       type="submit"

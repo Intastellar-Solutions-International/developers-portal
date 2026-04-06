@@ -94,6 +94,9 @@ export type StatusPageCopy = {
   manualSeverityIdentified: string;
   manualSeverityMonitoring: string;
   manualSeverityResolved: string;
+  /** Interpolation: {{atLabel}}, {{email}} */
+  manualUpdateMeta: string;
+  manualUpdatesHeading: string;
   affectedMonitorsLabel: string;
   subscribeRss: string;
   subscribeRssTitle: string;
@@ -218,6 +221,8 @@ export function getStatusPageCopy(locale: Locale): StatusPageCopy {
     manualSeverityIdentified: tp("status.manualSeverityIdentified"),
     manualSeverityMonitoring: tp("status.manualSeverityMonitoring"),
     manualSeverityResolved: tp("status.manualSeverityResolved"),
+    manualUpdateMeta: tp("status.manualUpdateMeta"),
+    manualUpdatesHeading: tp("status.manualUpdatesHeading"),
     affectedMonitorsLabel: tp("status.affectedMonitorsLabel"),
     subscribeRss: tp("status.subscribeRss"),
     subscribeRssTitle: tp("status.subscribeRssTitle"),

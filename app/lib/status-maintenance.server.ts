@@ -86,7 +86,7 @@ export function getConfiguredMaintenanceWindows(): StatusMaintenanceWindow[] {
   return parseMaintenanceJson(process.env.STATUS_MAINTENANCE_JSON);
 }
 
-function mergeMaintenanceById(
+export function mergeMaintenanceById(
   env: StatusMaintenanceWindow[],
   mongo: StatusMaintenanceWindow[],
 ): StatusMaintenanceWindow[] {
@@ -94,6 +94,22 @@ function mergeMaintenanceById(
   for (const w of env) map.set(w.id, w);
   for (const w of mongo) map.set(w.id, w);
   return [...map.values()];
+}
+
+/** Windows whose [startsAt, endsAt) intersects [rangeStart, rangeEnd] (inclusive bounds on range). */
+export function filterMaintenanceWindowsOverlappingRange(
+  windows: StatusMaintenanceWindow[],
+  rangeStart: Date,
+  rangeEnd: Date,
+): StatusMaintenanceWindow[] {
+  const a = rangeStart.getTime();
+  const b = rangeEnd.getTime();
+  return windows.filter((w) => {
+    const startMs = Date.parse(w.startsAt);
+    const endMs = Date.parse(w.endsAt);
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) return false;
+    return startMs < b && endMs > a;
+  });
 }
 
 /**

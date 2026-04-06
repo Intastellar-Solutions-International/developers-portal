@@ -55,6 +55,26 @@ export async function listFutureMaintenanceWindowsFromMongo(): Promise<
   return rows.map(rowToWindow);
 }
 
+/** Windows that overlap the time span of status history rows (includes ended windows). */
+export async function listMaintenanceWindowsOverlappingRange(
+  rangeStart: Date,
+  rangeEnd: Date,
+): Promise<StatusMaintenanceWindow[]> {
+  const col = await getCollection<MaintenanceWindowRow>(
+    STATUS_MAINTENANCE_DB_COLLECTION,
+  );
+  if (!col) return [];
+  const rows = await col
+    .find({
+      startsAt: { $lt: rangeEnd },
+      endsAt: { $gt: rangeStart },
+    })
+    .sort({ startsAt: 1 })
+    .limit(500)
+    .toArray();
+  return rows.map(rowToWindow);
+}
+
 /** Admin table: recent windows including ended (newest first). */
 export async function listMaintenanceWindowsForAdmin(
   limit = 100,

@@ -77,12 +77,27 @@ export async function buildStatusRssXml(
           ? ` Monitors: ${ev.affectedLabels.join(", ")}.`
           : "";
       const bodyShort = ev.body.length > 1500 ? `${ev.body.slice(0, 1500)}…` : ev.body;
+      let desc = `${bodyShort}${extra}`;
+      if (ev.updates.length > 0) {
+        const parts = ev.updates
+          .slice()
+          .sort((a, b) => a.at.localeCompare(b.at))
+          .map((u) => {
+            const sev =
+              u.fromSeverity !== u.toSeverity
+                ? ` ${u.fromSeverity}→${u.toSeverity}`
+                : "";
+            const note = u.message.trim() ? `\n${u.message.trim()}` : "";
+            return `\n\n— ${u.atLabel} (${u.authorEmail})${sev}${note}`;
+          });
+        desc += parts.join("");
+      }
       items.push({
         title: `[${ev.severity}] ${ev.title}`,
         link: statusUrl,
         guid: `inta.dev:manual-incident:${ev.id}`,
         pubDate: new Date(ev.createdAt),
-        description: escapeXml(`${bodyShort}${extra}`),
+        description: escapeXml(desc),
       });
     }
   }

@@ -9,6 +9,16 @@ export const MANUAL_INCIDENT_SEVERITIES = [
 
 export type ManualIncidentSeverity = (typeof MANUAL_INCIDENT_SEVERITIES)[number];
 
+export type ManualIncidentUpdatePublic = {
+  at: string;
+  atLabel: string;
+  authorEmail: string;
+  fromSeverity: ManualIncidentSeverity;
+  toSeverity: ManualIncidentSeverity;
+  /** Trimmed operator note (may be empty if only severity changed). */
+  message: string;
+};
+
 export type ManualIncidentPublic = {
   id: string;
   title: string;
@@ -23,4 +33,6 @@ export type ManualIncidentPublic = {
   affectedTargetIds: string[];
   /** Human-readable monitor names aligned with `affectedTargetIds`. */
   affectedLabels: string[];
+  /** Newest-first timeline of status changes / notes from operators. */
+  updates: ManualIncidentUpdatePublic[];
 };

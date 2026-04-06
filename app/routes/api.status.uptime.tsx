@@ -9,7 +9,8 @@ import {
 
 /**
  * Public JSON for embedding an uptime widget on marketing / product pages.
- * Same calculation as `/status` (stored scheduled runs where every check passed).
+ * Same calculation as `/status` (stored scheduled runs that count as fully up, including
+ * operator-notice and maintenance adjustments — see `getStoredOverallUptime`).
  *
  * Language for `widgetTitle`, `widgetDescription`, and URL fields: `?locale=de|da|fr|nl|pt-br|en` (or `pt` → Brazilian)
  * or `Accept-Language`; defaults to English. `badgeEmbedUrl` includes `?locale=` so iframe

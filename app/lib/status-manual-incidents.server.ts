@@ -13,11 +13,20 @@ import {
   MANUAL_INCIDENT_SEVERITIES,
   type ManualIncidentPublic,
   type ManualIncidentSeverity,
+  type ManualIncidentUpdatePublic,
 } from "~/lib/status-manual-incidents";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
 export type { ManualIncidentPublic, ManualIncidentSeverity };
 export { MANUAL_INCIDENT_SEVERITIES };
+
+export type ManualIncidentUpdateRow = {
+  at: Date;
+  authorEmail: string;
+  fromSeverity: ManualIncidentSeverity;
+  toSeverity: ManualIncidentSeverity;
+  message: string;
+};
 
 export type ManualIncidentRow = {
   _id: ObjectId;
@@ -29,7 +38,24 @@ export type ManualIncidentRow = {
   updatedAt: Date;
   authorEmail: string;
   resolvedAt: Date | null;
+  updates?: ManualIncidentUpdateRow[];
 };
+
+function mapUpdatesToPublic(
+  rows: ManualIncidentUpdateRow[] | undefined,
+): ManualIncidentUpdatePublic[] {
+  if (!rows?.length) return [];
+  const mapped = rows.map((u) => ({
+    at: u.at.toISOString(),
+    atLabel: formatDateTimeMediumUtc(u.at.toISOString()),
+    authorEmail: u.authorEmail,
+    fromSeverity: u.fromSeverity,
+    toSeverity: u.toSeverity,
+    message: u.message,
+  }));
+  mapped.sort((a, b) => b.at.localeCompare(a.at));
+  return mapped;
+}
 
 function rowToPublic(
   row: ManualIncidentRow,
@@ -51,6 +77,7 @@ function rowToPublic(
     resolvedAtLabel: resolvedIso ? formatDateTimeMediumUtc(resolvedIso) : null,
     affectedTargetIds: ids,
     affectedLabels: labelsForTargetIds(ids, targets),
+    updates: mapUpdatesToPublic(row.updates),
   };
 }
 
@@ -68,6 +95,27 @@ export async function listManualIncidentsPublic(
     .limit(limit)
     .toArray();
   return rows.map((r) => rowToPublic(r, targets));
+}
+
+/**
+ * Operator notices that could affect any moment in [rangeStart, rangeEnd] (for uptime adjustment).
+ */
+export async function listManualIncidentRowsOverlappingRange(
+  rangeStart: Date,
+  rangeEnd: Date,
+): Promise<ManualIncidentRow[]> {
+  const col = await getCollection<ManualIncidentRow>(
+    STATUS_MANUAL_INCIDENTS_COLLECTION,
+  );
+  if (!col) return [];
+  return col
+    .find({
+      createdAt: { $lte: rangeEnd },
+      $or: [{ resolvedAt: null }, { resolvedAt: { $gt: rangeStart } }],
+    })
+    .sort({ createdAt: 1 })
+    .limit(200)
+    .toArray();
 }
 
 export async function listManualIncidentsForAdmin(
@@ -123,12 +171,23 @@ export async function insertManualIncident(opts: {
   return { ok: true };
 }
 
-export async function updateManualIncidentSeverity(opts: {
+const MANUAL_INCIDENT_UPDATE_MESSAGE_MAX = 8000;
+
+export async function updateManualIncident(opts: {
   hexId: string;
   severity: ManualIncidentSeverity;
+  message?: string;
+  authorEmail: string;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   if (!MANUAL_INCIDENT_SEVERITIES.includes(opts.severity)) {
     return { ok: false, error: "Invalid severity." };
+  }
+  const message = (opts.message ?? "").trim();
+  if (message.length > MANUAL_INCIDENT_UPDATE_MESSAGE_MAX) {
+    return {
+      ok: false,
+      error: `Update message is too long (max ${MANUAL_INCIDENT_UPDATE_MESSAGE_MAX} characters).`,
+    };
   }
   let oid: ObjectId;
   try {
@@ -142,22 +201,36 @@ export async function updateManualIncidentSeverity(opts: {
   if (!col) return { ok: false, error: "MongoDB is not configured." };
   const row = await col.findOne({ _id: oid });
   if (!row) return { ok: false, error: "Incident not found." };
-  if (row.severity === opts.severity) {
+  const fromSev = row.severity;
+  const toSev = opts.severity;
+  if (fromSev === toSev && !message) {
     return { ok: true };
   }
   const now = new Date();
   const resolvedAt =
-    opts.severity === "resolved"
-      ? (row.resolvedAt ?? now)
-      : null;
+    fromSev === toSev
+      ? row.resolvedAt
+      : toSev === "resolved"
+        ? (row.resolvedAt ?? now)
+        : null;
+  const authorEmail = opts.authorEmail.trim().toLowerCase();
+  const newEntry: ManualIncidentUpdateRow = {
+    at: now,
+    authorEmail,
+    fromSeverity: fromSev,
+    toSeverity: toSev,
+    message,
+  };
   await col.updateOne(
     { _id: oid },
     {
       $set: {
-        severity: opts.severity,
+        ...(fromSev !== toSev
+          ? { severity: toSev, resolvedAt }
+          : {}),
         updatedAt: now,
-        resolvedAt,
       },
+      $push: { updates: newEntry },
     },
   );
   return { ok: true };

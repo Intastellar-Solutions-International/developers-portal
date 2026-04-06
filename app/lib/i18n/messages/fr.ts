@@ -436,6 +436,8 @@ export const fr: MessageTree = {
     manualSeverityIdentified: "Identifié",
     manualSeverityMonitoring: "Surveillance",
     manualSeverityResolved: "Résolu",
+    manualUpdateMeta: "Mise à jour · {{atLabel}} · {{email}}",
+    manualUpdatesHeading: "Mises à jour",
     affectedMonitorsLabel: "Surveillances",
     subscribeRss: "S’abonner (RSS)",
     subscribeRssTitle: "Flux RSS des avis opérateur et de la maintenance planifiée",
