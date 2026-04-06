@@ -114,9 +114,9 @@ The WordPress build does **not** support fully custom banner markup like the Jav
 
 ## Shopify
 
-Install **Intastellar Consents** from the Shopify App Store and complete setup in the app.
+There is **no Shopify App Store app yet**. Add the consent script by editing your theme **`theme.liquid`** (Liquid) — same **`window.INTA`** snippet as the JavaScript integration.
 
-[Get started (Shopify)](/docs/cookie-banner/shopify)
+[Shopify (theme / Liquid)](/docs/cookie-banner/shopify)
 
 > By implementing the solution you agree to the [cookie banner privacy policy](https://www.intastellarsolutions.com/about/legal/privacy/cookie-solutions/privacy-policy).
 
@@ -133,6 +133,8 @@ Yes. Load the script, then style or replace the banner using the documented **CS
 **WordPress:** Set a valid privacy policy URL in the plugin (**Intro** or **Privacy policy**). See [Config (WordPress)](/docs/cookie-banner/wordpress/config).
 
 **JavaScript:** Ensure `policy_link` / `settings.privacy_policy` points to a real URL. See [Get Started (JavaScript)](/docs/cookie-banner/javascript/getting-started).
+
+**Shopify:** Add the snippet in **`layout/theme.liquid`** and set `policy_link` to a live policy URL (for example your store’s privacy policy page). See [Shopify](/docs/cookie-banner/shopify).
 
 ### Where do I put the privacy policy link?
 

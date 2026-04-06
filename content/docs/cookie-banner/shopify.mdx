@@ -1,14 +1,68 @@
 ---
 title: Shopify
-description: Integrate Intastellar Consents on your Shopify store.
+description: Add Intastellar Consents to a Shopify store by editing your theme’s Liquid layout (no app required).
 order: 70
-lastUpdated: "2026-04-05"
+lastUpdated: "2026-04-06"
+related:
+  - title: Get Started (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Customize appearance and behavior
+    href: /docs/cookie-banner/javascript/customize
 ---
 
 # Shopify
 
-Install **Intastellar Consents** from the Shopify App Store and finish onboarding in the app.
+There is **no public Shopify App Store listing yet**. You can still run **Intastellar Consents** on a Shopify store by adding the same **JavaScript snippet** you would use on any site—placed in your theme’s **Liquid** layout so it loads on every storefront page.
 
-By using the app you agree to the [cookie banner privacy policy](https://www.intastellarsolutions.com/about/legal/privacy/cookie-solutions/privacy-policy).
+## Add the snippet in `theme.liquid`
 
-[← Documentation home](/docs/cookie-banner)
+1. In Shopify admin go to **Online Store → Themes**.
+2. On your live theme, choose **⋯ → Edit code**.
+3. Under **Layout**, open **`theme.liquid`** (or the main layout your theme uses).
+4. Paste the **configuration block** and **script tag** from [Get Started (JavaScript)](/docs/cookie-banner/javascript/getting-started) **immediately after** the opening `<head>` tag (before `{{ content_for_header }}` is fine, as long as both scripts run in `<head>`).
+
+Use your real **shop domain** (or primary custom domain) for `settings.rootDomain`, your **Intastellar company slug**, **privacy policy URL**, **logo**, colours, and optional **`gtagId`**, matching the [JavaScript guide](/docs/cookie-banner/javascript/getting-started) and [`window.INTA` schema](/docs/cookie-banner/javascript/inta-schema).
+
+Example shape (placeholders only—copy the full snippet from the JS guide):
+
+```liquid
+<head>
+  <script>
+    window.INTA = {
+      policy_link: "https://your-shop-domain.com/policies/privacy-policy",
+      settings: {
+        rootDomain: "your-shop-domain.com",
+        company: "yourcompany",
+        arrange: "ltr",
+        color: "#000000",
+        logo: "https://cdn.shopify.com/.../your-logo.png",
+        design: "overlay",
+        gtagId: "G-XXXXXXXXXX",
+        requiredCookies: [],
+        keepInLocalStorage: [],
+      },
+    };
+  </script>
+  <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+  {{ content_for_header }}
+```
+
+Shopify often serves assets from `cdn.shopify.com`; your **logo** can be a file from **Content → Files** or your theme assets. Use an **https** URL.
+
+## Checkout and customer accounts
+
+Shopify **checkout** and **customer account** domains differ from your storefront host. The standard **`theme.liquid`** snippet covers the **Online Store** theme only. If you need the banner on checkout or new customer account UI, you will need **additional** placement or configuration where Shopify allows scripts for those surfaces (and may require Shopify Plus or supported checkout extensions)—treat that as a separate integration.
+
+## Shopify app (coming later)
+
+A **Shopify app** is planned for easier install and configuration from the admin. Until it is published, **theme editing** is the supported path.
+
+## Privacy policy
+
+By implementing the solution you agree to the [cookie banner privacy policy](https://www.intastellarsolutions.com/about/legal/privacy/cookie-solutions/privacy-policy).
+
+## Related
+
+- [Get Started (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- [Customize](/docs/cookie-banner/javascript/customize)
+- [Documentation home](/docs/cookie-banner)

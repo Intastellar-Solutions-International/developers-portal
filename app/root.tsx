@@ -15,6 +15,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { LegacyDevelopersBanner } from "./components/legacy-developers-banner";
 import { NotFoundPage } from "./components/not-found-page";
 import { SearchOverlay } from "./components/search-overlay";
 import { SiteFooter } from "./components/site-footer";
@@ -34,6 +35,7 @@ import {
   getColorSchemeIsDarkSnapshot,
   subscribeColorScheme,
 } from "~/lib/color-scheme";
+import { isLegacyBannerActiveAt } from "~/lib/legacy-banner";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import {
   IntastellarAuthProvider,
@@ -65,7 +67,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     headers.append("Set-Cookie", c);
   }
   return data(
-    { ssoConfigured, portalAccount: account },
+    {
+      ssoConfigured,
+      portalAccount: account,
+      legacyBannerActive: isLegacyBannerActiveAt(Date.now()),
+    },
     { headers },
   );
 }
@@ -193,6 +199,8 @@ function IntastellarAppShell({ children }: { children: React.ReactNode }) {
  */
 function RootShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
+  const rootLoader = useRouteLoaderData("root") as RootLoaderData | undefined;
+  const showLegacyBanner = rootLoader?.legacyBannerActive === true;
   const fetcher = useFetcher<SearchLoaderData>();
   const navigate = useNavigate();
 
@@ -237,7 +245,12 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <>
       <div className="flex min-h-dvh flex-col">
         <SiteHeader onOpenSearch={openSearch} />
-        <main className="flex-1 pt-27">{children}</main>
+        {showLegacyBanner ? <LegacyDevelopersBanner /> : null}
+        <main
+          className={showLegacyBanner ? "flex-1 pt-27" : "flex-1 pt-15"}
+        >
+          {children}
+        </main>
         <SiteFooter />
       </div>
       <SearchOverlay
