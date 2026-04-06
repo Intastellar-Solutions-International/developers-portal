@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
+import { useI18n } from "~/providers/i18n-provider";
+
 const linkClass =
   "text-zinc-600 transition-colors hover:text-brand dark:text-zinc-400 dark:hover:text-brand";
 
@@ -15,6 +17,7 @@ type StatusJson = {
  * Footer link to `/status` with a small indicator from `/api/status.json`.
  */
 export function StatusFooterLink() {
+  const { t } = useI18n();
   const [snapshot, setSnapshot] = useState<StatusJson["snapshot"] | undefined>(
     undefined,
   );
@@ -49,15 +52,15 @@ export function StatusFooterLink() {
       className={`${linkClass} inline-flex items-center gap-1.5`}
       title={
         snapshot && !snapshot.overallOk
-          ? "Some checks are failing"
-          : "System status"
+          ? t("footer.statusDegraded")
+          : t("footer.statusOk")
       }
     >
       <span
         className={`size-1.5 shrink-0 rounded-full ${dotClass}`}
         aria-hidden
       />
-      System status
+      {t("footer.statusOk")}
     </Link>
   );
 }

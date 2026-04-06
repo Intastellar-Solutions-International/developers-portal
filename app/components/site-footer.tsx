@@ -2,6 +2,7 @@ import { Link } from "react-router";
 
 import { DevelopersBrandLogo } from "~/components/developers-brand-logo";
 import { StatusFooterLink } from "~/components/status-footer-link";
+import { useI18n } from "~/providers/i18n-provider";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
 import { requestOpenSearch } from "~/lib/search-overlay-context";
@@ -13,6 +14,7 @@ const headingClass =
   "text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-500";
 
 export function SiteFooter() {
+  const { t } = useI18n();
   const year = new Date().getFullYear();
   const vCb = getDefaultVersionSlug("cookie-banner");
   const vAcc = getDefaultVersionSlug("accounts-sign-in");
@@ -28,21 +30,20 @@ export function SiteFooter() {
             <Link
               to="/"
               className="inline-block transition-opacity hover:opacity-90"
-              title="Intastellar Developers — home"
+              title={t("nav.logoHomeTitle")}
             >
               <DevelopersBrandLogo variant="footer" />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-              Documentation, API keys, and integration guides for Intastellar
-              Consents and Intastellar Accounts.
+              {t("footer.tagline")}
             </p>
           </div>
           <div>
-            <p className={headingClass}>Documentation</p>
+            <p className={headingClass}>{t("footer.documentation")}</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
                 <Link to="/docs" className={linkClass}>
-                  All docs
+                  {t("footer.allDocs")}
                 </Link>
               </li>
               <li>
@@ -50,7 +51,7 @@ export function SiteFooter() {
                   to={docHref("cookie-banner", vCb)}
                   className={linkClass}
                 >
-                  Intastellar Consents
+                  {t("footer.intastellarConsents")}
                 </Link>
               </li>
               <li>
@@ -58,7 +59,7 @@ export function SiteFooter() {
                   to={docHref("accounts-sign-in", vAcc)}
                   className={linkClass}
                 >
-                  Accounts — Sign in
+                  {t("footer.accountsSignIn")}
                 </Link>
               </li>
               <li>
@@ -67,7 +68,7 @@ export function SiteFooter() {
                   onClick={() => requestOpenSearch()}
                   className={`${linkClass} text-left`}
                 >
-                  Search docs
+                  {t("footer.searchDocs")}
                   <span className="ml-1 text-zinc-500 dark:text-zinc-600" aria-hidden>
                     ⌘K
                   </span>
@@ -76,16 +77,16 @@ export function SiteFooter() {
             </ul>
           </div>
           <div>
-            <p className={headingClass}>Platform</p>
+            <p className={headingClass}>{t("footer.platform")}</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
                 <Link to="/" className={linkClass}>
-                  Home
+                  {t("footer.home")}
                 </Link>
               </li>
               <li>
                 <Link to="/changelog" className={linkClass}>
-                  Changelog
+                  {t("footer.changelog")}
                 </Link>
               </li>
               <li>
@@ -93,32 +94,32 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link to="/account/login" className={linkClass}>
-                  Sign in
+                  {t("footer.signIn")}
                 </Link>
               </li>
               <li>
                 <Link to="/account/api-keys" className={linkClass}>
-                  API keys
+                  {t("footer.apiKeys")}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <p className={headingClass}>Legal</p>
+            <p className={headingClass}>{t("footer.legal")}</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
                 <Link to="/legal" className={linkClass}>
-                  Legal overview
+                  {t("footer.legalOverview")}
                 </Link>
               </li>
               <li>
                 <Link to="/legal/privacy" className={linkClass}>
-                  Privacy (inta.dev)
+                  {t("footer.privacy")}
                 </Link>
               </li>
               <li>
                 <Link to="/legal/terms" className={linkClass}>
-                  Terms (inta.dev)
+                  {t("footer.terms")}
                 </Link>
               </li>
               <li>
@@ -128,7 +129,7 @@ export function SiteFooter() {
                   rel="noreferrer noopener"
                   className={linkClass}
                 >
-                  DPA (corporate)
+                  {t("footer.dpaCorporate")}
                   <span className="ml-0.5 text-xs opacity-70" aria-hidden>
                     ↗
                   </span>
@@ -137,7 +138,7 @@ export function SiteFooter() {
             </ul>
           </div>
           <div>
-            <p className={headingClass}>Intastellar</p>
+            <p className={headingClass}>{t("footer.intastellar")}</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
                 <a
@@ -146,7 +147,7 @@ export function SiteFooter() {
                   rel="noreferrer noopener"
                   className={linkClass}
                 >
-                  Intastellar Solutions
+                  {t("footer.intastellarSolutions")}
                   <span className="ml-0.5 text-xs opacity-70" aria-hidden>
                     ↗
                   </span>
@@ -159,7 +160,7 @@ export function SiteFooter() {
                   rel="noreferrer noopener"
                   className={linkClass}
                 >
-                  Cookie consents product
+                  {t("footer.cookieConsentsProduct")}
                   <span className="ml-0.5 text-xs opacity-70" aria-hidden>
                     ↗
                   </span>
@@ -169,7 +170,7 @@ export function SiteFooter() {
           </div>
         </div>
         <p className="mt-12 border-t border-zinc-200 pt-8 text-center text-xs text-zinc-500 dark:border-zinc-800">
-          © {year} Intastellar Solutions. All rights reserved.
+          {t("footer.copyright", { year })}
         </p>
       </div>
     </footer>

@@ -23,6 +23,7 @@ import {
   SSO_BOOTSTRAPPING_AUTH,
   type IntastellarAuthContextValue,
 } from "~/lib/intastellar-auth-context";
+import type { Locale } from "~/lib/i18n/locale";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
 import { clearIntastellarBrowserSession } from "~/lib/intastellar-session";
 
@@ -30,6 +31,8 @@ export type { IntastellarAuthContextValue } from "~/lib/intastellar-auth-context
 
 export type RootLoaderData = {
   ssoConfigured?: boolean;
+  /** UI language (cookie / Accept-Language). */
+  locale?: Locale;
   /**
    * Migration strip: legacy developers Referer and/or `?ref=legacy` on the URL (e.g. htaccess 301).
    */

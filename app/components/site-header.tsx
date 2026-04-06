@@ -6,12 +6,17 @@ import {
   ColorSchemeToggleMobileRow,
 } from "~/components/color-scheme-toggle";
 import { DevelopersBrandLogo } from "~/components/developers-brand-logo";
+import {
+  LanguageSwitcher,
+  LanguageSwitcherMobileRow,
+} from "~/components/language-switcher";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
 import {
   type RootLoaderData,
   useIntastellarAuth,
 } from "~/providers/intastellar-auth-provider";
 import { ColorSchemeProvider } from "~/providers/color-scheme-provider";
+import { useI18n } from "~/providers/i18n-provider";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -174,6 +179,7 @@ function SiteHeaderInner({
   const location = useLocation();
   const menuTitleId = useId();
   const { authReady, configured, isLoading, signin, logout } = useIntastellarAuth();
+  const { t } = useI18n();
   const rootLoaderData = useRouteLoaderData("root") as RootLoaderData | undefined;
   const portalAccount = rootLoaderData?.portalAccount ?? null;
   const hasPortalSession = Boolean(portalAccount?.email?.trim());
@@ -212,7 +218,7 @@ function SiteHeaderInner({
           <Link
             to="/"
             className="min-w-0 shrink-0 transition-opacity hover:opacity-90"
-            title="Intastellar Developers — home"
+            title={t("nav.logoHomeTitle")}
           >
             <DevelopersBrandLogo variant="header" />
           </Link>
@@ -225,11 +231,11 @@ function SiteHeaderInner({
             target="_blank"
             rel="noreferrer noopener"
             className="hidden min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-500 transition-colors hover:text-brand dark:text-zinc-400 dark:hover:text-brand sm:inline-flex"
-            title="Intastellar Solutions (opens in new tab)"
+            title={t("nav.intastellarSolutionsTitle")}
           >
-            <span className="truncate">Intastellar Solutions</span>
+            <span className="truncate">{t("nav.intastellarSolutions")}</span>
             <ExternalLinkGlyph className="size-3 shrink-0 opacity-70" />
-            <span className="sr-only"> (opens in new tab)</span>
+            <span className="sr-only"> {t("nav.opensNewTab")}</span>
           </a>
         </div>
 
@@ -237,12 +243,15 @@ function SiteHeaderInner({
           <button
             type="button"
             onClick={onOpenSearch}
-            aria-label="Search documentation"
-            title="Search (⌘K)"
+            aria-label={t("nav.searchAria")}
+            title={t("nav.searchTitle")}
             className={headerIconBtnClass}
           >
             <SearchIcon className="size-5" />
           </button>
+          <span className="lg:hidden">
+            <LanguageSwitcher />
+          </span>
           <span className="lg:hidden">
             <ColorSchemeToggle />
           </span>
@@ -251,7 +260,7 @@ function SiteHeaderInner({
             className={`${headerIconBtnClass} lg:hidden`}
             aria-expanded={menuOpen}
             aria-controls={menuTitleId}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-label={menuOpen ? t("nav.closeMenu") : t("nav.openMenu")}
             onClick={() => setMenuOpen((o) => !o)}
           >
             {menuOpen ? (
@@ -263,17 +272,20 @@ function SiteHeaderInner({
 
           <nav
             className="hidden items-center gap-0.5 lg:flex lg:gap-1"
-            aria-label="Main"
+            aria-label={t("nav.main")}
           >
             <NavLink to="/docs" className={navLinkClass}>
-              Docs
+              {t("nav.docs")}
             </NavLink>
             <NavLink to="/account/api-keys" className={navLinkClass}>
-              API keys
+              {t("nav.apiKeys")}
             </NavLink>
+            <span className="hidden items-center gap-1 lg:inline-flex">
+              <LanguageSwitcher />
+            </span>
             <span
               className="hidden items-center lg:inline-flex"
-              title="Color theme"
+              title={t("nav.colorTheme")}
             >
               <ColorSchemeToggle />
             </span>
@@ -284,7 +296,7 @@ function SiteHeaderInner({
                 disabled={isLoading}
                 onClick={() => void signin()}
               >
-                {isLoading ? "…" : "Sign in"}
+                {isLoading ? "…" : t("nav.signIn")}
               </button>
             ) : null}
             {authReady && configured && hasPortalSession && portalAccount ? (
@@ -304,7 +316,7 @@ function SiteHeaderInner({
                   className={headerBtnClass}
                   onClick={() => void logout()}
                 >
-                  Sign out
+                  {t("nav.signOut")}
                 </button>
               </>
             ) : null}
@@ -323,18 +335,18 @@ function SiteHeaderInner({
             id={menuTitleId}
             role="dialog"
             aria-modal="true"
-            aria-label="Site menu"
+            aria-label={t("nav.siteMenu")}
             className="absolute inset-y-0 right-0 flex w-[min(20rem,calc(100vw-1rem))] flex-col border-l border-zinc-200 bg-white shadow-2xl dark:border-zinc-600 dark:bg-zinc-800"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-600/80">
               <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                Menu
+                {t("nav.menu")}
               </p>
               <button
                 type="button"
                 className="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-100"
-                aria-label="Close menu"
+                aria-label={t("nav.closeMenu")}
                 onClick={() => setMenuOpen(false)}
               >
                 <CloseIcon className="size-5" />
@@ -342,44 +354,45 @@ function SiteHeaderInner({
             </div>
             <nav
               className="flex flex-1 flex-col gap-1 overflow-y-auto p-3"
-              aria-label="Main navigation"
+              aria-label={t("nav.mainNav")}
             >
               <NavLink
                 to="/changelog"
                 className={mobileNavLinkClass}
-                title="Consents & Sign-In — npm and GitHub releases"
+                title={t("nav.changelogTitle")}
                 onClick={() => setMenuOpen(false)}
               >
-                Changelog
+                {t("nav.changelog")}
               </NavLink>
               <NavLink
                 to="/docs"
                 className={mobileNavLinkClass}
                 onClick={() => setMenuOpen(false)}
               >
-                Documentation
+                {t("nav.documentation")}
               </NavLink>
               <NavLink
                 to={consentsDocsHref}
                 className={mobileNavLinkClass}
                 onClick={() => setMenuOpen(false)}
               >
-                Intastellar Consents
+                {t("nav.intastellarConsents")}
               </NavLink>
               <NavLink
                 to="/account/profile"
                 className={mobileNavLinkClass}
                 onClick={() => setMenuOpen(false)}
               >
-                Profile
+                {t("nav.profile")}
               </NavLink>
               <NavLink
                 to="/account/api-keys"
                 className={mobileNavLinkClass}
                 onClick={() => setMenuOpen(false)}
               >
-                API keys
+                {t("nav.apiKeys")}
               </NavLink>
+              <LanguageSwitcherMobileRow />
               <ColorSchemeToggleMobileRow />
             </nav>
             <div className="border-t border-zinc-200 p-3 dark:border-zinc-600/80">
@@ -393,7 +406,7 @@ function SiteHeaderInner({
                     void signin();
                   }}
                 >
-                  {isLoading ? "Signing in…" : "Sign in"}
+                  {isLoading ? t("nav.signingIn") : t("nav.signIn")}
                 </button>
               ) : null}
               {authReady && configured && hasPortalSession && portalAccount ? (
@@ -424,7 +437,7 @@ function SiteHeaderInner({
                       void logout();
                     }}
                   >
-                    Sign out
+                    {t("nav.signOut")}
                   </button>
                 </div>
               ) : null}
@@ -435,7 +448,7 @@ function SiteHeaderInner({
                 className="mt-2 flex w-full items-center justify-center rounded-lg px-4 py-3 text-base font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-brand dark:text-zinc-400 dark:hover:bg-white/10"
                 onClick={() => setMenuOpen(false)}
               >
-                Intastellar Solutions
+                {t("nav.intastellarSolutions")}
                 <span className="ml-1 text-xs opacity-70" aria-hidden>
                   ↗
                 </span>

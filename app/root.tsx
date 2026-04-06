@@ -42,6 +42,8 @@ import {
   getColorSchemeIsDarkSnapshot,
   subscribeColorScheme,
 } from "~/lib/color-scheme";
+import { DEFAULT_LOCALE, isLocale } from "~/lib/i18n/locale";
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import {
   isLegacyBannerActiveAt,
   requestSignalsLegacyMigrationBanner,
@@ -51,6 +53,7 @@ import {
   IntastellarAuthProvider,
   type RootLoaderData,
 } from "~/providers/intastellar-auth-provider";
+import { I18nProvider } from "~/providers/i18n-provider";
 import "./app.css";
 
 const colorSchemeBootScript = `(function(){try{var k=${JSON.stringify(COLOR_SCHEME_STORAGE_KEY)};var v=localStorage.getItem(k);var d=v==="dark"||(v!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
@@ -82,6 +85,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     {
       ssoConfigured,
       portalAccount: account,
+      locale: resolveLocaleFromRequest(request),
       legacyBannerFromLegacyReferrer:
         requestSignalsLegacyMigrationBanner(request),
     },
@@ -219,6 +223,10 @@ function IntastellarAppShell({ children }: { children: React.ReactNode }) {
  * Search data loading and navigation run here so router hooks match the root route context reliably.
  */
 function RootShell({ children }: { children: React.ReactNode }) {
+  const rootLoader = useRouteLoaderData("root") as RootLoaderData | undefined;
+  const uiLocale = isLocale(rootLoader?.locale)
+    ? rootLoader.locale
+    : DEFAULT_LOCALE;
   const [searchOpen, setSearchOpen] = useState(false);
   /** Avoid SSR/hydration mismatch: first paint has no banner node; mount it before the browser paints. */
   const [shellReady, setShellReady] = useState(false);
@@ -268,30 +276,32 @@ function RootShell({ children }: { children: React.ReactNode }) {
   const openSearch = () => setSearchOpen(true);
 
   return (
-    <>
-      <div className="flex min-h-dvh flex-col">
-        <SiteHeader onOpenSearch={openSearch} />
-        {showLegacyBanner ? <LegacyDevelopersBanner /> : null}
-        <main
-          className={
-            wantLegacyBanner
-              ? "flex-1 pt-[6.75rem]"
-              : "flex-1 pt-[3.75rem]"
-          }
-        >
-          {children}
-        </main>
-        <SiteFooter />
-      </div>
-      <SearchOverlay
-        open={searchOpen}
-        onClose={() => setSearchOpen(false)}
-        documents={documents}
-        loading={loading}
-        onNavigate={(href) => navigate(href)}
-      />
-      <ScrollRestoration />
-    </>
+    <I18nProvider initialLocale={uiLocale}>
+      <>
+        <div className="flex min-h-dvh flex-col">
+          <SiteHeader onOpenSearch={openSearch} />
+          {showLegacyBanner ? <LegacyDevelopersBanner /> : null}
+          <main
+            className={
+              wantLegacyBanner
+                ? "flex-1 pt-[6.75rem]"
+                : "flex-1 pt-[3.75rem]"
+            }
+          >
+            {children}
+          </main>
+          <SiteFooter />
+        </div>
+        <SearchOverlay
+          open={searchOpen}
+          onClose={() => setSearchOpen(false)}
+          documents={documents}
+          loading={loading}
+          onNavigate={(href) => navigate(href)}
+        />
+        <ScrollRestoration />
+      </>
+    </I18nProvider>
   );
 }
 
@@ -299,13 +309,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const analytics = isAnalyticsEnabled();
   const htmlIsDark = useRootHtmlIsDark();
   const rootLoader = useRouteLoaderData("root") as RootLoaderData | undefined;
+  const uiLocale = isLocale(rootLoader?.locale)
+    ? rootLoader.locale
+    : DEFAULT_LOCALE;
   const legacyBannerLayout =
     (rootLoader?.legacyBannerFromLegacyReferrer ?? false) &&
     isLegacyBannerActiveAt(Date.now());
 
   return (
     <html
-      lang="en"
+      lang={uiLocale}
       className={htmlIsDark ? "dark" : undefined}
       suppressHydrationWarning
     >

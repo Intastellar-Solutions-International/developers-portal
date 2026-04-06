@@ -1,5 +1,7 @@
 import type { MetaDescriptor } from "react-router";
 
+import { DEFAULT_LOCALE, type Locale } from "~/lib/i18n/locale";
+import { translatePath } from "~/lib/i18n/messages";
 import { absoluteUrl } from "~/lib/site";
 
 const SITE_NAME = "inta.dev";
@@ -105,10 +107,12 @@ export function buildDocsHubMeta(
   ];
 }
 
-export function buildHomePageMeta(pathname: string): MetaDescriptor[] {
-  const title = `inta.dev · Intastellar Developers`;
-  const desc =
-    "Documentation, API keys, and integration guides for Intastellar Consents and Intastellar Accounts on inta.dev.";
+export function buildHomePageMeta(
+  pathname: string,
+  locale: Locale = DEFAULT_LOCALE,
+): MetaDescriptor[] {
+  const title = translatePath(locale, "meta.homeTitle");
+  const desc = translatePath(locale, "meta.homeDescription");
   const url = absoluteUrl(pathname);
 
   const jsonLd = {

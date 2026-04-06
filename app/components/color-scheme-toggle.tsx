@@ -6,6 +6,7 @@ import {
   subscribeColorScheme,
 } from "~/lib/color-scheme";
 import { useColorScheme } from "~/providers/color-scheme-provider";
+import { useI18n } from "~/providers/i18n-provider";
 
 function SunIcon({ className }: { className?: string }) {
   return (
@@ -68,21 +69,22 @@ const segmentActiveClass =
 
 function SunMoonToggle({ className = "" }: { className?: string }) {
   const { setPreference } = useColorScheme();
+  const { t } = useI18n();
   const isDark = useResolvedColorSchemeIsDark();
 
   return (
     <div
       className={`${trackClass} ${className}`.trim()}
       role="radiogroup"
-      aria-label="Color theme"
+      aria-label={t("a11y.colorTheme")}
     >
       <button
         type="button"
         role="radio"
         className={`${segmentClass} ${!isDark ? segmentActiveClass : segmentInactiveClass}`}
         aria-checked={!isDark}
-        aria-label="Light theme"
-        title="Light theme"
+        aria-label={t("a11y.lightTheme")}
+        title={t("a11y.lightTheme")}
         onClick={() => setPreference("light")}
       >
         <SunIcon className="size-4.5" />
@@ -92,8 +94,8 @@ function SunMoonToggle({ className = "" }: { className?: string }) {
         role="radio"
         className={`${segmentClass} ${isDark ? segmentActiveClass : segmentInactiveClass}`}
         aria-checked={isDark}
-        aria-label="Dark theme"
-        title="Dark theme"
+        aria-label={t("a11y.darkTheme")}
+        title={t("a11y.darkTheme")}
         onClick={() => setPreference("dark")}
       >
         <MoonIcon className="size-4.5" />

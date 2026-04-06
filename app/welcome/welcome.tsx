@@ -2,6 +2,7 @@ import { Link } from "react-router";
 
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
 import { requestOpenSearch } from "~/lib/search-overlay-context";
+import { useI18n } from "~/providers/i18n-provider";
 
 function ArrowRightIcon({ className }: { className?: string }) {
   return (
@@ -168,6 +169,7 @@ function DecoPlatform({ className }: { className?: string }) {
 }
 
 export function Welcome() {
+  const { t } = useI18n();
   const vCb = getDefaultVersionSlug("cookie-banner");
   const vAcc = getDefaultVersionSlug("accounts-sign-in");
 
@@ -184,19 +186,22 @@ export function Welcome() {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="max-w-2xl">
               <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl sm:leading-tight">
-                Built with Intastellar
+                {t("home.heroTitle")}
               </h1>
               <p className="mt-4 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-xl">
-                Documentation, guides, and tools to ship{" "}
+                {t("home.heroLead1")}
                 <span className="text-zinc-800 dark:text-zinc-200">
-                  GDPR-aligned consent
-                </span>{" "}
-                and{" "}
+                  {t("home.heroLeadConsent")}
+                </span>
+                {t("home.heroLead2")}
                 <span className="text-zinc-800 dark:text-zinc-200">
-                  secure sign-in
-                </span>{" "}
-                with the same stack Intastellar uses — all on{" "}
-                <span className="font-medium text-brand dark:text-brand">inta.dev</span>.
+                  {t("home.heroLeadSignin")}
+                </span>
+                {t("home.heroLead3")}
+                <span className="font-medium text-brand dark:text-brand">
+                  {t("home.heroLeadBrand")}
+                </span>
+                {t("home.heroLead4")}
               </p>
             </div>
             <button
@@ -205,7 +210,7 @@ export function Welcome() {
               className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-full border border-zinc-200 bg-zinc-50 px-4 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-white dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
             >
               <SearchSparkleIcon className="text-brand" />
-              Search docs
+              {t("home.searchDocs")}
               <kbd className="ml-1 hidden rounded border border-zinc-200 bg-white px-1.5 py-0.5 font-mono text-[10px] text-zinc-500 sm:inline dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-400">
                 ⌘K
               </kbd>
@@ -222,14 +227,13 @@ export function Welcome() {
             className="group relative flex flex-col overflow-hidden rounded-2xl border border-sky-200/80 bg-linear-to-b from-sky-50 to-sky-100/50 p-6 shadow-sm transition-shadow hover:shadow-md dark:border-sky-900/50 dark:from-sky-950/40 dark:to-sky-950/20 dark:hover:border-sky-800/60"
           >
             <h2 className="text-lg font-semibold text-sky-900 dark:text-sky-200">
-              Intastellar Consents
+              {t("home.cardConsentsTitle")}
             </h2>
             <p className="mt-2 flex-1 text-sm leading-relaxed text-sky-950/70 dark:text-sky-100/70">
-              Cookie banner, CMP, and consent APIs for the web, WordPress, GTM,
-              Shopify, and more.
+              {t("home.cardConsentsBody")}
             </p>
             <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-sky-800 dark:text-sky-200">
-              Open documentation
+              {t("home.cardConsentsCta")}
               <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
             </span>
             <div className="pointer-events-none -mx-2 mt-4 flex justify-center opacity-90">
@@ -242,14 +246,13 @@ export function Welcome() {
             className="group relative flex flex-col overflow-hidden rounded-2xl border border-violet-200/80 bg-linear-to-b from-violet-50 to-violet-100/50 p-6 shadow-sm transition-shadow hover:shadow-md dark:border-violet-900/50 dark:from-violet-950/40 dark:to-violet-950/20 dark:hover:border-violet-800/60"
           >
             <h2 className="text-lg font-semibold text-violet-900 dark:text-violet-200">
-              Intastellar Accounts
+              {t("home.cardAccountsTitle")}
             </h2>
             <p className="mt-2 flex-1 text-sm leading-relaxed text-violet-950/70 dark:text-violet-100/70">
-              React SDK on inta.dev, OAuth-style flows, PKCE, sessions, and
-              security patterns for your apps and sites.
+              {t("home.cardAccountsBody")}
             </p>
             <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-800 dark:text-violet-200">
-              Open documentation
+              {t("home.cardAccountsCta")}
               <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
             </span>
             <div className="pointer-events-none -mx-2 mt-4 flex justify-center opacity-90">
@@ -262,14 +265,13 @@ export function Welcome() {
             className="group relative flex flex-col overflow-hidden rounded-2xl border border-amber-200/80 bg-linear-to-b from-amber-50 to-amber-100/40 p-6 shadow-sm transition-shadow hover:shadow-md dark:border-amber-900/45 dark:from-amber-950/35 dark:to-amber-950/15 dark:hover:border-amber-800/55"
           >
             <h2 className="text-lg font-semibold text-amber-950 dark:text-amber-200">
-              All docs &amp; API keys
+              {t("home.cardAllTitle")}
             </h2>
             <p className="mt-2 flex-1 text-sm leading-relaxed text-amber-950/70 dark:text-amber-100/70">
-              Browse every product guide, track releases, and manage keys for the
-              developer portal.
+              {t("home.cardAllBody")}
             </p>
             <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-900 dark:text-amber-200">
-              Browse everything
+              {t("home.cardAllCta")}
               <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
             </span>
             <div className="pointer-events-none -mx-2 mt-4 flex justify-center opacity-90">
@@ -283,21 +285,21 @@ export function Welcome() {
             to={jsStart}
             className="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
           >
-            Consents — quick start
+            {t("home.quickConsents")}
             <ArrowRightIcon className="ml-1.5 opacity-70" />
           </Link>
           <Link
             to={accStart}
             className="inline-flex items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
           >
-            Accounts — quick start
+            {t("home.quickAccounts")}
             <ArrowRightIcon className="ml-1.5 opacity-70" />
           </Link>
           <Link
             to="/account/login"
             className="inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover"
           >
-            Sign in to the portal
+            {t("home.signInPortal")}
           </Link>
         </div>
       </section>
@@ -306,12 +308,10 @@ export function Welcome() {
       <section className="border-t border-zinc-200/80 bg-zinc-50 py-16 dark:border-zinc-800 dark:bg-zinc-900/50">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Move faster with search &amp; releases
+            {t("home.bandTitle")}
           </h2>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Jump to any page with full-text search, follow product updates on the
-            changelog (Consents and Intastellar Sign-In), and keep API keys in one
-            place after you sign in.
+            {t("home.bandBody")}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <button
@@ -320,19 +320,19 @@ export function Welcome() {
               className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
             >
               <SearchSparkleIcon className="size-4" />
-              Open search
+              {t("home.openSearch")}
             </button>
             <Link
               to="/changelog"
               className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-800 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-800"
             >
-              Changelog
+              {t("home.changelog")}
             </Link>
             <Link
               to="/account/api-keys"
               className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-800 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-800"
             >
-              API keys
+              {t("home.apiKeys")}
             </Link>
           </div>
         </div>
