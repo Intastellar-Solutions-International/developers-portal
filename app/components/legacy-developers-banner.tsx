@@ -3,7 +3,7 @@ export function LegacyDevelopersBanner() {
   return (
     <div
       role="note"
-      className="inset-x-0 top-15 z-40 border-b border-brand/25 bg-brand/10 px-4 py-2.5 dark:border-brand/30 dark:bg-brand/15"
+      className="fixed inset-x-0 top-15 z-40 border-b border-brand/25 bg-brand/10 px-4 py-2.5 dark:border-brand/30 dark:bg-brand/15"
     >
       <div className="mx-auto max-w-6xl text-center text-xs leading-snug text-zinc-700 sm:text-left sm:text-sm dark:text-zinc-200">
         <p>
