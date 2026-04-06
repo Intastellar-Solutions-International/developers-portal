@@ -10,8 +10,8 @@ import {
 } from "react";
 
 import {
-  applyColorSchemeToDocument,
   cycleColorSchemePreference,
+  notifyColorSchemeChanged,
   persistColorScheme,
   readStoredColorScheme,
   type ColorSchemePreference,
@@ -33,14 +33,14 @@ export function ColorSchemeProvider({ children }: { children: ReactNode }) {
   useLayoutEffect(() => {
     const p = readStoredColorScheme();
     setPreferenceState(p);
-    applyColorSchemeToDocument(p);
+    notifyColorSchemeChanged();
   }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const onOsChange = () => {
       if (readStoredColorScheme() !== "system") return;
-      applyColorSchemeToDocument("system");
+      notifyColorSchemeChanged();
     };
     mq.addEventListener("change", onOsChange);
     return () => mq.removeEventListener("change", onOsChange);
@@ -49,14 +49,14 @@ export function ColorSchemeProvider({ children }: { children: ReactNode }) {
   const setPreference = useCallback((p: ColorSchemePreference) => {
     persistColorScheme(p);
     setPreferenceState(p);
-    applyColorSchemeToDocument(p);
+    notifyColorSchemeChanged();
   }, []);
 
   const cyclePreference = useCallback(() => {
     setPreferenceState((prev) => {
       const next = cycleColorSchemePreference(prev);
       persistColorScheme(next);
-      applyColorSchemeToDocument(next);
+      notifyColorSchemeChanged();
       return next;
     });
   }, []);

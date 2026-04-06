@@ -1,5 +1,43 @@
 export const COLOR_SCHEME_STORAGE_KEY = "inta-color-scheme";
 
+/** Dispatched after storage changes so `<html className>` can update (React owns the class). */
+export const COLOR_SCHEME_CHANGE_EVENT = "inta-color-scheme-change";
+
+export function notifyColorSchemeChanged(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(COLOR_SCHEME_CHANGE_EVENT));
+}
+
+/** Subscribe to theme-related updates (custom event, storage, OS preference). */
+export function subscribeColorScheme(onChange: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === COLOR_SCHEME_STORAGE_KEY || e.key === null) onChange();
+  };
+  const onCustom = () => onChange();
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const onMq = () => onChange();
+
+  window.addEventListener("storage", onStorage);
+  window.addEventListener(COLOR_SCHEME_CHANGE_EVENT, onCustom);
+  mq.addEventListener("change", onMq);
+  return () => {
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener(COLOR_SCHEME_CHANGE_EVENT, onCustom);
+    mq.removeEventListener("change", onMq);
+  };
+}
+
+export function getColorSchemeIsDarkSnapshot(): boolean {
+  if (typeof window === "undefined") return false;
+  return resolvedColorSchemeIsDark(readStoredColorScheme());
+}
+
+export function getColorSchemeIsDarkServerSnapshot(): boolean {
+  return false;
+}
+
 /** User preference. `system` follows `prefers-color-scheme`. */
 export type ColorSchemePreference = "light" | "dark" | "system";
 
@@ -36,7 +74,10 @@ export function resolvedColorSchemeIsDark(
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
-/** Apply `dark` class on `<html>` to match preference + system. */
+/**
+ * Syncs `dark` on `<html>` for non-React callers (inline boot script only).
+ * In the app, the root `Layout` sets `<html className="dark">` via `useSyncExternalStore`.
+ */
 export function applyColorSchemeToDocument(
   preference: ColorSchemePreference,
 ): void {

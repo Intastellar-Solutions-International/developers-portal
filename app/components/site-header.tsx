@@ -36,7 +36,7 @@ const mobileHeaderBtnClass =
   "flex w-full items-center justify-center rounded-lg px-4 py-3 text-base font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-brand disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-200 dark:hover:bg-white/10 dark:hover:text-brand";
 
 const headerIconBtnClass =
-  "rounded-md p-2.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-brand dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-brand";
+  "rounded-md p-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-brand dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-brand";
 
 type PortalAccount = NonNullable<RootLoaderData["portalAccount"]>;
 
@@ -243,7 +243,9 @@ function SiteHeaderInner({
           >
             <SearchIcon className="size-5" />
           </button>
-          <ColorSchemeToggle />
+          <span className="lg:hidden">
+            <ColorSchemeToggle />
+          </span>
           <button
             type="button"
             className={`${headerIconBtnClass} lg:hidden`}
@@ -276,6 +278,12 @@ function SiteHeaderInner({
             <NavLink to="/account/api-keys" className={navLinkClass}>
               API keys
             </NavLink>
+            <span
+              className="hidden items-center lg:inline-flex"
+              title="Color theme"
+            >
+              <ColorSchemeToggle />
+            </span>
             {authReady && configured && !hasPortalSession ? (
               <button
                 type="button"

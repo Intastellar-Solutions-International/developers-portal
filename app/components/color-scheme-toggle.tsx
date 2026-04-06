@@ -70,7 +70,7 @@ function iconForPreference(p: ColorSchemePreference) {
 }
 
 const toggleBtnClass =
-  "rounded-md p-2.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-brand dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-brand";
+  "rounded-md p-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-brand dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-brand";
 
 export function ColorSchemeToggle() {
   const { preference, cyclePreference } = useColorScheme();

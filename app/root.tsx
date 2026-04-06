@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import {
   data,
   isRouteErrorResponse,
@@ -28,7 +28,12 @@ import {
   isAnalyticsEnabled,
 } from "~/lib/analytics";
 import { OPEN_SEARCH_EVENT } from "~/lib/search-overlay-context";
-import { COLOR_SCHEME_STORAGE_KEY } from "~/lib/color-scheme";
+import {
+  COLOR_SCHEME_STORAGE_KEY,
+  getColorSchemeIsDarkServerSnapshot,
+  getColorSchemeIsDarkSnapshot,
+  subscribeColorScheme,
+} from "~/lib/color-scheme";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import {
   IntastellarAuthProvider,
@@ -37,6 +42,14 @@ import {
 import "./app.css";
 
 const colorSchemeBootScript = `(function(){try{var k=${JSON.stringify(COLOR_SCHEME_STORAGE_KEY)};var v=localStorage.getItem(k);var d=v==="dark"||(v!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
+
+function useRootHtmlIsDark(): boolean {
+  return useSyncExternalStore(
+    subscribeColorScheme,
+    getColorSchemeIsDarkSnapshot,
+    getColorSchemeIsDarkServerSnapshot,
+  );
+}
 
 type SearchLoaderData = { documents: SearchDocument[] };
 
@@ -241,9 +254,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const analytics = isAnalyticsEnabled();
+  const htmlIsDark = useRootHtmlIsDark();
 
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={htmlIsDark ? "dark" : undefined}
+      suppressHydrationWarning
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
