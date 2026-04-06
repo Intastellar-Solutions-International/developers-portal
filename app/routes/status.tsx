@@ -103,14 +103,14 @@ export default function StatusPage() {
         System status
       </h1>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        Automated HTTP checks from inta.dev. JSON:{" "}
+        Automated HTTP checks from inta.dev. Machine-readable snapshot:{" "}
         <a
           href="/api/status.json"
           className="text-brand hover:text-brand-hover"
         >
           /api/status.json
         </a>
-        . 
+        .
       </p>
 
       {source === "live" ? (
@@ -200,23 +200,51 @@ export default function StatusPage() {
         </>
       ) : null}
 
-      <p className="mt-10 text-xs text-zinc-500 dark:text-zinc-500">
-        Configure targets with{" "}
-        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
-          STATUS_CHECK_TARGETS_JSON
-        </code>{" "}
-        (full replace) or{" "}
-        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">
-          STATUS_CHECK_EXTRA_JSON
-        </code>{" "}
-        (append). A check is “passing” when the response status is below 500.
-        The incident log lists cron runs where any target failed, with the probe’s error text when
-        stored. Timelines, the incident log, and latency trends use the last{" "}
-        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">STATUS_HISTORY_POINTS</code>{" "}
-        stored runs (14-day TTL in Mongo). Display times are UTC. New cron rows include per-target{" "}
-        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">latencyMs</code>; older rows only
-        contribute up/down segments until they age out.
-      </p>
+      <footer
+        className="mt-12 border-t border-zinc-200 pt-6 dark:border-zinc-700"
+        role="note"
+        aria-label="Technical details for people who operate this status page"
+      >
+        <p
+          id="status-page-footnote-label"
+          className="text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500"
+        >
+          Footnote — hosting and configuration
+        </p>
+        <div
+          className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400"
+          aria-labelledby="status-page-footnote-label"
+        >
+          <p>
+            This page is public. The details below are for{" "}
+            <strong className="font-medium text-zinc-600 dark:text-zinc-300">
+              teams that deploy inta.dev
+            </strong>{" "}
+            (environment variables, data retention).
+          </p>
+          <p className="mt-2">
+            Configure targets with{" "}
+            <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
+              STATUS_CHECK_TARGETS_JSON
+            </code>{" "}
+            (full replace) or{" "}
+            <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
+              STATUS_CHECK_EXTRA_JSON
+            </code>{" "}
+            (append). A check counts as passing when the HTTP status is below 500. The incident log
+            shows stored cron runs where any target failed, including probe error text when saved.
+            Timelines, the incident log, and latency trends use the last{" "}
+            <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
+              STATUS_HISTORY_POINTS
+            </code>{" "}
+            runs (14-day TTL in Mongo). Times on this page are UTC. New history rows store per-target{" "}
+            <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
+              latencyMs
+            </code>
+            ; older rows still drive up/down segments until they expire.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
