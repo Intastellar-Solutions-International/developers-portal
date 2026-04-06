@@ -358,5 +358,15 @@ export const de: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Zuletzt",
+    badgeMainUptime: "{{percent}} Verfügbarkeit",
+    badgeSubOk:
+      "{{passedRuns}}/{{totalRuns}} Läufe vollständig OK · bis zu {{windowMaxRuns}} sichtbar",
+    badgePlaceholder: "Verfügbarkeit",
+    badgeCollecting: "Geplante Prüfungen werden erfasst…",
+    badgeLink: "Systemstatus →",
+    uptimeJsonWidgetDescription:
+      "In den letzten {{totalRuns}} geplanten Läufen waren {{passedRuns}} vollständig erfolgreich (alle Dienste normal).",
+    uptimeJsonNoHistoryDescription:
+      "Die Verfügbarkeit erscheint hier, sobald geplante Health-Checks gespeichert wurden.",
   },
 };

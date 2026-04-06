@@ -353,5 +353,15 @@ export const da: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Maks",
     latencyLatest: "Seneste",
+    badgeMainUptime: "{{percent}} oppetid",
+    badgeSubOk:
+      "{{passedRuns}}/{{totalRuns}} kørsler helt OK · op til {{windowMaxRuns}} i visning",
+    badgePlaceholder: "Oppetid",
+    badgeCollecting: "Indsamler planlagte tjek…",
+    badgeLink: "Systemstatus →",
+    uptimeJsonWidgetDescription:
+      "Af de seneste {{totalRuns}} planlagte kørsler var {{passedRuns}} fuldt succesfulde (alle tjenester svarede normalt).",
+    uptimeJsonNoHistoryDescription:
+      "Oppetid vises her, når planlagte sundhedstjek er blevet gemt.",
   },
 };

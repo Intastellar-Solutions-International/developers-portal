@@ -354,5 +354,15 @@ export const nl: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Laatste",
+    badgeMainUptime: "{{percent}} beschikbaarheid",
+    badgeSubOk:
+      "{{passedRuns}}/{{totalRuns}} runs volledig OK · tot {{windowMaxRuns}} in beeld",
+    badgePlaceholder: "Beschikbaarheid",
+    badgeCollecting: "Geplande controles verzamelen…",
+    badgeLink: "Systeemstatus →",
+    uptimeJsonWidgetDescription:
+      "Van de laatste {{totalRuns}} geplande runs waren {{passedRuns}} volledig succesvol (alle services reageerden normaal).",
+    uptimeJsonNoHistoryDescription:
+      "Beschikbaarheid verschijnt hier zodra geplande healthchecks zijn opgeslagen.",
   },
 };

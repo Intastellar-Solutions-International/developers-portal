@@ -1,4 +1,7 @@
 import type { Route } from "./+types/api.status.uptime-badge";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
+import { interpolate, translatePath } from "~/lib/i18n/messages";
+import { resolveLocaleForApiRequest } from "~/lib/i18n/resolve-locale.server";
 import {
   getStatusHistoryMaxPoints,
   getStoredOverallUptime,
@@ -15,9 +18,13 @@ function escapeHtml(s: string): string {
 /**
  * Minimal standalone HTML for <iframe src="…/api/status/uptime/badge"> embeds.
  * Opens full status page in a new tab when clicked.
+ *
+ * Language: `?locale=de|da|fr|nl|en` or `Accept-Language`; defaults to English.
  */
 export async function loader({ request }: Route.LoaderArgs) {
-  const statusPageUrl = escapeHtml(new URL("/status", request.url).href);
+  const locale = resolveLocaleForApiRequest(request);
+  const statusPath = withLocalePrefix("/status", locale);
+  const statusPageUrl = escapeHtml(new URL(statusPath, request.url).href);
   const windowMaxRuns = getStatusHistoryMaxPoints();
   const stored = await getStoredOverallUptime(windowMaxRuns);
 
@@ -36,18 +43,29 @@ export async function loader({ request }: Route.LoaderArgs) {
       stored.percent % 1 === 0
         ? `${stored.percent.toFixed(0)}%`
         : `${stored.percent.toFixed(1)}%`;
-    mainLine = escapeHtml(`${pctText} uptime`);
+    mainLine = escapeHtml(
+      interpolate(translatePath(locale, "status.badgeMainUptime"), {
+        percent: pctText,
+      }),
+    );
     subLine = escapeHtml(
-      `${stored.passedRuns}/${stored.totalRuns} runs all OK · up to ${windowMaxRuns} in view`,
+      interpolate(translatePath(locale, "status.badgeSubOk"), {
+        passedRuns: stored.passedRuns,
+        totalRuns: stored.totalRuns,
+        windowMaxRuns,
+      }),
     );
   } else {
     pctClass = "muted";
-    mainLine = escapeHtml("Uptime");
-    subLine = escapeHtml("Collecting scheduled checks…");
+    mainLine = escapeHtml(translatePath(locale, "status.badgePlaceholder"));
+    subLine = escapeHtml(translatePath(locale, "status.badgeCollecting"));
   }
 
+  const linkText = escapeHtml(translatePath(locale, "status.badgeLink"));
+  const htmlLang = locale;
+
   const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="${htmlLang}">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -125,7 +143,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   <a class="badge ${pctClass}" href="${statusPageUrl}" target="_blank" rel="noopener noreferrer">
     <span class="main">${mainLine}</span>
     <span class="sub">${subLine}</span>
-    <span class="link">System status →</span>
+    <span class="link">${linkText}</span>
   </a>
 </body>
 </html>`;
@@ -135,6 +153,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
       "X-Robots-Tag": "noindex",
+      "Vary": "Accept-Language",
     },
   });
 }

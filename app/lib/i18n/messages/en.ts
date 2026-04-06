@@ -363,6 +363,16 @@ export const en = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Latest",
+    badgeMainUptime: "{{percent}} uptime",
+    badgeSubOk:
+      "{{passedRuns}}/{{totalRuns}} runs all OK · up to {{windowMaxRuns}} in view",
+    badgePlaceholder: "Uptime",
+    badgeCollecting: "Collecting scheduled checks…",
+    badgeLink: "System status →",
+    uptimeJsonWidgetDescription:
+      "In the last {{totalRuns}} scheduled runs, {{passedRuns}} finished with every service responding normally.",
+    uptimeJsonNoHistoryDescription:
+      "Uptime will appear here after scheduled health checks have been stored.",
   },
 } as const;
 

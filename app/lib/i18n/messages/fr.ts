@@ -354,5 +354,15 @@ export const fr: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Dernier",
+    badgeMainUptime: "{{percent}} de disponibilité",
+    badgeSubOk:
+      "{{passedRuns}}/{{totalRuns}} exécutions entièrement OK · jusqu’à {{windowMaxRuns}} affichées",
+    badgePlaceholder: "Disponibilité",
+    badgeCollecting: "Collecte des vérifications planifiées…",
+    badgeLink: "État du système →",
+    uptimeJsonWidgetDescription:
+      "Sur les {{totalRuns}} dernières exécutions planifiées, {{passedRuns}} se sont terminées sans incident (tous les services ont répondu normalement).",
+    uptimeJsonNoHistoryDescription:
+      "La disponibilité apparaîtra ici une fois les contrôles de santé planifiés enregistrés.",
   },
 };
