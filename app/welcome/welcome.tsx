@@ -310,7 +310,8 @@ export function Welcome() {
           </h2>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
             Jump to any page with full-text search, follow product updates on the
-            Consents changelog, and keep API keys in one place after you sign in.
+            changelog (Consents and Intastellar Sign-In), and keep API keys in one
+            place after you sign in.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <button
@@ -322,10 +323,10 @@ export function Welcome() {
               Open search
             </button>
             <Link
-              to="/consents/changelog"
+              to="/changelog"
               className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-800 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-800"
             >
-              Consents changelog
+              Changelog
             </Link>
             <Link
               to="/account/api-keys"

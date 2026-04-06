@@ -1,0 +1,232 @@
+---
+title: Plain HTML, CSS, and JavaScript — Intastellar Sign-In
+sidebar_label: Plain HTML / CSS / JS
+description: "Vanilla sites: same popup flow, URLs, cookies, and postMessage handshake as @intastellar/signin-sdk-react — migrated from developers.intastellarsolutions.com js-docs."
+order: 13
+lastUpdated: "2026-04-06"
+---
+
+This guide is for sites built with **only HTML, CSS, and JavaScript** (no React or other UI framework). It replaces the documentation that used to live at  
+[developers.intastellarsolutions.com/identity/sign-in/web/docs/js-docs](https://developers.intastellarsolutions.com/identity/sign-in/web/docs/js-docs).
+
+**Technical source of truth:** the behavior below is taken from the published npm package [**`@intastellar/signin-sdk-react`**](https://www.npmjs.com/package/@intastellar/signin-sdk-react) (as shipped in `dist/api.js` and `dist/useIntastellar.js`, e.g. [api.js on jsDelivr](https://cdn.jsdelivr.net/npm/@intastellar/signin-sdk-react@1.1.303/dist/api.js)). Your plain-JS code should match that implementation so it stays compatible with Intastellar Accounts.
+
+> **Note:** Automated HTTP requests to the legacy **js-docs** URL often receive only the shared site shell (the response body may end right after the header), not the full article. If you still have a saved copy of the old page, use it alongside this guide; the flow here tracks the **SDK** so it does not drift from production.
+
+## Legacy script tag (reference only)
+
+The old developers-site template included this tag in the `<head>`:
+
+```html
+<script src="https://account.api.intastellarsolutions.com/insign/client.js"></script>
+```
+
+That URL **no longer serves** the script (it returns 404). New integrations should use **`IntastellarAPI`** from the npm package (bundled for the browser), not that legacy URL.
+
+## What you need
+
+- **HTTPS** in production (popups and cookies).
+- **Popup windows** allowed for your origin.
+- An Intastellar **client ID** and registered **app display name** (`appName` / `service`).
+- A **bundler** (or small build step) that can resolve **`@intastellar/signin-sdk-react`** for browser output. The package is published as CommonJS; tools like **esbuild**, **Vite**, or **Webpack** work well. The package declares **React as a peer dependency**; for a bundle that only imports `IntastellarAPI`, configure your bundler to **omit or stub** React if it tries to pull it in, or install the peers to satisfy resolution.
+
+## Configuration (same as `IntastellarConfig`)
+
+| Field | Required | Default / notes |
+| --- | --- | --- |
+| `appName` | Yes | Registered **service** / app display name. |
+| `clientId` | Yes | OAuth **key** sent as query param `key`. |
+| `loginUri` | No | If omitted, the SDK uses `hostname + port + pathname` only (no `https://`). Used as the `continue` query parameter. |
+| `scopes` | No | Default in the React hook is **`profile`**. Passed as `scope` and encoded in `entryFlow` as `btoa(scopes)`. |
+| `type` | No | `'signin'` (default) or `'signup'` — changes the hosted URL (see below). |
+| `email` | No | If set with `type: 'signin'`, opens the **password** entry flow URL. |
+
+## Hosted URLs (`IntastellarAPI.buildLoginUrl`)
+
+The SDK picks the base URL as follows ([`api.js`](https://cdn.jsdelivr.net/npm/@intastellar/signin-sdk-react@1.1.303/dist/api.js)):
+
+- **Default (OAuth chooser):**  
+  `https://www.intastellaraccounts.com/signin/v2/ws/oauth/oauthchooser`
+- **Email + sign-in (`email` set and `type === 'signin'`):**  
+  `https://www.intastellaraccounts.com/signin/v2/ws/oauth/pwd`
+- **Sign-up (`type === 'signup'`):**  
+  `https://www.intastellaraccounts.com/Signup/`
+
+Query parameters include (names from the implementation): `service` (app name), `continue` (login URI), `entryFlow` (`btoa(scopes)`), `key` (client id), `access_id` (encoded **parent-style** host, with port if present), `passive`, `flowName`, `Entry`, `scope`, and optionally `identifier` (email).
+
+## API base URL and HTTP endpoints
+
+- **Base:** `https://apis.intastellaraccounts.com` (`IntastellarAPI.baseUrl`).
+
+**Verify token** (after popup posts the token string to the opener):
+
+- `GET /verify`
+- Header: `Authorization: Bearer <token>`
+- `Content-Type: application/json`
+
+**Current user** (first-party cookie session on your domain):
+
+- `GET /usercontent/js/getuser?origin=<window.location.host>`
+- `credentials: 'include'`, CORS mode `cors`
+
+## Popup flow and `postMessage` (same as `useIntastellar`)
+
+1. Build the login URL with `IntastellarAPI.buildLoginUrl(...)`.
+2. Open it with:
+
+   ```text
+   window.open(url, 'intastellarLogin', 'height=719,width=500,left=100,top=100,resizable=no')
+   ```
+
+3. Listen on `window` for `message`.
+4. When `event.data` is a **non-empty string** (the token), send **immediately** to the popup:
+
+   ```javascript
+   loginWindow.postMessage("iframe-token-received", event.origin);
+   ```
+
+   Omitting this **breaks** the hosted flow.
+
+5. Remove your listener, call `IntastellarAPI.verifyToken(token)`, then persist the session. The React hook sets a first-party cookie:
+
+   - Name: **`inta_acc`**
+   - Value: the **token** string
+   - **Domain:** parent-style host derived like the SDK’s `getDomain()` (strip subdomains when the first label is not numeric, then **drop any port** for the cookie domain)
+   - **Path:** `/`
+   - **Expiry:** hook uses ~2 years ahead
+
+6. If the user closes the popup without completing sign-in, clear the interval and remove the listener (the SDK checks `popup.closed` every second).
+
+In production, **validate `event.origin`** against the origins Intastellar documents for your environment before trusting `event.data`.
+
+## Example: `index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign in</title>
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body>
+    <button type="button" id="inta-signin">Sign in with Intastellar</button>
+    <script src="/js/intastellar-signin-bundle.js"></script>
+  </body>
+</html>
+```
+
+Build `intastellar-signin-bundle.js` from an entry file that imports `IntastellarAPI` and attaches the click handler (see below).
+
+## Example: vanilla entry module (mirrors `useIntastellar` sign-in)
+
+This is the same control flow as the **`signin()`** function inside [`useIntastellar.js`](https://cdn.jsdelivr.net/npm/@intastellar/signin-sdk-react@1.1.303/dist/useIntastellar.js), without React state.
+
+```javascript
+import { IntastellarAPI } from "@intastellar/signin-sdk-react";
+
+const config = {
+  appName: "Your registered app display name",
+  clientId: "your-client-id",
+  // loginUri: optional — defaults to hostname + port + pathname
+  scopes: "profile",
+  type: "signin",
+};
+
+function getDomain() {
+  let domain = window.location.hostname || window.location.host;
+  const domainParts = domain.split(".");
+  if (domainParts.length > 2) domainParts.shift();
+  if (isNaN(Number(domainParts[0]))) domain = domainParts.join(".");
+  return domain.split(":")[0];
+}
+
+function setCookie(name, value, domain, expires) {
+  let cookieString = `${name}=${value}; domain=${domain}; path=/`;
+  if (expires) cookieString += `; expires=${expires.toUTCString()}`;
+  document.cookie = cookieString;
+}
+
+function openIntastellarSignIn(email) {
+  const loginUri =
+    config.loginUri ??
+    `${location.hostname}${location.port ? ":" + location.port : ""}${location.pathname}`;
+
+  const loginUrl = IntastellarAPI.buildLoginUrl({
+    appName: config.appName,
+    clientId: config.clientId,
+    loginUri,
+    scopes: config.scopes || "profile",
+    email,
+    type: config.type || "signin",
+  });
+
+  const loginWindow = window.open(
+    loginUrl,
+    "intastellarLogin",
+    "height=719,width=500,left=100,top=100,resizable=no",
+  );
+  if (!loginWindow) {
+    alert("Please enable popups for this website");
+    return;
+  }
+
+  function onMessage(event) {
+    const token = event.data;
+    if (!(token && typeof token === "string")) return;
+
+    loginWindow.postMessage("iframe-token-received", event.origin);
+    window.removeEventListener("message", onMessage);
+
+    IntastellarAPI.verifyToken(token)
+      .then((account) => {
+        const expires = new Date();
+        expires.setFullYear(expires.getFullYear() + 2);
+        setCookie("inta_acc", token, getDomain(), expires);
+        console.log("Signed in:", account.user);
+        if (!loginWindow.closed) loginWindow.close();
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!loginWindow.closed) loginWindow.close();
+      });
+  }
+
+  window.addEventListener("message", onMessage);
+
+  const timer = setInterval(() => {
+    if (loginWindow.closed) {
+      clearInterval(timer);
+      window.removeEventListener("message", onMessage);
+    }
+  }, 1000);
+}
+
+document.getElementById("inta-signin")?.addEventListener("click", () => {
+  openIntastellarSignIn();
+});
+```
+
+Optional: after a successful sign-in, call **`IntastellarAPI.getUsers()`** to align with the SDK’s “who is logged in” check (same cookie + origin behavior).
+
+## Logout (same idea as the hook)
+
+Clear the session cookie on your parent domain and reload, matching the SDK’s `logout`:
+
+```javascript
+const domain = getDomain();
+document.cookie = `inta_acc=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+window.location.reload();
+```
+
+## Prefer React?
+
+Use [**`@intastellar/signin-sdk-react`**](https://www.npmjs.com/package/@intastellar/signin-sdk-react) components and **`useIntastellar`** — [Intastellar Sign-In — React SDK and plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Related
+
+- [Getting started](/docs/accounts-sign-in/web/getting-started)  
+- [Sessions, cookies, and tokens](/docs/accounts-sign-in/web/sessions-and-cookies)  
+- [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors)  
+- After `npm install`, see **`TROUBLESHOOTING.md`** inside **`node_modules/@intastellar/signin-sdk-react/`** for SDK-specific issues.

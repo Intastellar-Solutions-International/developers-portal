@@ -270,11 +270,11 @@ function SiteHeaderInner({
             aria-label="Main"
           >
             <NavLink
-              to="/consents/changelog"
+              to="/changelog"
               className={navLinkClass}
-              title="Intastellar Consents — releases & versions"
+              title="Consents & Sign-In — npm and GitHub releases"
             >
-              Consents changelog
+              Changelog
             </NavLink>
             <NavLink to="/docs" className={navLinkClass}>
               Docs
@@ -356,12 +356,12 @@ function SiteHeaderInner({
               aria-label="Main navigation"
             >
               <NavLink
-                to="/consents/changelog"
+                to="/changelog"
                 className={mobileNavLinkClass}
-                title="Intastellar Consents — releases & versions"
+                title="Consents & Sign-In — npm and GitHub releases"
                 onClick={() => setMenuOpen(false)}
               >
-                Consents changelog
+                Changelog
               </NavLink>
               <NavLink
                 to="/docs"

@@ -10,7 +10,7 @@ Intastellar Sign-In supports more than one integration style. Pick the path that
 | You are building… | Start here |
 | ----------------- | ---------- |
 | **React** app | [Intastellar Sign-In — React SDK and plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) — aligns with the [official npm package](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme). |
-| **JS without React** | [JavaScript without React](/docs/accounts-sign-in/web/javascript-without-react) — migrated from the former developers-site JS docs. |
+| **Plain HTML / CSS / JS** | [Plain HTML, CSS, and JavaScript](/docs/accounts-sign-in/web/plain-html-css-js) — no framework; migrated from the former developers-site JS docs. |
 | **Custom OAuth code flow** (any server) | Continue below, then [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow). |
 
 The sections below focus on **registering a client** and planning **redirects / sessions** for **your** applications. They complement the SDK-focused guide, which uses **illustrative** code only.
@@ -30,7 +30,7 @@ Use **separate** clients (or isolated redirect lists) for production and staging
 | Your app | Recommended approach |
 | -------- | -------------------- |
 | **React** | [`@intastellar/signin-sdk-react`](https://www.npmjs.com/package/@intastellar/signin-sdk-react) — see [integrating React and JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript). |
-| **Vanilla JS** | [JavaScript without React](/docs/accounts-sign-in/web/javascript-without-react). |
+| **Vanilla JS (static sites)** | [Plain HTML, CSS, and JavaScript](/docs/accounts-sign-in/web/plain-html-css-js). |
 | **SPA (custom)** | Authorization code with **PKCE**; no client secret in the browser. |
 | **Server-rendered site** | Browser completes redirect; your **server** exchanges the code with the **client secret**. |
 | **Mobile / native** | PKCE, custom scheme or HTTPS redirect. |

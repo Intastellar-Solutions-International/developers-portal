@@ -78,8 +78,8 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link to="/consents/changelog" className={linkClass}>
-                  Consents changelog
+                <Link to="/changelog" className={linkClass}>
+                  Changelog
                 </Link>
               </li>
               <li>

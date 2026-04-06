@@ -64,9 +64,9 @@ export default function DocsIndex() {
       href: docHref("accounts-sign-in", vAcc, "web/integrating-react-and-javascript"),
     },
     {
-      label: "Accounts — JS without React",
-      hint: "Migrated js-docs: popup handshake, IntastellarAPI",
-      href: docHref("accounts-sign-in", vAcc, "web/javascript-without-react"),
+      label: "Accounts — Plain HTML / CSS / JS",
+      hint: "Static sites, no framework — migrated js-docs",
+      href: docHref("accounts-sign-in", vAcc, "web/plain-html-css-js"),
     },
     {
       label: "Accounts — Get started",
@@ -114,10 +114,10 @@ export default function DocsIndex() {
           </kbd>
         </button>
         <Link
-          to="/consents/changelog"
+          to="/changelog"
           className="rounded-lg border border-transparent px-4 py-2.5 text-sm font-medium text-zinc-600 transition-colors hover:border-zinc-200 hover:bg-zinc-50 hover:text-brand dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/80 dark:hover:text-brand"
         >
-          Consents changelog
+          Changelog
         </Link>
         <Link
           to="/account/api-keys"

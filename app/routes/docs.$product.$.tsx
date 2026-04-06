@@ -24,11 +24,10 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
   if (
     product === "accounts-sign-in" &&
-    docPath === "javascript/plain-html-and-js"
+    (docPath === "javascript/plain-html-and-js" ||
+      docPath === "web/javascript-without-react")
   ) {
-    throw redirect(
-      docHref(product, version, "web/javascript-without-react"),
-    );
+    throw redirect(docHref(product, version, "web/plain-html-css-js"));
   }
 
   const doc = await loadDoc(product, docPath);
