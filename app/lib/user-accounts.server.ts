@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-import type { PortalAccountSession } from "./intastellar-verify.server";
+import type { PortalAccountSession } from "./intastellar-portal-session.server";
 import { USER_ACCOUNTS_COLLECTION } from "./mongodb-schema.server";
 import { getCollection } from "./mongodb.server";
 
@@ -48,7 +48,7 @@ function normalizeEmail(email: string): string {
 }
 
 /**
- * Upsert account for an Intastellar SSO session (cookie + verify API).
+ * Upsert account from Intastellar profile data (SDK-provided user object).
  */
 export async function ensureUserFromIntastellar(
   session: PortalAccountSession,

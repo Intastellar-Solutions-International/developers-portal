@@ -248,12 +248,12 @@ export default function AccountApiKeys() {
           {sessionUiMismatch && sessionHardFail ? (
             <div className="space-y-2">
               <p>
-                Signed in in the app, but the API keys request still has no
-                verified server session. Common causes: stale loader cache,
+                Signed in in the app, but the API keys request still has no portal
+                session cookie. Common causes: stale loader cache,{" "}
                 <code className="mx-1 text-xs">localhost</code> vs{" "}
-                <code className="text-xs">127.0.0.1</code>, missing{" "}
-                <code className="text-xs">SESSION_SECRET</code> in production, or
-                the server cannot call Intastellar verify.
+                <code className="text-xs">127.0.0.1</code>, or missing{" "}
+                <code className="text-xs">SESSION_SECRET</code> in production (the
+                signed session cookie cannot be created).
               </p>
               <ul className="list-inside list-disc space-y-1 text-zinc-700 dark:text-zinc-300">
                 <li>
@@ -267,13 +267,6 @@ export default function AccountApiKeys() {
                 </li>
                 <li>
                   Set <code className="text-xs">SESSION_SECRET</code> in production.
-                </li>
-                <li>
-                  Allow outbound HTTPS to{" "}
-                  <code className="break-all text-xs">
-                    apis.intastellaraccounts.com
-                  </code>
-                  .
                 </li>
               </ul>
               <p>

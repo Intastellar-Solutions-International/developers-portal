@@ -24,7 +24,6 @@ import {
   type IntastellarAuthContextValue,
 } from "~/lib/intastellar-auth-context";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
-import { readIntaAccFromDocument } from "~/lib/intastellar-portal-session-sync.client";
 import { clearIntastellarBrowserSession } from "~/lib/intastellar-session";
 
 export type { IntastellarAuthContextValue } from "~/lib/intastellar-auth-context";
@@ -111,12 +110,22 @@ function IntastellarAuthEnabled({
 
   const { clientId, appName } = getIntastellarClientConfig()!;
 
-  const submitPortalSessionToken = useCallback(
-    async (token: string) => {
-      const t = token.trim();
-      if (!t || t.length > 16_000) return;
+  /**
+   * POSTs `IntastellarUser` to `/auth/session` to mint the signed HttpOnly portal cookie.
+   * Identity comes from the SDK (`loginCallback` → `account.user` or `getUsers()`), not from
+   * server-side token verification against Intastellar.
+   */
+  const submitIntastellarUserForPortalSession = useCallback(
+    async (user: IntastellarUser) => {
+      if (!user.email?.trim()) return;
       await sessionFetcher.submit(
-        { token: t },
+        {
+          user: {
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          },
+        },
         { method: "post", action: "/auth/session", encType: "application/json" },
       );
     },
@@ -125,10 +134,10 @@ function IntastellarAuthEnabled({
 
   const onIntastellarSignedIn = useCallback(
     async (account: IntastellarAccount) => {
-      await submitPortalSessionToken(account.token);
+      await submitIntastellarUserForPortalSession(account.user);
       revalidator.revalidate();
     },
-    [submitPortalSessionToken, revalidator.revalidate],
+    [submitIntastellarUserForPortalSession, revalidator.revalidate],
   );
 
   const config = useMemo(
@@ -189,8 +198,8 @@ function IntastellarAuthEnabled({
     ) {
       portalSyncAttempts.current += 1;
       void (async () => {
-        const token = readIntaAccFromDocument();
-        if (token) await submitPortalSessionToken(token);
+        const u = users[0];
+        if (u) await submitIntastellarUserForPortalSession(u);
         revalidator.revalidate();
       })();
     }
@@ -201,7 +210,8 @@ function IntastellarAuthEnabled({
     users.length,
     revalidator.state,
     revalidator.revalidate,
-    submitPortalSessionToken,
+    submitIntastellarUserForPortalSession,
+    users[0]?.email,
   ]);
 
   const signinWrapped = useCallback(

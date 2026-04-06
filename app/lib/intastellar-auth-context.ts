@@ -9,8 +9,8 @@ export type IntastellarAuthContextValue = {
   configured: boolean;
   isLoading: boolean;
   /**
-   * Signed in to **this portal** (verified `inta_acc` + root loader), not merely the
-   * Intastellar SDK session (which can be true before the account picker completes).
+   * Signed in to **this portal** (signed `inta_portal_session` + root loader), not merely
+   * the Intastellar SDK session (which can be true before the account picker completes).
    */
   isSignedIn: boolean;
   users: IntastellarUser[];
