@@ -1,7 +1,26 @@
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useLoaderData } from "react-router";
 
+import type { Route } from "./+types/account";
 import { withLocalePrefix } from "~/lib/i18n/localized-path";
-import { useI18n } from "~/providers/i18n-provider";
+import { translatePath } from "~/lib/i18n/messages";
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const locale = resolveLocaleFromRequest(request);
+  /**
+   * Resolve copy in the loader so the document embeds final strings. Calling `translatePath` only on
+   * the client during hydration has produced English fallbacks (e.g. “Account” vs “Konto”) while
+   * `loaderData.locale` was still `"de"`, likely from module graph / chunk boundaries for `de.ts`.
+   */
+  return {
+    locale,
+    layoutTitle: translatePath(locale, "account.layoutTitle"),
+    layoutDescription: translatePath(locale, "account.layoutDescription"),
+    tabSignIn: translatePath(locale, "nav.signIn"),
+    tabProfile: translatePath(locale, "nav.profile"),
+    tabApiKeys: translatePath(locale, "nav.apiKeys"),
+  };
+}
 
 const tabClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -12,25 +31,32 @@ const tabClass = ({ isActive }: { isActive: boolean }) =>
   ].join(" ");
 
 export default function AccountLayout() {
-  const { locale, t } = useI18n();
+  const {
+    locale,
+    layoutTitle,
+    layoutDescription,
+    tabSignIn,
+    tabProfile,
+    tabApiKeys,
+  } = useLoaderData<typeof loader>();
   const lp = (path: string) => withLocalePrefix(path, locale);
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-        {t("account.layoutTitle")}
+        {layoutTitle}
       </h1>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        {t("account.layoutDescription")}
+        {layoutDescription}
       </p>
       <div className="mt-8 flex flex-wrap gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-700">
         <NavLink to={lp("/account/login")} className={tabClass}>
-          {t("nav.signIn")}
+          {tabSignIn}
         </NavLink>
         <NavLink to={lp("/account/profile")} className={tabClass}>
-          {t("nav.profile")}
+          {tabProfile}
         </NavLink>
         <NavLink to={lp("/account/api-keys")} className={tabClass}>
-          {t("nav.apiKeys")}
+          {tabApiKeys}
         </NavLink>
       </div>
       <div className="mt-8">
