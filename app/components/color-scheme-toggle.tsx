@@ -82,8 +82,8 @@ export function ColorSchemeToggle() {
       type="button"
       className={toggleBtnClass}
       onClick={() => cyclePreference()}
-      title={`Theme: ${label} (click to cycle: system → light → dark)`}
-      aria-label={`Color theme: ${label}. Click to cycle between system, light, and dark.`}
+      title={`Theme: ${label} — click to change`}
+      aria-label={`Color theme: ${label}. Click to change theme.`}
     >
       <Icon className="size-5" />
     </button>
