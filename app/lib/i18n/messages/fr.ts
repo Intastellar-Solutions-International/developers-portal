@@ -403,5 +403,38 @@ export const fr: MessageTree = {
     embedCopied: "Copié",
     embedModalClose: "Fermer",
     embedOpenOnSite: "Ouvrez cette page sur votre site pour générer les URL.",
+    maintenanceHeading: "Maintenance planifiée",
+    maintenanceEmpty:
+      "Aucune fenêtre de maintenance en cours ou à venir n’est publiée pour le moment.",
+    maintenanceActiveBadge: "En cours",
+    maintenanceUpcomingBadge: "À venir",
+    maintenanceRange: "{{start}} → {{end}}",
+    deployHeading: "Dernier déploiement",
+    deployUnavailable:
+      "Les métadonnées de déploiement (commit git) ne sont injectées que sur l’hôte de production. En local, cette section est vide.",
+    deployCommit: "Commit",
+    deployBranch: "Branche",
+    deployMessage: "Message",
+    deployViewCommit: "Voir le commit sur GitHub",
+    trustHeading: "Comment nous mesurons la disponibilité",
+    trustIntro: "Quelques précisions sur ce que représente cette page.",
+    trustBulletSynthetic:
+      "Contrôles synthétiques : requêtes HTTP automatisées depuis notre hébergeur vers chaque URL publique ci-dessous — pas de mesure utilisateur réelle (RUM).",
+    trustBulletFrequency:
+      "Cadence : en production environ une fois par minute (configuration cron de votre projet).",
+    trustBulletPass:
+      "Un contrôle est réussi lorsque le statut HTTP est strictement inférieur à 500 ; timeouts et erreurs réseau comptent comme échecs.",
+    trustBulletHistory:
+      "Les chronologies et le pourcentage de disponibilité en tête utilisent les {{n}} dernières exécutions stockées (TTL MongoDB d’environ 14 jours).",
+    trustBulletUtc: "Toutes les heures de cette page sont en UTC.",
+    manualNoticesHeading: "Messages d’exploitation",
+    manualNoticesIntro:
+      "Mises à jour publiées par l’équipe en cas d’incident ou de suivi (séparées de l’historique automatique des sondes ci-dessous).",
+    manualPostedBy: "Publié par {{email}}",
+    manualResolvedPrefix: "Résolu",
+    manualSeverityInvestigating: "Analyse en cours",
+    manualSeverityIdentified: "Identifié",
+    manualSeverityMonitoring: "Surveillance",
+    manualSeverityResolved: "Résolu",
   },
 };

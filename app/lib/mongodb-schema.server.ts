@@ -12,6 +12,12 @@ export const STATUS_SNAPSHOT_COLLECTION = "platform_status";
 /** Append-only cron runs for per-monitor timelines (TTL on `checkedAt`). */
 export const STATUS_HISTORY_COLLECTION = "platform_status_history";
 
+/** Scheduled maintenance windows managed from `/internal/status-ops` (merged with env). */
+export const STATUS_MAINTENANCE_DB_COLLECTION = "status_maintenance_windows";
+
+/** Manual incident reports filed by operators (shown on /status). */
+export const STATUS_MANUAL_INCIDENTS_COLLECTION = "status_manual_incidents";
+
 /**
  * MongoDB JSON Schema validators (`createCollection` / `collMod`).
  * @see https://www.mongodb.com/docs/manual/reference/operator/query/jsonSchema/
@@ -148,6 +154,30 @@ async function ensureStatusHistoryCollection(db: Db): Promise<void> {
   );
 }
 
+async function ensureStatusMaintenanceDbCollection(db: Db): Promise<void> {
+  if (!(await collectionExists(db, STATUS_MAINTENANCE_DB_COLLECTION))) {
+    await db.createCollection(STATUS_MAINTENANCE_DB_COLLECTION);
+  }
+  await db.collection(STATUS_MAINTENANCE_DB_COLLECTION).createIndex(
+    { id: 1 },
+    { unique: true, name: "maintenance_id_unique" },
+  );
+  await db.collection(STATUS_MAINTENANCE_DB_COLLECTION).createIndex(
+    { endsAt: -1 },
+    { name: "endsAt_-1" },
+  );
+}
+
+async function ensureStatusManualIncidentsCollection(db: Db): Promise<void> {
+  if (!(await collectionExists(db, STATUS_MANUAL_INCIDENTS_COLLECTION))) {
+    await db.createCollection(STATUS_MANUAL_INCIDENTS_COLLECTION);
+  }
+  await db.collection(STATUS_MANUAL_INCIDENTS_COLLECTION).createIndex(
+    { createdAt: -1 },
+    { name: "createdAt_-1" },
+  );
+}
+
 /**
  * Creates collections (with JSON Schema validators) and indexes for portal data.
  * Idempotent; safe to call on every DB handle acquisition.
@@ -161,6 +191,8 @@ export async function ensureMongoDbSchema(db: Db): Promise<void> {
         await ensureApiKeysCollection(db);
         await ensureStatusSnapshotCollection(db);
         await ensureStatusHistoryCollection(db);
+        await ensureStatusMaintenanceDbCollection(db);
+        await ensureStatusManualIncidentsCollection(db);
       } catch (err) {
         if (process.env.NODE_ENV !== "production") {
           console.warn("[mongodb] ensureMongoDbSchema failed:", err);

@@ -403,5 +403,38 @@ export const nl: MessageTree = {
     embedCopied: "Gekopieerd",
     embedModalClose: "Sluiten",
     embedOpenOnSite: "Open deze pagina op uw site om URL’s te genereren.",
+    maintenanceHeading: "Gepland onderhoud",
+    maintenanceEmpty:
+      "Er zijn momenteel geen lopende of aankomende onderhoudsvensters gepubliceerd.",
+    maintenanceActiveBadge: "Bezig",
+    maintenanceUpcomingBadge: "Gepland",
+    maintenanceRange: "{{start}} → {{end}}",
+    deployHeading: "Laatste deployment",
+    deployUnavailable:
+      "Deploy-metadata (git-commit) worden alleen op de productiehost geïnjecteerd. Lokaal blijft deze sectie leeg.",
+    deployCommit: "Commit",
+    deployBranch: "Branch",
+    deployMessage: "Bericht",
+    deployViewCommit: "Commit op GitHub bekijken",
+    trustHeading: "Hoe we uptime meten",
+    trustIntro: "Korte toelichting bij wat deze pagina laat zien.",
+    trustBulletSynthetic:
+      "Synthetische checks: geautomatiseerde HTTP-verzoeken vanaf onze hostingprovider naar elke openbare URL hieronder — geen echte gebruikersmeting (RUM).",
+    trustBulletFrequency:
+      "Schema: in productie ongeveer eens per minuut (cron-configuratie van uw project).",
+    trustBulletPass:
+      "Een check slaagt als de HTTP-status lager is dan 500; timeouts en netwerkfouten tellen als mislukt.",
+    trustBulletHistory:
+      "Tijdlijnen en het uptime-percentage bovenaan gebruiken de laatste {{n}} opgeslagen runs (MongoDB-TTL ongeveer 14 dagen).",
+    trustBulletUtc: "Alle tijden op deze pagina zijn UTC.",
+    manualNoticesHeading: "Mededelingen van het team",
+    manualNoticesIntro:
+      "Updates van het team bij incidenten of vervolg (los van de automatische probe-geschiedenis hieronder).",
+    manualPostedBy: "Geplaatst door {{email}}",
+    manualResolvedPrefix: "Opgelost",
+    manualSeverityInvestigating: "Onderzoek",
+    manualSeverityIdentified: "Geïdentificeerd",
+    manualSeverityMonitoring: "Monitoring",
+    manualSeverityResolved: "Opgelost",
   },
 };

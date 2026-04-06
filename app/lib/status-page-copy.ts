@@ -68,6 +68,32 @@ export type StatusPageCopy = {
   embedCopy: string;
   embedCopied: string;
   embedOpenOnSite: string;
+  maintenanceHeading: string;
+  maintenanceEmpty: string;
+  maintenanceActiveBadge: string;
+  maintenanceUpcomingBadge: string;
+  maintenanceRange: string;
+  deployHeading: string;
+  deployUnavailable: string;
+  deployCommit: string;
+  deployBranch: string;
+  deployMessage: string;
+  deployViewCommit: string;
+  trustHeading: string;
+  trustIntro: string;
+  trustBulletSynthetic: string;
+  trustBulletFrequency: string;
+  trustBulletPass: string;
+  trustBulletHistory: string;
+  trustBulletUtc: string;
+  manualNoticesHeading: string;
+  manualNoticesIntro: string;
+  manualPostedBy: string;
+  manualResolvedPrefix: string;
+  manualSeverityInvestigating: string;
+  manualSeverityIdentified: string;
+  manualSeverityMonitoring: string;
+  manualSeverityResolved: string;
 };
 
 export function getStatusPageCopy(locale: Locale): StatusPageCopy {
@@ -138,6 +164,32 @@ export function getStatusPageCopy(locale: Locale): StatusPageCopy {
     embedCopy: tp("status.embedCopy"),
     embedCopied: tp("status.embedCopied"),
     embedOpenOnSite: tp("status.embedOpenOnSite"),
+    maintenanceHeading: tp("status.maintenanceHeading"),
+    maintenanceEmpty: tp("status.maintenanceEmpty"),
+    maintenanceActiveBadge: tp("status.maintenanceActiveBadge"),
+    maintenanceUpcomingBadge: tp("status.maintenanceUpcomingBadge"),
+    maintenanceRange: tp("status.maintenanceRange"),
+    deployHeading: tp("status.deployHeading"),
+    deployUnavailable: tp("status.deployUnavailable"),
+    deployCommit: tp("status.deployCommit"),
+    deployBranch: tp("status.deployBranch"),
+    deployMessage: tp("status.deployMessage"),
+    deployViewCommit: tp("status.deployViewCommit"),
+    trustHeading: tp("status.trustHeading"),
+    trustIntro: tp("status.trustIntro"),
+    trustBulletSynthetic: tp("status.trustBulletSynthetic"),
+    trustBulletFrequency: tp("status.trustBulletFrequency"),
+    trustBulletPass: tp("status.trustBulletPass"),
+    trustBulletHistory: tp("status.trustBulletHistory"),
+    trustBulletUtc: tp("status.trustBulletUtc"),
+    manualNoticesHeading: tp("status.manualNoticesHeading"),
+    manualNoticesIntro: tp("status.manualNoticesIntro"),
+    manualPostedBy: tp("status.manualPostedBy"),
+    manualResolvedPrefix: tp("status.manualResolvedPrefix"),
+    manualSeverityInvestigating: tp("status.manualSeverityInvestigating"),
+    manualSeverityIdentified: tp("status.manualSeverityIdentified"),
+    manualSeverityMonitoring: tp("status.manualSeverityMonitoring"),
+    manualSeverityResolved: tp("status.manualSeverityResolved"),
   };
 }
 
@@ -152,7 +204,9 @@ export function resolveStatusPageCopy(
   if (
     fromLoader != null &&
     typeof fromLoader.timelineRecentChecks === "string" &&
-    typeof fromLoader.embedPreviewHeading === "string"
+    typeof fromLoader.embedPreviewHeading === "string" &&
+    typeof fromLoader.trustHeading === "string" &&
+    typeof fromLoader.manualNoticesHeading === "string"
   ) {
     return fromLoader;
   }

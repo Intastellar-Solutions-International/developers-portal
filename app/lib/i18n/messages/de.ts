@@ -407,5 +407,38 @@ export const de: MessageTree = {
     embedCopied: "Kopiert",
     embedModalClose: "Schließen",
     embedOpenOnSite: "Seite auf Ihrer Installation öffnen, um URLs zu erzeugen.",
+    maintenanceHeading: "Geplante Wartung",
+    maintenanceEmpty:
+      "Derzeit sind keine laufenden oder bevorstehenden Wartungsfenster veröffentlicht.",
+    maintenanceActiveBadge: "Läuft",
+    maintenanceUpcomingBadge: "Bevorstehend",
+    maintenanceRange: "{{start}} → {{end}}",
+    deployHeading: "Letztes Deployment",
+    deployUnavailable:
+      "Deploy-Metadaten (Git-Commit) werden nur auf dem Produktionshost injiziert. Lokal bleibt dieser Abschnitt leer.",
+    deployCommit: "Commit",
+    deployBranch: "Branch",
+    deployMessage: "Nachricht",
+    deployViewCommit: "Commit auf GitHub ansehen",
+    trustHeading: "So messen wir Verfügbarkeit",
+    trustIntro: "Kurze Hinweise, was diese Seite darstellt.",
+    trustBulletSynthetic:
+      "Synthetische Prüfungen: automatisierte HTTP-Anfragen von unserem Hosting-Anbieter zu jeder öffentlichen URL unten — kein Real-User-Monitoring (RUM).",
+    trustBulletFrequency:
+      "Zeitplan: in Produktion etwa einmal pro Minute (Cron-Konfiguration Ihres Projekts).",
+    trustBulletPass:
+      "Eine Prüfung gilt als bestanden, wenn der HTTP-Status unter 500 liegt; Timeouts und Netzwerkfehler zählen als fehlgeschlagen.",
+    trustBulletHistory:
+      "Zeitlinien und die Kopf-Verfügbarkeit nutzen die letzten {{n}} gespeicherten Läufe (MongoDB-TTL etwa 14 Tage).",
+    trustBulletUtc: "Alle Zeiten auf dieser Seite sind UTC.",
+    manualNoticesHeading: "Hinweise vom Betrieb",
+    manualNoticesIntro:
+      "Updates vom Team zu Vorfällen oder Nachverfolgung (getrennt von der automatisierten Prüfhistorie unten).",
+    manualPostedBy: "Veröffentlicht von {{email}}",
+    manualResolvedPrefix: "Gelöst",
+    manualSeverityInvestigating: "In Analyse",
+    manualSeverityIdentified: "Identifiziert",
+    manualSeverityMonitoring: "Überwachung",
+    manualSeverityResolved: "Behoben",
   },
 };

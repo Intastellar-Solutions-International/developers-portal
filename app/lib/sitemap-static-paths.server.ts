@@ -6,6 +6,7 @@ import routeTree from "../routes";
 const SKIP_ROUTE_FILES = new Set([
   "routes/robots-txt.tsx",
   "routes/sitemap-xml.tsx",
+  "routes/internal.status-ops.tsx",
   "routes/changelog.tsx",
   "routes/api.status.cron.tsx",
   "routes/api.status.json.tsx",
@@ -24,6 +25,7 @@ const SKIP_PATHNAMES = new Set([
   "/api/status/cron",
   "/api/status/uptime/badge",
   "/auth/session",
+  "/internal/status-ops",
 ]);
 
 function routeFileSkipped(file: string): boolean {

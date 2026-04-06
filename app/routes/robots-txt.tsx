@@ -5,6 +5,7 @@ export async function loader(_args: Route.LoaderArgs) {
   const body = [
     "User-agent: *",
     "Allow: /",
+    "Disallow: /internal/",
     "",
     `Sitemap: ${absoluteUrl("/sitemap.xml")}`,
     "",

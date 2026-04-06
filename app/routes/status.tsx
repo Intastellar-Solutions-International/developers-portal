@@ -3,6 +3,12 @@ import { useLoaderData } from "react-router";
 
 import type { Route } from "./+types/status";
 import { StatusIncidentLog } from "~/components/status-incident-log";
+import { StatusManualIncidents } from "~/components/status-manual-incidents";
+import {
+  StatusDeploySection,
+  StatusMaintenanceSection,
+  StatusTrustSection,
+} from "~/components/status-page-extras";
 import { StatusUptimeBadgeModal } from "~/components/status-uptime-badge-modal";
 import { StatusLatencyTrend } from "~/components/status-latency-trend";
 import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
@@ -27,6 +33,10 @@ import {
 } from "~/lib/status-history.server";
 import { overallOk, runStatusProbes } from "~/lib/status-probe.server";
 import { getLatestStatusSnapshot } from "~/lib/status-snapshot.server";
+import { getStatusDeployPublic } from "~/lib/status-deploy.server";
+import { listFutureMaintenanceWindowsFromMongo } from "~/lib/status-maintenance-db.server";
+import { getPublicMaintenanceWindows } from "~/lib/status-maintenance.server";
+import { listManualIncidentsPublic } from "~/lib/status-manual-incidents.server";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -54,6 +64,15 @@ export async function loader({ request }: Route.LoaderArgs) {
   let incidents: StatusIncident[] = [];
   let checkedAtLabel: string | null = null;
   const historyWindowSize = getStatusHistoryMaxPoints();
+  const mongoMaint =
+    isMongoConfigured() ? await listFutureMaintenanceWindowsFromMongo() : [];
+  const maintenance = getPublicMaintenanceWindows(
+    formatDateTimeMediumUtc,
+    { mongoWindows: mongoMaint },
+  );
+  const deploy = getStatusDeployPublic();
+  const manualIncidents =
+    isMongoConfigured() ? await listManualIncidentsPublic(25) : [];
 
   type UptimePayload =
     | {
@@ -111,6 +130,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     incidents,
     targetNames,
     uptime,
+    maintenance,
+    deploy,
+    historyWindowSize,
+    manualIncidents,
   };
 }
 
@@ -139,6 +162,10 @@ export default function StatusPage() {
     incidents,
     targetNames,
     uptime,
+    maintenance,
+    deploy,
+    historyWindowSize,
+    manualIncidents,
   } = useLoaderData<typeof loader>();
   const copy = resolveStatusPageCopy(locale, copyFromLoader);
 
@@ -157,6 +184,10 @@ export default function StatusPage() {
         </a>
         {copy.introAfterLink}
       </p>
+
+      <StatusTrustSection copy={copy} historyMaxPoints={historyWindowSize} />
+      <StatusMaintenanceSection copy={copy} windows={maintenance} />
+      <StatusDeploySection copy={copy} deploy={deploy} />
 
       {uptime?.variant === "stored" ? (
         <div
@@ -317,13 +348,17 @@ export default function StatusPage() {
             ))}
           </ul>
 
+          <StatusManualIncidents incidents={manualIncidents} copy={copy} />
+
           <StatusIncidentLog
             incidents={incidents}
             targetNames={targetNames}
             copy={copy}
           />
         </>
-      ) : null}
+      ) : (
+        <StatusManualIncidents incidents={manualIncidents} copy={copy} />
+      )}
 
       <StatusUptimeBadgeModal
         open={embedModalOpen}

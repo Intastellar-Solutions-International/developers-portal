@@ -412,6 +412,39 @@ export const en = {
     embedCopied: "Copied",
     embedModalClose: "Close",
     embedOpenOnSite: "Open this page on your site to generate URLs.",
+    maintenanceHeading: "Scheduled maintenance",
+    maintenanceEmpty:
+      "No in-progress or upcoming maintenance windows are published right now.",
+    maintenanceActiveBadge: "In progress",
+    maintenanceUpcomingBadge: "Upcoming",
+    maintenanceRange: "{{start}} → {{end}}",
+    deployHeading: "Last deploy",
+    deployUnavailable:
+      "Deploy metadata (git commit) is injected on the production host only. In local development this section is empty.",
+    deployCommit: "Commit",
+    deployBranch: "Branch",
+    deployMessage: "Message",
+    deployViewCommit: "View commit on GitHub",
+    trustHeading: "How we measure uptime",
+    trustIntro: "Short notes so you know what this page represents.",
+    trustBulletSynthetic:
+      "Synthetic checks: automated HTTP requests from our hosting provider to each public URL below — not real-user (RUM) monitoring.",
+    trustBulletFrequency:
+      "Schedule: production runs about once per minute (your project’s cron configuration).",
+    trustBulletPass:
+      "A check passes when the HTTP status is below 500; timeouts and network errors count as failed.",
+    trustBulletHistory:
+      "Timelines and the headline uptime percentage use the last {{n}} stored runs (MongoDB TTL about 14 days).",
+    trustBulletUtc: "All times on this page are UTC.",
+    manualNoticesHeading: "Operator notices",
+    manualNoticesIntro:
+      "Updates posted by the team when we communicate an issue or follow-up (separate from automated probe history below).",
+    manualPostedBy: "Posted by {{email}}",
+    manualResolvedPrefix: "Resolved",
+    manualSeverityInvestigating: "Investigating",
+    manualSeverityIdentified: "Identified",
+    manualSeverityMonitoring: "Monitoring",
+    manualSeverityResolved: "Resolved",
   },
 } as const;
 

@@ -402,5 +402,38 @@ export const da: MessageTree = {
     embedCopied: "Kopieret",
     embedModalClose: "Luk",
     embedOpenOnSite: "Åbn siden på dit site for at generere URL’er.",
+    maintenanceHeading: "Planlagt vedligehold",
+    maintenanceEmpty:
+      "Der er ikke offentliggjort igangværende eller kommende vedligeholdelsesvinduer lige nu.",
+    maintenanceActiveBadge: "I gang",
+    maintenanceUpcomingBadge: "Kommende",
+    maintenanceRange: "{{start}} → {{end}}",
+    deployHeading: "Seneste deploy",
+    deployUnavailable:
+      "Deploy-metadata (git-commit) indsættes kun på produktionshosten. Lokalt er dette afsnit tomt.",
+    deployCommit: "Commit",
+    deployBranch: "Branch",
+    deployMessage: "Besked",
+    deployViewCommit: "Se commit på GitHub",
+    trustHeading: "Sådan måler vi oppetid",
+    trustIntro: "Korte noter om, hvad siden viser.",
+    trustBulletSynthetic:
+      "Syntetiske tjek: automatiserede HTTP-forespørgsler fra vores udbyder til hver offentlige URL nedenfor — ikke RUM.",
+    trustBulletFrequency:
+      "Plan: i produktion ca. én gang i minuttet (dit projekts cron-konfiguration).",
+    trustBulletPass:
+      "Et tjek består, når HTTP-status er under 500; timeouts og netværksfejl tæller som fejl.",
+    trustBulletHistory:
+      "Tidslinjer og den viste oppetidsprocent bruger de seneste {{n}} gemte kørsler (MongoDB TTL ca. 14 dage).",
+    trustBulletUtc: "Alle tidspunkter på siden er UTC.",
+    manualNoticesHeading: "Driftsmeddelelser",
+    manualNoticesIntro:
+      "Opdateringer fra teamet om hændelser eller opfølgning (adskilt fra automatisk probe-historik nedenfor).",
+    manualPostedBy: "Skrevet af {{email}}",
+    manualResolvedPrefix: "Løst",
+    manualSeverityInvestigating: "Undersøger",
+    manualSeverityIdentified: "Identificeret",
+    manualSeverityMonitoring: "Overvåger",
+    manualSeverityResolved: "Løst",
   },
 };

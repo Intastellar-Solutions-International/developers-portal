@@ -404,5 +404,38 @@ export const ptBr: MessageTree = {
     embedCopied: "Copiado",
     embedModalClose: "Fechar",
     embedOpenOnSite: "Abra esta página no seu site para gerar URLs.",
+    maintenanceHeading: "Manutenção agendada",
+    maintenanceEmpty:
+      "Não há janelas de manutenção em andamento ou futuras publicadas no momento.",
+    maintenanceActiveBadge: "Em andamento",
+    maintenanceUpcomingBadge: "Próxima",
+    maintenanceRange: "{{start}} → {{end}}",
+    deployHeading: "Último deploy",
+    deployUnavailable:
+      "Metadados de deploy (commit git) só são injetados no host de produção. Em desenvolvimento local esta seção fica vazia.",
+    deployCommit: "Commit",
+    deployBranch: "Branch",
+    deployMessage: "Mensagem",
+    deployViewCommit: "Ver commit no GitHub",
+    trustHeading: "Como medimos disponibilidade",
+    trustIntro: "Notas rápidas sobre o que esta página representa.",
+    trustBulletSynthetic:
+      "Verificações sintéticas: requisições HTTP automatizadas do nosso provedor de hospedagem para cada URL pública abaixo — não é monitoramento de usuários reais (RUM).",
+    trustBulletFrequency:
+      "Agenda: em produção, cerca de uma vez por minuto (configuração de cron do projeto).",
+    trustBulletPass:
+      "Uma verificação passa quando o status HTTP é menor que 500; timeouts e erros de rede contam como falha.",
+    trustBulletHistory:
+      "Linhas do tempo e o percentual de disponibilidade no topo usam as últimas {{n}} execuções armazenadas (TTL no MongoDB de cerca de 14 dias).",
+    trustBulletUtc: "Todos os horários nesta página estão em UTC.",
+    manualNoticesHeading: "Avisos da equipe",
+    manualNoticesIntro:
+      "Atualizações publicadas pela equipe sobre incidentes ou acompanhamento (separadas do histórico automático de probes abaixo).",
+    manualPostedBy: "Publicado por {{email}}",
+    manualResolvedPrefix: "Resolvido",
+    manualSeverityInvestigating: "Investigando",
+    manualSeverityIdentified: "Identificado",
+    manualSeverityMonitoring: "Monitorando",
+    manualSeverityResolved: "Resolvido",
   },
 };
