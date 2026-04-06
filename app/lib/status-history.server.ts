@@ -49,6 +49,36 @@ export function getStatusHistoryMaxPoints(): number {
   return historyMaxPoints();
 }
 
+export type StoredOverallUptime = {
+  /** 0–100, one decimal. */
+  percent: number;
+  passedRuns: number;
+  totalRuns: number;
+};
+
+/**
+ * Share of stored cron runs where every target passed (`overallOk`), over the last `maxPoints` rows
+ * (same window as per-monitor timelines).
+ */
+export async function getStoredOverallUptime(
+  maxPoints?: number,
+): Promise<StoredOverallUptime | null> {
+  const limit = maxPoints ?? historyMaxPoints();
+  const col = await getCollection<StatusHistoryRow>(STATUS_HISTORY_COLLECTION);
+  if (!col) return null;
+  const rows = await col
+    .find({})
+    .sort({ checkedAt: -1 })
+    .limit(limit)
+    .toArray();
+  if (rows.length === 0) return null;
+  const passedRuns = rows.filter((r) => r.overallOk).length;
+  const totalRuns = rows.length;
+  const percent =
+    Math.round((passedRuns / totalRuns) * 1000) / 10;
+  return { percent, passedRuns, totalRuns };
+}
+
 /**
  * Record one cron run (minimal fields) for timelines. TTL on collection drops old rows.
  */

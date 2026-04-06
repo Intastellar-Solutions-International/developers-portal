@@ -11,7 +11,9 @@ import {
 } from "~/lib/format-datetime";
 import {
   getRecentStatusIncidents,
+  getStatusHistoryMaxPoints,
   getStatusTimelines,
+  getStoredOverallUptime,
   type StatusIncident,
   type StatusTimelinePoint,
 } from "~/lib/status-history.server";
@@ -41,6 +43,17 @@ export async function loader(_: Route.LoaderArgs) {
   const timelines: Record<string, StatusTimelinePoint[]> = {};
   let incidents: StatusIncident[] = [];
   let checkedAtLabel: string | null = null;
+  const historyWindowSize = getStatusHistoryMaxPoints();
+
+  type UptimePayload =
+    | {
+        variant: "stored";
+        percent: number;
+        totalRuns: number;
+        passedRuns: number;
+      }
+    | { variant: "dev"; percent: number };
+  let uptime: UptimePayload | null = null;
 
   if (snapshot) {
     checkedAtLabel = formatDateTimeMediumUtc(snapshot.checkedAt);
@@ -48,6 +61,15 @@ export async function loader(_: Route.LoaderArgs) {
     if (source === "mongodb") {
       Object.assign(timelines, await getStatusTimelines(ids));
       incidents = await getRecentStatusIncidents(25);
+      const u = await getStoredOverallUptime(historyWindowSize);
+      if (u) {
+        uptime = {
+          variant: "stored",
+          percent: u.percent,
+          totalRuns: u.totalRuns,
+          passedRuns: u.passedRuns,
+        };
+      }
     } else {
       const iso = snapshot.checkedAt;
       const tip = formatDateTimeShortUtc(iso);
@@ -61,6 +83,10 @@ export async function loader(_: Route.LoaderArgs) {
           },
         ];
       }
+      uptime = {
+        variant: "dev",
+        percent: snapshot.overallOk ? 100 : 0,
+      };
     }
   }
 
@@ -72,6 +98,7 @@ export async function loader(_: Route.LoaderArgs) {
     checkedAtLabel,
     incidents,
     targetNames,
+    uptime,
   };
 }
 
@@ -95,6 +122,7 @@ export default function StatusPage() {
     checkedAtLabel,
     incidents,
     targetNames,
+    uptime,
   } = useLoaderData<typeof loader>();
 
   return (
@@ -112,6 +140,68 @@ export default function StatusPage() {
         </a>
         .
       </p>
+
+      {uptime?.variant === "stored" ? (
+        <div
+          className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50/90 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-900/50"
+          aria-label="Uptime from stored scheduled checks"
+        >
+          <p
+            className={`text-4xl font-semibold tabular-nums tracking-tight ${
+              uptime.percent >= 99.9
+                ? "text-emerald-600 dark:text-emerald-400"
+                : uptime.percent >= 99
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-red-600 dark:text-red-400"
+            }`}
+          >
+            {uptime.percent % 1 === 0
+              ? `${uptime.percent.toFixed(0)}%`
+              : `${uptime.percent.toFixed(1)}%`}{" "}
+            <span className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
+              uptime
+            </span>
+          </p>
+          <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+            We run these checks automatically on a schedule. In the last{" "}
+            <strong className="font-medium text-zinc-700 dark:text-zinc-300">
+              {uptime.totalRuns}
+            </strong>{" "}
+            runs,{" "}
+            <strong className="font-medium text-zinc-700 dark:text-zinc-300">
+              {uptime.passedRuns}
+            </strong>{" "}
+            finished with every service responding normally (no failures in that run).
+          </p>
+        </div>
+      ) : uptime?.variant === "dev" ? (
+        <div
+          className="mt-6 rounded-xl border border-amber-200/80 bg-amber-50/60 px-5 py-4 dark:border-amber-900/40 dark:bg-amber-950/30"
+          aria-label="Uptime from development-only check"
+        >
+          <p
+            className={`text-3xl font-semibold tabular-nums tracking-tight ${
+              uptime.percent >= 100
+                ? "text-emerald-700 dark:text-emerald-400"
+                : "text-red-600 dark:text-red-400"
+            }`}
+          >
+            {uptime.percent}%{" "}
+            <span className="text-base font-medium text-amber-900/80 dark:text-amber-200/80">
+              on this page load
+            </span>
+          </p>
+          <p className="mt-2 text-xs text-amber-900/90 dark:text-amber-100/70">
+            Development mode — not averaged over stored history. Production shows uptime from
+            scheduled cron runs.
+          </p>
+        </div>
+      ) : snapshot && source === "mongodb" ? (
+        <p className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-400">
+          Uptime percentage will show here after the status cron has written at least one row to
+          history (timelines use the same store).
+        </p>
+      ) : null}
 
       {source === "live" ? (
         <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
@@ -237,7 +327,9 @@ export default function StatusPage() {
             <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
               STATUS_HISTORY_POINTS
             </code>{" "}
-            runs (14-day TTL in Mongo). Times on this page are UTC. New history rows store per-target{" "}
+            runs (14-day TTL in Mongo). The headline uptime percentage uses the same window: the
+            fraction of those runs where every target passed. Times on this page are UTC. New history
+            rows store per-target{" "}
             <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
               latencyMs
             </code>
