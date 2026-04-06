@@ -1,5 +1,7 @@
 import type { Route } from "./+types/sitemap-xml";
 import { getAllDocPathnamesForSitemap } from "~/lib/docs.server";
+import { SUPPORTED_LOCALES } from "~/lib/i18n/locale";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { getStaticPathnamesFromRoutes } from "~/lib/sitemap-static-paths.server";
 import { absoluteUrl } from "~/lib/site";
 
@@ -23,12 +25,24 @@ function escapeXml(s: string): string {
     .replace(/'/g, "&apos;");
 }
 
+function expandPathnamesForAllLocales(paths: string[]): string[] {
+  const out: string[] = [];
+  for (const p of paths) {
+    for (const locale of SUPPORTED_LOCALES) {
+      out.push(withLocalePrefix(p, locale));
+    }
+  }
+  return out;
+}
+
 export async function loader(_args: Route.LoaderArgs) {
-  const [staticPaths, docPaths] = await Promise.all([
+  const [staticPaths, docPathsUnloc] = await Promise.all([
     getStaticPathnamesFromRoutes(),
     getAllDocPathnamesForSitemap(),
   ]);
-  const pathnames = uniqueSortedPaths([...staticPaths, ...docPaths]);
+  /** `staticPaths` already includes `/de/…` and `/da/…` from the route tree. */
+  const localizedDocs = expandPathnamesForAllLocales(docPathsUnloc);
+  const pathnames = uniqueSortedPaths([...staticPaths, ...localizedDocs]);
   const urls = pathnames.map((p) => escapeXml(absoluteUrl(p)));
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

@@ -1,5 +1,3 @@
-export const INTA_LOCALE_COOKIE = "inta_locale";
-
 export const SUPPORTED_LOCALES = ["en", "de", "da"] as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];

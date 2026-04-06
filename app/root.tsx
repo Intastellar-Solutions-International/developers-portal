@@ -15,6 +15,7 @@ import {
   Scripts,
   ScrollRestoration,
   useFetcher,
+  useLocation,
   useMatches,
   useNavigate,
   useRouteLoaderData,
@@ -42,8 +43,13 @@ import {
   getColorSchemeIsDarkSnapshot,
   subscribeColorScheme,
 } from "~/lib/color-scheme";
-import { DEFAULT_LOCALE, isLocale } from "~/lib/i18n/locale";
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES, isLocale } from "~/lib/i18n/locale";
+import {
+  stripLocalePrefix,
+  withLocalePrefix,
+} from "~/lib/i18n/localized-path";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
+import { absoluteUrl } from "~/lib/site";
 import {
   isLegacyBannerActiveAt,
   requestSignalsLegacyMigrationBanner,
@@ -98,10 +104,51 @@ export function shouldRevalidate({
   defaultShouldRevalidate,
   nextUrl,
 }: ShouldRevalidateFunctionArgs) {
-  if (nextUrl.pathname.startsWith("/account")) {
+  const bare = stripLocalePrefix(nextUrl.pathname);
+  if (bare.startsWith("/account")) {
     return true;
   }
   return defaultShouldRevalidate;
+}
+
+function pathnameSupportsHreflang(pathname: string): boolean {
+  const bare = stripLocalePrefix(pathname);
+  if (bare === "/") return true;
+  const roots = [
+    "/docs",
+    "/search",
+    "/changelog",
+    "/status",
+    "/legal",
+    "/account",
+    "/auth",
+    "/consents",
+  ];
+  return roots.some((r) => bare === r || bare.startsWith(`${r}/`));
+}
+
+/** `hreflang` alternates for crawlers (Ahrefs, Google) — only where `/de` and `/da` mirrors exist. */
+function LocaleAlternateLinks() {
+  const { pathname, search } = useLocation();
+  if (!pathnameSupportsHreflang(pathname)) return null;
+  const bare = stripLocalePrefix(pathname);
+  return (
+    <>
+      {SUPPORTED_LOCALES.map((l) => (
+        <link
+          key={l}
+          rel="alternate"
+          hrefLang={l}
+          href={absoluteUrl(withLocalePrefix(bare + search, l))}
+        />
+      ))}
+      <link
+        rel="alternate"
+        hrefLang="x-default"
+        href={absoluteUrl(withLocalePrefix(bare + search, DEFAULT_LOCALE))}
+      />
+    </>
+  );
 }
 
 export const links: Route.LinksFunction = () => [
@@ -275,6 +322,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
   const openSearch = () => setSearchOpen(true);
 
+  const navigateToSearchResult = (href: string) => {
+    if (href.startsWith("/")) {
+      navigate(withLocalePrefix(href, uiLocale));
+    } else {
+      navigate(href);
+    }
+  };
+
   return (
     <I18nProvider initialLocale={uiLocale}>
       <>
@@ -297,7 +352,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
           onClose={() => setSearchOpen(false)}
           documents={documents}
           loading={loading}
-          onNavigate={(href) => navigate(href)}
+          onNavigate={navigateToSearchResult}
         />
         <ScrollRestoration />
       </>
@@ -331,6 +386,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
         <Meta />
         <Links />
+        <LocaleAlternateLinks />
         {analytics ? (
           <>
             <script

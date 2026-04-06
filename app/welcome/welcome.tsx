@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { requestOpenSearch } from "~/lib/search-overlay-context";
 import { useI18n } from "~/providers/i18n-provider";
 
@@ -169,14 +170,25 @@ function DecoPlatform({ className }: { className?: string }) {
 }
 
 export function Welcome() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const lp = (path: string) => withLocalePrefix(path, locale);
   const vCb = getDefaultVersionSlug("cookie-banner");
   const vAcc = getDefaultVersionSlug("accounts-sign-in");
 
-  const consentsHome = docHref("cookie-banner", vCb);
-  const accountsHome = docHref("accounts-sign-in", vAcc);
-  const jsStart = docHref("cookie-banner", vCb, "javascript/getting-started");
-  const accStart = docHref("accounts-sign-in", vAcc, "web/getting-started");
+  const consentsHome = docHref(locale, "cookie-banner", vCb);
+  const accountsHome = docHref(locale, "accounts-sign-in", vAcc);
+  const jsStart = docHref(
+    locale,
+    "cookie-banner",
+    vCb,
+    "javascript/getting-started",
+  );
+  const accStart = docHref(
+    locale,
+    "accounts-sign-in",
+    vAcc,
+    "web/getting-started",
+  );
 
   return (
     <div className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
@@ -261,7 +273,7 @@ export function Welcome() {
           </Link>
 
           <Link
-            to="/docs"
+            to={lp("/docs")}
             className="group relative flex flex-col overflow-hidden rounded-2xl border border-amber-200/80 bg-linear-to-b from-amber-50 to-amber-100/40 p-6 shadow-sm transition-shadow hover:shadow-md dark:border-amber-900/45 dark:from-amber-950/35 dark:to-amber-950/15 dark:hover:border-amber-800/55"
           >
             <h2 className="text-lg font-semibold text-amber-950 dark:text-amber-200">
@@ -296,7 +308,7 @@ export function Welcome() {
             <ArrowRightIcon className="ml-1.5 opacity-70" />
           </Link>
           <Link
-            to="/account/login"
+            to={lp("/account/login")}
             className="inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover"
           >
             {t("home.signInPortal")}
@@ -323,13 +335,13 @@ export function Welcome() {
               {t("home.openSearch")}
             </button>
             <Link
-              to="/changelog"
+              to={lp("/changelog")}
               className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-800 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-800"
             >
               {t("home.changelog")}
             </Link>
             <Link
-              to="/account/api-keys"
+              to={lp("/account/api-keys")}
               className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-800 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:bg-zinc-800"
             >
               {t("home.apiKeys")}

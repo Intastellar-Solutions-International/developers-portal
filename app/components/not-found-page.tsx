@@ -1,9 +1,14 @@
 import { Link } from "react-router";
 
+import { useLocalizedHref } from "~/providers/i18n-provider";
+
 const linkClass =
   "text-brand hover:text-brand-hover underline-offset-2 hover:underline";
 
 export function NotFoundPage() {
+  const home = useLocalizedHref("/");
+  const docs = useLocalizedHref("/docs");
+  const search = useLocalizedHref("/search");
   return (
     <div className="container mx-auto max-w-xl px-4 py-16 md:py-24">
       <p className="text-sm font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
@@ -18,17 +23,17 @@ export function NotFoundPage() {
       </p>
       <ul className="mt-8 flex flex-col gap-3 text-sm">
         <li>
-          <Link to="/" className={linkClass}>
+          <Link to={home} className={linkClass}>
             Home
           </Link>
         </li>
         <li>
-          <Link to="/docs" className={linkClass}>
+          <Link to={docs} className={linkClass}>
             Documentation
           </Link>
         </li>
         <li>
-          <Link to="/search" className={linkClass}>
+          <Link to={search} className={linkClass}>
             Search
           </Link>
         </li>

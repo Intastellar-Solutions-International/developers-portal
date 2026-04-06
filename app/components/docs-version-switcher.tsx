@@ -6,6 +6,7 @@ import {
   getVersionsForProduct,
   parseDocsProductPath,
 } from "~/lib/docs-versions";
+import { useI18n } from "~/providers/i18n-provider";
 
 function isSingleVersion(versions: DocsVersion[]) {
   return versions.length <= 1;
@@ -14,6 +15,7 @@ function isSingleVersion(versions: DocsVersion[]) {
 export function DocsVersionSwitcher({ product }: { product: string }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { locale } = useI18n();
   const versions = getVersionsForProduct(product);
   const { version: currentVersion, docTail } = parseDocsProductPath(
     pathname,
@@ -52,7 +54,7 @@ export function DocsVersionSwitcher({ product }: { product: string }) {
         value={currentVersion}
         onChange={(e) => {
           const slug = e.target.value;
-          const next = docHref(product, slug, docTail || undefined);
+          const next = docHref(locale, product, slug, docTail || undefined);
           navigate(next);
         }}
         className="rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-sm font-medium text-zinc-900 shadow-sm outline-none ring-brand focus:border-brand focus:ring-2 focus:ring-brand/30 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"

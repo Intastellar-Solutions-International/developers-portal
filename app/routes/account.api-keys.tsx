@@ -27,6 +27,7 @@ import {
 } from "~/lib/portal-account.server";
 import { publicAccountToResolved } from "~/lib/portal-user.server";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
+import { useLocalizedHref } from "~/providers/i18n-provider";
 
 export function meta(_: Route.MetaArgs) {
   return [{ title: "API keys · inta.dev" }];
@@ -321,6 +322,7 @@ export default function AccountApiKeys() {
     configured: clientConfigured,
     isSignedIn: clientSignedIn,
   } = useIntastellarAuth();
+  const loginHref = useLocalizedHref("/account/login");
 
   const sessionUiMismatch =
     mongoConfigured &&
@@ -457,7 +459,7 @@ export default function AccountApiKeys() {
         </p>
       ) : !clientConfigured || !clientSignedIn ? (
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-          <Link to="/account/login" className={linkClass}>
+          <Link to={loginHref} className={linkClass}>
             Sign in
           </Link>{" "}
           with Intastellar to create and revoke keys. Keys are tied to your
@@ -516,7 +518,7 @@ export default function AccountApiKeys() {
                 </li>
               </ul>
               <p>
-                <Link to="/account/login" className={linkClass}>
+                <Link to={loginHref} className={linkClass}>
                   Sign in again
                 </Link>
               </p>
@@ -530,7 +532,7 @@ export default function AccountApiKeys() {
             <p>
               The server could not verify your session cookie. Try refreshing this
               page after sign-in, or{" "}
-              <Link to="/account/login" className={linkClass}>
+              <Link to={loginHref} className={linkClass}>
                 sign out and sign in again
               </Link>
               .

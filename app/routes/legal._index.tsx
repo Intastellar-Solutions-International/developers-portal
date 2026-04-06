@@ -2,6 +2,7 @@ import { Link } from "react-router";
 
 import type { Route } from "./+types/legal._index";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
+import { useLocalizedHref } from "~/providers/i18n-provider";
 
 export function meta(_: Route.MetaArgs) {
   return [
@@ -18,6 +19,8 @@ const ext =
   "text-brand hover:text-brand-hover underline-offset-2 hover:underline";
 
 export default function LegalIndex() {
+  const privacy = useLocalizedHref("/legal/privacy");
+  const terms = useLocalizedHref("/legal/terms");
   return (
     <div className="space-y-10 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
       <section>
@@ -41,14 +44,14 @@ export default function LegalIndex() {
         </h2>
         <ul className="mt-4 list-inside list-disc space-y-2 marker:text-brand">
           <li>
-            <Link to="/legal/privacy" className={ext}>
+            <Link to={privacy} className={ext}>
               Privacy policy
             </Link>{" "}
             — cookies, analytics (Google Tag Manager / GA4), Consents via GTM, and
             account data on this domain.
           </li>
           <li>
-            <Link to="/legal/terms" className={ext}>
+            <Link to={terms} className={ext}>
               Terms of use
             </Link>{" "}
             — acceptable use of the developer portal and linked services.

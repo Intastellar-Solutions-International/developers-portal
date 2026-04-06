@@ -4,8 +4,14 @@ import path from "node:path";
 import matter from "gray-matter";
 
 import { DEFAULT_LOCALE, type Locale } from "~/lib/i18n/locale";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { translatePath } from "~/lib/i18n/messages";
-import { docHref, getDefaultVersionSlug, parseDocsProductPath } from "./docs-versions";
+import {
+  docHref,
+  getDefaultVersionSlug,
+  parseDocsProductPath,
+  unlocalizedDocPath,
+} from "./docs-versions";
 import { bundleDocMdx } from "./mdx.server";
 import { absoluteUrl } from "./site";
 
@@ -206,9 +212,9 @@ export async function getDocBreadcrumbs(
   const out: BreadcrumbItem[] = [
     {
       label: translatePath(locale, "docs.breadcrumbDocumentation"),
-      href: "/docs",
+      href: withLocalePrefix("/docs", locale),
     },
-    { label: productTitle, href: docHref(product, version) },
+    { label: productTitle, href: docHref(locale, product, version) },
   ];
   if (sectionLabel) {
     out.push({ label: sectionLabel });
@@ -333,13 +339,14 @@ function filePathToHref(
   product: string,
   filePath: string,
   version: string,
+  locale: Locale,
 ): string {
   const rel = path.relative(englishProductRoot(product), filePath);
   const withoutExt = rel.replace(/\/index\.mdx$/i, "").replace(/\.mdx$/i, "");
   if (!withoutExt || withoutExt === "index")
-    return docHref(product, version);
+    return docHref(locale, product, version);
   const urlPath = withoutExt.split(path.sep).join("/");
-  return docHref(product, version, urlPath);
+  return docHref(locale, product, version, urlPath);
 }
 
 export async function getSidebar(
@@ -368,7 +375,7 @@ export async function getSidebar(
           locale,
         );
         collected.push({
-          href: filePathToHref(product, full, version),
+          href: filePathToHref(product, full, version, locale),
           label: title,
           order,
           rel,
@@ -460,9 +467,9 @@ function mdxFileToPathname(product: string, filePath: string): string {
   const withoutExt = n.replace(/\/index\.mdx$/i, "").replace(/\.mdx$/i, "");
   const version = getDefaultVersionSlug(product);
   if (!withoutExt || withoutExt === "index") {
-    return docHref(product, version);
+    return unlocalizedDocPath(product, version);
   }
-  return docHref(product, version, withoutExt);
+  return unlocalizedDocPath(product, version, withoutExt);
 }
 
 /** Public doc URL pathnames (default version only) for sitemap generation. */

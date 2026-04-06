@@ -2,6 +2,8 @@ import { NavLink, Outlet } from "react-router";
 
 import type { Route } from "./+types/legal";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
+import { useI18n } from "~/providers/i18n-provider";
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -12,6 +14,8 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
   ].join(" ");
 
 export default function LegalLayout(_: Route.ComponentProps) {
+  const { locale } = useI18n();
+  const lp = (path: string) => withLocalePrefix(path, locale);
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
@@ -34,13 +38,13 @@ export default function LegalLayout(_: Route.ComponentProps) {
         className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-b border-zinc-200 pb-4 text-sm dark:border-zinc-700"
         aria-label="Legal sections"
       >
-        <NavLink to="/legal" end className={navClass}>
+        <NavLink to={lp("/legal")} end className={navClass}>
           Overview
         </NavLink>
-        <NavLink to="/legal/privacy" className={navClass}>
+        <NavLink to={lp("/legal/privacy")} className={navClass}>
           Privacy
         </NavLink>
-        <NavLink to="/legal/terms" className={navClass}>
+        <NavLink to={lp("/legal/terms")} className={navClass}>
           Terms
         </NavLink>
         <a

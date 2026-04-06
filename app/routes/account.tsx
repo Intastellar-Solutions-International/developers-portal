@@ -1,5 +1,8 @@
 import { NavLink, Outlet } from "react-router";
 
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
+import { useI18n } from "~/providers/i18n-provider";
+
 const tabClass = ({ isActive }: { isActive: boolean }) =>
   [
     "rounded-md px-3 py-2 text-sm font-medium transition-colors",
@@ -9,6 +12,8 @@ const tabClass = ({ isActive }: { isActive: boolean }) =>
   ].join(" ");
 
 export default function AccountLayout() {
+  const { locale } = useI18n();
+  const lp = (path: string) => withLocalePrefix(path, locale);
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
@@ -18,13 +23,13 @@ export default function AccountLayout() {
         Intastellar SSO profile and developer API keys.
       </p>
       <div className="mt-8 flex flex-wrap gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-700">
-        <NavLink to="/account/login" className={tabClass}>
+        <NavLink to={lp("/account/login")} className={tabClass}>
           Sign in
         </NavLink>
-        <NavLink to="/account/profile" className={tabClass}>
+        <NavLink to={lp("/account/profile")} className={tabClass}>
           Profile
         </NavLink>
-        <NavLink to="/account/api-keys" className={tabClass}>
+        <NavLink to={lp("/account/api-keys")} className={tabClass}>
           API keys
         </NavLink>
       </div>

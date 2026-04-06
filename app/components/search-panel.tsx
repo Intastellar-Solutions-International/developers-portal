@@ -8,6 +8,8 @@ import {
 import { Link, useNavigate } from "react-router";
 
 import { searchDocuments } from "~/lib/docs-search";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
+import { useI18n } from "~/providers/i18n-provider";
 import type { SearchDocument } from "~/lib/search-index.server";
 
 const resultClass =
@@ -33,6 +35,9 @@ export function SearchPanel({
   onPick?: (href: string) => void;
 }) {
   const navigate = useNavigate();
+  const { locale } = useI18n();
+  const localizeHref = (href: string) =>
+    href.startsWith("/") ? withLocalePrefix(href, locale) : href;
   const [q, setQ] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -94,7 +99,7 @@ export function SearchPanel({
       e.preventDefault();
       const href = list[activeIndex]!.href;
       if (onPick) onPick(href);
-      else navigate(href);
+      else navigate(localizeHref(href));
     }
   }
 
@@ -158,7 +163,7 @@ export function SearchPanel({
               </button>
             ) : (
               <Link
-                to={hit.href}
+                to={localizeHref(hit.href)}
                 className={hitClass(activeIndex === index)}
                 onMouseEnter={() => setActiveIndex(index)}
               >

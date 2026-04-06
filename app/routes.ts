@@ -1,15 +1,47 @@
 import {
   type RouteConfig,
+  type RouteConfigEntry,
   index,
   layout,
   prefix,
   route,
 } from "@react-router/dev/routes";
 
-export default [
-  index("routes/home.tsx"),
+/** Duplicate localized trees need unique route ids (same `.tsx` module path). */
+function suffixRouteIds(
+  entries: RouteConfigEntry[],
+  suffix: string,
+): RouteConfigEntry[] {
+  return entries.map((entry) => {
+    const inferred =
+      entry.id ??
+      entry.file
+        .replace(/\\/g, "/")
+        .replace(/^.*\/routes\//, "routes/")
+        .replace(/\.tsx$/, "");
+    return {
+      ...entry,
+      id: `${inferred}__${suffix}`,
+      children: entry.children?.length
+        ? suffixRouteIds(entry.children, suffix)
+        : undefined,
+    };
+  });
+}
+
+/** Non-localized URLs (APIs, crawlers, assets). */
+const systemRoutes: RouteConfigEntry[] = [
   route("robots.txt", "routes/robots-txt.tsx"),
   route("sitemap.xml", "routes/sitemap-xml.tsx"),
+  route("api/status/cron", "routes/api.status.cron.tsx"),
+  route("api/status.json", "routes/api.status.json.tsx"),
+  route("api/status/uptime", "routes/api.status.uptime.tsx"),
+  route("api/status/uptime/badge", "routes/api.status.uptime-badge.tsx"),
+];
+
+/** User-facing routes mirrored under `/de` and `/da` for SEO (English stays unprefixed). */
+const localizedAppRoutes: RouteConfigEntry[] = [
+  index("routes/home.tsx"),
   route("search", "routes/search.tsx"),
   ...prefix("auth", [
     route("logout", "routes/auth.logout.tsx"),
@@ -17,10 +49,6 @@ export default [
   ]),
   route("changelog", "routes/changelog.tsx"),
   route("status", "routes/status.tsx"),
-  route("api/status/cron", "routes/api.status.cron.tsx"),
-  route("api/status.json", "routes/api.status.json.tsx"),
-  route("api/status/uptime", "routes/api.status.uptime.tsx"),
-  route("api/status/uptime/badge", "routes/api.status.uptime-badge.tsx"),
   ...prefix("consents", [
     route("changelog", "routes/consents.changelog.tsx"),
   ]),
@@ -45,4 +73,11 @@ export default [
     route("api-keys", "routes/account.api-keys.tsx"),
   ]),
   route("*", "routes/$.tsx"),
+];
+
+export default [
+  ...systemRoutes,
+  ...localizedAppRoutes,
+  ...prefix("de", suffixRouteIds(localizedAppRoutes, "de")),
+  ...prefix("da", suffixRouteIds(localizedAppRoutes, "da")),
 ] satisfies RouteConfig;

@@ -1,3 +1,6 @@
+import { type Locale } from "~/lib/i18n/locale";
+import { stripLocalePrefix, withLocalePrefix } from "~/lib/i18n/localized-path";
+
 export type DocsVersion = { slug: string; label: string };
 
 /** Per-product doc versions (URL segment after /docs/:product/). */
@@ -26,11 +29,8 @@ export function normalizeDocsVersionSlug(
   return segment;
 }
 
-/**
- * Parse /docs/:product/... for the version switcher (client-safe).
- * Legacy paths without a version segment treat docTail as the path after /product/.
- */
-export function docHref(
+/** `/docs/:product/:version/...` without locale prefix (English canonical shape). */
+export function unlocalizedDocPath(
   product: string,
   version: string,
   docPath?: string,
@@ -41,22 +41,40 @@ export function docHref(
   return `/docs/${product}/${v}/${tail}`;
 }
 
+/**
+ * Canonical doc URL for a locale (English unprefixed, `de`/`da` as `/de/docs/...`).
+ */
+export function docHref(
+  locale: Locale,
+  product: string,
+  version: string,
+  docPath?: string,
+): string {
+  return withLocalePrefix(unlocalizedDocPath(product, version, docPath), locale);
+}
+
 export type ParsedDocSplat =
   | { redirect: string }
   | { version: string; docPath: string | undefined };
 
-export function parseDocSplat(product: string, splat: string): ParsedDocSplat {
+export function parseDocSplat(
+  product: string,
+  splat: string,
+  locale: Locale,
+): ParsedDocSplat {
   const trimmed = splat.replace(/^\/+|\/+$/g, "");
   const segments = trimmed ? trimmed.split("/").filter(Boolean) : [];
   const defaultV = getDefaultVersionSlug(product);
 
   if (segments.length === 0) {
-    return { redirect: docHref(product, defaultV) };
+    return { redirect: docHref(locale, product, defaultV) };
   }
 
   const first = segments[0]!;
   if (!isDocsVersionSlug(product, first) && first !== "latest") {
-    return { redirect: docHref(product, defaultV, segments.join("/")) };
+    return {
+      redirect: docHref(locale, product, defaultV, segments.join("/")),
+    };
   }
 
   const version = normalizeDocsVersionSlug(product, first);
@@ -68,12 +86,13 @@ export function parseDocsProductPath(
   pathname: string,
   product: string,
 ): { version: string; docTail: string } {
+  const bare = stripLocalePrefix(pathname);
   const prefix = `/docs/${product}/`;
   const defaultV = getDefaultVersionSlug(product);
-  if (!pathname.startsWith(prefix)) {
+  if (!bare.startsWith(prefix)) {
     return { version: defaultV, docTail: "" };
   }
-  const rest = pathname.slice(prefix.length).replace(/\/$/, "");
+  const rest = bare.slice(prefix.length).replace(/\/$/, "");
   const segments = rest ? rest.split("/").filter(Boolean) : [];
   if (segments.length === 0) return { version: defaultV, docTail: "" };
   const first = segments[0]!;

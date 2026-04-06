@@ -3,6 +3,7 @@ import { Link, data, useLoaderData } from "react-router";
 import type { Route } from "./+types/docs._index";
 import { listProducts } from "~/lib/docs.server";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { requestOpenSearch } from "~/lib/search-overlay-context";
 import { buildDocsHubMeta } from "~/lib/seo";
@@ -43,8 +44,9 @@ function SearchIcon({ className }: { className?: string }) {
 }
 
 export default function DocsIndex() {
-  const { products } = useLoaderData<typeof loader>();
+  const { products, locale } = useLoaderData<typeof loader>();
   const { t } = useI18n();
+  const lp = (path: string) => withLocalePrefix(path, locale);
 
   const vCb = getDefaultVersionSlug("cookie-banner");
   const vAcc = getDefaultVersionSlug("accounts-sign-in");
@@ -53,17 +55,18 @@ export default function DocsIndex() {
     {
       labelKey: "docs.ql1Label" as const,
       hintKey: "docs.ql1Hint" as const,
-      href: docHref("cookie-banner", vCb, "javascript/getting-started"),
+      href: docHref(locale, "cookie-banner", vCb, "javascript/getting-started"),
     },
     {
       labelKey: "docs.ql2Label" as const,
       hintKey: "docs.ql2Hint" as const,
-      href: docHref("cookie-banner", vCb, "wordpress/getting-started"),
+      href: docHref(locale, "cookie-banner", vCb, "wordpress/getting-started"),
     },
     {
       labelKey: "docs.ql3Label" as const,
       hintKey: "docs.ql3Hint" as const,
       href: docHref(
+        locale,
         "accounts-sign-in",
         vAcc,
         "web/integrating-react-and-javascript",
@@ -72,17 +75,22 @@ export default function DocsIndex() {
     {
       labelKey: "docs.ql4Label" as const,
       hintKey: "docs.ql4Hint" as const,
-      href: docHref("accounts-sign-in", vAcc, "web/plain-html-css-js"),
+      href: docHref(locale, "accounts-sign-in", vAcc, "web/plain-html-css-js"),
     },
     {
       labelKey: "docs.ql5Label" as const,
       hintKey: "docs.ql5Hint" as const,
-      href: docHref("accounts-sign-in", vAcc, "web/getting-started"),
+      href: docHref(locale, "accounts-sign-in", vAcc, "web/getting-started"),
     },
     {
       labelKey: "docs.ql6Label" as const,
       hintKey: "docs.ql6Hint" as const,
-      href: docHref("accounts-sign-in", vAcc, "web/authorization-code-flow"),
+      href: docHref(
+        locale,
+        "accounts-sign-in",
+        vAcc,
+        "web/authorization-code-flow",
+      ),
     },
   ];
 
@@ -117,13 +125,13 @@ export default function DocsIndex() {
           </kbd>
         </button>
         <Link
-          to="/changelog"
+          to={lp("/changelog")}
           className="rounded-lg border border-transparent px-4 py-2.5 text-sm font-medium text-zinc-600 transition-colors hover:border-zinc-200 hover:bg-zinc-50 hover:text-brand dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/80 dark:hover:text-brand"
         >
           {t("docs.hubChangelog")}
         </Link>
         <Link
-          to="/account/api-keys"
+          to={lp("/account/api-keys")}
           className="rounded-lg border border-transparent px-4 py-2.5 text-sm font-medium text-zinc-600 transition-colors hover:border-zinc-200 hover:bg-zinc-50 hover:text-brand dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/80 dark:hover:text-brand"
         >
           {t("docs.hubApiKeys")}
@@ -173,7 +181,7 @@ export default function DocsIndex() {
           {products.map((p) => (
             <li key={p.slug}>
               <Link
-                to={docHref(p.slug, getDefaultVersionSlug(p.slug))}
+                to={docHref(locale, p.slug, getDefaultVersionSlug(p.slug))}
                 className="block rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:border-brand/50 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-brand/45"
               >
                 <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">

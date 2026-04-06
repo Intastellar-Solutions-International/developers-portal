@@ -2,6 +2,17 @@ import type { ComponentPropsWithoutRef } from "react";
 import { Link } from "react-router";
 
 import { MdxPrettyCodeFigure } from "~/components/mdx-pretty-code-figure";
+import { useLocalizedHref } from "~/providers/i18n-provider";
+
+function MdxInternalLink(props: ComponentPropsWithoutRef<"a">) {
+  const { href, children, ...rest } = props;
+  const to = useLocalizedHref(href ?? "/");
+  return (
+    <Link to={to} {...rest}>
+      {children}
+    </Link>
+  );
+}
 
 export const mdxComponents = {
   figure: MdxPrettyCodeFigure,
@@ -9,9 +20,9 @@ export const mdxComponents = {
     const { href, children, ...rest } = props;
     if (href?.startsWith("/")) {
       return (
-        <Link to={href} {...rest}>
+        <MdxInternalLink href={href} {...rest}>
           {children}
-        </Link>
+        </MdxInternalLink>
       );
     }
     const isExternal = href?.startsWith("http");

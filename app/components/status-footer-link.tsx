@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { useI18n } from "~/providers/i18n-provider";
 
 const linkClass =
@@ -17,7 +18,7 @@ type StatusJson = {
  * Footer link to `/status` with a small indicator from `/api/status.json`.
  */
 export function StatusFooterLink() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [snapshot, setSnapshot] = useState<StatusJson["snapshot"] | undefined>(
     undefined,
   );
@@ -48,7 +49,7 @@ export function StatusFooterLink() {
 
   return (
     <Link
-      to="/status"
+      to={withLocalePrefix("/status", locale)}
       className={`${linkClass} inline-flex items-center gap-1.5`}
       title={
         snapshot && !snapshot.overallOk

@@ -28,13 +28,13 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const pathname = new URL(request.url).pathname;
   const version = resolveSidebarVersion(product, pathname);
   const sidebar = await getSidebar(product, version, locale);
-  const productRootHref = docHref(product, version);
+  const productRootHref = docHref(locale, product, version);
   return { product, sidebar, productRootHref };
 }
 
 export default function DocsProductLayout() {
   const { product, sidebar, productRootHref } = useLoaderData<typeof loader>();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   const extraSections: ExtraNavSection[] | undefined =
     product === "accounts-sign-in"
@@ -45,6 +45,7 @@ export default function DocsProductLayout() {
             items: [
               {
                 href: docHref(
+                  locale,
                   "accounts-sign-in",
                   getDefaultVersionSlug("accounts-sign-in"),
                 ),

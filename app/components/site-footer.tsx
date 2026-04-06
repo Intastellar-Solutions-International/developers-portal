@@ -2,8 +2,9 @@ import { Link } from "react-router";
 
 import { DevelopersBrandLogo } from "~/components/developers-brand-logo";
 import { StatusFooterLink } from "~/components/status-footer-link";
-import { useI18n } from "~/providers/i18n-provider";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
+import { useI18n } from "~/providers/i18n-provider";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
 import { requestOpenSearch } from "~/lib/search-overlay-context";
 
@@ -14,7 +15,8 @@ const headingClass =
   "text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-500";
 
 export function SiteFooter() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const lp = (path: string) => withLocalePrefix(path, locale);
   const year = new Date().getFullYear();
   const vCb = getDefaultVersionSlug("cookie-banner");
   const vAcc = getDefaultVersionSlug("accounts-sign-in");
@@ -28,7 +30,7 @@ export function SiteFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8">
           <div className="sm:col-span-2 lg:col-span-1">
             <Link
-              to="/"
+              to={lp("/")}
               className="inline-block transition-opacity hover:opacity-90"
               title={t("nav.logoHomeTitle")}
             >
@@ -42,13 +44,13 @@ export function SiteFooter() {
             <p className={headingClass}>{t("footer.documentation")}</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
-                <Link to="/docs" className={linkClass}>
+                <Link to={lp("/docs")} className={linkClass}>
                   {t("footer.allDocs")}
                 </Link>
               </li>
               <li>
                 <Link
-                  to={docHref("cookie-banner", vCb)}
+                  to={docHref(locale, "cookie-banner", vCb)}
                   className={linkClass}
                 >
                   {t("footer.intastellarConsents")}
@@ -56,7 +58,7 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link
-                  to={docHref("accounts-sign-in", vAcc)}
+                  to={docHref(locale, "accounts-sign-in", vAcc)}
                   className={linkClass}
                 >
                   {t("footer.accountsSignIn")}
@@ -80,12 +82,12 @@ export function SiteFooter() {
             <p className={headingClass}>{t("footer.platform")}</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
-                <Link to="/" className={linkClass}>
+                <Link to={lp("/")} className={linkClass}>
                   {t("footer.home")}
                 </Link>
               </li>
               <li>
-                <Link to="/changelog" className={linkClass}>
+                <Link to={lp("/changelog")} className={linkClass}>
                   {t("footer.changelog")}
                 </Link>
               </li>
@@ -93,12 +95,12 @@ export function SiteFooter() {
                 <StatusFooterLink />
               </li>
               <li>
-                <Link to="/account/login" className={linkClass}>
+                <Link to={lp("/account/login")} className={linkClass}>
                   {t("footer.signIn")}
                 </Link>
               </li>
               <li>
-                <Link to="/account/api-keys" className={linkClass}>
+                <Link to={lp("/account/api-keys")} className={linkClass}>
                   {t("footer.apiKeys")}
                 </Link>
               </li>
@@ -108,17 +110,17 @@ export function SiteFooter() {
             <p className={headingClass}>{t("footer.legal")}</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
-                <Link to="/legal" className={linkClass}>
+                <Link to={lp("/legal")} className={linkClass}>
                   {t("footer.legalOverview")}
                 </Link>
               </li>
               <li>
-                <Link to="/legal/privacy" className={linkClass}>
+                <Link to={lp("/legal/privacy")} className={linkClass}>
                   {t("footer.privacy")}
                 </Link>
               </li>
               <li>
-                <Link to="/legal/terms" className={linkClass}>
+                <Link to={lp("/legal/terms")} className={linkClass}>
                   {t("footer.terms")}
                 </Link>
               </li>

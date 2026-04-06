@@ -11,6 +11,7 @@ import {
   LanguageSwitcherMobileRow,
 } from "~/components/language-switcher";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import {
   type RootLoaderData,
   useIntastellarAuth,
@@ -179,12 +180,14 @@ function SiteHeaderInner({
   const location = useLocation();
   const menuTitleId = useId();
   const { authReady, configured, isLoading, signin, logout } = useIntastellarAuth();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const lp = (path: string) => withLocalePrefix(path, locale);
   const rootLoaderData = useRouteLoaderData("root") as RootLoaderData | undefined;
   const portalAccount = rootLoaderData?.portalAccount ?? null;
   const hasPortalSession = Boolean(portalAccount?.email?.trim());
 
   const consentsDocsHref = docHref(
+    locale,
     "cookie-banner",
     getDefaultVersionSlug("cookie-banner"),
   );
@@ -216,7 +219,7 @@ function SiteHeaderInner({
       <div className="mx-auto flex h-[3.75rem] max-w-6xl items-center justify-between gap-2 px-4 sm:gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <Link
-            to="/"
+            to={lp("/")}
             className="min-w-0 shrink-0 transition-opacity hover:opacity-90"
             title={t("nav.logoHomeTitle")}
           >
@@ -274,10 +277,10 @@ function SiteHeaderInner({
             className="hidden items-center gap-0.5 lg:flex lg:gap-1"
             aria-label={t("nav.main")}
           >
-            <NavLink to="/docs" className={navLinkClass}>
+            <NavLink to={lp("/docs")} className={navLinkClass}>
               {t("nav.docs")}
             </NavLink>
-            <NavLink to="/account/api-keys" className={navLinkClass}>
+            <NavLink to={lp("/account/api-keys")} className={navLinkClass}>
               {t("nav.apiKeys")}
             </NavLink>
             <span className="hidden items-center gap-1 lg:inline-flex">
@@ -302,7 +305,7 @@ function SiteHeaderInner({
             {authReady && configured && hasPortalSession && portalAccount ? (
               <>
                 <Link
-                  to="/account/profile"
+                  to={lp("/account/profile")}
                   className="flex max-w-[11rem] items-center gap-2 rounded-md py-1 pl-1 pr-2 transition-colors hover:bg-zinc-100 dark:hover:bg-white/10"
                   title={portalAccount.email}
                 >
@@ -357,7 +360,7 @@ function SiteHeaderInner({
               aria-label={t("nav.mainNav")}
             >
               <NavLink
-                to="/changelog"
+                to={lp("/changelog")}
                 className={mobileNavLinkClass}
                 title={t("nav.changelogTitle")}
                 onClick={() => setMenuOpen(false)}
@@ -365,7 +368,7 @@ function SiteHeaderInner({
                 {t("nav.changelog")}
               </NavLink>
               <NavLink
-                to="/docs"
+                to={lp("/docs")}
                 className={mobileNavLinkClass}
                 onClick={() => setMenuOpen(false)}
               >
@@ -379,14 +382,14 @@ function SiteHeaderInner({
                 {t("nav.intastellarConsents")}
               </NavLink>
               <NavLink
-                to="/account/profile"
+                to={lp("/account/profile")}
                 className={mobileNavLinkClass}
                 onClick={() => setMenuOpen(false)}
               >
                 {t("nav.profile")}
               </NavLink>
               <NavLink
-                to="/account/api-keys"
+                to={lp("/account/api-keys")}
                 className={mobileNavLinkClass}
                 onClick={() => setMenuOpen(false)}
               >
@@ -412,7 +415,7 @@ function SiteHeaderInner({
               {authReady && configured && hasPortalSession && portalAccount ? (
                 <div className="space-y-2">
                   <Link
-                    to="/account/profile"
+                    to={lp("/account/profile")}
                     className="flex items-center gap-3 rounded-lg px-1 py-2 transition-colors hover:bg-zinc-100 dark:hover:bg-white/5"
                     onClick={() => setMenuOpen(false)}
                   >

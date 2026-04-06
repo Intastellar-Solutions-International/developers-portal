@@ -2,12 +2,14 @@ import { Link } from "react-router";
 
 import type { Route } from "./+types/account.profile";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
+import { useLocalizedHref } from "~/providers/i18n-provider";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Profile · inta.dev" }];
 }
 
 export default function AccountProfile() {
+  const loginHref = useLocalizedHref("/account/login");
   const {
     authReady,
     configured,
@@ -39,7 +41,7 @@ export default function AccountProfile() {
           </code>{" "}
           in your environment. See the{" "}
           <Link
-            to="/account/login"
+            to={loginHref}
             className="font-medium text-brand hover:text-brand-hover"
           >
             Sign in
@@ -74,7 +76,7 @@ export default function AccountProfile() {
               Sign in with Intastellar
             </button>
             <Link
-              to="/account/login"
+              to={loginHref}
               className="rounded-lg border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:border-brand/50 hover:text-brand dark:border-zinc-600 dark:text-zinc-300"
             >
               Open sign-in page

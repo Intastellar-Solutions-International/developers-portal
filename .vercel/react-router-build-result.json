@@ -10,18 +10,18 @@
       }
     },
     "routeIdToServerBundleId": {
-      "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/robots-txt": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/sitemap-xml": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.cron": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.json": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.uptime": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.uptime-badge": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/search": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/auth.logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/auth.session": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/status": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/api.status.cron": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/api.status.json": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/api.status.uptime": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/api.status.uptime-badge": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/consents.changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal.privacy": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -33,7 +33,43 @@
       "routes/account.login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/account.profile": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/account.api-keys": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/$": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+      "routes/$": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/home__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/search__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.logout__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.session__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/changelog__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/status__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/consents.changelog__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal._index__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal.privacy__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal.terms__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs._index__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs.$product._index__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs.$product.$__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account._index__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.login__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.profile__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.api-keys__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/$__de": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/home__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/search__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.logout__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.session__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/changelog__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/status__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/consents.changelog__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal._index__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal.privacy__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal.terms__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs._index__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs.$product._index__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs.$product.$__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account._index__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.login__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.profile__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.api-keys__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/$__da": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
       "root": {
@@ -41,15 +77,6 @@
         "file": "app/root.tsx",
         "path": "",
         "config": {}
-      },
-      "routes/home": {
-        "id": "routes/home",
-        "parentId": "root",
-        "file": "app/routes/home.tsx",
-        "index": true,
-        "config": {
-          "runtime": "nodejs"
-        }
       },
       "routes/robots-txt": {
         "id": "routes/robots-txt",
@@ -65,6 +92,51 @@
         "parentId": "root",
         "file": "app/routes/sitemap-xml.tsx",
         "path": "sitemap.xml",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.cron": {
+        "id": "routes/api.status.cron",
+        "parentId": "root",
+        "file": "app/routes/api.status.cron.tsx",
+        "path": "api/status/cron",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.json": {
+        "id": "routes/api.status.json",
+        "parentId": "root",
+        "file": "app/routes/api.status.json.tsx",
+        "path": "api/status.json",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.uptime": {
+        "id": "routes/api.status.uptime",
+        "parentId": "root",
+        "file": "app/routes/api.status.uptime.tsx",
+        "path": "api/status/uptime",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.uptime-badge": {
+        "id": "routes/api.status.uptime-badge",
+        "parentId": "root",
+        "file": "app/routes/api.status.uptime-badge.tsx",
+        "path": "api/status/uptime/badge",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "app/routes/home.tsx",
+        "index": true,
         "config": {
           "runtime": "nodejs"
         }
@@ -110,42 +182,6 @@
         "parentId": "root",
         "file": "app/routes/status.tsx",
         "path": "status",
-        "config": {
-          "runtime": "nodejs"
-        }
-      },
-      "routes/api.status.cron": {
-        "id": "routes/api.status.cron",
-        "parentId": "root",
-        "file": "app/routes/api.status.cron.tsx",
-        "path": "api/status/cron",
-        "config": {
-          "runtime": "nodejs"
-        }
-      },
-      "routes/api.status.json": {
-        "id": "routes/api.status.json",
-        "parentId": "root",
-        "file": "app/routes/api.status.json.tsx",
-        "path": "api/status.json",
-        "config": {
-          "runtime": "nodejs"
-        }
-      },
-      "routes/api.status.uptime": {
-        "id": "routes/api.status.uptime",
-        "parentId": "root",
-        "file": "app/routes/api.status.uptime.tsx",
-        "path": "api/status/uptime",
-        "config": {
-          "runtime": "nodejs"
-        }
-      },
-      "routes/api.status.uptime-badge": {
-        "id": "routes/api.status.uptime-badge",
-        "parentId": "root",
-        "file": "app/routes/api.status.uptime-badge.tsx",
-        "path": "api/status/uptime/badge",
         "config": {
           "runtime": "nodejs"
         }
@@ -285,6 +321,388 @@
         "config": {
           "runtime": "nodejs"
         }
+      },
+      "routes/home__de": {
+        "id": "routes/home__de",
+        "parentId": "root",
+        "file": "app/routes/home.tsx",
+        "path": "de",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/search__de": {
+        "id": "routes/search__de",
+        "parentId": "root",
+        "file": "app/routes/search.tsx",
+        "path": "de/search",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.logout__de": {
+        "id": "routes/auth.logout__de",
+        "parentId": "root",
+        "file": "app/routes/auth.logout.tsx",
+        "path": "de/auth/logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.session__de": {
+        "id": "routes/auth.session__de",
+        "parentId": "root",
+        "file": "app/routes/auth.session.tsx",
+        "path": "de/auth/session",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/changelog__de": {
+        "id": "routes/changelog__de",
+        "parentId": "root",
+        "file": "app/routes/changelog.tsx",
+        "path": "de/changelog",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/status__de": {
+        "id": "routes/status__de",
+        "parentId": "root",
+        "file": "app/routes/status.tsx",
+        "path": "de/status",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/consents.changelog__de": {
+        "id": "routes/consents.changelog__de",
+        "parentId": "root",
+        "file": "app/routes/consents.changelog.tsx",
+        "path": "de/consents/changelog",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal__de": {
+        "id": "routes/legal__de",
+        "parentId": "root",
+        "file": "app/routes/legal.tsx",
+        "path": "de/legal",
+        "config": {}
+      },
+      "routes/legal._index__de": {
+        "id": "routes/legal._index__de",
+        "parentId": "routes/legal__de",
+        "file": "app/routes/legal._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal.privacy__de": {
+        "id": "routes/legal.privacy__de",
+        "parentId": "routes/legal__de",
+        "file": "app/routes/legal.privacy.tsx",
+        "path": "privacy",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal.terms__de": {
+        "id": "routes/legal.terms__de",
+        "parentId": "routes/legal__de",
+        "file": "app/routes/legal.terms.tsx",
+        "path": "terms",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.layout__de": {
+        "id": "routes/docs.layout__de",
+        "parentId": "root",
+        "file": "app/routes/docs.layout.tsx",
+        "config": {}
+      },
+      "routes/docs._index__de": {
+        "id": "routes/docs._index__de",
+        "parentId": "routes/docs.layout__de",
+        "file": "app/routes/docs._index.tsx",
+        "path": "de/docs",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.$product__de": {
+        "id": "routes/docs.$product__de",
+        "parentId": "routes/docs.layout__de",
+        "file": "app/routes/docs.$product.tsx",
+        "path": "de/docs/:product",
+        "config": {}
+      },
+      "routes/docs.$product._index__de": {
+        "id": "routes/docs.$product._index__de",
+        "parentId": "routes/docs.$product__de",
+        "file": "app/routes/docs.$product._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.$product.$__de": {
+        "id": "routes/docs.$product.$__de",
+        "parentId": "routes/docs.$product__de",
+        "file": "app/routes/docs.$product.$.tsx",
+        "path": "*",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account__de": {
+        "id": "routes/account__de",
+        "parentId": "root",
+        "file": "app/routes/account.tsx",
+        "path": "de/account",
+        "config": {}
+      },
+      "routes/account._index__de": {
+        "id": "routes/account._index__de",
+        "parentId": "routes/account__de",
+        "file": "app/routes/account._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.login__de": {
+        "id": "routes/account.login__de",
+        "parentId": "routes/account__de",
+        "file": "app/routes/account.login.tsx",
+        "path": "login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.profile__de": {
+        "id": "routes/account.profile__de",
+        "parentId": "routes/account__de",
+        "file": "app/routes/account.profile.tsx",
+        "path": "profile",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.api-keys__de": {
+        "id": "routes/account.api-keys__de",
+        "parentId": "routes/account__de",
+        "file": "app/routes/account.api-keys.tsx",
+        "path": "api-keys",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/$__de": {
+        "id": "routes/$__de",
+        "parentId": "root",
+        "file": "app/routes/$.tsx",
+        "path": "de/*",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/home__da": {
+        "id": "routes/home__da",
+        "parentId": "root",
+        "file": "app/routes/home.tsx",
+        "path": "da",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/search__da": {
+        "id": "routes/search__da",
+        "parentId": "root",
+        "file": "app/routes/search.tsx",
+        "path": "da/search",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.logout__da": {
+        "id": "routes/auth.logout__da",
+        "parentId": "root",
+        "file": "app/routes/auth.logout.tsx",
+        "path": "da/auth/logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.session__da": {
+        "id": "routes/auth.session__da",
+        "parentId": "root",
+        "file": "app/routes/auth.session.tsx",
+        "path": "da/auth/session",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/changelog__da": {
+        "id": "routes/changelog__da",
+        "parentId": "root",
+        "file": "app/routes/changelog.tsx",
+        "path": "da/changelog",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/status__da": {
+        "id": "routes/status__da",
+        "parentId": "root",
+        "file": "app/routes/status.tsx",
+        "path": "da/status",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/consents.changelog__da": {
+        "id": "routes/consents.changelog__da",
+        "parentId": "root",
+        "file": "app/routes/consents.changelog.tsx",
+        "path": "da/consents/changelog",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal__da": {
+        "id": "routes/legal__da",
+        "parentId": "root",
+        "file": "app/routes/legal.tsx",
+        "path": "da/legal",
+        "config": {}
+      },
+      "routes/legal._index__da": {
+        "id": "routes/legal._index__da",
+        "parentId": "routes/legal__da",
+        "file": "app/routes/legal._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal.privacy__da": {
+        "id": "routes/legal.privacy__da",
+        "parentId": "routes/legal__da",
+        "file": "app/routes/legal.privacy.tsx",
+        "path": "privacy",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal.terms__da": {
+        "id": "routes/legal.terms__da",
+        "parentId": "routes/legal__da",
+        "file": "app/routes/legal.terms.tsx",
+        "path": "terms",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.layout__da": {
+        "id": "routes/docs.layout__da",
+        "parentId": "root",
+        "file": "app/routes/docs.layout.tsx",
+        "config": {}
+      },
+      "routes/docs._index__da": {
+        "id": "routes/docs._index__da",
+        "parentId": "routes/docs.layout__da",
+        "file": "app/routes/docs._index.tsx",
+        "path": "da/docs",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.$product__da": {
+        "id": "routes/docs.$product__da",
+        "parentId": "routes/docs.layout__da",
+        "file": "app/routes/docs.$product.tsx",
+        "path": "da/docs/:product",
+        "config": {}
+      },
+      "routes/docs.$product._index__da": {
+        "id": "routes/docs.$product._index__da",
+        "parentId": "routes/docs.$product__da",
+        "file": "app/routes/docs.$product._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.$product.$__da": {
+        "id": "routes/docs.$product.$__da",
+        "parentId": "routes/docs.$product__da",
+        "file": "app/routes/docs.$product.$.tsx",
+        "path": "*",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account__da": {
+        "id": "routes/account__da",
+        "parentId": "root",
+        "file": "app/routes/account.tsx",
+        "path": "da/account",
+        "config": {}
+      },
+      "routes/account._index__da": {
+        "id": "routes/account._index__da",
+        "parentId": "routes/account__da",
+        "file": "app/routes/account._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.login__da": {
+        "id": "routes/account.login__da",
+        "parentId": "routes/account__da",
+        "file": "app/routes/account.login.tsx",
+        "path": "login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.profile__da": {
+        "id": "routes/account.profile__da",
+        "parentId": "routes/account__da",
+        "file": "app/routes/account.profile.tsx",
+        "path": "profile",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.api-keys__da": {
+        "id": "routes/account.api-keys__da",
+        "parentId": "routes/account__da",
+        "file": "app/routes/account.api-keys.tsx",
+        "path": "api-keys",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/$__da": {
+        "id": "routes/$__da",
+        "parentId": "root",
+        "file": "app/routes/$.tsx",
+        "path": "da/*",
+        "config": {
+          "runtime": "nodejs"
+        }
       }
     }
   },
@@ -308,12 +726,6 @@
         "file": "root.tsx",
         "path": ""
       },
-      "routes/home": {
-        "id": "routes/home",
-        "parentId": "root",
-        "file": "routes/home.tsx",
-        "index": true
-      },
       "routes/robots-txt": {
         "id": "routes/robots-txt",
         "parentId": "root",
@@ -325,6 +737,36 @@
         "parentId": "root",
         "file": "routes/sitemap-xml.tsx",
         "path": "sitemap.xml"
+      },
+      "routes/api.status.cron": {
+        "id": "routes/api.status.cron",
+        "parentId": "root",
+        "file": "routes/api.status.cron.tsx",
+        "path": "api/status/cron"
+      },
+      "routes/api.status.json": {
+        "id": "routes/api.status.json",
+        "parentId": "root",
+        "file": "routes/api.status.json.tsx",
+        "path": "api/status.json"
+      },
+      "routes/api.status.uptime": {
+        "id": "routes/api.status.uptime",
+        "parentId": "root",
+        "file": "routes/api.status.uptime.tsx",
+        "path": "api/status/uptime"
+      },
+      "routes/api.status.uptime-badge": {
+        "id": "routes/api.status.uptime-badge",
+        "parentId": "root",
+        "file": "routes/api.status.uptime-badge.tsx",
+        "path": "api/status/uptime/badge"
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "routes/home.tsx",
+        "index": true
       },
       "routes/search": {
         "id": "routes/search",
@@ -355,30 +797,6 @@
         "parentId": "root",
         "file": "routes/status.tsx",
         "path": "status"
-      },
-      "routes/api.status.cron": {
-        "id": "routes/api.status.cron",
-        "parentId": "root",
-        "file": "routes/api.status.cron.tsx",
-        "path": "api/status/cron"
-      },
-      "routes/api.status.json": {
-        "id": "routes/api.status.json",
-        "parentId": "root",
-        "file": "routes/api.status.json.tsx",
-        "path": "api/status.json"
-      },
-      "routes/api.status.uptime": {
-        "id": "routes/api.status.uptime",
-        "parentId": "root",
-        "file": "routes/api.status.uptime.tsx",
-        "path": "api/status/uptime"
-      },
-      "routes/api.status.uptime-badge": {
-        "id": "routes/api.status.uptime-badge",
-        "parentId": "root",
-        "file": "routes/api.status.uptime-badge.tsx",
-        "path": "api/status/uptime/badge"
       },
       "routes/consents.changelog": {
         "id": "routes/consents.changelog",
@@ -475,6 +893,272 @@
         "parentId": "root",
         "file": "routes/$.tsx",
         "path": "*"
+      },
+      "routes/home__de": {
+        "id": "routes/home__de",
+        "parentId": "root",
+        "file": "routes/home.tsx",
+        "path": "de",
+        "index": true
+      },
+      "routes/search__de": {
+        "id": "routes/search__de",
+        "parentId": "root",
+        "file": "routes/search.tsx",
+        "path": "de/search"
+      },
+      "routes/auth.logout__de": {
+        "id": "routes/auth.logout__de",
+        "parentId": "root",
+        "file": "routes/auth.logout.tsx",
+        "path": "de/auth/logout"
+      },
+      "routes/auth.session__de": {
+        "id": "routes/auth.session__de",
+        "parentId": "root",
+        "file": "routes/auth.session.tsx",
+        "path": "de/auth/session"
+      },
+      "routes/changelog__de": {
+        "id": "routes/changelog__de",
+        "parentId": "root",
+        "file": "routes/changelog.tsx",
+        "path": "de/changelog"
+      },
+      "routes/status__de": {
+        "id": "routes/status__de",
+        "parentId": "root",
+        "file": "routes/status.tsx",
+        "path": "de/status"
+      },
+      "routes/consents.changelog__de": {
+        "id": "routes/consents.changelog__de",
+        "parentId": "root",
+        "file": "routes/consents.changelog.tsx",
+        "path": "de/consents/changelog"
+      },
+      "routes/legal__de": {
+        "id": "routes/legal__de",
+        "parentId": "root",
+        "file": "routes/legal.tsx",
+        "path": "de/legal"
+      },
+      "routes/legal._index__de": {
+        "id": "routes/legal._index__de",
+        "parentId": "routes/legal__de",
+        "file": "routes/legal._index.tsx",
+        "index": true
+      },
+      "routes/legal.privacy__de": {
+        "id": "routes/legal.privacy__de",
+        "parentId": "routes/legal__de",
+        "file": "routes/legal.privacy.tsx",
+        "path": "privacy"
+      },
+      "routes/legal.terms__de": {
+        "id": "routes/legal.terms__de",
+        "parentId": "routes/legal__de",
+        "file": "routes/legal.terms.tsx",
+        "path": "terms"
+      },
+      "routes/docs.layout__de": {
+        "id": "routes/docs.layout__de",
+        "parentId": "root",
+        "file": "routes/docs.layout.tsx"
+      },
+      "routes/docs._index__de": {
+        "id": "routes/docs._index__de",
+        "parentId": "routes/docs.layout__de",
+        "file": "routes/docs._index.tsx",
+        "path": "de/docs",
+        "index": true
+      },
+      "routes/docs.$product__de": {
+        "id": "routes/docs.$product__de",
+        "parentId": "routes/docs.layout__de",
+        "file": "routes/docs.$product.tsx",
+        "path": "de/docs/:product"
+      },
+      "routes/docs.$product._index__de": {
+        "id": "routes/docs.$product._index__de",
+        "parentId": "routes/docs.$product__de",
+        "file": "routes/docs.$product._index.tsx",
+        "index": true
+      },
+      "routes/docs.$product.$__de": {
+        "id": "routes/docs.$product.$__de",
+        "parentId": "routes/docs.$product__de",
+        "file": "routes/docs.$product.$.tsx",
+        "path": "*"
+      },
+      "routes/account__de": {
+        "id": "routes/account__de",
+        "parentId": "root",
+        "file": "routes/account.tsx",
+        "path": "de/account"
+      },
+      "routes/account._index__de": {
+        "id": "routes/account._index__de",
+        "parentId": "routes/account__de",
+        "file": "routes/account._index.tsx",
+        "index": true
+      },
+      "routes/account.login__de": {
+        "id": "routes/account.login__de",
+        "parentId": "routes/account__de",
+        "file": "routes/account.login.tsx",
+        "path": "login"
+      },
+      "routes/account.profile__de": {
+        "id": "routes/account.profile__de",
+        "parentId": "routes/account__de",
+        "file": "routes/account.profile.tsx",
+        "path": "profile"
+      },
+      "routes/account.api-keys__de": {
+        "id": "routes/account.api-keys__de",
+        "parentId": "routes/account__de",
+        "file": "routes/account.api-keys.tsx",
+        "path": "api-keys"
+      },
+      "routes/$__de": {
+        "id": "routes/$__de",
+        "parentId": "root",
+        "file": "routes/$.tsx",
+        "path": "de/*"
+      },
+      "routes/home__da": {
+        "id": "routes/home__da",
+        "parentId": "root",
+        "file": "routes/home.tsx",
+        "path": "da",
+        "index": true
+      },
+      "routes/search__da": {
+        "id": "routes/search__da",
+        "parentId": "root",
+        "file": "routes/search.tsx",
+        "path": "da/search"
+      },
+      "routes/auth.logout__da": {
+        "id": "routes/auth.logout__da",
+        "parentId": "root",
+        "file": "routes/auth.logout.tsx",
+        "path": "da/auth/logout"
+      },
+      "routes/auth.session__da": {
+        "id": "routes/auth.session__da",
+        "parentId": "root",
+        "file": "routes/auth.session.tsx",
+        "path": "da/auth/session"
+      },
+      "routes/changelog__da": {
+        "id": "routes/changelog__da",
+        "parentId": "root",
+        "file": "routes/changelog.tsx",
+        "path": "da/changelog"
+      },
+      "routes/status__da": {
+        "id": "routes/status__da",
+        "parentId": "root",
+        "file": "routes/status.tsx",
+        "path": "da/status"
+      },
+      "routes/consents.changelog__da": {
+        "id": "routes/consents.changelog__da",
+        "parentId": "root",
+        "file": "routes/consents.changelog.tsx",
+        "path": "da/consents/changelog"
+      },
+      "routes/legal__da": {
+        "id": "routes/legal__da",
+        "parentId": "root",
+        "file": "routes/legal.tsx",
+        "path": "da/legal"
+      },
+      "routes/legal._index__da": {
+        "id": "routes/legal._index__da",
+        "parentId": "routes/legal__da",
+        "file": "routes/legal._index.tsx",
+        "index": true
+      },
+      "routes/legal.privacy__da": {
+        "id": "routes/legal.privacy__da",
+        "parentId": "routes/legal__da",
+        "file": "routes/legal.privacy.tsx",
+        "path": "privacy"
+      },
+      "routes/legal.terms__da": {
+        "id": "routes/legal.terms__da",
+        "parentId": "routes/legal__da",
+        "file": "routes/legal.terms.tsx",
+        "path": "terms"
+      },
+      "routes/docs.layout__da": {
+        "id": "routes/docs.layout__da",
+        "parentId": "root",
+        "file": "routes/docs.layout.tsx"
+      },
+      "routes/docs._index__da": {
+        "id": "routes/docs._index__da",
+        "parentId": "routes/docs.layout__da",
+        "file": "routes/docs._index.tsx",
+        "path": "da/docs",
+        "index": true
+      },
+      "routes/docs.$product__da": {
+        "id": "routes/docs.$product__da",
+        "parentId": "routes/docs.layout__da",
+        "file": "routes/docs.$product.tsx",
+        "path": "da/docs/:product"
+      },
+      "routes/docs.$product._index__da": {
+        "id": "routes/docs.$product._index__da",
+        "parentId": "routes/docs.$product__da",
+        "file": "routes/docs.$product._index.tsx",
+        "index": true
+      },
+      "routes/docs.$product.$__da": {
+        "id": "routes/docs.$product.$__da",
+        "parentId": "routes/docs.$product__da",
+        "file": "routes/docs.$product.$.tsx",
+        "path": "*"
+      },
+      "routes/account__da": {
+        "id": "routes/account__da",
+        "parentId": "root",
+        "file": "routes/account.tsx",
+        "path": "da/account"
+      },
+      "routes/account._index__da": {
+        "id": "routes/account._index__da",
+        "parentId": "routes/account__da",
+        "file": "routes/account._index.tsx",
+        "index": true
+      },
+      "routes/account.login__da": {
+        "id": "routes/account.login__da",
+        "parentId": "routes/account__da",
+        "file": "routes/account.login.tsx",
+        "path": "login"
+      },
+      "routes/account.profile__da": {
+        "id": "routes/account.profile__da",
+        "parentId": "routes/account__da",
+        "file": "routes/account.profile.tsx",
+        "path": "profile"
+      },
+      "routes/account.api-keys__da": {
+        "id": "routes/account.api-keys__da",
+        "parentId": "routes/account__da",
+        "file": "routes/account.api-keys.tsx",
+        "path": "api-keys"
+      },
+      "routes/$__da": {
+        "id": "routes/$__da",
+        "parentId": "root",
+        "file": "routes/$.tsx",
+        "path": "da/*"
       }
     },
     "routeDiscovery": {
@@ -492,16 +1176,32 @@
         "file": "root.tsx",
         "children": [
           {
-            "file": "routes/home.tsx",
-            "index": true
-          },
-          {
             "file": "routes/robots-txt.tsx",
             "path": "robots.txt"
           },
           {
             "file": "routes/sitemap-xml.tsx",
             "path": "sitemap.xml"
+          },
+          {
+            "file": "routes/api.status.cron.tsx",
+            "path": "api/status/cron"
+          },
+          {
+            "file": "routes/api.status.json.tsx",
+            "path": "api/status.json"
+          },
+          {
+            "file": "routes/api.status.uptime.tsx",
+            "path": "api/status/uptime"
+          },
+          {
+            "file": "routes/api.status.uptime-badge.tsx",
+            "path": "api/status/uptime/badge"
+          },
+          {
+            "file": "routes/home.tsx",
+            "index": true
           },
           {
             "file": "routes/search.tsx",
@@ -522,22 +1222,6 @@
           {
             "file": "routes/status.tsx",
             "path": "status"
-          },
-          {
-            "file": "routes/api.status.cron.tsx",
-            "path": "api/status/cron"
-          },
-          {
-            "file": "routes/api.status.json.tsx",
-            "path": "api/status.json"
-          },
-          {
-            "file": "routes/api.status.uptime.tsx",
-            "path": "api/status/uptime"
-          },
-          {
-            "file": "routes/api.status.uptime-badge.tsx",
-            "path": "api/status/uptime/badge"
           },
           {
             "file": "routes/consents.changelog.tsx",
@@ -610,6 +1294,244 @@
           {
             "file": "routes/$.tsx",
             "path": "*"
+          },
+          {
+            "file": "routes/home.tsx",
+            "index": true,
+            "id": "routes/home__de",
+            "path": "de"
+          },
+          {
+            "file": "routes/search.tsx",
+            "path": "de/search",
+            "id": "routes/search__de"
+          },
+          {
+            "file": "routes/auth.logout.tsx",
+            "path": "de/auth/logout",
+            "id": "routes/auth.logout__de"
+          },
+          {
+            "file": "routes/auth.session.tsx",
+            "path": "de/auth/session",
+            "id": "routes/auth.session__de"
+          },
+          {
+            "file": "routes/changelog.tsx",
+            "path": "de/changelog",
+            "id": "routes/changelog__de"
+          },
+          {
+            "file": "routes/status.tsx",
+            "path": "de/status",
+            "id": "routes/status__de"
+          },
+          {
+            "file": "routes/consents.changelog.tsx",
+            "path": "de/consents/changelog",
+            "id": "routes/consents.changelog__de"
+          },
+          {
+            "file": "routes/legal.tsx",
+            "children": [
+              {
+                "file": "routes/legal._index.tsx",
+                "index": true,
+                "id": "routes/legal._index__de"
+              },
+              {
+                "file": "routes/legal.privacy.tsx",
+                "path": "privacy",
+                "id": "routes/legal.privacy__de"
+              },
+              {
+                "file": "routes/legal.terms.tsx",
+                "path": "terms",
+                "id": "routes/legal.terms__de"
+              }
+            ],
+            "path": "de/legal",
+            "id": "routes/legal__de"
+          },
+          {
+            "file": "routes/docs.layout.tsx",
+            "children": [
+              {
+                "file": "routes/docs._index.tsx",
+                "index": true,
+                "path": "de/docs",
+                "id": "routes/docs._index__de"
+              },
+              {
+                "file": "routes/docs.$product.tsx",
+                "children": [
+                  {
+                    "file": "routes/docs.$product._index.tsx",
+                    "index": true,
+                    "id": "routes/docs.$product._index__de"
+                  },
+                  {
+                    "file": "routes/docs.$product.$.tsx",
+                    "path": "*",
+                    "id": "routes/docs.$product.$__de"
+                  }
+                ],
+                "path": "de/docs/:product",
+                "id": "routes/docs.$product__de"
+              }
+            ],
+            "id": "routes/docs.layout__de"
+          },
+          {
+            "file": "routes/account.tsx",
+            "children": [
+              {
+                "file": "routes/account._index.tsx",
+                "index": true,
+                "id": "routes/account._index__de"
+              },
+              {
+                "file": "routes/account.login.tsx",
+                "path": "login",
+                "id": "routes/account.login__de"
+              },
+              {
+                "file": "routes/account.profile.tsx",
+                "path": "profile",
+                "id": "routes/account.profile__de"
+              },
+              {
+                "file": "routes/account.api-keys.tsx",
+                "path": "api-keys",
+                "id": "routes/account.api-keys__de"
+              }
+            ],
+            "path": "de/account",
+            "id": "routes/account__de"
+          },
+          {
+            "file": "routes/$.tsx",
+            "path": "de/*",
+            "id": "routes/$__de"
+          },
+          {
+            "file": "routes/home.tsx",
+            "index": true,
+            "id": "routes/home__da",
+            "path": "da"
+          },
+          {
+            "file": "routes/search.tsx",
+            "path": "da/search",
+            "id": "routes/search__da"
+          },
+          {
+            "file": "routes/auth.logout.tsx",
+            "path": "da/auth/logout",
+            "id": "routes/auth.logout__da"
+          },
+          {
+            "file": "routes/auth.session.tsx",
+            "path": "da/auth/session",
+            "id": "routes/auth.session__da"
+          },
+          {
+            "file": "routes/changelog.tsx",
+            "path": "da/changelog",
+            "id": "routes/changelog__da"
+          },
+          {
+            "file": "routes/status.tsx",
+            "path": "da/status",
+            "id": "routes/status__da"
+          },
+          {
+            "file": "routes/consents.changelog.tsx",
+            "path": "da/consents/changelog",
+            "id": "routes/consents.changelog__da"
+          },
+          {
+            "file": "routes/legal.tsx",
+            "children": [
+              {
+                "file": "routes/legal._index.tsx",
+                "index": true,
+                "id": "routes/legal._index__da"
+              },
+              {
+                "file": "routes/legal.privacy.tsx",
+                "path": "privacy",
+                "id": "routes/legal.privacy__da"
+              },
+              {
+                "file": "routes/legal.terms.tsx",
+                "path": "terms",
+                "id": "routes/legal.terms__da"
+              }
+            ],
+            "path": "da/legal",
+            "id": "routes/legal__da"
+          },
+          {
+            "file": "routes/docs.layout.tsx",
+            "children": [
+              {
+                "file": "routes/docs._index.tsx",
+                "index": true,
+                "path": "da/docs",
+                "id": "routes/docs._index__da"
+              },
+              {
+                "file": "routes/docs.$product.tsx",
+                "children": [
+                  {
+                    "file": "routes/docs.$product._index.tsx",
+                    "index": true,
+                    "id": "routes/docs.$product._index__da"
+                  },
+                  {
+                    "file": "routes/docs.$product.$.tsx",
+                    "path": "*",
+                    "id": "routes/docs.$product.$__da"
+                  }
+                ],
+                "path": "da/docs/:product",
+                "id": "routes/docs.$product__da"
+              }
+            ],
+            "id": "routes/docs.layout__da"
+          },
+          {
+            "file": "routes/account.tsx",
+            "children": [
+              {
+                "file": "routes/account._index.tsx",
+                "index": true,
+                "id": "routes/account._index__da"
+              },
+              {
+                "file": "routes/account.login.tsx",
+                "path": "login",
+                "id": "routes/account.login__da"
+              },
+              {
+                "file": "routes/account.profile.tsx",
+                "path": "profile",
+                "id": "routes/account.profile__da"
+              },
+              {
+                "file": "routes/account.api-keys.tsx",
+                "path": "api-keys",
+                "id": "routes/account.api-keys__da"
+              }
+            ],
+            "path": "da/account",
+            "id": "routes/account__da"
+          },
+          {
+            "file": "routes/$.tsx",
+            "path": "da/*",
+            "id": "routes/$__da"
           }
         ]
       }

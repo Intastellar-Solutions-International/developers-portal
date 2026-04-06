@@ -2,6 +2,7 @@ import { Link } from "react-router";
 
 import type { Route } from "./+types/legal.terms";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
+import { useLocalizedHref } from "~/providers/i18n-provider";
 
 export function meta(_: Route.MetaArgs) {
   return [
@@ -22,6 +23,7 @@ const a =
   "text-brand underline-offset-2 hover:text-brand-hover hover:underline";
 
 export default function LegalTerms() {
+  const privacy = useLocalizedHref("/legal/privacy");
   return (
     <article>
       <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
@@ -42,7 +44,7 @@ export default function LegalTerms() {
         </a>{" "}
         continue to apply where they do not conflict with this page. For
         processing of personal data, see our{" "}
-        <Link to="/legal/privacy" className={a}>
+        <Link to={privacy} className={a}>
           privacy policy
         </Link>{" "}
         and the{" "}

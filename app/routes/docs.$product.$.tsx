@@ -20,7 +20,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const locale = resolveLocaleFromRequest(request);
   const splat = params["*"]?.replace(/^\/+|\/+$/g, "") ?? "";
   const product = params.product!;
-  const parsed = parseDocSplat(product, splat);
+  const parsed = parseDocSplat(product, splat, locale);
   if ("redirect" in parsed) throw redirect(parsed.redirect);
   const { version, docPath } = parsed;
 
@@ -29,7 +29,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     (docPath === "javascript/plain-html-and-js" ||
       docPath === "web/javascript-without-react")
   ) {
-    throw redirect(docHref(product, version, "web/plain-html-css-js"));
+    throw redirect(
+      docHref(locale, product, version, "web/plain-html-css-js"),
+    );
   }
 
   const doc = await loadDoc(product, docPath, locale);

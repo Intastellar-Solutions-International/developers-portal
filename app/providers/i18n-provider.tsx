@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useRevalidator } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 import {
   I18N_CONTEXT_FALLBACK,
@@ -14,8 +14,14 @@ import {
   type I18nContextValue,
 } from "~/lib/i18n/i18n-react-context";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "~/lib/i18n/locale";
+import { stripLocalePrefix, withLocalePrefix } from "~/lib/i18n/localized-path";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
-import { persistLocaleCookie } from "~/lib/i18n/persist-locale.client";
+
+export function useLocalizedHref(path: string): string {
+  const ctx = useContext(I18nReactContext);
+  const locale = ctx?.locale ?? DEFAULT_LOCALE;
+  return withLocalePrefix(path, locale);
+}
 
 export function I18nProvider({
   initialLocale,
@@ -24,7 +30,8 @@ export function I18nProvider({
   initialLocale: Locale;
   children: ReactNode;
 }) {
-  const revalidator = useRevalidator();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [locale, setLocaleState] = useState<Locale>(
     isLocale(initialLocale) ? initialLocale : DEFAULT_LOCALE,
   );
@@ -35,11 +42,15 @@ export function I18nProvider({
 
   const setLocale = useCallback(
     (next: Locale) => {
-      persistLocaleCookie(next);
-      setLocaleState(next);
-      revalidator.revalidate();
+      const barePath = stripLocalePrefix(location.pathname);
+      const target =
+        withLocalePrefix(barePath, next) + location.search + location.hash;
+      if (target === location.pathname + location.search + location.hash) {
+        return;
+      }
+      navigate(target, { replace: true });
     },
-    [revalidator],
+    [navigate, location.pathname, location.search, location.hash],
   );
 
   const t = useCallback(

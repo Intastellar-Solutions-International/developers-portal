@@ -2,14 +2,27 @@ import type { ComponentPropsWithoutRef } from "react";
 import { Link } from "react-router";
 
 import type { RelatedLink } from "~/lib/docs.server";
+import { useLocalizedHref } from "~/providers/i18n-provider";
+
+function RelatedInternalLink(
+  props: ComponentPropsWithoutRef<"a"> & { href: string },
+) {
+  const { href, children, ...rest } = props;
+  const to = useLocalizedHref(href);
+  return (
+    <Link to={to} {...rest}>
+      {children}
+    </Link>
+  );
+}
 
 function RelatedAnchor(props: ComponentPropsWithoutRef<"a">) {
   const { href, children, ...rest } = props;
   if (href?.startsWith("/")) {
     return (
-      <Link to={href} {...rest}>
+      <RelatedInternalLink href={href} {...rest}>
         {children}
-      </Link>
+      </RelatedInternalLink>
     );
   }
   const isExternal = href?.startsWith("http");
