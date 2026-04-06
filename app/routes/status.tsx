@@ -110,20 +110,7 @@ export default function StatusPage() {
         >
           /api/status.json
         </a>
-        . Cron updates require{" "}
-        <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">
-          MONGODB_URI
-        </code>{" "}
-        and{" "}
-        <a
-          href="https://vercel.com/docs/cron-jobs"
-          className="text-brand hover:text-brand-hover"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          Vercel Cron
-        </a>
-        .
+        . 
       </p>
 
       {source === "live" ? (
