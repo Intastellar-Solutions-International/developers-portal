@@ -136,6 +136,8 @@ export async function listManualIncidentsForAdmin(
   return col.find({}).sort({ createdAt: -1 }).limit(limit).toArray();
 }
 
+const MANUAL_INCIDENT_UPDATE_MESSAGE_MAX = 8000;
+
 export async function insertManualIncident(opts: {
   title: string;
   body: string;
@@ -179,7 +181,103 @@ export async function insertManualIncident(opts: {
   return { ok: true };
 }
 
-const MANUAL_INCIDENT_UPDATE_MESSAGE_MAX = 8000;
+/**
+ * Insert a notice with explicit times and optional update history (e.g. recovery after archive/data loss).
+ * Does not send subscriber emails.
+ */
+export async function insertManualIncidentWithTimeline(opts: {
+  title: string;
+  body: string;
+  severity: ManualIncidentSeverity;
+  authorEmail: string;
+  affectedTargetIds?: string[];
+  createdAt: Date;
+  resolvedAt: Date | null;
+  updates?: ManualIncidentUpdateRow[];
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const title = opts.title.trim();
+  const body = opts.body.trim();
+  if (!title || title.length > 200) {
+    return { ok: false, error: "Title is required (max 200 characters)." };
+  }
+  if (!body || body.length > 20000) {
+    return { ok: false, error: "Report body is required (max 20,000 characters)." };
+  }
+  if (!MANUAL_INCIDENT_SEVERITIES.includes(opts.severity)) {
+    return { ok: false, error: "Invalid severity." };
+  }
+  const ca = opts.createdAt.getTime();
+  if (!Number.isFinite(ca)) {
+    return { ok: false, error: "Invalid created at time." };
+  }
+  let resolvedAt: Date | null = opts.resolvedAt;
+  if (opts.severity === "resolved") {
+    if (!resolvedAt || !Number.isFinite(resolvedAt.getTime())) {
+      return {
+        ok: false,
+        error: "Resolved notices need a valid resolved-at time (ISO 8601 UTC).",
+      };
+    }
+    if (resolvedAt.getTime() < ca) {
+      return {
+        ok: false,
+        error: "Resolved at must be on or after created at.",
+      };
+    }
+  } else {
+    resolvedAt = null;
+  }
+  const validIds = new Set(getStatusTargets().map((t) => t.id));
+  const affectedTargetIds = normalizeAffectedTargetIds(
+    opts.affectedTargetIds ?? [],
+    validIds,
+  );
+  const updates = opts.updates ?? [];
+  for (const u of updates) {
+    if (!Number.isFinite(u.at.getTime())) {
+      return { ok: false, error: "Invalid update timestamp." };
+    }
+    if (!MANUAL_INCIDENT_SEVERITIES.includes(u.fromSeverity)) {
+      return { ok: false, error: "Invalid update (from severity)." };
+    }
+    if (!MANUAL_INCIDENT_SEVERITIES.includes(u.toSeverity)) {
+      return { ok: false, error: "Invalid update (to severity)." };
+    }
+    if (u.message.length > MANUAL_INCIDENT_UPDATE_MESSAGE_MAX) {
+      return {
+        ok: false,
+        error: `Update message too long (max ${MANUAL_INCIDENT_UPDATE_MESSAGE_MAX}).`,
+      };
+    }
+    if (u.at.getTime() < ca) {
+      return {
+        ok: false,
+        error: "Each update must be on or after created at.",
+      };
+    }
+  }
+  const col = await getCollection<ManualIncidentRow>(
+    STATUS_MANUAL_INCIDENTS_COLLECTION,
+  );
+  if (!col) return { ok: false, error: "MongoDB is not configured." };
+  const authorEmail = opts.authorEmail.trim().toLowerCase();
+  const timeMs = [ca, ...updates.map((u) => u.at.getTime())];
+  if (resolvedAt) timeMs.push(resolvedAt.getTime());
+  const updatedAt = new Date(Math.max(...timeMs));
+  await col.insertOne({
+    _id: new ObjectId(),
+    title,
+    body,
+    severity: opts.severity,
+    ...(affectedTargetIds.length ? { affectedTargetIds } : {}),
+    createdAt: opts.createdAt,
+    updatedAt,
+    authorEmail,
+    resolvedAt,
+    ...(updates.length ? { updates } : {}),
+  });
+  return { ok: true };
+}
 
 export type UpdateManualIncidentResult =
   | { ok: true; skipped: true }

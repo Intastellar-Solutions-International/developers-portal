@@ -13,8 +13,10 @@ import {
 import {
   archiveManualIncidentById,
   insertManualIncident,
+  insertManualIncidentWithTimeline,
   restoreManualIncidentById,
   listManualIncidentsForAdmin,
+  type ManualIncidentUpdateRow,
   updateManualIncident,
 } from "~/lib/status-manual-incidents.server";
 import {
@@ -235,6 +237,93 @@ export async function action({ request }: Route.ActionArgs) {
       severity,
       affectedTargetIds: affectedTargets,
     });
+    return redirect("/internal/status-ops");
+  }
+
+  if (intent === "import-incident-timeline") {
+    const title = String(fd.get("importTitle") ?? "").trim();
+    const body = String(fd.get("importBody") ?? "");
+    const severityRaw = String(fd.get("importSeverity") ?? "");
+    const noticeAuthor =
+      String(fd.get("noticeAuthorEmail") ?? "").trim() || email;
+    const createdAtRaw = String(fd.get("importCreatedAt") ?? "").trim();
+    const resolvedAtRaw = String(fd.get("importResolvedAt") ?? "").trim();
+    const importTargets = fd
+      .getAll("importAffectedTargets")
+      .map((x) => String(x).trim())
+      .filter(Boolean);
+    if (!MANUAL_INCIDENT_SEVERITIES.includes(severityRaw as ManualIncidentSeverity)) {
+      return data({ error: "Invalid severity (import)." }, { status: 400 });
+    }
+    const severity = severityRaw as ManualIncidentSeverity;
+    const createdAt = new Date(createdAtRaw);
+    const resolvedAtParsed = resolvedAtRaw
+      ? new Date(resolvedAtRaw)
+      : null;
+    const resolvedAt =
+      severity === "resolved"
+        ? resolvedAtParsed
+        : null;
+    const updateAtRaw = String(fd.get("importUpdateAt") ?? "").trim();
+    const updateFromRaw = String(fd.get("importUpdateFromSeverity") ?? "");
+    const updateToRaw = String(fd.get("importUpdateToSeverity") ?? "");
+    const updateAuthor =
+      String(fd.get("importUpdateAuthorEmail") ?? "").trim() || email;
+    const updateMessage = String(fd.get("importUpdateMessage") ?? "").trim();
+    let updates: ManualIncidentUpdateRow[] | undefined;
+    if (updateAtRaw) {
+      if (!updateFromRaw || !updateToRaw) {
+        return data(
+          {
+            error:
+              "When update time is set, choose both from and to severity for that update.",
+          },
+          { status: 400 },
+        );
+      }
+      if (
+        !MANUAL_INCIDENT_SEVERITIES.includes(
+          updateFromRaw as ManualIncidentSeverity,
+        ) ||
+        !MANUAL_INCIDENT_SEVERITIES.includes(updateToRaw as ManualIncidentSeverity)
+      ) {
+        return data(
+          { error: "Import update needs valid from/to severities." },
+          { status: 400 },
+        );
+      }
+      const at = new Date(updateAtRaw);
+      updates = [
+        {
+          at,
+          authorEmail: updateAuthor.trim().toLowerCase(),
+          fromSeverity: updateFromRaw as ManualIncidentSeverity,
+          toSeverity: updateToRaw as ManualIncidentSeverity,
+          message: updateMessage,
+        },
+      ];
+    } else if (updateFromRaw || updateToRaw || updateMessage) {
+      return data(
+        {
+          error:
+            "Fill “Update at (UTC)” when you add an update message or severities.",
+        },
+        { status: 400 },
+      );
+    }
+    const ins = await insertManualIncidentWithTimeline({
+      title,
+      body,
+      severity,
+      authorEmail: noticeAuthor,
+      affectedTargetIds: importTargets,
+      createdAt,
+      resolvedAt,
+      updates,
+    });
+    if (!ins.ok) {
+      return data({ error: ins.error }, { status: 400 });
+    }
     return redirect("/internal/status-ops");
   }
 
@@ -604,6 +693,187 @@ export default function InternalStatusOps() {
             Publish report
           </button>
         </Form>
+
+        <details className="mt-8 rounded-lg border border-zinc-200 dark:border-zinc-700">
+          <summary className="cursor-pointer select-none px-4 py-3 text-sm font-medium text-zinc-800 dark:text-zinc-200">
+            Import notice with historical times (recovery)
+          </summary>
+          <div className="border-t border-zinc-200 px-4 pb-4 pt-3 dark:border-zinc-700">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Inserts one MongoDB document with your timestamps and optional update
+              entry. Does <strong>not</strong> send subscriber emails. Use ISO 8601
+              UTC (e.g. <code className="font-mono">2026-04-06T19:30:00.000Z</code>
+              ).
+            </p>
+            <Form method="post" className="mt-4 space-y-3">
+              <input type="hidden" name="intent" value="import-incident-timeline" />
+              <label className="block text-sm">
+                <span className="text-zinc-600 dark:text-zinc-400">Title</span>
+                <input
+                  name="importTitle"
+                  required
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="text-zinc-600 dark:text-zinc-400">Report body</span>
+                <textarea
+                  name="importBody"
+                  required
+                  rows={8}
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  Current severity (stored on notice)
+                </span>
+                <select
+                  name="importSeverity"
+                  required
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                >
+                  {MANUAL_INCIDENT_SEVERITIES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block text-sm">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  Original author email
+                </span>
+                <input
+                  name="noticeAuthorEmail"
+                  type="email"
+                  placeholder="felix.schultz@intastellar.com"
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                />
+              </label>
+              <p className="text-xs text-zinc-500">
+                Leave author blank to use your signed-in address (
+                <span className="font-mono">{email}</span>).
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-400">
+                    Created at (UTC)
+                  </span>
+                  <input
+                    name="importCreatedAt"
+                    required
+                    placeholder="2026-04-06T19:30:00.000Z"
+                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 font-mono text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-400">
+                    Resolved at (UTC, if severity is resolved)
+                  </span>
+                  <input
+                    name="importResolvedAt"
+                    placeholder="2026-04-06T19:52:00.000Z"
+                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 font-mono text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                  />
+                </label>
+              </div>
+              <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                Optional timeline update (e.g. status change + message)
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block text-sm sm:col-span-2">
+                  <span className="text-zinc-600 dark:text-zinc-400">
+                    Update at (UTC)
+                  </span>
+                  <input
+                    name="importUpdateAt"
+                    placeholder="2026-04-06T19:52:00.000Z"
+                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 font-mono text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-400">From severity</span>
+                  <select
+                    name="importUpdateFromSeverity"
+                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                  >
+                    <option value="">—</option>
+                    {MANUAL_INCIDENT_SEVERITIES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-400">To severity</span>
+                  <select
+                    name="importUpdateToSeverity"
+                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                  >
+                    <option value="">—</option>
+                    {MANUAL_INCIDENT_SEVERITIES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <label className="block text-sm">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  Update author email (optional)
+                </span>
+                <input
+                  name="importUpdateAuthorEmail"
+                  type="email"
+                  placeholder="felix.schultz@intastellar.com"
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  Update message
+                </span>
+                <textarea
+                  name="importUpdateMessage"
+                  rows={4}
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                />
+              </label>
+              {monitors.length > 0 ? (
+                <fieldset>
+                  <legend className="text-sm text-zinc-600 dark:text-zinc-400">
+                    Related monitors (optional)
+                  </legend>
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+                    {monitors.map((m) => (
+                      <label
+                        key={m.id}
+                        className="flex cursor-pointer items-center gap-2 text-sm text-zinc-800 dark:text-zinc-200"
+                      >
+                        <input
+                          type="checkbox"
+                          name="importAffectedTargets"
+                          value={m.id}
+                          className="rounded border-zinc-300 dark:border-zinc-600"
+                        />
+                        {m.name}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              ) : null}
+              <button
+                type="submit"
+                className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+              >
+                Import to MongoDB
+              </button>
+            </Form>
+          </div>
+        </details>
 
         {incidents.length > 0 ? (
           <ul className="mt-8 divide-y divide-zinc-200 dark:divide-zinc-700">
