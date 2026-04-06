@@ -364,5 +364,18 @@ export const fr: MessageTree = {
       "Sur les {{totalRuns}} dernières exécutions planifiées, {{passedRuns}} se sont terminées sans incident (tous les services ont répondu normalement).",
     uptimeJsonNoHistoryDescription:
       "La disponibilité apparaîtra ici une fois les contrôles de santé planifiés enregistrés.",
+    embedBadgeButton: "Intégrer le badge",
+    embedModalTitle: "Intégrer le badge de disponibilité",
+    embedModalIntro:
+      "Copiez un extrait iframe ou l’URL de l’API JSON. La langue suit cette page ; modifiez ?locale= dans l’URL (en, de, da, fr, nl).",
+    embedIframeHeading: "Intégration iframe",
+    embedIframeTitle: "Badge de disponibilité",
+    embedJsonHeading: "API JSON",
+    embedJsonHint:
+      "Utilisez cette URL dans fetch() ou curl — renvoie widgetTitle, widgetDescription, statusPageUrl et badgeEmbedUrl.",
+    embedCopy: "Copier",
+    embedCopied: "Copié",
+    embedModalClose: "Fermer",
+    embedOpenOnSite: "Ouvrez cette page sur votre site pour générer les URL.",
   },
 };

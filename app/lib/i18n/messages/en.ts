@@ -373,6 +373,19 @@ export const en = {
       "In the last {{totalRuns}} scheduled runs, {{passedRuns}} finished with every service responding normally.",
     uptimeJsonNoHistoryDescription:
       "Uptime will appear here after scheduled health checks have been stored.",
+    embedBadgeButton: "Embed badge",
+    embedModalTitle: "Embed uptime badge",
+    embedModalIntro:
+      "Copy an iframe snippet or the JSON API URL. Language matches this page; you can change ?locale= in the URL (en, de, da, fr, nl).",
+    embedIframeHeading: "iframe embed",
+    embedIframeTitle: "Uptime badge",
+    embedJsonHeading: "JSON API",
+    embedJsonHint:
+      "Use this URL in fetch() or curl — it returns widgetTitle, widgetDescription, statusPageUrl, and badgeEmbedUrl.",
+    embedCopy: "Copy",
+    embedCopied: "Copied",
+    embedModalClose: "Close",
+    embedOpenOnSite: "Open this page on your site to generate URLs.",
   },
 } as const;
 

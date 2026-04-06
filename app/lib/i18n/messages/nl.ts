@@ -364,5 +364,18 @@ export const nl: MessageTree = {
       "Van de laatste {{totalRuns}} geplande runs waren {{passedRuns}} volledig succesvol (alle services reageerden normaal).",
     uptimeJsonNoHistoryDescription:
       "Beschikbaarheid verschijnt hier zodra geplande healthchecks zijn opgeslagen.",
+    embedBadgeButton: "Badge insluiten",
+    embedModalTitle: "Uptime-badge insluiten",
+    embedModalIntro:
+      "Kopieer een iframe-fragment of de JSON-API-URL. Taal volgt deze pagina; pas ?locale= in de URL aan (en, de, da, fr, nl).",
+    embedIframeHeading: "iframe-insluiting",
+    embedIframeTitle: "Uptime-badge",
+    embedJsonHeading: "JSON-API",
+    embedJsonHint:
+      "Gebruik deze URL in fetch() of curl — levert widgetTitle, widgetDescription, statusPageUrl en badgeEmbedUrl.",
+    embedCopy: "Kopiëren",
+    embedCopied: "Gekopieerd",
+    embedModalClose: "Sluiten",
+    embedOpenOnSite: "Open deze pagina op uw site om URL’s te genereren.",
   },
 };

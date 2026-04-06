@@ -368,5 +368,18 @@ export const de: MessageTree = {
       "In den letzten {{totalRuns}} geplanten Läufen waren {{passedRuns}} vollständig erfolgreich (alle Dienste normal).",
     uptimeJsonNoHistoryDescription:
       "Die Verfügbarkeit erscheint hier, sobald geplante Health-Checks gespeichert wurden.",
+    embedBadgeButton: "Badge einbinden",
+    embedModalTitle: "Verfügbarkeits-Badge einbinden",
+    embedModalIntro:
+      "Kopieren Sie ein iframe-Snippet oder die JSON-API-URL. Die Sprache entspricht dieser Seite; ?locale= in der URL anpassen (en, de, da, fr, nl).",
+    embedIframeHeading: "iframe-Einbindung",
+    embedIframeTitle: "Verfügbarkeits-Badge",
+    embedJsonHeading: "JSON-API",
+    embedJsonHint:
+      "URL für fetch() oder curl — liefert widgetTitle, widgetDescription, statusPageUrl und badgeEmbedUrl.",
+    embedCopy: "Kopieren",
+    embedCopied: "Kopiert",
+    embedModalClose: "Schließen",
+    embedOpenOnSite: "Seite auf Ihrer Installation öffnen, um URLs zu erzeugen.",
   },
 };

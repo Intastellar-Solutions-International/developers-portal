@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useLoaderData } from "react-router";
 
 import type { Route } from "./+types/status";
 import { StatusIncidentLog } from "~/components/status-incident-log";
+import { StatusUptimeBadgeModal } from "~/components/status-uptime-badge-modal";
 import { StatusLatencyTrend } from "~/components/status-latency-trend";
 import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
@@ -120,6 +122,7 @@ export function meta({ data }: Route.MetaArgs) {
 
 export default function StatusPage() {
   const { t } = useI18n();
+  const [embedModalOpen, setEmbedModalOpen] = useState(false);
   const {
     snapshot,
     source,
@@ -179,6 +182,15 @@ export default function StatusPage() {
             </strong>{" "}
             {t("status.uptimeStoredRunsAfter")}
           </p>
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => setEmbedModalOpen(true)}
+              className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+            >
+              {t("status.embedBadgeButton")}
+            </button>
+          </div>
         </div>
       ) : uptime?.variant === "dev" ? (
         <div
@@ -300,6 +312,11 @@ export default function StatusPage() {
           <StatusIncidentLog incidents={incidents} targetNames={targetNames} />
         </>
       ) : null}
+
+      <StatusUptimeBadgeModal
+        open={embedModalOpen}
+        onClose={() => setEmbedModalOpen(false)}
+      />
 
       <footer
         className="mt-12 border-t border-zinc-200 pt-6 dark:border-zinc-700"

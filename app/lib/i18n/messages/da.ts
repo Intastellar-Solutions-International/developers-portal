@@ -363,5 +363,18 @@ export const da: MessageTree = {
       "Af de seneste {{totalRuns}} planlagte kørsler var {{passedRuns}} fuldt succesfulde (alle tjenester svarede normalt).",
     uptimeJsonNoHistoryDescription:
       "Oppetid vises her, når planlagte sundhedstjek er blevet gemt.",
+    embedBadgeButton: "Indlejr badge",
+    embedModalTitle: "Indlejr oppetids-badge",
+    embedModalIntro:
+      "Kopiér et iframe-uddrag eller JSON-API-URL. Sprog følger denne side; skift ?locale= i URL’en (en, de, da, fr, nl).",
+    embedIframeHeading: "iframe-indlejring",
+    embedIframeTitle: "Oppetids-badge",
+    embedJsonHeading: "JSON-API",
+    embedJsonHint:
+      "Brug URL’en i fetch() eller curl — returnerer widgetTitle, widgetDescription, statusPageUrl og badgeEmbedUrl.",
+    embedCopy: "Kopiér",
+    embedCopied: "Kopieret",
+    embedModalClose: "Luk",
+    embedOpenOnSite: "Åbn siden på dit site for at generere URL’er.",
   },
 };
