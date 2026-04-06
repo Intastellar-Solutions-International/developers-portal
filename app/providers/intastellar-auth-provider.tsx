@@ -68,6 +68,8 @@ const SESSION_PROBE_MS = 10_000;
  */
 const IGNORE_SDK_AFTER_PORTAL_LOGOUT_KEY = "inta_portal_ignore_sdk";
 
+const EMPTY_INTASTELLAR_USERS: IntastellarUser[] = [];
+
 /** After sign-out, Intastellar `getUsers()` may still throw (e.g. Safari “Load failed”); don’t treat that as a blocking error. */
 function suppressBenignSignedOutError(
   isSignedIn: boolean,
@@ -107,6 +109,7 @@ function IntastellarAuthEnabled({
 }) {
   const revalidator = useRevalidator();
   const sessionFetcher = useFetcher();
+  const logoutFetcher = useFetcher();
 
   const { clientId, appName } = getIntastellarClientConfig()!;
 
@@ -229,9 +232,9 @@ function IntastellarAuthEnabled({
 
   const logout = useCallback(async () => {
     try {
-      await fetch("/auth/logout", {
-        method: "POST",
-        credentials: "include",
+      await logoutFetcher.submit(new FormData(), {
+        method: "post",
+        action: "/auth/logout",
       });
     } catch {
       /* ignore */
@@ -243,7 +246,7 @@ function IntastellarAuthEnabled({
       /* ignore */
     }
     window.location.assign("/account/login");
-  }, []);
+  }, [logoutFetcher.submit]);
 
   const [sessionProbeTimedOut, setSessionProbeTimedOut] = useState(false);
 
@@ -283,12 +286,23 @@ function IntastellarAuthEnabled({
   const effectiveSignedIn = ignoreSdkUi
     ? serverSignedIn
     : serverSignedIn || isSignedIn;
-  const effectiveUsers =
-    ignoreSdkUi && !serverSignedIn
-      ? []
-      : serverSignedIn && portalAccount
-        ? [portalAccountToUser(portalAccount)]
-        : users;
+
+  /** Avoid a fresh `[]` / `[user]` every render — unstable refs loop consumers (e.g. login `useEffect`). */
+  const effectiveUsers = useMemo((): IntastellarUser[] => {
+    if (ignoreSdkUi && !serverSignedIn) return EMPTY_INTASTELLAR_USERS;
+    if (serverSignedIn && portalAccount) {
+      return [portalAccountToUser(portalAccount)];
+    }
+    return users;
+  }, [
+    ignoreSdkUi,
+    serverSignedIn,
+    portalAccount?.accountId,
+    portalAccount?.email,
+    portalAccount?.displayName,
+    portalAccount?.avatarUrl,
+    users,
+  ]);
 
   const value = useMemo<IntastellarAuthContextValue>(
     () => ({
