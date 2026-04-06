@@ -1,0 +1,50 @@
+---
+title: Déconnexion, erreurs et dépannage
+sidebar_label: Déconnexion et erreurs
+description: Terminez les sessions Intastellar Accounts en toute sécurité et interprétez les erreurs OAuth courantes des endpoints authorize et token.
+order: 70
+---
+
+## Déconnexion
+
+1. **Effacer votre session** — supprimez ou invalidez le cookie de session de votre application et l’enregistrement de session côté serveur.
+2. **Déconnexion IdP (optionnelle mais recommandée)** — si Intastellar fournit une URL end-session ou logout, redirigez-y l’utilisateur avec les paramètres indiqués dans votre guide d’intégration (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, etc.) pour effacer les cookies SSO sur le domaine d’identité.
+3. **URL de retour** — renvoyez l’utilisateur vers une page publique de votre site après la déconnexion.
+
+Sans l’étape 2, l’utilisateur peut rester connecté à Intastellar et bénéficier d’un SSO silencieux au prochain redirect `authorize`.
+
+## Erreurs authorize courantes
+
+| `error` (typique) | Signification |
+| ----------------- | ------- |
+| `invalid_request` | Paramètre manquant ou invalide (ex. mauvais `redirect_uri`). |
+| `unauthorized_client` | Client non autorisé pour ce flux ou ce scope. |
+| `access_denied` | Utilisateur a annulé ou bloqué le consentement. |
+| `invalid_scope` | Scope demandé non autorisé pour le client. |
+
+Affichez toujours un message sûr à l’utilisateur et journalisez `error_description` côté serveur pour le support.
+
+## Erreurs token courantes
+
+| `error` | Signification |
+| ------- | ------- |
+| `invalid_grant` | Code expiré, déjà utilisé, ou mismatch `redirect_uri` / PKCE. |
+| `invalid_client` | Mauvais `client_id` / `client_secret`. |
+| `invalid_request` | Corps mal formé ou champ manquant. |
+
+Les codes d’autorisation sont en général **à usage unique** et à courte durée de vie. En cas de double soumission du callback ou de nouvelle tentative avec le même code, attendez-vous à `invalid_grant`.
+
+## SDK React (popup)
+
+- **Popup bloquée** — le SDK ouvre une nouvelle fenêtre ; les navigateurs peuvent la bloquer. Autorisez les popups pour votre origine ou utilisez un flux sans `window.open` si votre produit le permet.
+- **Toujours « connecté » après déconnexion du portail** — cookies tiers ou session IdP peuvent faire que `getUsers()` renvoie un utilisateur jusqu’à déconnexion IdP ou nettoyage des cookies ; voir [Sessions, cookies et jetons](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Liste de dépannage
+
+- L’[URI de redirection](/docs/accounts-sign-in/web/redirect-uris) correspond **exactement** à la valeur enregistrée (schéma, hôte, chemin, pas de query en trop).
+- `state` correspond à la valeur stockée pour cette tentative.
+- PKCE : même `code_verifier` que celui qui a produit le `code_challenge` envoyé.
+- Décalage d’horloge : assurez-vous que l’heure serveur est correcte pour la validation JWT `exp`.
+- CORS : les appels token endpoint depuis le navigateur échouent souvent par conception — utilisez votre backend.
+
+Pour un parcours complet du cas nominal, voir [Flux code d’autorisation](/docs/accounts-sign-in/web/authorization-code-flow).

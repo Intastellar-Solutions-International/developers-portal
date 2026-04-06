@@ -1,0 +1,50 @@
+---
+title: Afmelden, fouten en troubleshooting
+sidebar_label: Afmelden en fouten
+description: Beëindig Intastellar Accounts-sessies veilig en interpreteer veelvoorkomende OAuth-fouten van authorize- en token-endpoints.
+order: 70
+---
+
+## Afmelden
+
+1. **Wis uw sessie** — verwijder of invalideer het applicatiesessiecookie en het serverside sessierecord.
+2. **IdP-afmelden (optioneel maar aanbevolen)** — als Intastellar een end-session- of logout-URL biedt, redirect de gebruiker daarheen met parameters uit uw integratiegids (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, enz.) zodat SSO-cookies op het identity-domein worden gewist.
+3. **Return-URL** — stuur de gebruiker na afmelden naar een publieke pagina op uw site.
+
+Zonder stap 2 kan de gebruiker nog bij Intastellar ingelogd zijn en stille SSO krijgen bij de volgende `authorize`-redirect.
+
+## Veelvoorkomende authorize-fouten
+
+| `error` (typisch) | Betekenis |
+| ----------------- | ------- |
+| `invalid_request` | Ontbrekende of ongeldige parameter (bijv. verkeerde `redirect_uri`). |
+| `unauthorized_client` | Client niet toegestaan voor deze flow of scope. |
+| `access_denied` | Gebruiker heeft geannuleerd of toestemming geblokkeerd. |
+| `invalid_scope` | Gevraagde scope niet toegestaan voor de client. |
+
+Toon altijd een veilige boodschap aan de gebruiker en log `error_description` server-side voor support.
+
+## Veelvoorkomende token-fouten
+
+| `error` | Betekenis |
+| ------- | ------- |
+| `invalid_grant` | Code verlopen, al gebruikt, of `redirect_uri` / PKCE-mismatch. |
+| `invalid_client` | Verkeerde `client_id` / `client_secret`. |
+| `invalid_request` | Malformed body of ontbrekend veld. |
+
+Authorization codes zijn meestal **eenmalig** en kortlevend. Bij dubbele submit van de callback of retry met dezelfde code: verwacht `invalid_grant`.
+
+## React-SDK (popup)
+
+- **Popup geblokkeerd** — de SDK opent een nieuw venster; browsers kunnen het blokkeren. Sta popups toe voor uw origin of gebruik een flow zonder `window.open` als uw product dat ondersteunt.
+- **Nog « ingelogd » na portal-afmelden** — third-party cookies of IdP-sessie kunnen ervoor zorgen dat `getUsers()` een gebruiker teruggeeft tot IdP-afmelden of cookie-opruiming; zie [Sessies, cookies en tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Troubleshooting-checklist
+
+- [Redirect-URI](/docs/accounts-sign-in/web/redirect-uris) komt **exact** overeen met de geregistreerde waarde (schema, host, pad, geen extra query).
+- `state` komt overeen met wat u voor deze poging opsloeg.
+- PKCE: dezelfde `code_verifier` die de verzonden `code_challenge` opleverde.
+- Klokskew: zorg dat servertijd klopt voor JWT `exp`-validatie.
+- CORS: token-endpoint-calls vanuit de browser falen vaak by design — gebruik uw backend.
+
+Voor een volledige walkthrough van het happy path, zie [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow).

@@ -1,0 +1,98 @@
+---
+title: Intastellar Sign-In — SDK React et JavaScript simple
+sidebar_label: React et JS simple
+description: "Intégrer Intastellar Sign-In avec @intastellar/signin-sdk-react ou du HTML/JS vanilla — modèles, espaces réservés et liens vers les références officielles."
+order: 12
+---
+
+Ce guide décrit **comment intégrer** Intastellar Sign-In dans le navigateur. Il utilise des valeurs **illustratives** (`your-client-id`, `https://app.example.com`, endpoints d’exemple). **Ne considérez** aucun chemin, nom de cookie ou variable d’environnement ici comme copie d’un déploiement de production précis.
+
+Références officielles du paquet :
+
+- **React :** [`@intastellar/signin-sdk-react` sur npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react) — installation, `IntastellarButton`, `useIntastellar` et tableau de configuration.
+- **HTML, CSS et JavaScript simples :** [HTML, CSS et JavaScript simples](/docs/accounts-sign-in/web/plain-html-css-js) (migré depuis l’ancienne page [js-docs](https://developers.intastellarsolutions.com/identity/sign-in/web/docs/js-docs) du site développeurs).
+
+La documentation des produits Intastellar (dont Consents et Accounts) est publiée sur **inta.dev**. Si vous avez encore des liens vers d’anciens noms d’hôte développeurs, préférez des **redirections HTTPS** vers le site de docs actuel et mettez à jour les **URI de connexion / redirection** autorisées sur votre client Intastellar pour qu’elles correspondent aux URL réellement utilisées.
+
+## React (`@intastellar/signin-sdk-react`)
+
+Installez le paquet (voir le [readme npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme)) :
+
+```bash
+npm install @intastellar/signin-sdk-react
+```
+
+### Composant bouton (illustratif)
+
+```jsx
+import { IntastellarButton } from "@intastellar/signin-sdk-react";
+
+function Example() {
+  const handleLogin = (account) => {
+    // Utilisez account.user (forme selon les types SDK) dans votre app
+    console.log("Signed in:", account);
+  };
+
+  return (
+    <IntastellarButton
+      clientId="your-client-id"
+      loginCallback={handleLogin}
+    />
+  );
+}
+```
+
+### Hook (illustratif)
+
+```jsx
+import { useIntastellar } from "@intastellar/signin-sdk-react";
+
+function Example() {
+  const { users, isLoading, signin, logout, isSignedIn } = useIntastellar({
+    clientId: "your-client-id",
+    scopes: "profile,email",
+    loginCallback: async (account) => {
+      /* optionnel : synchroniser avec votre backend */
+    },
+  });
+
+  if (isLoading) return <p>Chargement…</p>;
+  return isSignedIn ? (
+    <button type="button" onClick={logout}>Se déconnecter</button>
+  ) : (
+    <button type="button" onClick={() => signin()}>Se connecter</button>
+  );
+}
+```
+
+Configurez **`clientId`** (et les champs optionnels requis par votre intégration, ex. nom d’affichage ou thème) selon votre **enregistrement client Intastellar**. La manière d’**injecter** `clientId` dans le bundle (ex. variable d’environnement publique au build, config runtime) dépend de votre chaîne d’outils — **évitez de coder en dur de vrais ID** dans le contrôle de version.
+
+La connexion repose en général sur une **popup** : le SDK ouvre l’UI Intastellar, puis termine la vérification et exécute vos callbacks. Ce chemin **n’est pas** le même que de câbler à la main la redirection OAuth **code d’autorisation** et le `POST` token ; pour cela, voir [Flux code d’autorisation](/docs/accounts-sign-in/web/authorization-code-flow).
+
+## HTML et JavaScript simples
+
+Pour des sites **HTML/CSS/JS statiques** (sans framework), suivez **[HTML, CSS et JavaScript simples](/docs/accounts-sign-in/web/plain-html-css-js)** — balises script, script vanilla hébergé, annexe bundler optionnelle.
+
+## Optionnel : votre propre session serveur
+
+Si vous avez besoin de **pages rendues côté serveur** ou d’**API protégées** sur votre domaine, un modèle courant est :
+
+1. Après que le SDK signale un utilisateur connecté, appelez **votre** backend (ex. `POST https://api.example.com/v1/session`) avec une charge **minimale** de profil que votre serveur accepte.
+2. Le serveur valide la confiance **de façon adaptée à votre modèle de menace** (ex. vérifier un access token ou ID token si Intastellar documente comment, ou utiliser un BFF qui détient les secrets).
+3. Le serveur définit un cookie de session **opaque, HttpOnly, Secure** pour votre app.
+
+Les noms de routes, cookies et magasins de session exacts sont des **détails d’implémentation** — concevez-les pour votre stack ; ne supposez pas qu’ils correspondent à un site public particulier.
+
+## Cookies sur votre origine
+
+Le SDK peut définir des cookies **first-party** sur l’origine de votre site pour persister l’état de connexion. Noms et durées de vie sont définis par le **SDK et le guide d’intégration Intastellar** — reportez-vous au paquet npm, aux docs JS ou au support plutôt que de copier des valeurs d’un déploiement sans rapport.
+
+## Fonctionnalités connectées sur les sites de documentation
+
+Un site de documentation développeur peut proposer des **outils supplémentaires** après connexion (par ex. gestion des identifiants API). La configuration de ces fonctionnalités (base de données, secrets, stockage des clés) est **spécifique à l’environnement** et relève de **vos** runbooks internes, pas de ce guide générique.
+
+## Étapes suivantes
+
+- [Premiers pas](/docs/accounts-sign-in/web/getting-started) — types de clients, redirections et flux.
+- [Sessions, cookies et jetons](/docs/accounts-sign-in/web/sessions-and-cookies) — modéliser vos propres cookies aux côtés du SDK.
+- [Déconnexion, erreurs et dépannage](/docs/accounts-sign-in/web/logout-and-errors) — popups, erreurs et déconnexion.

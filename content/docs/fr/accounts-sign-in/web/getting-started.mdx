@@ -1,0 +1,62 @@
+---
+title: Connexion web — Premiers pas
+sidebar_label: Premiers pas
+description: Enregistrez votre client Intastellar, choisissez public ou confidentiel et planifiez redirections et sessions.
+order: 10
+---
+
+Intastellar Sign-In prend en charge plusieurs styles d’intégration. Choisissez le parcours adapté à votre stack :
+
+| Vous développez… | Commencez ici |
+| ----------------- | ---------- |
+| Application **React** | [Intastellar Sign-In — SDK React et JavaScript simple](/docs/accounts-sign-in/web/integrating-react-and-javascript) — aligné sur le [paquet npm officiel](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme). |
+| **HTML / CSS / JS** simples | [HTML, CSS et JavaScript simples](/docs/accounts-sign-in/web/plain-html-css-js) — sans framework ; migré depuis l’ancienne doc JS du site développeurs. |
+| **Flux OAuth code** sur mesure (tout serveur) | Poursuivez ci-dessous, puis [Flux code d’autorisation](/docs/accounts-sign-in/web/authorization-code-flow). |
+
+Les sections ci-dessous portent sur **l’enregistrement d’un client** et la planification des **redirections / sessions** pour **vos** applications. Elles complètent le guide centré SDK, qui n’utilise que du code **illustratif**.
+
+## 1. Enregistrer votre application
+
+Créez un **client de type OAuth/OIDC** dans le flux d’enregistrement Intastellar utilisé par votre équipe. Notez :
+
+- **Client ID** — identifiant public (acceptable dans le front pour les clients **publics**).
+- **Client secret** — uniquement pour les clients **confidentiels** (côté serveur) ; ne jamais l’expédier dans le navigateur ni dans des binaires d’app.
+- **URI de redirection / connexion** — URL exactes qu’Intastellar peut utiliser au retour utilisateur ou à la fin de la connexion. Voir [URI de redirection et callbacks](/docs/accounts-sign-in/web/redirect-uris).
+
+Utilisez des clients **distincts** (ou des listes de redirection isolées) pour la production et le staging.
+
+## 2. Choisir un flux
+
+| Votre app | Approche recommandée |
+| -------- | -------------------- |
+| **React** | [`@intastellar/signin-sdk-react`](https://www.npmjs.com/package/@intastellar/signin-sdk-react) — voir [intégrer React et JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript). |
+| **Vanilla JS (sites statiques)** | [HTML, CSS et JavaScript simples](/docs/accounts-sign-in/web/plain-html-css-js). |
+| **SPA (sur mesure)** | Code d’autorisation avec **PKCE** ; pas de secret client dans le navigateur. |
+| **Site rendu côté serveur** | Le navigateur termine la redirection ; votre **serveur** échange le code avec le **secret client**. |
+| **Mobile / natif** | PKCE, schéma personnalisé ou redirection HTTPS. |
+
+Détails : [Flux code d’autorisation](/docs/accounts-sign-in/web/authorization-code-flow), [SPA et JavaScript](/docs/accounts-sign-in/web/spa-and-javascript), [Échange côté serveur](/docs/accounts-sign-in/web/backend-exchange).
+
+## 3. Points de terminaison et métadonnées
+
+Votre enregistrement ou le guide Intastellar doit lister (ou lier vers une découverte pour) :
+
+- **Endpoint d’autorisation** — l’utilisateur se connecte (pour les intégrations en flux code).
+- **Endpoint de jetons** — échanger le code contre des jetons.
+- **Émetteur / JWKS** — pour valider les ID tokens avec OpenID Connect.
+
+Les exemples de ces guides utilisent des espaces réservés tels que `AUTHORIZATION_ENDPOINT` et `TOKEN_ENDPOINT`.
+
+## 4. Planifier les sessions
+
+Décidez comment **votre origine** mémorise l’utilisateur :
+
+- **Cookies de session HttpOnly** depuis votre serveur (classique pour les apps traditionnelles).
+- **Identifiant de session opaque** plus stockage côté serveur.
+- **Jeton d’accès à courte durée en mémoire** pour les SPA, avec un **BFF** si possible.
+
+Si vous utilisez le **SDK**, il peut définir des cookies **first-party** sur votre domaine ; combinez cela avec votre propre session si vous avez des pages rendues côté serveur — voir [Sessions, cookies et jetons](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Étapes suivantes
+
+[Flux code d’autorisation](/docs/accounts-sign-in/web/authorization-code-flow) — pour des intégrations authorize + callback + jeton entièrement maison.

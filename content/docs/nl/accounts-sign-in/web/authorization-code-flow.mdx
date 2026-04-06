@@ -1,0 +1,83 @@
+---
+title: Authorization code flow
+sidebar_label: Authorization code
+description: Bouw de authorize-redirect, valideer state en PKCE, en wissel de authorization code in voor tokens bij Intastellar Accounts.
+order: 20
+---
+
+De **authorization code**-flow is het standaardpatroon voor web-aanmelding: de browser gaat naar Intastellar, de gebruiker meldt zich aan, en Intastellar stuurt terug naar uw site met een **code** die u inwisselt voor tokens.
+
+## React-SDK (popup) vs deze gids
+
+Als u **`@intastellar/signin-sdk-react`** gebruikt, draait aanmelding meestal in een **popup**: Intastellar stuurt een token naar uw pagina via `postMessage`, de SDK verifieert het, en optionele hooks (bijv. `loginCallback`) draaien. In die modus bouwt u **niet** handmatig de `GET` authorize-URL en `POST` token-request.
+
+Gebruik deze pagina wanneer u zelf de volgorde **authorize + callback + token** implementeert (niet-React, mobiel of maatwerk-server). Voor de **React-SDK** of het **platte JS**-pad, zie [Intastellar Sign-In — React-SDK en plat JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+Parameternamen hieronder volgen **gangbare** OAuth 2.0 / OIDC-gebruik — bevestig **exacte** namen, scopes en discovery-URL’s in uw Intastellar-clientregistratie en integratiegids.
+
+## Stap 1 — Gebruiker naar authorize sturen
+
+Stuur de browser van de gebruiker naar het authorization endpoint met queryparameters:
+
+| Parameter | Doel |
+| --------- | ------- |
+| `response_type` | Gebruik `code` voor deze flow. |
+| `client_id` | Uw geregistreerde client ID. |
+| `redirect_uri` | Moet **exact** overeenkomen met een geregistreerde URI. |
+| `scope` | Door spaties gescheiden scopes (vaak inclusief `openid` voor OIDC). |
+| `state` | Willekeurige, niet te raden waarde; u controleert die bij terugkeer. |
+| `code_challenge` | PKCE: SHA-256-hash van `code_verifier`, Base64url-gecodeerd (voor publieke clients). |
+| `code_challenge_method` | Meestal `S256`. |
+
+Voorbeeld (regelafbrekingen voor leesbaarheid):
+
+```http
+GET AUTHORIZATION_ENDPOINT?
+  response_type=code
+  &client_id=YOUR_CLIENT_ID
+  &redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+  &scope=openid%20profile%20email
+  &state=RANDOM_STATE
+  &code_challenge=CODE_CHALLENGE
+  &code_challenge_method=S256
+```
+
+**Bewaar** `state` en de ruwe `code_verifier` (PKCE) server-side of in een veilige, kortlevende cookie zodat u ze bij de callback kunt valideren.
+
+## Stap 2 — Callback afhandelen
+
+Intastellar redirect naar uw `redirect_uri` met:
+
+| Queryparam | Betekenis |
+| ----------- | ------- |
+| `code` | Eenmalige authorization code. |
+| `state` | Echo van de waarde die u stuurde; **moet overeenkomen** met opgeslagen `state`. |
+
+Als de gebruiker toegang weigert of er een fout optreedt, kunt u `error` en `error_description` krijgen — behandel die zonder ze als succes te zien.
+
+## Stap 3 — Code inwisselen voor tokens
+
+`POST` naar het token endpoint (meestal `application/x-www-form-urlencoded`):
+
+| Veld | Doel |
+| ----- | ------- |
+| `grant_type` | `authorization_code` |
+| `code` | De code uit de callback. |
+| `redirect_uri` | Dezelfde URI als in stap 1. |
+| `client_id` | Uw client ID. |
+| `code_verifier` | PKCE: de oorspronkelijke secret verifier (publieke clients). |
+| `client_secret` | Alleen vertrouwelijke clients. |
+
+Het antwoord bevat meestal `access_token`, optioneel `refresh_token`, en een `id_token` wanneer `openid` is gevraagd. Valideer de **ID token** (issuer, audience, expiry, signature) met JWKS van de issuer wanneer u op claims in uw app vertrouwt.
+
+## Security-checklist
+
+- **Nooit** `state`-verificatie overslaan — voorkomt CSRF op de callback.
+- Gebruik **PKCE** voor elke client die geen client secret kan bewaren (SPA’s, mobiel).
+- Gebruik **HTTPS** voor elke redirect-URI in productie.
+- Houd **refresh tokens** en **client secrets** alleen op servers die u beheert.
+
+## Volgende
+
+- [Redirect-URI’s en callbacks](/docs/accounts-sign-in/web/redirect-uris) — registratie aanscherpen en mismatch-fouten vermijden.
+- [Sessies, cookies en tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — SDK-cookies op uw origin en uw eigen sessiemodel.

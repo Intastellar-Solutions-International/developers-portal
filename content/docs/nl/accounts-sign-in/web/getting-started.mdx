@@ -1,0 +1,62 @@
+---
+title: Web-aanmelding — Aan de slag
+sidebar_label: Aan de slag
+description: Registreer uw Intastellar-client, kies publiek vs vertrouwelijk en plan redirects en sessies.
+order: 10
+---
+
+Intastellar Sign-In ondersteunt meer dan één integratiestijl. Kies het pad dat bij uw stack past:
+
+| U bouwt… | Start hier |
+| ----------------- | ---------- |
+| **React**-app | [Intastellar Sign-In — React-SDK en plat JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) — sluit aan bij het [officiële npm-pakket](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme). |
+| **Platte HTML / CSS / JS** | [Platte HTML, CSS en JavaScript](/docs/accounts-sign-in/web/plain-html-css-js) — geen framework; gemigreerd van de oude JS-docs op de developers-site. |
+| **Aangepaste OAuth code-flow** (elke server) | Lees verder hieronder, daarna [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow). |
+
+De onderstaande secties gaan over **een client registreren** en **redirects / sessies** plannen voor **uw** applicaties. Ze vullen de SDK-gerichte gids aan, die alleen **illustratieve** code gebruikt.
+
+## 1. Uw applicatie registreren
+
+Maak een **OAuth/OIDC-achtige client** in het Intastellar-registratieproces dat uw team gebruikt. Noteer:
+
+- **Client ID** — openbare identifier (veilig in front-endcode voor **publieke** clients).
+- **Client secret** — alleen voor **vertrouwelijke** (server-side) clients; nooit naar de browser of app-binaries sturen.
+- **Redirect- / login-URI’s** — exacte URL’s die Intastellar mag gebruiken bij terugkeer of voltooide aanmelding. Zie [Redirect-URI’s en callbacks](/docs/accounts-sign-in/web/redirect-uris).
+
+Gebruik **aparte** clients (of geïsoleerde redirectlijsten) voor productie en staging.
+
+## 2. Een flow kiezen
+
+| Uw app | Aanbevolen aanpak |
+| -------- | -------------------- |
+| **React** | [`@intastellar/signin-sdk-react`](https://www.npmjs.com/package/@intastellar/signin-sdk-react) — zie [React en JavaScript integreren](/docs/accounts-sign-in/web/integrating-react-and-javascript). |
+| **Vanilla JS (statische sites)** | [Platte HTML, CSS en JavaScript](/docs/accounts-sign-in/web/plain-html-css-js). |
+| **SPA (maatwerk)** | Authorization code met **PKCE**; geen client secret in de browser. |
+| **Server-rendered site** | Browser voltooit redirect; uw **server** wisselt de code met het **client secret**. |
+| **Mobiel / native** | PKCE, custom scheme of HTTPS-redirect. |
+
+Details: [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow), [SPA’s en JavaScript](/docs/accounts-sign-in/web/spa-and-javascript), [Server-side uitwisseling](/docs/accounts-sign-in/web/backend-exchange).
+
+## 3. Endpoints en metadata
+
+Uw registratie of de Intastellar-gids moet (of moet linken naar discovery voor) bevatten:
+
+- **Authorization endpoint** — gebruiker meldt zich aan (voor code-flow-integraties).
+- **Token endpoint** — code inwisselen voor tokens.
+- **Issuer / JWKS** — voor validatie van ID-tokens met OpenID Connect.
+
+Voorbeelden in deze gidsen gebruiken placeholders zoals `AUTHORIZATION_ENDPOINT` en `TOKEN_ENDPOINT`.
+
+## 4. Sessies plannen
+
+Bepaal hoe **uw origin** de gebruiker onthoudt:
+
+- **HttpOnly-sessiecookies** van uw server (typisch voor traditionele apps).
+- **Opaque session id** plus server-side store.
+- **Kortlevend access token in het geheugen** voor SPA’s, bij voorkeur met een **BFF**.
+
+Als u de **SDK** gebruikt, kan die **first-party**-cookies op uw domein zetten; combineer dat met uw eigen sessie als u server-rendered pagina’s nodig hebt — zie [Sessies, cookies en tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Volgende stappen
+
+[Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow) — voor handmatige authorize + callback + token-integraties.

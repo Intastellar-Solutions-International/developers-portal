@@ -1,0 +1,35 @@
+---
+title: SPA’s en JavaScript-clients
+sidebar_label: SPA’s en JavaScript
+description: Gebruik PKCE zonder client secret, bescherm tokens in de browser en vermijd veelvoorkomende SPA-valkuilen met Intastellar Accounts.
+order: 50
+---
+
+Single-page applications kunnen geen **client secret** veilig opslaan. Gebruik de authorization code flow alleen met **PKCE**, **of** het officiële **`@intastellar/signin-sdk-react`**-pakket als u React target en Intastellar dat voor uw client ondersteunt — de SDK gebruikt een **popup** en tokenverificatie in plaats van zelf de authorize-URL en token-`POST` te bedraden.
+
+Voor React- en vanilla JS-patronen (alleen **placeholder**-voorbeelden), zie [Intastellar Sign-In — React-SDK en plat JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Flow-samenvatting (handmatige code + PKCE)
+
+1. Genereer `code_verifier` (hoog-entropie willekeurige string) en leid `code_challenge` af (S256).
+2. Bewaar `code_verifier` waar u het bij callback kunt lezen — bijv. `sessionStorage` voor het tabblad, of een versleutelde cookie via een kleine BFF.
+3. Redirect naar `AUTHORIZATION_ENDPOINT` met `code_challenge` / `code_challenge_method=S256`.
+4. Bij callback stuurt u `code` + `code_verifier` naar uw **backend** (aanbevolen) of naar het token endpoint als het product publieke clients zonder secret toestaat (bevestig in console).
+
+## Geef de voorkeur aan een backend-for-frontend (BFF)
+
+Zelfs in een SPA zijn **token-uitwisseling** en **refresh** veiliger op een same-origin API:
+
+- De browser krijgt alleen een **opaque sessiecookie** van uw API.
+- Refresh tokens raken nooit `localStorage`.
+- CORS en CSRF zijn op uw domein te beheersen.
+
+Als u tokens volledig in de browser moet afhandelen, minimaliseer de levensduur, vermijd `localStorage` voor refresh tokens en plan XSS als volledige compromittering van de sessie.
+
+## CORS en iframes
+
+Embed de Intastellar-aanmeld-UI niet in een verborgen iframe tenzij het product expliciet stille of embedded flows ondersteunt. Geef de voorkeur aan full-page redirect voor aan- en afmelden.
+
+## Volgende
+
+[Server-side (vertrouwelijke) clients](/docs/accounts-sign-in/web/backend-exchange) als u ook een traditionele backend serveert.

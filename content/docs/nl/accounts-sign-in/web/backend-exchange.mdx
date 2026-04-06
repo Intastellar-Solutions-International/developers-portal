@@ -1,0 +1,42 @@
+---
+title: Server-side (vertrouwelijke) clients
+sidebar_label: Backend-uitwisseling
+description: Wissel de authorization code op uw server in met client_id en client_secret voor Intastellar Accounts web-aanmelding.
+order: 60
+---
+
+Wanneer u een vertrouwde server hebt (Node, .NET, PHP, enz.), voer de **token-uitwisseling** daar uit zodat het **client secret** nooit de browser bereikt.
+
+Dit is het juiste model voor **maatwerk** OAuth code-integraties. De **React-SDK**- en **platte JS**-paden (popup / scriptintegratie) zijn apart — zie [Intastellar Sign-In — React-SDK en plat JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Volgorde
+
+1. Browser voltooit de redirect-flow en landt op uw callback met `code` en `state`.
+2. Uw **callback-route** verifieert `state` en roept vervolgens uw **backend** aan (of draait server-side in dezelfde request) om de code in te wisselen.
+3. Backend `POST` naar `TOKEN_ENDPOINT` met `grant_type=authorization_code`, `code`, `redirect_uri`, `client_id` en `client_secret`.
+4. Backend maakt een **sessie** voor de gebruiker (cookie zetten, tokens server-side opslaan).
+5. Browser wordt naar de app geredirect met alleen uw sessiecookie.
+
+## Voorbeeld (conceptueel)
+
+```http
+POST TOKEN_ENDPOINT
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code
+&code=AUTHORIZATION_CODE
+&redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+&client_id=YOUR_CLIENT_ID
+&client_secret=YOUR_CLIENT_SECRET
+```
+
+Voeg PKCE-parameters toe als deze client hybride is geconfigureerd of als de autorisatiestap PKCE gebruikte.
+
+## Secret-opslag
+
+- Laad `client_secret` uit omgevingsvariabelen of een secret manager.
+- Roteer secrets bij blootstelling; gebruik aparte credentials per omgeving.
+
+## Volgende
+
+[Afmelden, fouten en troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).

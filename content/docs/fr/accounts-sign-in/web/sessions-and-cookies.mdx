@@ -1,0 +1,44 @@
+---
+title: Sessions, cookies et jetons
+sidebar_label: Sessions et cookies
+description: Cookies SDK sur votre origine, hôtes IdP et conception de votre propre session pour Intastellar Sign-In.
+order: 40
+---
+
+Traitez cookies et jetons sur trois couches : **hébergées par Intastellar** (UI de connexion), **origine de votre site** (SDK ou votre session) et **votre backend** (sessions opaques, vérification).
+
+## Sur l’origine de votre site
+
+Lorsque vous utilisez **`@intastellar/signin-sdk-react`** ou un flux **vanilla** qui le reflète, l’intégration peut définir des cookies **first-party** après la connexion pour que l’onglet se souvienne de l’utilisateur. Les noms et la sémantique exacts sont définis par le **SDK et la documentation Intastellar** ([readme npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme), [HTML, CSS et JavaScript simples](/docs/accounts-sign-in/web/plain-html-css-js)) — ne supposez pas qu’ils correspondent à un autre déploiement.
+
+Votre code applicatif doit les traiter comme **gérés par le SDK** sauf indication contraire d’Intastellar.
+
+## Votre propre cookie de session (modèle recommandé)
+
+Si vous exécutez un **backend** ou un **BFF**, préférez :
+
+1. **Identifiant de session opaque** dans un cookie **HttpOnly**, **Secure**, avec `SameSite` adapté à votre topologie.
+2. **Stockage côté serveur** associant cet id à l’utilisateur, l’expiration et la gestion du refresh.
+3. Établir ou rafraîchir cette session uniquement après que votre serveur **fait confiance** au résultat de la connexion (ex. validation de jeton selon votre guide d’intégration).
+
+Voir [intégrer React et JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) pour un modèle de haut niveau « session serveur optionnelle » avec des URL d’**exemple** uniquement.
+
+## Sur les hôtes contrôlés par Intastellar
+
+Pendant que l’utilisateur se connecte chez Intastellar, l’**hôte d’identité** peut définir **ses propres** cookies (SSO, session). Ils ne sont **pas** lisibles depuis le JavaScript de votre origine. Appuyez-vous sur les **jetons**, **votre session** ou le **SDK**, pas sur la lecture des cookies IdP cross-site.
+
+## ID token vs access token
+
+Lorsque vous utilisez des réponses **jeton** de type OAuth (flux code manuel) :
+
+- **ID token** — JWT sur l’événement d’authentification ; validez `iss`, `aud`, `exp`, la signature (et `nonce` si utilisé).
+- **Access token** — appels API ; traitez-le comme opaque sauf besoin de le parser.
+
+## Déconnexion
+
+Effacez **votre** session et suivez les indications **SDK / Intastellar** pour la sortie. Si une URL **end-session** est disponible, y rediriger efface les cookies SSO IdP sur le domaine d’identité. Voir [Déconnexion, erreurs et dépannage](/docs/accounts-sign-in/web/logout-and-errors).
+
+## Suite
+
+- [SPA et clients JavaScript](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE et aperçu du SDK.
+- [Clients confidentiels (côté serveur)](/docs/accounts-sign-in/web/backend-exchange) — échange du code sans exposer les secrets.

@@ -1,0 +1,35 @@
+---
+title: SPA et clients JavaScript
+sidebar_label: SPA et JavaScript
+description: Utilisez PKCE sans secret client, protégez les jetons dans le navigateur et évitez les pièges courants des SPA avec Intastellar Accounts.
+order: 50
+---
+
+Les applications monopage ne peuvent pas stocker en toute sécurité un **secret client**. Utilisez le flux code d’autorisation avec **PKCE** uniquement, **ou** le paquet officiel **`@intastellar/signin-sdk-react`** si vous ciblez React et qu’Intastellar le prend en charge pour votre client — le SDK utilise une **popup** et la vérification de jeton au lieu de câbler vous-même l’URL authorize et le `POST` token.
+
+Pour les modèles React et vanilla JS (avec des exemples **indicatifs** uniquement), voir [Intastellar Sign-In — SDK React et JavaScript simple](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Résumé du flux (code manuel + PKCE)
+
+1. Générez `code_verifier` (chaîne aléatoire à haute entropie) et dérivez `code_challenge` (S256).
+2. Stockez `code_verifier` où vous pourrez le lire au callback — ex. `sessionStorage` pour l’onglet, ou un cookie chiffré via un petit BFF.
+3. Redirigez vers `AUTHORIZATION_ENDPOINT` avec `code_challenge` / `code_challenge_method=S256`.
+4. Au callback, envoyez `code` + `code_verifier` à votre **backend** (recommandé) ou à l’endpoint token si le produit autorise les clients publics sans secret (à confirmer dans la console).
+
+## Préférer un backend-for-frontend (BFF)
+
+Même dans une SPA, l’**échange de jetons** et le **refresh** sont plus sûrs sur une API same-origin :
+
+- Le navigateur ne reçoit qu’un **cookie de session opaque** de votre API.
+- Les refresh tokens ne passent jamais par `localStorage`.
+- CORS et CSRF peuvent être maîtrisés sur votre domaine.
+
+Si vous devez gérer les jetons entièrement dans le navigateur, minimisez la durée de vie, évitez `localStorage` pour les refresh tokens et anticipez le XSS comme compromission complète de la session.
+
+## CORS et iframes
+
+N’intégrez pas l’UI de connexion Intastellar dans une iframe cachée sauf si le produit prend explicitement en charge des flux silencieux ou embarqués. Préférez la redirection pleine page pour la connexion et la déconnexion.
+
+## Suite
+
+[Clients confidentiels (côté serveur)](/docs/accounts-sign-in/web/backend-exchange) si vous servez aussi un backend classique.

@@ -1,0 +1,39 @@
+---
+title: Intastellar Accounts — Aanmelden
+description: Web-aanmelding met Intastellar Accounts — React-SDK, platte JS, OAuth-achtige flows, PKCE, redirects en sessies.
+hub_order: 20
+hub_tagline: Web-aanmelding — React- en JS-SDK, OAuth-achtige flows, PKCE, redirects en sessies.
+order: 0
+---
+
+**Intastellar Accounts** is de identiteitslaag voor Intastellar-producten. Deze gidsen leggen uit hoe u **web-aanmelding** toevoegt zodat mensen hetzelfde account kunnen gebruiken op Intastellar-services.
+
+**inta.dev** host deze documentatie, zoeken en kan **ingelogde tools** aanbieden (zoals ontwikkelaarscredentials), afhankelijk van het product — implementatiedetails horen bij de documentatie van uw eigen omgeving.
+
+## Wat u kunt bouwen
+
+**Op uw eigen sites en apps:**
+
+1. Gebruik de **React-SDK** ([React en JavaScript integreren](/docs/accounts-sign-in/web/integrating-react-and-javascript)) of **platte HTML, CSS en JS** ([Platte HTML, CSS en JavaScript](/docs/accounts-sign-in/web/plain-html-css-js)) voor aanmelding in de browser, **of**
+2. Implementeer een **OAuth-achtige authorization code**-flow (vaak met **PKCE**) voor maatwerk-stacks — zie de webgidsen hieronder.
+
+## Gidsen (Aanmelding — Web)
+
+- [Intastellar Sign-In — React-SDK en plat JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) — **React**-patronen met **voorbeeld**-code; links naar [npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme).
+- [Platte HTML, CSS en JavaScript](/docs/accounts-sign-in/web/plain-html-css-js) — **gemigreerd** van [developers.intastellarsolutions.com/…/js-docs](https://developers.intastellarsolutions.com/identity/sign-in/web/docs/js-docs): statische sites, script-tags, optionele bundler-bijlage met `IntastellarAPI`.
+- [Aan de slag](/docs/accounts-sign-in/web/getting-started) — client registreren, publiek vs vertrouwelijk kiezen, redirects en sessies plannen.
+- [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow) — auth-URL, `state`, PKCE en code-uitwisseling (maatwerkintegraties).
+- [Redirect-URI’s en callbacks](/docs/accounts-sign-in/web/redirect-uris) — toegestane URL’s, validatie en veelgemaakte fouten.
+- [Sessies, cookies en tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — uw origin, de SDK en uw sessiemodel.
+- [SPA’s en JavaScript-clients](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE en SDK-pad.
+- [Server-side (vertrouwelijke) clients](/docs/accounts-sign-in/web/backend-exchange) — de code op uw backend uitwisselen.
+- [Afmelden, fouten en troubleshooting](/docs/accounts-sign-in/web/logout-and-errors) — sessies beëindigen en typische problemen.
+
+## Gerelateerd
+
+- [Changelog](/changelog) — `@intastellar/signin-sdk-react`-versies op npm en releases op GitHub.
+- [Intastellar Consents (cookiebanner)](/docs/cookie-banner) — toestemmings-UI als u ook een banner op dezelfde property nodig hebt.
+
+## Legacy-ontwikkelaars-URL
+
+Oudere links kunnen naar **`developers.intastellarsolutions.com`** wijzen (inclusief **`…/identity/sign-in/web/docs/js-docs`**). Geef de voorkeur aan **HTTPS-redirects** naar **inta.dev**; de gids **platte HTML / JavaScript** hierboven is de plek voor die inhoud. Werk **OAuth-client redirect- / login-URI’s** bij zodat ze overeenkomen met de live URL’s die u serveert.

@@ -1,0 +1,44 @@
+---
+title: Redirect-URI’s en callbacks
+sidebar_label: Redirect-URI’s
+description: Registreer exacte callback-URL’s voor Intastellar Accounts web-aanmelding en vermijd veelvoorkomende redirect-mismatch-fouten.
+order: 30
+---
+
+Intastellar voltooit aanmeldings-terugkeerflows alleen naar **vooraf geregistreerde** URL’s (of URI’s die uw clientregistratie toestaat voor de **login-URI** die de React-SDK gebruikt). Een typfout, verkeerd schema of mismatch met een trailing slash veroorzaakt `redirect_uri_mismatch` of vergelijkbare fouten.
+
+Als u de **publieke hostnaam** van uw app wijzigt (bijv. na een domeinmigratie), werk dan uw Intastellar-client bij zodat toegestane **redirect- / login**-items overeenkomen met de **nieuwe** origin en paden. SDK’s leiden vaak een **login-URI** af van de huidige pagina (`hostname`, `port`, `pathname`) tenzij u die overschrijft — registreer de waarden die u daadwerwerkelijk stuurt.
+
+## Vuistregels
+
+1. **HTTPS in productie** — `http://localhost` is vaak toegestaan voor ontwikkeling; productie moet `https://` gebruiken.
+2. **Exacte match** — `https://app.example.com/callback` en `https://app.example.com/callback/` zijn verschillende paden; registreer degene die u in de authorize-request gebruikt.
+3. **Geen wildcards** in de meeste setups — registreer elk concreet callback-pad (of volg het gedocumenteerde patroon van uw console als padtemplates worden ondersteund).
+4. **Querystrings** — vermijd dynamische querystrings in de geregistreerde URI tenzij uw registratie dat expliciet toestaat; geef de voorkeur aan een vast pad en geef interne context door via `state`.
+
+## Meerdere omgevingen
+
+Registreer aparte redirect-URI’s (of aparte clients) voor:
+
+- Lokale ontwikkeling (`http://127.0.0.1:5173/auth/callback`, enz.)
+- Staging
+- Productie
+
+Dit beperkt de impact als een secret lekt in een niet-productieclient.
+
+## SPA-routers
+
+Als u hash-routing gebruikt (`/#/callback`), controleer of uw identity provider dat patroon voor redirects toestaat; veel vereisen **padgebaseerde** URL’s (`/auth/callback`) voor de OAuth-callback.
+
+## Na redirect
+
+Op de callback-route:
+
+1. Lees `code` en `state` uit de querystring.
+2. Verifieer `state` tegen wat u bij het starten van de flow opsloeg.
+3. Wissel de code in bij het token endpoint (zie [Authorization code flow](/docs/accounts-sign-in/web/authorization-code-flow)).
+4. Redirect de gebruiker naar de uiteindelijke bestemming in de app (dashboard, return-URL in `state`, enz.).
+
+## Volgende
+
+[Sessies, cookies en tokens](/docs/accounts-sign-in/web/sessions-and-cookies) voor veilig vasthouden van de ingelogde gebruiker na een geslaagde callback.

@@ -1,0 +1,42 @@
+---
+title: Clients confidentiels (côté serveur)
+sidebar_label: Échange backend
+description: Échanger le code d’autorisation sur votre serveur avec client_id et client_secret pour la connexion web Intastellar Accounts.
+order: 60
+---
+
+Lorsque vous disposez d’un serveur de confiance (Node, .NET, PHP, etc.), effectuez l’**échange de jetons** côté serveur pour que le **secret client** n’atteigne jamais le navigateur.
+
+C’est le bon modèle pour les intégrations OAuth code **sur mesure**. Les parcours **SDK React** et **JS simple** (popup / intégration script) sont distincts — voir [Intastellar Sign-In — SDK React et JavaScript simple](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Séquence
+
+1. Le navigateur termine le flux de redirection et arrive sur votre callback avec `code` et `state`.
+2. Votre **route callback** vérifie `state`, puis appelle votre **backend** (ou exécute côté serveur dans la même requête) pour échanger le code.
+3. Le backend envoie un `POST` vers `TOKEN_ENDPOINT` avec `grant_type=authorization_code`, `code`, `redirect_uri`, `client_id` et `client_secret`.
+4. Le backend crée une **session** pour l’utilisateur (cookie, stockage des jetons côté serveur).
+5. Le navigateur est redirigé vers l’app avec uniquement votre cookie de session.
+
+## Exemple (conceptuel)
+
+```http
+POST TOKEN_ENDPOINT
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code
+&code=AUTHORIZATION_CODE
+&redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+&client_id=YOUR_CLIENT_ID
+&client_secret=YOUR_CLIENT_SECRET
+```
+
+Ajoutez les paramètres PKCE si ce client est configuré en hybride ou si l’étape d’autorisation a utilisé PKCE.
+
+## Stockage du secret
+
+- Chargez `client_secret` depuis des variables d’environnement ou un gestionnaire de secrets.
+- Faites tourner les secrets en cas d’exposition ; utilisez des identifiants distincts par environnement.
+
+## Suite
+
+[Déconnexion, erreurs et dépannage](/docs/accounts-sign-in/web/logout-and-errors).

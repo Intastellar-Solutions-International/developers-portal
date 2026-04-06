@@ -1,0 +1,44 @@
+---
+title: URI de redirection et callbacks
+sidebar_label: URI de redirection
+description: Enregistrez des URL de callback exactes pour la connexion web Intastellar Accounts et évitez les erreurs courantes de mismatch.
+order: 30
+---
+
+Intastellar ne termine les retours de connexion que vers des URL **préenregistrées** (ou URI autorisées par l’enregistrement de votre client pour l’**URI de connexion** utilisée par le SDK React). Une faute de frappe, un mauvais schéma ou un slash final en trop provoque `redirect_uri_mismatch` ou des erreurs similaires.
+
+Si vous **changez le nom d’hôte public** de votre app (par ex. après migration de domaine), mettez à jour votre client Intastellar pour que les entrées **redirection / connexion** autorisées correspondent à la **nouvelle** origine et aux chemins. Les SDK dérivent souvent une **URI de connexion** depuis la page courante (`hostname`, `port`, `pathname`) sauf si vous la surchargez — enregistrez les valeurs que vous envoyez réellement.
+
+## Règles pratiques
+
+1. **HTTPS en production** — `http://localhost` est souvent autorisé en développement ; la production devrait utiliser `https://`.
+2. **Correspondance exacte** — `https://app.example.com/callback` et `https://app.example.com/callback/` sont des chemins différents ; enregistrez celui que vous utilisez dans la requête authorize.
+3. **Pas de jokers** dans la plupart des configurations — enregistrez chaque chemin de callback concret (ou suivez le modèle documenté de votre console si des modèles de chemin sont pris en charge).
+4. **Chaînes de requête** — évitez les query strings dynamiques dans l’URI enregistrée sauf si votre enregistrement l’autorise explicitement ; préférez un chemin fixe et passez le contexte interne via `state`.
+
+## Plusieurs environnements
+
+Enregistrez des URI de redirection distinctes (ou des clients distincts) pour :
+
+- Le développement local (`http://127.0.0.1:5173/auth/callback`, etc.)
+- Le staging
+- La production
+
+Cela limite l’impact si un secret fuit sur un client non production.
+
+## Routeurs SPA
+
+Si vous utilisez le routage par hash (`/#/callback`), vérifiez si votre fournisseur d’identité autorise ce motif pour les redirections ; beaucoup exigent des URL **basées sur le chemin** (`/auth/callback`) pour le callback OAuth.
+
+## Après la redirection
+
+Sur la route callback :
+
+1. Lisez `code` et `state` dans la chaîne de requête.
+2. Vérifiez `state` par rapport à ce que vous avez stocké au démarrage du flux.
+3. Échangez le code à l’endpoint token (voir [Flux code d’autorisation](/docs/accounts-sign-in/web/authorization-code-flow)).
+4. Redirigez l’utilisateur vers la destination finale dans l’app (tableau de bord, URL de retour stockée dans `state`, etc.).
+
+## Suite
+
+[Sessions, cookies et jetons](/docs/accounts-sign-in/web/sessions-and-cookies) pour persister l’utilisateur connecté en toute sécurité après un callback réussi.

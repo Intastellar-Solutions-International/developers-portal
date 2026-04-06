@@ -1,0 +1,83 @@
+---
+title: Flux code d’autorisation
+sidebar_label: Code d’autorisation
+description: Construire la redirection authorize, valider state et PKCE, et échanger le code d’autorisation contre des jetons avec Intastellar Accounts.
+order: 20
+---
+
+Le flux **code d’autorisation** est le schéma standard de connexion web : le navigateur visite Intastellar, l’utilisateur s’authentifie, et Intastellar redirige vers votre site avec un **code** que vous échangez contre des jetons.
+
+## SDK React (popup) vs ce guide
+
+Si vous utilisez **`@intastellar/signin-sdk-react`**, la connexion s’exécute généralement dans une **popup** : Intastellar renvoie un jeton à votre page via `postMessage`, le SDK le vérifie, et des hooks optionnels (ex. `loginCallback`) s’exécutent. Dans ce mode, vous ne construisez **pas** manuellement l’URL `GET` authorize ni la requête `POST` token.
+
+Utilisez cette page lorsque vous implémentez vous-même la séquence **authorize + callback + token** (hors React, mobile ou serveur sur mesure). Pour le **SDK React** ou le parcours **JS simple**, voir [Intastellar Sign-In — SDK React et JavaScript simple](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+Les noms de paramètres ci-dessous suivent l’usage **courant** OAuth 2.0 / OIDC — confirmez les noms **exacts**, scopes et URL de découverte dans votre enregistrement client Intastellar et votre guide d’intégration.
+
+## Étape 1 — Rediriger l’utilisateur vers authorize
+
+Envoyez le navigateur de l’utilisateur vers l’endpoint d’autorisation avec des paramètres de requête :
+
+| Paramètre | Rôle |
+| --------- | ------- |
+| `response_type` | Utilisez `code` pour ce flux. |
+| `client_id` | Votre client ID enregistré. |
+| `redirect_uri` | Doit **exactement** correspondre à une URI enregistrée. |
+| `scope` | Scopes séparés par des espaces (souvent inclut `openid` pour OIDC). |
+| `state` | Valeur aléatoire imprévisible ; vous la vérifiez au retour. |
+| `code_challenge` | PKCE : hachage SHA-256 de `code_verifier`, encodé en Base64url (clients publics). |
+| `code_challenge_method` | Typiquement `S256`. |
+
+Exemple (sauts de ligne pour la lisibilité) :
+
+```http
+GET AUTHORIZATION_ENDPOINT?
+  response_type=code
+  &client_id=YOUR_CLIENT_ID
+  &redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+  &scope=openid%20profile%20email
+  &state=RANDOM_STATE
+  &code_challenge=CODE_CHALLENGE
+  &code_challenge_method=S256
+```
+
+**Stockez** `state` et le `code_verifier` brut (PKCE) côté serveur ou dans un cookie sécurisé à courte durée pour les valider au callback.
+
+## Étape 2 — Traiter le callback
+
+Intastellar redirige vers votre `redirect_uri` avec :
+
+| Paramètre de requête | Signification |
+| ----------- | ------- |
+| `code` | Code d’autorisation à usage unique. |
+| `state` | Écho de la valeur envoyée ; **doit correspondre** au `state` stocké. |
+
+Si l’utilisateur refuse l’accès ou en cas d’erreur, vous pouvez recevoir `error` et `error_description` — traitez-les sans les considérer comme un succès.
+
+## Étape 3 — Échanger le code contre des jetons
+
+`POST` vers l’endpoint token (généralement `application/x-www-form-urlencoded`) :
+
+| Champ | Rôle |
+| ----- | ------- |
+| `grant_type` | `authorization_code` |
+| `code` | Le code du callback. |
+| `redirect_uri` | Même URI qu’à l’étape 1. |
+| `client_id` | Votre client ID. |
+| `code_verifier` | PKCE : le vérificateur secret d’origine (clients publics). |
+| `client_secret` | Clients confidentiels uniquement. |
+
+La réponse inclut en général `access_token`, éventuellement `refresh_token`, et un `id_token` lorsque `openid` a été demandé. Validez l’**ID token** (émetteur, audience, expiration, signature) via le JWKS de l’émetteur si vous vous appuyez sur ses claims dans l’app.
+
+## Liste de contrôle sécurité
+
+- **Ne jamais** sauter la vérification de `state` — évite le CSRF sur le callback.
+- Utilisez **PKCE** pour tout client qui ne peut pas détenir un secret client (SPA, mobile).
+- Utilisez **HTTPS** pour chaque URI de redirection en production.
+- Gardez **refresh tokens** et **secrets client** uniquement sur des serveurs que vous contrôlez.
+
+## Suite
+
+- [URI de redirection et callbacks](/docs/accounts-sign-in/web/redirect-uris) — resserrer l’enregistrement et éviter les erreurs de mismatch.
+- [Sessions, cookies et jetons](/docs/accounts-sign-in/web/sessions-and-cookies) — cookies SDK sur votre origine et votre propre modèle de session.

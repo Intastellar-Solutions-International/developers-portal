@@ -1,0 +1,44 @@
+---
+title: Sessies, cookies en tokens
+sidebar_label: Sessies en cookies
+description: SDK-cookies op uw origin, IdP-hosts en hoe u uw eigen sessie voor Intastellar Sign-In ontwerpt.
+order: 40
+---
+
+Behandel cookies en tokens in drie lagen: **door Intastellar gehost** (aanmeld-UI), **origin van uw site** (SDK of uw sessie) en **uw backend** (opaque sessies, verificatie).
+
+## Op de origin van uw site
+
+Wanneer u **`@intastellar/signin-sdk-react`** of een **vanilla**-flow die dat weerspiegelt gebruikt, kan de integratie na aanmelding **first-party**-cookies zetten zodat het tabblad de gebruiker onthoudt. Exacte namen en semantiek staan in de **SDK en Intastellar-documentatie** ([npm readme](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme), [Platte HTML, CSS en JavaScript](/docs/accounts-sign-in/web/plain-html-css-js)) — ga er niet van uit dat ze overeenkomen met een ander project.
+
+Uw applicatiecode moet ze als **door SDK beheerd** behandelen tenzij Intastellar anders aangeeft.
+
+## Uw eigen sessiecookie (aanbevolen patroon)
+
+Als u een **backend** of **BFF** draait, heeft de voorkeur:
+
+1. **Opaque session id** in een **HttpOnly**-, **Secure**-cookie, met `SameSite` passend bij uw topologie.
+2. **Server-side store** die die id koppelt aan gebruikers-id, verloop en refresh-afhandeling.
+3. Die sessie alleen vaststellen of vernieuwen nadat uw server het aanmeldresultaat **vertrouwt** (bijv. tokenvalidatie volgens uw integratiegids).
+
+Zie [React en JavaScript integreren](/docs/accounts-sign-in/web/integrating-react-and-javascript) voor een hoog niveau « optionele serversessie » met alleen **voorbeeld**-URL’s.
+
+## Op door Intastellar gecontroleerde hosts
+
+Terwijl de gebruiker zich bij Intastellar aanmeldt, kan de **identity host** **eigen** cookies zetten (SSO, sessie). Die zijn **niet** leesbaar vanuit JavaScript op uw origin. Vertrouw op **tokens**, **uw sessie** of de **SDK**, niet op cross-site IdP-cookies lezen.
+
+## ID token vs access token
+
+Bij OAuth-achtige **token**-antwoorden (handmatige code-flow):
+
+- **ID token** — JWT over het authenticatie-evenement; valideer `iss`, `aud`, `exp`, signature (en `nonce` indien gebruikt).
+- **Access token** — API’s aanroepen; behandel als opaque tenzij u het moet parsen.
+
+## Afmelden
+
+Wis **uw** sessie en volg **SDK / Intastellar**-richtlijnen voor uitloggen. Als een **end-session**-URL beschikbaar is, zorgt redirecten daarheen voor wissen van IdP SSO-cookies op het identity-domein. Zie [Afmelden, fouten en troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).
+
+## Volgende
+
+- [SPA’s en JavaScript-clients](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE en SDK-overzicht.
+- [Server-side (vertrouwelijke) clients](/docs/accounts-sign-in/web/backend-exchange) — code-uitwisseling zonder secrets bloot te stellen.
