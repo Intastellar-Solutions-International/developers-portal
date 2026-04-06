@@ -412,7 +412,7 @@ export const ptBr: MessageTree = {
     maintenanceRange: "{{start}} → {{end}}",
     deployHeading: "Último deploy",
     deployUnavailable:
-      "Metadados de deploy (commit git) só são injetados no host de produção. Em desenvolvimento local esta seção fica vazia.",
+      "O último commit vem do repositório Intastellar Consents no GitHub (não do deploy deste site). Fica vazio se a API do GitHub estiver indisponível ou limitada — use GITHUB_TOKEN para limites maiores.",
     deployCommit: "Commit",
     deployBranch: "Branch",
     deployMessage: "Mensagem",

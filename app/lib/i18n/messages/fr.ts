@@ -411,7 +411,7 @@ export const fr: MessageTree = {
     maintenanceRange: "{{start}} → {{end}}",
     deployHeading: "Dernier déploiement",
     deployUnavailable:
-      "Les métadonnées de déploiement (commit git) ne sont injectées que sur l’hôte de production. En local, cette section est vide.",
+      "Le dernier commit provient du dépôt GitHub Intastellar Consents (pas du déploiement de ce site). Vide si l’API GitHub est indisponible ou limitée — définissez GITHUB_TOKEN pour des quotas plus élevés.",
     deployCommit: "Commit",
     deployBranch: "Branche",
     deployMessage: "Message",

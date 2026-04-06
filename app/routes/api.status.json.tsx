@@ -11,15 +11,16 @@ import { getLatestStatusSnapshot } from "~/lib/status-snapshot.server";
 
 /** Public JSON for the status widget and integrations. */
 export async function loader(_: Route.LoaderArgs) {
-  const snapshot = await getLatestStatusSnapshot();
-  const mongoMaint =
-    isMongoConfigured() ? await listFutureMaintenanceWindowsFromMongo() : [];
+  const mongoConfigured = isMongoConfigured();
+  const [snapshot, deploy, mongoMaint, manualIncidents] = await Promise.all([
+    getLatestStatusSnapshot(),
+    getStatusDeployPublic(),
+    mongoConfigured ? listFutureMaintenanceWindowsFromMongo() : Promise.resolve([]),
+    mongoConfigured ? listManualIncidentsPublic(25) : Promise.resolve([]),
+  ]);
   const maintenance = getPublicMaintenanceWindows(formatDateTimeMediumUtc, {
     mongoWindows: mongoMaint,
   });
-  const deploy = getStatusDeployPublic();
-  const manualIncidents =
-    isMongoConfigured() ? await listManualIncidentsPublic(25) : [];
   const body = JSON.stringify({
     snapshot,
     maintenance,

@@ -66,15 +66,16 @@ export async function loader({ request }: Route.LoaderArgs) {
   let incidents: StatusIncident[] = [];
   let checkedAtLabel: string | null = null;
   const historyWindowSize = getStatusHistoryMaxPoints();
-  const mongoMaint =
-    isMongoConfigured() ? await listFutureMaintenanceWindowsFromMongo() : [];
+  const mongoConfigured = isMongoConfigured();
+  const [mongoMaint, deploy, manualIncidents] = await Promise.all([
+    mongoConfigured ? listFutureMaintenanceWindowsFromMongo() : Promise.resolve([]),
+    getStatusDeployPublic(),
+    mongoConfigured ? listManualIncidentsPublic(25) : Promise.resolve([]),
+  ]);
   const maintenance = getPublicMaintenanceWindows(
     formatDateTimeMediumUtc,
     { mongoWindows: mongoMaint },
   );
-  const deploy = getStatusDeployPublic();
-  const manualIncidents =
-    isMongoConfigured() ? await listManualIncidentsPublic(25) : [];
 
   type UptimePayload =
     | {
@@ -126,7 +127,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     copy,
     snapshot,
     source,
-    mongoConfigured: isMongoConfigured(),
+    mongoConfigured,
     timelines,
     checkedAtLabel,
     incidents,

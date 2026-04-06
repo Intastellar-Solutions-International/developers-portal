@@ -411,7 +411,7 @@ export const nl: MessageTree = {
     maintenanceRange: "{{start}} → {{end}}",
     deployHeading: "Laatste deployment",
     deployUnavailable:
-      "Deploy-metadata (git-commit) worden alleen op de productiehost geïnjecteerd. Lokaal blijft deze sectie leeg.",
+      "De laatste commit komt uit de Intastellar Consents GitHub-repo (niet van de deploy van deze site). Leeg als de GitHub-API niet bereikbaar is of gelimiteerd — zet GITHUB_TOKEN voor hogere limieten.",
     deployCommit: "Commit",
     deployBranch: "Branch",
     deployMessage: "Bericht",

@@ -410,7 +410,7 @@ export const da: MessageTree = {
     maintenanceRange: "{{start}} → {{end}}",
     deployHeading: "Seneste deploy",
     deployUnavailable:
-      "Deploy-metadata (git-commit) indsættes kun på produktionshosten. Lokalt er dette afsnit tomt.",
+      "Seneste commit hentes fra Intastellar Consents’ GitHub-repo (ikke dette sites deploy). Tomt hvis GitHub-API’en er utilgængelig eller begrænset — sæt GITHUB_TOKEN for højere grænser.",
     deployCommit: "Commit",
     deployBranch: "Branch",
     deployMessage: "Besked",

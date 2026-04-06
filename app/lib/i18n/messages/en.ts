@@ -420,7 +420,7 @@ export const en = {
     maintenanceRange: "{{start}} → {{end}}",
     deployHeading: "Last deploy",
     deployUnavailable:
-      "Deploy metadata (git commit) is injected on the production host only. In local development this section is empty.",
+      "Latest commit is loaded from the Intastellar Consents GitHub repository (not this site’s deploy). This stays empty if the GitHub API is unreachable or rate-limited — set GITHUB_TOKEN for higher limits.",
     deployCommit: "Commit",
     deployBranch: "Branch",
     deployMessage: "Message",
