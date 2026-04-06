@@ -19,6 +19,24 @@ export function isReferrerFromLegacyDevelopersSite(
   }
 }
 
+/** `?ref=legacy` on the document URL (e.g. 301 from old host appends this query param). */
+export function hasLegacyBannerRefQuery(requestUrl: string): boolean {
+  try {
+    const u = new URL(requestUrl);
+    return u.searchParams.get("ref")?.toLowerCase() === "legacy";
+  } catch {
+    return false;
+  }
+}
+
+/** Either legacy-site Referer or `ref=legacy` on the request URL. */
+export function requestSignalsLegacyMigrationBanner(request: Request): boolean {
+  return (
+    hasLegacyBannerRefQuery(request.url) ||
+    isReferrerFromLegacyDevelopersSite(request.headers.get("Referer"))
+  );
+}
+
 function untilYearFromEnv(): number {
   const raw = import.meta.env.VITE_LEGACY_BANNER_UNTIL_YEAR;
   const n = Number(raw);

@@ -44,7 +44,7 @@ import {
 } from "~/lib/color-scheme";
 import {
   isLegacyBannerActiveAt,
-  isReferrerFromLegacyDevelopersSite,
+  requestSignalsLegacyMigrationBanner,
 } from "~/lib/legacy-banner";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import {
@@ -78,13 +78,12 @@ export async function loader({ request }: Route.LoaderArgs) {
   for (const c of setCookieHeaders) {
     headers.append("Set-Cookie", c);
   }
-  const referer = request.headers.get("Referer");
   return data(
     {
       ssoConfigured,
       portalAccount: account,
       legacyBannerFromLegacyReferrer:
-        isReferrerFromLegacyDevelopersSite(referer),
+        requestSignalsLegacyMigrationBanner(request),
     },
     { headers },
   );

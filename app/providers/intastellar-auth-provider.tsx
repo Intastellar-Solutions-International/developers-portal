@@ -30,7 +30,9 @@ export type { IntastellarAuthContextValue } from "~/lib/intastellar-auth-context
 
 export type RootLoaderData = {
   ssoConfigured?: boolean;
-  /** First document request came from developers.intastellarsolutions.com (Referer). */
+  /**
+   * Migration strip: legacy developers Referer and/or `?ref=legacy` on the URL (e.g. htaccess 301).
+   */
   legacyBannerFromLegacyReferrer?: boolean;
   portalAccount?: {
     accountId: string;
