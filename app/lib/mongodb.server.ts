@@ -1,5 +1,7 @@
 import { MongoClient, type Collection, type Db } from "mongodb";
 
+import { ensureMongoDbSchema } from "./mongodb-schema.server";
+
 const globalForMongo = globalThis as typeof globalThis & {
   __mongoClientPromise?: Promise<MongoClient>;
 };
@@ -26,7 +28,9 @@ export async function getMongoDb(): Promise<Db | null> {
   const p = getClientPromise();
   if (!p) return null;
   const client = await p;
-  return client.db(getMongoDbName());
+  const db = client.db(getMongoDbName());
+  await ensureMongoDbSchema(db);
+  return db;
 }
 
 export async function getCollection<T extends object>(

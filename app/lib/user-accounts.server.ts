@@ -1,9 +1,8 @@
-import { type Collection, ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 
 import type { PortalAccountSession } from "./intastellar-verify.server";
+import { USER_ACCOUNTS_COLLECTION } from "./mongodb-schema.server";
 import { getCollection } from "./mongodb.server";
-
-export const USER_ACCOUNTS_COLLECTION = "user_accounts";
 
 /** Supported external identity providers (extend when adding e.g. Google). */
 export type AuthProviderId = "intastellar" | "github";
@@ -44,27 +43,6 @@ export type GitHubUserInput = {
   avatarUrl: string | null;
 };
 
-let userAccountIndexesPromise: Promise<void> | null = null;
-
-function ensureUserAccountIndexes(coll: Collection<UserAccountRecord>) {
-  if (!userAccountIndexesPromise) {
-    userAccountIndexesPromise = coll
-      .createIndexes([
-        {
-          key: { "identities.provider": 1, "identities.subject": 1 },
-          unique: true,
-        },
-        { key: { primaryEmail: 1 } },
-        { key: { updatedAt: -1 } },
-      ])
-      .then(() => {})
-      .catch(() => {
-        userAccountIndexesPromise = null;
-      });
-  }
-  return userAccountIndexesPromise;
-}
-
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
@@ -77,7 +55,6 @@ export async function ensureUserFromIntastellar(
 ): Promise<ObjectId | null> {
   const coll = await getCollection<UserAccountRecord>(USER_ACCOUNTS_COLLECTION);
   if (!coll) return null;
-  await ensureUserAccountIndexes(coll);
 
   const subject = normalizeEmail(session.email);
   const now = new Date();
@@ -127,7 +104,6 @@ export async function ensureUserFromGitHub(
 ): Promise<ObjectId | null> {
   const coll = await getCollection<UserAccountRecord>(USER_ACCOUNTS_COLLECTION);
   if (!coll) return null;
-  await ensureUserAccountIndexes(coll);
 
   const subject = String(input.id);
   const now = new Date();
