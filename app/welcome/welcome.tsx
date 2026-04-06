@@ -184,7 +184,7 @@ export function Welcome() {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="max-w-2xl">
               <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl sm:leading-tight">
-                Intastellar Developers
+                Built with Intastellar
               </h1>
               <p className="mt-4 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-xl">
                 Documentation, guides, and tools to ship{" "}
