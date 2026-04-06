@@ -20,6 +20,9 @@ const SKIP_PATHNAMES = new Set([
   "/account/profile",
   "/account/api-keys",
   "/auth/logout",
+  "/auth/login",
+  "/api/status/cron",
+  "/api/status/uptime/badge",
   "/auth/session",
 ]);
 
