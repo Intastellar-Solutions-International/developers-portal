@@ -30,8 +30,6 @@ export type { IntastellarAuthContextValue } from "~/lib/intastellar-auth-context
 
 export type RootLoaderData = {
   ssoConfigured?: boolean;
-  /** From root loader — same on SSR and client to avoid hydration mismatch. */
-  legacyBannerActive?: boolean;
   portalAccount?: {
     accountId: string;
     email: string;

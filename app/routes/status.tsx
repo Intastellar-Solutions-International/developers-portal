@@ -1,10 +1,18 @@
 import { useLoaderData } from "react-router";
 
 import type { Route } from "./+types/status";
+import { StatusIncidentLog } from "~/components/status-incident-log";
+import { StatusLatencyTrend } from "~/components/status-latency-trend";
 import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import {
+  formatDateTimeMediumUtc,
+  formatDateTimeShortUtc,
+} from "~/lib/format-datetime";
+import {
+  getRecentStatusIncidents,
   getStatusTimelines,
+  type StatusIncident,
   type StatusTimelinePoint,
 } from "~/lib/status-history.server";
 import { overallOk, runStatusProbes } from "~/lib/status-probe.server";
@@ -12,11 +20,16 @@ import { getLatestStatusSnapshot } from "~/lib/status-snapshot.server";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
 export async function loader(_: Route.LoaderArgs) {
+  const targetList = getStatusTargets();
+  const targetNames = Object.fromEntries(
+    targetList.map((t) => [t.id, t.name] as const),
+  );
+
   let snapshot = await getLatestStatusSnapshot();
   let source: "mongodb" | "live" | "none" = snapshot ? "mongodb" : "none";
 
   if (!snapshot && process.env.NODE_ENV !== "production") {
-    const results = await runStatusProbes(getStatusTargets());
+    const results = await runStatusProbes(targetList);
     snapshot = {
       checkedAt: new Date().toISOString(),
       overallOk: overallOk(results),
@@ -26,14 +39,27 @@ export async function loader(_: Route.LoaderArgs) {
   }
 
   const timelines: Record<string, StatusTimelinePoint[]> = {};
+  let incidents: StatusIncident[] = [];
+  let checkedAtLabel: string | null = null;
+
   if (snapshot) {
+    checkedAtLabel = formatDateTimeMediumUtc(snapshot.checkedAt);
     const ids = snapshot.results.map((r) => r.id);
     if (source === "mongodb") {
       Object.assign(timelines, await getStatusTimelines(ids));
+      incidents = await getRecentStatusIncidents(25);
     } else {
       const iso = snapshot.checkedAt;
+      const tip = formatDateTimeShortUtc(iso);
       for (const r of snapshot.results) {
-        timelines[r.id] = [{ ok: r.ok, checkedAt: iso }];
+        timelines[r.id] = [
+          {
+            ok: r.ok,
+            checkedAt: iso,
+            checkedAtLabel: tip,
+            latencyMs: r.latencyMs,
+          },
+        ];
       }
     }
   }
@@ -43,6 +69,9 @@ export async function loader(_: Route.LoaderArgs) {
     source,
     mongoConfigured: isMongoConfigured(),
     timelines,
+    checkedAtLabel,
+    incidents,
+    targetNames,
   };
 }
 
@@ -57,20 +86,16 @@ export function meta(_: Route.MetaArgs) {
   ];
 }
 
-function formatWhen(iso: string) {
-  try {
-    return new Intl.DateTimeFormat("en", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(iso));
-  } catch {
-    return iso;
-  }
-}
-
 export default function StatusPage() {
-  const { snapshot, source, mongoConfigured, timelines } =
-    useLoaderData<typeof loader>();
+  const {
+    snapshot,
+    source,
+    mongoConfigured,
+    timelines,
+    checkedAtLabel,
+    incidents,
+    targetNames,
+  } = useLoaderData<typeof loader>();
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -135,8 +160,8 @@ export default function StatusPage() {
               {snapshot.overallOk ? "All checks passing" : "Some checks failing"}
             </span>
             <span className="text-sm text-zinc-500 dark:text-zinc-400">
-              Updated {formatWhen(snapshot.checkedAt)}
-              {source === "mongodb" ? " (stored)" : null}
+              Updated {checkedAtLabel}
+              {source === "mongodb" ? " (stored, UTC)" : " (UTC)"}
             </span>
           </div>
 
@@ -160,6 +185,10 @@ export default function StatusPage() {
                       points={timelines[r.id] ?? []}
                       liveSingleCheck={source === "live"}
                     />
+                    <StatusLatencyTrend
+                      points={timelines[r.id] ?? []}
+                      label={r.name}
+                    />
                   </div>
                   <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end sm:pt-0.5">
                     <span
@@ -179,6 +208,8 @@ export default function StatusPage() {
               </li>
             ))}
           </ul>
+
+          <StatusIncidentLog incidents={incidents} targetNames={targetNames} />
         </>
       ) : null}
 
@@ -192,8 +223,11 @@ export default function StatusPage() {
           STATUS_CHECK_EXTRA_JSON
         </code>{" "}
         (append). A check is “passing” when the response status is below 500.
-        Timelines use the last <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">STATUS_HISTORY_POINTS</code>{" "}
-        stored runs (14-day TTL in Mongo).
+        Timelines, the incident log, and latency trends use the last{" "}
+        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">STATUS_HISTORY_POINTS</code>{" "}
+        stored runs (14-day TTL in Mongo). Display times are UTC. New cron rows include per-target{" "}
+        <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">latencyMs</code>; older rows only
+        contribute up/down segments until they age out.
       </p>
     </div>
   );

@@ -1,16 +1,5 @@
 import type { StatusTimelinePoint } from "~/lib/status-history.server";
 
-function formatTooltip(iso: string) {
-  try {
-    return new Intl.DateTimeFormat("en", {
-      dateStyle: "short",
-      timeStyle: "short",
-    }).format(new Date(iso));
-  } catch {
-    return iso;
-  }
-}
-
 type Props = {
   points: StatusTimelinePoint[];
   liveSingleCheck?: boolean;
@@ -45,7 +34,7 @@ export function StatusMonitorTimeline({ points, liveSingleCheck }: Props) {
         {points.map((p, i) => (
           <span
             key={`${p.checkedAt}-${i}`}
-            title={`${formatTooltip(p.checkedAt)}${p.ok ? " — Up" : " — Down"}`}
+            title={`${p.checkedAtLabel}${p.ok ? " — Up" : " — Down"}`}
             className={`min-w-0 flex-1 rounded-[1px] ${
               p.ok
                 ? "bg-emerald-500 dark:bg-emerald-600"

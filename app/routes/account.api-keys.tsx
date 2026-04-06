@@ -12,6 +12,7 @@ import {
 
 import type { Route } from "./+types/account.api-keys";
 import { copyToClipboard } from "~/lib/copy-to-clipboard";
+import { formatDateTimeMediumShort } from "~/lib/format-datetime";
 import {
   createApiKey,
   listApiKeysForUser,
@@ -185,14 +186,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 function formatCreated(iso: string) {
-  try {
-    return new Intl.DateTimeFormat("en", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(iso));
-  } catch {
-    return iso;
-  }
+  return formatDateTimeMediumShort(iso);
 }
 
 const panelClass =

@@ -1,4 +1,11 @@
-import { useEffect, useState, useSyncExternalStore } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import {
   data,
   isRouteErrorResponse,
@@ -45,6 +52,19 @@ import "./app.css";
 
 const colorSchemeBootScript = `(function(){try{var k=${JSON.stringify(COLOR_SCHEME_STORAGE_KEY)};var v=localStorage.getItem(k);var d=v==="dark"||(v!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
 
+const LegacyBannerLayoutContext = createContext<boolean>(false);
+
+/** Match SSR: read `data-legacy-banner` from the hydrated document before recomputing from env (can differ SSR vs client). */
+function layoutLegacyBannerFromEnv(): boolean {
+  if (typeof document === "undefined") {
+    return isLegacyBannerActiveAt(Date.now());
+  }
+  const raw = document.body?.getAttribute("data-legacy-banner");
+  if (raw === "1") return true;
+  if (raw === "0") return false;
+  return isLegacyBannerActiveAt(Date.now());
+}
+
 function useRootHtmlIsDark(): boolean {
   return useSyncExternalStore(
     subscribeColorScheme,
@@ -70,7 +90,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     {
       ssoConfigured,
       portalAccount: account,
-      legacyBannerActive: isLegacyBannerActiveAt(Date.now()),
     },
     { headers },
   );
@@ -188,19 +207,6 @@ function useResolvedRootLoaderData(): RootLoaderData | undefined {
 }
 
 /**
- * When root loader data is missing on the first client paint, treating `undefined` as falsy hid the banner
- * while SSR still rendered it. Re-run the same rule as the root loader (`isLegacyBannerActiveAt`) until
- * hydrated loader data includes an explicit boolean (matches loader: `legacyBannerActive` is always set there).
- */
-function resolveLegacyBannerVisible(
-  rootLoader: RootLoaderData | undefined,
-): boolean {
-  const flag = rootLoader?.legacyBannerActive;
-  if (flag === true || flag === false) return flag;
-  return isLegacyBannerActiveAt(Date.now());
-}
-
-/**
  * Resolves root loader data next to the data router (with `useMatches` fallback) and wraps the UI shell
  * in `IntastellarAuthProvider` so consumers always see the same context instance as the header.
  */
@@ -220,8 +226,13 @@ function IntastellarAppShell({ children }: { children: React.ReactNode }) {
  */
 function RootShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
-  const rootLoader = useResolvedRootLoaderData();
-  const showLegacyBanner = resolveLegacyBannerVisible(rootLoader);
+  /** Avoid SSR/hydration mismatch: first paint has no banner node; mount it before the browser paints. */
+  const [shellReady, setShellReady] = useState(false);
+  useLayoutEffect(() => {
+    setShellReady(true);
+  }, []);
+  const wantLegacyBanner = useContext(LegacyBannerLayoutContext);
+  const showLegacyBanner = shellReady && wantLegacyBanner;
   const fetcher = useFetcher<SearchLoaderData>();
   const navigate = useNavigate();
 
@@ -268,7 +279,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <SiteHeader onOpenSearch={openSearch} />
         {showLegacyBanner ? <LegacyDevelopersBanner /> : null}
         <main
-          className={showLegacyBanner ? "flex-1 pt-27" : "flex-1 pt-15"}
+          className={
+            wantLegacyBanner
+              ? "flex-1 pt-[6.75rem]"
+              : "flex-1 pt-[3.75rem]"
+          }
         >
           {children}
         </main>
@@ -289,6 +304,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 export function Layout({ children }: { children: React.ReactNode }) {
   const analytics = isAnalyticsEnabled();
   const htmlIsDark = useRootHtmlIsDark();
+  const legacyBannerLayout = layoutLegacyBannerFromEnv();
 
   return (
     <html
@@ -321,7 +337,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </>
         ) : null}
       </head>
-      <body className="min-h-dvh antialiased">
+      <body
+        className="min-h-dvh antialiased"
+        data-legacy-banner={legacyBannerLayout ? "1" : "0"}
+      >
         {analytics ? (
           <noscript>
             <iframe
@@ -333,9 +352,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
             />
           </noscript>
         ) : null}
-        <IntastellarAppShell>
-          <RootShell>{children}</RootShell>
-        </IntastellarAppShell>
+        <LegacyBannerLayoutContext.Provider value={legacyBannerLayout}>
+          <IntastellarAppShell>
+            <RootShell>{children}</RootShell>
+          </IntastellarAppShell>
+        </LegacyBannerLayoutContext.Provider>
         <Scripts />
       </body>
     </html>

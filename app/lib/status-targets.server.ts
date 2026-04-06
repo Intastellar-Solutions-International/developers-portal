@@ -37,8 +37,8 @@ function parseTargetsJson(raw: string | undefined): StatusTarget[] | null {
 const DEFAULT_TARGETS: StatusTarget[] = [
   {
     id: "consents-login",
-    name: "Intastellar Consents — login",
-    url: "https://www.intastellarconsents.com/login",
+    name: "Intastellar Consents",
+    url: "https://www.intastellarconsents.com",
   },
   {
     id: "consents-uc",
@@ -48,7 +48,7 @@ const DEFAULT_TARGETS: StatusTarget[] = [
   },
   {
     id: "inta-dev",
-    name: "inta.dev",
+    name: "inta.dev - Developer Portal",
     url: "https://inta.dev/",
     method: "HEAD",
   },

@@ -11,6 +11,7 @@ import {
   fetchGithubChangelog,
   fetchNpmPackageVersions,
 } from "~/lib/changelog.server";
+import { formatDateMedium } from "~/lib/format-datetime";
 
 const DEFAULT_CONSENTS_REPO = "felixaschultz/intastellar-cookie-solutions";
 const DEFAULT_SIGNIN_REPO = "Intastellar-Solutions-International/intastellar-signin";
@@ -53,13 +54,7 @@ export function meta(_: Route.MetaArgs) {
 
 function formatDate(iso: string | null) {
   if (!iso) return null;
-  try {
-    return new Intl.DateTimeFormat("en", {
-      dateStyle: "medium",
-    }).format(new Date(iso));
-  } catch {
-    return iso;
-  }
+  return formatDateMedium(iso);
 }
 
 type Platform = "consents" | "signin";

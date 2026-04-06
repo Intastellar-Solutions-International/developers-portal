@@ -1,3 +1,5 @@
+import { formatDateMedium } from "~/lib/format-datetime";
+
 export function DocMeta({
   lastUpdated,
   lastUpdatedSource,
@@ -5,9 +7,7 @@ export function DocMeta({
   lastUpdated: string;
   lastUpdatedSource: "frontmatter" | "file";
 }) {
-  const formatted = new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
-  }).format(new Date(lastUpdated));
+  const formatted = formatDateMedium(lastUpdated);
 
   const hint =
     lastUpdatedSource === "frontmatter"
