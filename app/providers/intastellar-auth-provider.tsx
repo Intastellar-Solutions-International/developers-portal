@@ -114,8 +114,8 @@ function IntastellarAuthEnabled({
 
   const onIntastellarSignedIn = useCallback(
     async (account: IntastellarAccount) => {
-      const ok = await syncIntastellarPortalSession(account.token);
-      if (ok) revalidator.revalidate();
+      await syncIntastellarPortalSession(account.token);
+      revalidator.revalidate();
     },
     [revalidator.revalidate],
   );

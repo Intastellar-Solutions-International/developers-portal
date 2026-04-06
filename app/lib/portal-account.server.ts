@@ -4,8 +4,11 @@ import { getPortalAccountSession } from "./intastellar-verify.server";
 import { isMongoConfigured } from "./mongodb.server";
 import {
   readPortalSessionTokenFromRequest,
+  readSsoSnapshotTokenFromRequest,
   serializePortalSessionSetCookie,
+  serializeSsoSnapshotClearCookie,
   verifyPortalSessionToken,
+  verifySsoSnapshotToken,
 } from "./portal-session.server";
 import {
   ensureUserFromIntastellar,
@@ -59,6 +62,21 @@ async function loadPortalAccountFromRequest(
   const setCookieHeaders: string[] = [];
 
   if (!isMongoConfigured()) {
+    const snapTok = readSsoSnapshotTokenFromRequest(request);
+    if (snapTok) {
+      const snap = verifySsoSnapshotToken(snapTok);
+      if (snap) {
+        return {
+          account: {
+            accountId: "",
+            email: snap.email,
+            displayName: snap.displayName,
+            avatarUrl: snap.imageUrl,
+          },
+          setCookieHeaders,
+        };
+      }
+    }
     const inta = await getPortalAccountSession(request);
     if (!inta) return { account: null, setCookieHeaders };
     return {
@@ -85,6 +103,21 @@ async function loadPortalAccountFromRequest(
 
   const inta = await getPortalAccountSession(request);
   if (!inta) {
+    const snapTok = readSsoSnapshotTokenFromRequest(request);
+    if (snapTok) {
+      const snap = verifySsoSnapshotToken(snapTok);
+      if (snap) {
+        return {
+          account: {
+            accountId: "",
+            email: snap.email,
+            displayName: snap.displayName,
+            avatarUrl: snap.imageUrl,
+          },
+          setCookieHeaders,
+        };
+      }
+    }
     return { account: null, setCookieHeaders };
   }
 
@@ -107,6 +140,7 @@ async function loadPortalAccountFromRequest(
     const cookie = serializePortalSessionSetCookie(request, accountId);
     if (cookie) {
       setCookieHeaders.push(cookie);
+      setCookieHeaders.push(serializeSsoSnapshotClearCookie(request));
     }
   }
 

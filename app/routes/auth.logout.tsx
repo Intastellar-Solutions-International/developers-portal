@@ -1,7 +1,10 @@
 import { redirect } from "react-router";
 
 import type { Route } from "./+types/auth.logout";
-import { serializePortalSessionClearCookie } from "~/lib/portal-session.server";
+import {
+  serializePortalSessionClearCookie,
+  serializeSsoSnapshotClearCookie,
+} from "~/lib/portal-session.server";
 
 export function loader() {
   return redirect("/account/login");
@@ -13,7 +16,8 @@ export function loader() {
  */
 export async function action({ request }: Route.ActionArgs) {
   const headers = new Headers();
-  headers.set("Set-Cookie", serializePortalSessionClearCookie(request));
+  headers.append("Set-Cookie", serializePortalSessionClearCookie(request));
+  headers.append("Set-Cookie", serializeSsoSnapshotClearCookie(request));
   return new Response(null, { status: 204, headers });
 }
 

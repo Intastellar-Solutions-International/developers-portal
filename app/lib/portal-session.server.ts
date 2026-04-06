@@ -4,6 +4,12 @@ import { ObjectId } from "mongodb";
 
 export const PORTAL_SESSION_COOKIE = "inta_portal_sess";
 
+/**
+ * When MongoDB is off, we still need an HttpOnly cookie the server can read on
+ * every request — `inta_acc` is often not sent (SDK uses `domain=localhost`, etc.).
+ */
+export const PORTAL_SSO_SNAPSHOT_COOKIE = "inta_portal_sso";
+
 /** 30 days */
 const MAX_AGE_SEC = 60 * 60 * 24 * 30;
 
@@ -48,6 +54,103 @@ export function signPortalSessionToken(accountId: ObjectId): string | null {
   const payload = `${hexId}.${exp}`;
   const sig = createHmac("sha256", sec).update(payload).digest("base64url");
   return `${payload}.${sig}`;
+}
+
+export type SsoSnapshotSession = {
+  email: string;
+  displayName: string;
+  imageUrl?: string;
+};
+
+export function signSsoSnapshotToken(session: SsoSnapshotSession): string | null {
+  const sec = sessionSecret();
+  if (!sec) return null;
+  const exp = Math.floor(Date.now() / 1000) + MAX_AGE_SEC;
+  const inner = JSON.stringify({
+    v: 1 as const,
+    email: session.email,
+    displayName: session.displayName,
+    ...(session.imageUrl ? { imageUrl: session.imageUrl } : {}),
+  });
+  const b64 = Buffer.from(inner, "utf8").toString("base64url");
+  const payload = `${b64}.${exp}`;
+  const sig = createHmac("sha256", sec).update(payload).digest("base64url");
+  return `${payload}.${sig}`;
+}
+
+export function verifySsoSnapshotToken(token: string): SsoSnapshotSession | null {
+  const sec = sessionSecret();
+  if (!sec) return null;
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+  const [b64, expStr, sig] = parts;
+  const exp = Number(expStr);
+  if (!Number.isFinite(exp) || exp < Math.floor(Date.now() / 1000)) {
+    return null;
+  }
+  const payload = `${b64}.${expStr}`;
+  const expected = createHmac("sha256", sec).update(payload).digest("base64url");
+  const sigBuf = Buffer.from(sig, "utf8");
+  const expBuf = Buffer.from(expected, "utf8");
+  if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
+    return null;
+  }
+  let inner: { v?: number; email?: string; displayName?: string; imageUrl?: string };
+  try {
+    inner = JSON.parse(Buffer.from(b64, "base64url").toString("utf8")) as typeof inner;
+  } catch {
+    return null;
+  }
+  if (inner.v !== 1) return null;
+  const email =
+    typeof inner.email === "string" ? inner.email.trim().toLowerCase() : "";
+  if (!email) return null;
+  const displayName =
+    typeof inner.displayName === "string" && inner.displayName.trim()
+      ? inner.displayName.trim()
+      : email;
+  const imageUrl =
+    typeof inner.imageUrl === "string" && inner.imageUrl.trim()
+      ? inner.imageUrl.trim()
+      : undefined;
+  return { email, displayName, imageUrl };
+}
+
+export function readSsoSnapshotTokenFromRequest(request: Request): string | null {
+  const raw = parseCookie(request.headers.get("Cookie"), PORTAL_SSO_SNAPSHOT_COOKIE);
+  const t = raw?.trim();
+  return t || null;
+}
+
+export function serializeSsoSnapshotSetCookie(
+  request: Request,
+  session: SsoSnapshotSession,
+): string | null {
+  const token = signSsoSnapshotToken(session);
+  if (!token) return null;
+  const secure = requestIsHttps(request);
+  const attrs = [
+    `${PORTAL_SSO_SNAPSHOT_COOKIE}=${encodeURIComponent(token)}`,
+    "Path=/",
+    `Max-Age=${MAX_AGE_SEC}`,
+    "HttpOnly",
+    "SameSite=Lax",
+  ];
+  if (secure) attrs.push("Secure");
+  return attrs.join("; ");
+}
+
+export function serializeSsoSnapshotClearCookie(request: Request): string {
+  const secure = requestIsHttps(request);
+  const attrs = [
+    `${PORTAL_SSO_SNAPSHOT_COOKIE}=`,
+    "Path=/",
+    "Max-Age=0",
+    "HttpOnly",
+    "SameSite=Lax",
+  ];
+  if (secure) attrs.push("Secure");
+  return attrs.join("; ");
 }
 
 export function verifyPortalSessionToken(token: string): ObjectId | null {

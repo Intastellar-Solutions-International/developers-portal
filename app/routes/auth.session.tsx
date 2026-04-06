@@ -3,7 +3,11 @@ import { data } from "react-router";
 import type { Route } from "./+types/auth.session";
 import { verifyIntastellarToken } from "~/lib/intastellar-verify.server";
 import { isMongoConfigured } from "~/lib/mongodb.server";
-import { serializePortalSessionSetCookie } from "~/lib/portal-session.server";
+import {
+  serializePortalSessionSetCookie,
+  serializeSsoSnapshotClearCookie,
+  serializeSsoSnapshotSetCookie,
+} from "~/lib/portal-session.server";
 import { ensureUserFromIntastellar } from "~/lib/user-accounts.server";
 
 export function loader() {
@@ -38,12 +42,35 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   if (!isMongoConfigured()) {
-    return data({ ok: true as const });
+    const snap = serializeSsoSnapshotSetCookie(request, {
+      email: session.email,
+      displayName: session.displayName,
+      imageUrl: session.imageUrl,
+    });
+    if (!snap) {
+      return data(
+        { ok: false as const, error: "session_unconfigured" },
+        { status: 503 },
+      );
+    }
+    const headers = new Headers();
+    headers.append("Set-Cookie", snap);
+    return data({ ok: true as const }, { headers });
   }
 
   const accountId = await ensureUserFromIntastellar(session);
   if (!accountId) {
-    return data({ ok: false as const, error: "db_unavailable" }, { status: 503 });
+    const snap = serializeSsoSnapshotSetCookie(request, {
+      email: session.email,
+      displayName: session.displayName,
+      imageUrl: session.imageUrl,
+    });
+    if (!snap) {
+      return data({ ok: false as const, error: "db_unavailable" }, { status: 503 });
+    }
+    const headers = new Headers();
+    headers.append("Set-Cookie", snap);
+    return data({ ok: true as const }, { headers });
   }
 
   const cookie = serializePortalSessionSetCookie(request, accountId);
@@ -56,6 +83,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   const headers = new Headers();
   headers.append("Set-Cookie", cookie);
+  headers.append("Set-Cookie", serializeSsoSnapshotClearCookie(request));
   return data({ ok: true as const }, { headers });
 }
 
