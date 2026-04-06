@@ -123,6 +123,46 @@ export async function insertManualIncident(opts: {
   return { ok: true };
 }
 
+export async function updateManualIncidentSeverity(opts: {
+  hexId: string;
+  severity: ManualIncidentSeverity;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!MANUAL_INCIDENT_SEVERITIES.includes(opts.severity)) {
+    return { ok: false, error: "Invalid severity." };
+  }
+  let oid: ObjectId;
+  try {
+    oid = new ObjectId(opts.hexId);
+  } catch {
+    return { ok: false, error: "Invalid incident id." };
+  }
+  const col = await getCollection<ManualIncidentRow>(
+    STATUS_MANUAL_INCIDENTS_COLLECTION,
+  );
+  if (!col) return { ok: false, error: "MongoDB is not configured." };
+  const row = await col.findOne({ _id: oid });
+  if (!row) return { ok: false, error: "Incident not found." };
+  if (row.severity === opts.severity) {
+    return { ok: true };
+  }
+  const now = new Date();
+  const resolvedAt =
+    opts.severity === "resolved"
+      ? (row.resolvedAt ?? now)
+      : null;
+  await col.updateOne(
+    { _id: oid },
+    {
+      $set: {
+        severity: opts.severity,
+        updatedAt: now,
+        resolvedAt,
+      },
+    },
+  );
+  return { ok: true };
+}
+
 export async function deleteManualIncidentById(
   hexId: string,
 ): Promise<boolean> {

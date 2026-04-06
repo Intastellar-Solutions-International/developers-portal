@@ -18,6 +18,43 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+const OPS_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Extra recipients for maintenance, incident, and probe-failure alerts (comma-separated in env).
+ * Not part of Mongo subscriptions; emails omit the unsubscribe link for these addresses.
+ */
+export function getOpsNotificationEmails(): string[] {
+  const raw = process.env.STATUS_NOTIFY_OPS_EMAILS?.trim();
+  if (!raw) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const part of raw.split(",")) {
+    const e = part.trim().toLowerCase();
+    if (!e || !OPS_EMAIL_RE.test(e) || seen.has(e)) continue;
+    seen.add(e);
+    out.push(e);
+  }
+  return out;
+}
+
+function unsubscribeFooterParagraph(unsubscribeToken: string): string {
+  const unsubUrl = absoluteUrl(
+    `/api/status/notify/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`,
+  );
+  return `<p style="margin:0;"><a href="${escapeHtml(unsubUrl)}" style="color:${TEXT_MUTED};text-decoration:underline;">Unsubscribe from status emails</a></p>`;
+}
+
+function opsRecipientFooterParagraph(): string {
+  return `<p style="margin:0;color:${TEXT_MUTED};font-size:12px;line-height:1.55;">This address is listed in <code style="background:#f4f4f5;padding:2px 6px;border-radius:4px;font-size:11px;">STATUS_NOTIFY_OPS_EMAILS</code> on the server (not the public subscribe list).</p>`;
+}
+
+function alertFooterHtml(unsubscribeToken: string | null): string {
+  return unsubscribeToken
+    ? unsubscribeFooterParagraph(unsubscribeToken)
+    : opsRecipientFooterParagraph();
+}
+
 function statusEmailLogoSrc(): string {
   const fromEnv = process.env.STATUS_NOTIFY_EMAIL_LOGO_URL?.trim();
   if (fromEnv && /^https:\/\//i.test(fromEnv)) {
@@ -168,7 +205,8 @@ ${ctaButton(verifyUrl, "Confirm subscription")}
 
 export async function sendMaintenanceAlertEmail(opts: {
   to: string;
-  unsubscribeToken: string;
+  /** `null` = ops routing via STATUS_NOTIFY_OPS_EMAILS (no unsubscribe link). */
+  unsubscribeToken: string | null;
   title: string;
   summary?: string;
   startsAtLabel: string;
@@ -176,9 +214,6 @@ export async function sendMaintenanceAlertEmail(opts: {
   monitorsLine: string | null;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   const statusUrl = absoluteUrl("/status");
-  const unsubUrl = absoluteUrl(
-    `/api/status/notify/unsubscribe?token=${encodeURIComponent(opts.unsubscribeToken)}`,
-  );
   const subject = `Scheduled maintenance: ${opts.title}`;
   const metaRows = [
     `<tr><td style="padding:6px 0;font-size:13px;color:${TEXT_MUTED};width:88px;vertical-align:top;">When</td><td style="padding:6px 0;font-size:14px;color:${TEXT_DARK};font-weight:500;">${escapeHtml(opts.startsAtLabel)} → ${escapeHtml(opts.endsAtLabel)}</td></tr>`,
@@ -203,7 +238,7 @@ export async function sendMaintenanceAlertEmail(opts: {
 </table>
 ${ctaButton(statusUrl, "View status page")}
 `;
-  const footerHtml = `<p style="margin:0;"><a href="${escapeHtml(unsubUrl)}" style="color:${TEXT_MUTED};text-decoration:underline;">Unsubscribe from status emails</a></p>`;
+  const footerHtml = alertFooterHtml(opts.unsubscribeToken);
   const html = wrapStatusEmailLayout({
     preheader: `Maintenance: ${opts.title}`,
     bodyHtml,
@@ -218,16 +253,13 @@ ${ctaButton(statusUrl, "View status page")}
 
 export async function sendIncidentAlertEmail(opts: {
   to: string;
-  unsubscribeToken: string;
+  unsubscribeToken: string | null;
   severity: string;
   title: string;
   body: string;
   monitorsLine: string | null;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   const statusUrl = absoluteUrl("/status");
-  const unsubUrl = absoluteUrl(
-    `/api/status/notify/unsubscribe?token=${encodeURIComponent(opts.unsubscribeToken)}`,
-  );
   const subject = `Status notice: ${opts.title}`;
   const bodyShort =
     opts.body.length > 4000 ? `${opts.body.slice(0, 4000)}…` : opts.body;
@@ -243,9 +275,71 @@ export async function sendIncidentAlertEmail(opts: {
 ${monitorsBlock}
 ${ctaButton(statusUrl, "View status page")}
 `;
-  const footerHtml = `<p style="margin:0;"><a href="${escapeHtml(unsubUrl)}" style="color:${TEXT_MUTED};text-decoration:underline;">Unsubscribe from status emails</a></p>`;
+  const footerHtml = alertFooterHtml(opts.unsubscribeToken);
   const html = wrapStatusEmailLayout({
     preheader: `${opts.severity}: ${opts.title}`,
+    bodyHtml,
+    footerHtml,
+  });
+  return sendResendEmail({
+    to: opts.to,
+    subject,
+    html,
+  });
+}
+
+export async function sendProbeFailureAlertEmail(opts: {
+  to: string;
+  unsubscribeToken: string | null;
+  checkedAtLabel: string;
+  failures: Array<{
+    name: string;
+    url: string;
+    statusCode: number | null;
+    error: string | null;
+    latencyMs: number;
+  }>;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const statusUrl = absoluteUrl("/status");
+  const n = opts.failures.length;
+  const subject =
+    n === 1
+      ? `Automated check failed: ${opts.failures[0].name}`.slice(0, 180)
+      : `Automated checks failed (${n} monitors)`;
+  const detailRows = opts.failures
+    .map((f) => {
+      const code =
+        f.statusCode != null ? `HTTP ${f.statusCode}` : "No response";
+      const err = f.error?.trim() ? f.error : code;
+      return `<tr>
+  <td style="padding:14px 16px;border-bottom:1px solid ${BORDER};vertical-align:top;">
+    <p style="margin:0 0 6px;font-size:15px;font-weight:600;color:${TEXT_DARK};">${escapeHtml(f.name)}</p>
+    <p style="margin:0 0 8px;font-size:12px;word-break:break-all;color:${TEXT_MUTED};">${escapeHtml(f.url)}</p>
+    <p style="margin:0;font-size:13px;color:#b91c1c;font-weight:500;">${escapeHtml(err)}</p>
+    <p style="margin:6px 0 0;font-size:12px;color:${TEXT_MUTED};">${escapeHtml(code)} · ${f.latencyMs} ms</p>
+  </td>
+</tr>`;
+    })
+    .join("");
+  const bodyHtml = `
+<p style="margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#b45309;">Automated monitoring</p>
+<p style="margin:0 0 8px;font-size:16px;font-weight:600;color:${TEXT_DARK};">One or more checks just started failing</p>
+<p style="margin:0 0 18px;font-size:14px;color:${TEXT_BODY};">Checked at <strong>${escapeHtml(opts.checkedAtLabel)}</strong> (UTC). This email is sent when a monitor moves from passing to failing so you are not notified on every cron run while it stays down.</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 20px;background:#fef2f2;border-radius:8px;border:1px solid #fecaca;overflow:hidden;">
+  ${detailRows}
+</table>
+${ctaButton(statusUrl, "View status page")}
+`;
+  const footerHtml = opts.unsubscribeToken
+    ? `<p style="margin:0;">You receive this because you subscribed to <strong>operator notices</strong> on the status page (that list includes automated check alerts).</p>
+<p style="margin:12px 0 0;"><a href="${escapeHtml(absoluteUrl(`/api/status/notify/unsubscribe?token=${encodeURIComponent(opts.unsubscribeToken)}`))}" style="color:${TEXT_MUTED};text-decoration:underline;">Unsubscribe from status emails</a></p>`
+    : opsRecipientFooterParagraph();
+  const pre =
+    n === 1
+      ? `Check failed: ${opts.failures[0].name}`
+      : `${n} monitors failing`;
+  const html = wrapStatusEmailLayout({
+    preheader: pre,
     bodyHtml,
     footerHtml,
   });

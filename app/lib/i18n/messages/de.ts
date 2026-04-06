@@ -448,7 +448,7 @@ export const de: MessageTree = {
       "Wählen Sie, welche Arten von Updates Sie möchten. RSS-Reader laden neue Einträge von der Feed-URL; E-Mail wird gesendet, wenn wir ein passendes Wartungsfenster oder einen Betreiberhinweis veröffentlichen.",
     subscribeTopicsLabel: "Einschließen",
     subscribeTopicMaintenance: "Geplante Wartung",
-    subscribeTopicIncidents: "Betreiberhinweise",
+    subscribeTopicIncidents: "Betreiberhinweise & Monitoring-Alarme",
     subscribePickTopicsError: "Mindestens einen Update-Typ auswählen.",
     subscribeRssUrlHelp: "RSS (in den Reader einfügen oder URL kopieren)",
     subscribeOpenRss: "RSS-Feed öffnen",

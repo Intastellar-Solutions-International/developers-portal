@@ -444,7 +444,7 @@ export const fr: MessageTree = {
       "Choisissez les types de mises à jour. Les lecteurs RSS récupèrent les nouveaux éléments depuis l’URL du flux ; un e-mail est envoyé lorsque nous publions une fenêtre de maintenance ou un avis opérateur correspondant.",
     subscribeTopicsLabel: "Inclure",
     subscribeTopicMaintenance: "Maintenance planifiée",
-    subscribeTopicIncidents: "Avis opérateur",
+    subscribeTopicIncidents: "Avis opérateur et alertes de surveillance",
     subscribePickTopicsError: "Sélectionnez au moins un type de mise à jour.",
     subscribeRssUrlHelp: "RSS (coller dans votre lecteur ou copier l’URL)",
     subscribeOpenRss: "Ouvrir le flux RSS",

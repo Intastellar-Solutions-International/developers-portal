@@ -2,9 +2,14 @@ import { timingSafeEqual } from "node:crypto";
 
 import type { Route } from "./+types/api.status.cron";
 import { isMongoConfigured } from "~/lib/mongodb.server";
+import { notifySubscribersNewProbeFailures } from "~/lib/status-notify-dispatch.server";
 import { overallOk, runStatusProbes } from "~/lib/status-probe.server";
+import { newlyFailingProbeResults } from "~/lib/status-probe-new-failures.server";
 import { appendStatusHistoryRun } from "~/lib/status-history.server";
-import { saveStatusSnapshot } from "~/lib/status-snapshot.server";
+import {
+  getLatestStatusSnapshot,
+  saveStatusSnapshot,
+} from "~/lib/status-snapshot.server";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
 function bearerFromRequest(request: Request): string | null {
@@ -48,12 +53,22 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   const targets = getStatusTargets();
+  const previousSnapshot = isMongoConfigured()
+    ? await getLatestStatusSnapshot()
+    : null;
   const results = await runStatusProbes(targets);
   const ok = overallOk(results);
   let persisted = false;
   if (isMongoConfigured()) {
     persisted = await saveStatusSnapshot(results, ok);
     await appendStatusHistoryRun(results, ok);
+    const freshFailures = newlyFailingProbeResults(previousSnapshot, results);
+    if (freshFailures.length > 0) {
+      await notifySubscribersNewProbeFailures({
+        checkedAt: new Date().toISOString(),
+        failures: freshFailures,
+      });
+    }
   }
 
   const body = JSON.stringify({

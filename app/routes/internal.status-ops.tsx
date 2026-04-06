@@ -14,6 +14,7 @@ import {
   deleteManualIncidentById,
   insertManualIncident,
   listManualIncidentsForAdmin,
+  updateManualIncidentSeverity,
 } from "~/lib/status-manual-incidents.server";
 import {
   notifySubscribersNewIncident,
@@ -220,6 +221,23 @@ export async function action({ request }: Route.ActionArgs) {
       severity,
       affectedTargetIds: affectedTargets,
     });
+    return redirect("/internal/status-ops");
+  }
+
+  if (intent === "update-incident-severity") {
+    const incidentId = String(fd.get("incidentId") ?? "").trim();
+    const severityRaw = String(fd.get("severity") ?? "");
+    if (!MANUAL_INCIDENT_SEVERITIES.includes(severityRaw as ManualIncidentSeverity)) {
+      return data({ error: "Invalid severity." }, { status: 400 });
+    }
+    const severity = severityRaw as ManualIncidentSeverity;
+    const upd = await updateManualIncidentSeverity({
+      hexId: incidentId,
+      severity,
+    });
+    if (!upd.ok) {
+      return data({ error: upd.error }, { status: 400 });
+    }
     return redirect("/internal/status-ops");
   }
 
@@ -575,20 +593,53 @@ export default function InternalStatusOps() {
                     </p>
                   ) : null}
                 </div>
-                <Form method="post">
-                  <input type="hidden" name="intent" value="delete-incident" />
-                  <input
-                    type="hidden"
-                    name="incidentId"
-                    value={ev.id}
-                  />
-                  <button
-                    type="submit"
-                    className="shrink-0 text-sm text-red-600 hover:underline dark:text-red-400"
+                <div className="flex shrink-0 flex-col items-stretch gap-2 sm:items-end">
+                  <Form
+                    method="post"
+                    className="flex flex-col gap-2 sm:flex-row sm:items-center"
                   >
-                    Delete
-                  </button>
-                </Form>
+                    <input
+                      type="hidden"
+                      name="intent"
+                      value="update-incident-severity"
+                    />
+                    <input type="hidden" name="incidentId" value={ev.id} />
+                    <label className="flex flex-col gap-1 text-xs text-zinc-500 sm:items-end">
+                      <span className="sr-only">Status</span>
+                      <select
+                        name="severity"
+                        defaultValue={ev.severity}
+                        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                      >
+                        {MANUAL_INCIDENT_SEVERITIES.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <button
+                      type="submit"
+                      className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                    >
+                      Update status
+                    </button>
+                  </Form>
+                  <Form method="post">
+                    <input type="hidden" name="intent" value="delete-incident" />
+                    <input
+                      type="hidden"
+                      name="incidentId"
+                      value={ev.id}
+                    />
+                    <button
+                      type="submit"
+                      className="text-sm text-red-600 hover:underline dark:text-red-400"
+                    >
+                      Delete
+                    </button>
+                  </Form>
+                </div>
               </li>
             ))}
           </ul>

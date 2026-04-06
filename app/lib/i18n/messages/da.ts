@@ -443,7 +443,7 @@ export const da: MessageTree = {
       "Vælg hvilke opdateringer du vil have. RSS-læsere henter nye elementer fra feed-URL’en; e-mail sendes når vi udgiver et matchende vindue eller operatørvarsel.",
     subscribeTopicsLabel: "Inkluder",
     subscribeTopicMaintenance: "Planlagt vedligeholdelse",
-    subscribeTopicIncidents: "Operatørmeddelelser",
+    subscribeTopicIncidents: "Operatørmeddelelser og overvågningsalarmer",
     subscribePickTopicsError: "Vælg mindst én opdateringstype.",
     subscribeRssUrlHelp: "RSS (indsæt i din læser eller kopiér URL)",
     subscribeOpenRss: "Åbn RSS-feed",

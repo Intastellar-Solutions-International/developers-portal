@@ -453,7 +453,7 @@ export const en = {
       "Choose which kinds of updates you want. RSS readers fetch new items from the feed URL; email sends when we publish a matching maintenance window or operator notice.",
     subscribeTopicsLabel: "Include",
     subscribeTopicMaintenance: "Scheduled maintenance",
-    subscribeTopicIncidents: "Operator notices",
+    subscribeTopicIncidents: "Operator notices & monitoring alerts",
     subscribePickTopicsError: "Select at least one update type.",
     subscribeRssUrlHelp: "RSS (paste into your reader or copy the URL)",
     subscribeOpenRss: "Open RSS feed",

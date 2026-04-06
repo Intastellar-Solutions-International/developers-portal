@@ -444,7 +444,7 @@ export const nl: MessageTree = {
       "Kies welke updates je wilt. RSS-readers halen nieuwe items op via de feed-URL; e-mail wordt verstuurd wanneer we een passend onderhoudsvenster of operatorbericht publiceren.",
     subscribeTopicsLabel: "Opnemen",
     subscribeTopicMaintenance: "Gepland onderhoud",
-    subscribeTopicIncidents: "Operatorberichten",
+    subscribeTopicIncidents: "Operatorberichten en monitoringalerts",
     subscribePickTopicsError: "Kies minstens één soort update.",
     subscribeRssUrlHelp: "RSS (plak in je reader of kopieer de URL)",
     subscribeOpenRss: "RSS-feed openen",

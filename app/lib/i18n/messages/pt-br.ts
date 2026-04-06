@@ -445,7 +445,7 @@ export const ptBr: MessageTree = {
       "Escolha os tipos de atualização. Leitores RSS buscam novos itens na URL do feed; o e-mail é enviado quando publicamos uma janela de manutenção ou aviso do operador correspondente.",
     subscribeTopicsLabel: "Incluir",
     subscribeTopicMaintenance: "Manutenção agendada",
-    subscribeTopicIncidents: "Avisos do operador",
+    subscribeTopicIncidents: "Avisos do operador e alertas de monitoramento",
     subscribePickTopicsError: "Selecione pelo menos um tipo de atualização.",
     subscribeRssUrlHelp: "RSS (cole no leitor ou copie a URL)",
     subscribeOpenRss: "Abrir feed RSS",
