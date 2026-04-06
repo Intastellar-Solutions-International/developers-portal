@@ -7,9 +7,9 @@ import { StatusManualIncidents } from "~/components/status-manual-incidents";
 import {
   StatusDeploySection,
   StatusMaintenanceSection,
-  StatusSubscribeSection,
   StatusTrustSection,
 } from "~/components/status-page-extras";
+import { StatusSubscribeSection } from "~/components/status-subscribe-section";
 import { StatusUptimeBadgeModal } from "~/components/status-uptime-badge-modal";
 import { StatusLatencyTrend } from "~/components/status-latency-trend";
 import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
@@ -38,11 +38,32 @@ import { getStatusDeployPublic } from "~/lib/status-deploy.server";
 import { listFutureMaintenanceWindowsFromMongo } from "~/lib/status-maintenance-db.server";
 import { getPublicMaintenanceWindows } from "~/lib/status-maintenance.server";
 import { listManualIncidentsPublic } from "~/lib/status-manual-incidents.server";
+import { isStatusEmailConfigured } from "~/lib/status-notify-email.server";
 import { absoluteUrl } from "~/lib/site";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
+const NOTIFY_FLASH = new Set([
+  "verified",
+  "unsubscribed",
+  "verify_missing",
+  "verify_invalid",
+  "unsub_missing",
+  "unsub_invalid",
+]);
+
 export async function loader({ request }: Route.LoaderArgs) {
   const locale = resolveLocaleFromRequest(request);
+  const reqUrl = new URL(request.url);
+  const notifyParam = reqUrl.searchParams.get("notify") ?? "";
+  const notifyFlash = NOTIFY_FLASH.has(notifyParam)
+    ? (notifyParam as
+        | "verified"
+        | "unsubscribed"
+        | "verify_missing"
+        | "verify_invalid"
+        | "unsub_missing"
+        | "unsub_invalid")
+    : null;
   const copy = getStatusPageCopy(locale);
   const targetList = getStatusTargets();
   const targetNames = Object.fromEntries(
@@ -67,6 +88,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   let checkedAtLabel: string | null = null;
   const historyWindowSize = getStatusHistoryMaxPoints();
   const mongoConfigured = isMongoConfigured();
+  const subscribeEmailAvailable =
+    mongoConfigured && isStatusEmailConfigured();
   const [mongoMaint, deploy, manualIncidents] = await Promise.all([
     mongoConfigured ? listFutureMaintenanceWindowsFromMongo() : Promise.resolve([]),
     getStatusDeployPublic(),
@@ -138,6 +161,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     historyWindowSize,
     manualIncidents,
     feedUrl: absoluteUrl("/api/status/feed.xml"),
+    notifyFlash,
+    subscribeEmailAvailable,
   };
 }
 
@@ -179,8 +204,25 @@ export default function StatusPage() {
     historyWindowSize,
     manualIncidents,
     feedUrl,
+    notifyFlash,
+    subscribeEmailAvailable,
   } = useLoaderData<typeof loader>();
   const copy = resolveStatusPageCopy(locale, copyFromLoader);
+
+  const notifyFlashMessage =
+    notifyFlash === "verified"
+      ? copy.notifyFlashVerified
+      : notifyFlash === "unsubscribed"
+        ? copy.notifyFlashUnsubscribed
+        : notifyFlash === "verify_missing"
+          ? copy.notifyFlashVerifyMissing
+          : notifyFlash === "verify_invalid"
+            ? copy.notifyFlashVerifyInvalid
+            : notifyFlash === "unsub_missing"
+              ? copy.notifyFlashUnsubMissing
+              : notifyFlash === "unsub_invalid"
+                ? copy.notifyFlashUnsubInvalid
+                : null;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -198,7 +240,24 @@ export default function StatusPage() {
         {copy.introAfterLink}
       </p>
 
-      <StatusSubscribeSection copy={copy} feedUrl={feedUrl} />
+      {notifyFlashMessage ? (
+        <p
+          className={
+            notifyFlash === "verified" || notifyFlash === "unsubscribed"
+              ? "mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-100"
+              : "mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100"
+          }
+          role="status"
+        >
+          {notifyFlashMessage}
+        </p>
+      ) : null}
+
+      <StatusSubscribeSection
+        copy={copy}
+        feedUrl={feedUrl}
+        subscribeEmailAvailable={subscribeEmailAvailable}
+      />
 
       <StatusTrustSection copy={copy} historyMaxPoints={historyWindowSize} />
       <StatusMaintenanceSection copy={copy} windows={maintenance} />

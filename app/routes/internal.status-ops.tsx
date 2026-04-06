@@ -15,6 +15,10 @@ import {
   insertManualIncident,
   listManualIncidentsForAdmin,
 } from "~/lib/status-manual-incidents.server";
+import {
+  notifySubscribersNewIncident,
+  notifySubscribersNewMaintenance,
+} from "~/lib/status-notify-dispatch.server";
 import { isStatusAdminEmail, statusAdminConfigured } from "~/lib/status-admin.server";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
@@ -203,6 +207,12 @@ export async function action({ request }: Route.ActionArgs) {
     if (!ins.ok) {
       return data({ error: ins.error }, { status: 400 });
     }
+    void notifySubscribersNewIncident({
+      title,
+      body,
+      severity,
+      affectedTargetIds: affectedTargets,
+    });
     return redirect("/internal/status-ops");
   }
 

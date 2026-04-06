@@ -1,9 +1,14 @@
 import type { Route } from "./+types/api.status.feed";
-import { buildStatusRssXml } from "~/lib/status-feed.server";
+import {
+  buildStatusRssXml,
+  parseStatusFeedTopicsParam,
+} from "~/lib/status-feed.server";
 
 /** RSS 2.0 feed of operator notices + scheduled maintenance. */
-export async function loader(_: Route.LoaderArgs) {
-  const body = await buildStatusRssXml();
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const topics = parseStatusFeedTopicsParam(url.searchParams.get("topics"));
+  const body = await buildStatusRssXml(topics);
   return new Response(body, {
     headers: {
       "Content-Type": "application/rss+xml; charset=utf-8",

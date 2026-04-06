@@ -18,6 +18,9 @@ export const STATUS_MAINTENANCE_DB_COLLECTION = "status_maintenance_windows";
 /** Manual incident reports filed by operators (shown on /status). */
 export const STATUS_MANUAL_INCIDENTS_COLLECTION = "status_manual_incidents";
 
+/** Double opt-in email list for status maintenance + incident notifications. */
+export const STATUS_NOTIFY_SUBSCRIPTIONS_COLLECTION = "status_notify_subscriptions";
+
 /**
  * MongoDB JSON Schema validators (`createCollection` / `collMod`).
  * @see https://www.mongodb.com/docs/manual/reference/operator/query/jsonSchema/
@@ -178,6 +181,19 @@ async function ensureStatusManualIncidentsCollection(db: Db): Promise<void> {
   );
 }
 
+async function ensureStatusNotifySubscriptionsCollection(db: Db): Promise<void> {
+  if (!(await collectionExists(db, STATUS_NOTIFY_SUBSCRIPTIONS_COLLECTION))) {
+    await db.createCollection(STATUS_NOTIFY_SUBSCRIPTIONS_COLLECTION);
+  }
+  const c = db.collection(STATUS_NOTIFY_SUBSCRIPTIONS_COLLECTION);
+  await c.createIndex({ email: 1 }, { unique: true, name: "notify_email_unique" });
+  await c.createIndex({ verifyToken: 1 }, { unique: true, name: "notify_verify_unique" });
+  await c.createIndex(
+    { unsubscribeToken: 1 },
+    { unique: true, name: "notify_unsub_unique" },
+  );
+}
+
 /**
  * Creates collections (with JSON Schema validators) and indexes for portal data.
  * Idempotent; safe to call on every DB handle acquisition.
@@ -193,6 +209,7 @@ export async function ensureMongoDbSchema(db: Db): Promise<void> {
         await ensureStatusHistoryCollection(db);
         await ensureStatusMaintenanceDbCollection(db);
         await ensureStatusManualIncidentsCollection(db);
+        await ensureStatusNotifySubscriptionsCollection(db);
       } catch (err) {
         if (process.env.NODE_ENV !== "production") {
           console.warn("[mongodb] ensureMongoDbSchema failed:", err);

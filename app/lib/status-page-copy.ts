@@ -97,6 +97,31 @@ export type StatusPageCopy = {
   affectedMonitorsLabel: string;
   subscribeRss: string;
   subscribeRssTitle: string;
+  subscribeSectionHeading: string;
+  subscribeSectionIntro: string;
+  subscribeTopicsLabel: string;
+  subscribeTopicMaintenance: string;
+  subscribeTopicIncidents: string;
+  subscribePickTopicsError: string;
+  subscribeRssUrlHelp: string;
+  subscribeOpenRss: string;
+  subscribeCopyFeedUrl: string;
+  subscribeCopied: string;
+  subscribeEmailHelp: string;
+  subscribeEmailCheckbox: string;
+  subscribeEmailUnavailable: string;
+  subscribeEmailInputLabel: string;
+  subscribeEmailPlaceholder: string;
+  subscribeEmailSubmit: string;
+  subscribeEmailVerifySent: string;
+  subscribeEmailUpdated: string;
+  subscribeEmailErrorGeneric: string;
+  notifyFlashVerified: string;
+  notifyFlashUnsubscribed: string;
+  notifyFlashVerifyMissing: string;
+  notifyFlashVerifyInvalid: string;
+  notifyFlashUnsubMissing: string;
+  notifyFlashUnsubInvalid: string;
 };
 
 export function getStatusPageCopy(locale: Locale): StatusPageCopy {
@@ -196,6 +221,31 @@ export function getStatusPageCopy(locale: Locale): StatusPageCopy {
     affectedMonitorsLabel: tp("status.affectedMonitorsLabel"),
     subscribeRss: tp("status.subscribeRss"),
     subscribeRssTitle: tp("status.subscribeRssTitle"),
+    subscribeSectionHeading: tp("status.subscribeSectionHeading"),
+    subscribeSectionIntro: tp("status.subscribeSectionIntro"),
+    subscribeTopicsLabel: tp("status.subscribeTopicsLabel"),
+    subscribeTopicMaintenance: tp("status.subscribeTopicMaintenance"),
+    subscribeTopicIncidents: tp("status.subscribeTopicIncidents"),
+    subscribePickTopicsError: tp("status.subscribePickTopicsError"),
+    subscribeRssUrlHelp: tp("status.subscribeRssUrlHelp"),
+    subscribeOpenRss: tp("status.subscribeOpenRss"),
+    subscribeCopyFeedUrl: tp("status.subscribeCopyFeedUrl"),
+    subscribeCopied: tp("status.subscribeCopied"),
+    subscribeEmailHelp: tp("status.subscribeEmailHelp"),
+    subscribeEmailCheckbox: tp("status.subscribeEmailCheckbox"),
+    subscribeEmailUnavailable: tp("status.subscribeEmailUnavailable"),
+    subscribeEmailInputLabel: tp("status.subscribeEmailInputLabel"),
+    subscribeEmailPlaceholder: tp("status.subscribeEmailPlaceholder"),
+    subscribeEmailSubmit: tp("status.subscribeEmailSubmit"),
+    subscribeEmailVerifySent: tp("status.subscribeEmailVerifySent"),
+    subscribeEmailUpdated: tp("status.subscribeEmailUpdated"),
+    subscribeEmailErrorGeneric: tp("status.subscribeEmailErrorGeneric"),
+    notifyFlashVerified: tp("status.notifyFlashVerified"),
+    notifyFlashUnsubscribed: tp("status.notifyFlashUnsubscribed"),
+    notifyFlashVerifyMissing: tp("status.notifyFlashVerifyMissing"),
+    notifyFlashVerifyInvalid: tp("status.notifyFlashVerifyInvalid"),
+    notifyFlashUnsubMissing: tp("status.notifyFlashUnsubMissing"),
+    notifyFlashUnsubInvalid: tp("status.notifyFlashUnsubInvalid"),
   };
 }
 
@@ -213,7 +263,8 @@ export function resolveStatusPageCopy(
     typeof fromLoader.embedPreviewHeading === "string" &&
     typeof fromLoader.trustHeading === "string" &&
     typeof fromLoader.manualNoticesHeading === "string" &&
-    typeof fromLoader.subscribeRss === "string"
+    typeof fromLoader.subscribeRss === "string" &&
+    typeof fromLoader.subscribeSectionHeading === "string"
   ) {
     return fromLoader;
   }

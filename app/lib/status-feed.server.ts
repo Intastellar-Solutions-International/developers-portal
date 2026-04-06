@@ -27,18 +27,49 @@ type FeedItem = {
   description: string;
 };
 
+export type StatusFeedTopics = {
+  maintenance: boolean;
+  incidents: boolean;
+};
+
+/** Comma-separated: `maintenance`, `incidents`. Empty / unknown → both. */
+export function parseStatusFeedTopicsParam(raw: string | null): StatusFeedTopics {
+  if (raw == null || raw.trim() === "") {
+    return { maintenance: true, incidents: true };
+  }
+  const parts = raw
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  const maintenance = parts.includes("maintenance");
+  const incidents = parts.includes("incidents");
+  if (!maintenance && !incidents) {
+    return { maintenance: true, incidents: true };
+  }
+  return { maintenance, incidents };
+}
+
 /**
  * RSS 2.0 feed for operator notices + scheduled maintenance (merged env + Mongo).
  */
-export async function buildStatusRssXml(): Promise<string> {
+export async function buildStatusRssXml(
+  topics: StatusFeedTopics = { maintenance: true, incidents: true },
+): Promise<string> {
   const statusUrl = absoluteUrl("/status");
-  const channelTitle = "inta.dev — Status updates";
-  const channelDesc =
+  let channelTitle = "inta.dev — Status updates";
+  let channelDesc =
     "Operator notices, scheduled maintenance windows, and links to the system status page.";
+  if (topics.maintenance && !topics.incidents) {
+    channelTitle += " (maintenance)";
+    channelDesc = "Scheduled maintenance windows for inta.dev.";
+  } else if (!topics.maintenance && topics.incidents) {
+    channelTitle += " (operator notices)";
+    channelDesc = "Operator notices for inta.dev.";
+  }
 
   const items: FeedItem[] = [];
 
-  if (isMongoConfigured()) {
+  if (topics.incidents && isMongoConfigured()) {
     const incidents = await listManualIncidentsPublic(40);
     for (const ev of incidents) {
       const extra =
@@ -56,27 +87,29 @@ export async function buildStatusRssXml(): Promise<string> {
     }
   }
 
-  const mongoMaint = isMongoConfigured()
-    ? await listFutureMaintenanceWindowsFromMongo()
-    : [];
-  const maintViews = getPublicMaintenanceWindows(formatDateTimeMediumUtc, {
-    mongoWindows: mongoMaint,
-  });
-  for (const w of maintViews) {
-    const parts = [
-      w.summary,
-      w.affectedLabels.length > 0
-        ? `May affect: ${w.affectedLabels.join(", ")}.`
-        : null,
-    ].filter(Boolean);
-    const desc = parts.length ? parts.join(" ") : w.title;
-    items.push({
-      title: `Maintenance: ${w.title}`,
-      link: statusUrl,
-      guid: `inta.dev:maintenance:${w.id}:${w.startsAt}`,
-      pubDate: new Date(w.startsAt),
-      description: escapeXml(desc),
+  if (topics.maintenance) {
+    const mongoMaint = isMongoConfigured()
+      ? await listFutureMaintenanceWindowsFromMongo()
+      : [];
+    const maintViews = getPublicMaintenanceWindows(formatDateTimeMediumUtc, {
+      mongoWindows: mongoMaint,
     });
+    for (const w of maintViews) {
+      const parts = [
+        w.summary,
+        w.affectedLabels.length > 0
+          ? `May affect: ${w.affectedLabels.join(", ")}.`
+          : null,
+      ].filter(Boolean);
+      const desc = parts.length ? parts.join(" ") : w.title;
+      items.push({
+        title: `Maintenance: ${w.title}`,
+        link: statusUrl,
+        guid: `inta.dev:maintenance:${w.id}:${w.startsAt}`,
+        pubDate: new Date(w.startsAt),
+        description: escapeXml(desc),
+      });
+    }
   }
 
   items.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
