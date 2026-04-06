@@ -44,6 +44,8 @@ export type ManualIncidentRow = {
   authorEmail: string;
   resolvedAt: Date | null;
   updates?: ManualIncidentUpdateRow[];
+  /** Set when removed from the public status page (soft delete); row kept for restore. */
+  deletedAt?: Date;
 };
 
 function mapUpdatesToPublic(
@@ -95,7 +97,7 @@ export async function listManualIncidentsPublic(
   if (!col) return [];
   const targets = getStatusTargets();
   const rows = await col
-    .find({})
+    .find({ deletedAt: { $exists: false } })
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();
@@ -115,6 +117,7 @@ export async function listManualIncidentRowsOverlappingRange(
   if (!col) return [];
   return col
     .find({
+      deletedAt: { $exists: false },
       createdAt: { $lte: rangeEnd },
       $or: [{ resolvedAt: null }, { resolvedAt: { $gt: rangeStart } }],
     })
@@ -211,6 +214,12 @@ export async function updateManualIncident(opts: {
   if (!col) return { ok: false, error: "MongoDB is not configured." };
   const row = await col.findOne({ _id: oid });
   if (!row) return { ok: false, error: "Incident not found." };
+  if (row.deletedAt) {
+    return {
+      ok: false,
+      error: "This notice is archived. Restore it before editing.",
+    };
+  }
   const fromSev = row.severity;
   const toSev = opts.severity;
   if (fromSev === toSev && !message) {
@@ -259,9 +268,47 @@ export async function updateManualIncident(opts: {
   };
 }
 
-export async function deleteManualIncidentById(
-  hexId: string,
-): Promise<boolean> {
+/** Hide from public status / RSS / uptime; row remains in Mongo for restore. */
+export async function archiveManualIncidentById(hexId: string): Promise<boolean> {
+  let oid: ObjectId;
+  try {
+    oid = new ObjectId(hexId);
+  } catch {
+    return false;
+  }
+  const col = await getCollection<ManualIncidentRow>(
+    STATUS_MANUAL_INCIDENTS_COLLECTION,
+  );
+  if (!col) return false;
+  const now = new Date();
+  const r = await col.updateOne(
+    { _id: oid, deletedAt: { $exists: false } },
+    { $set: { deletedAt: now, updatedAt: now } },
+  );
+  return r.matchedCount === 1;
+}
+
+export async function restoreManualIncidentById(hexId: string): Promise<boolean> {
+  let oid: ObjectId;
+  try {
+    oid = new ObjectId(hexId);
+  } catch {
+    return false;
+  }
+  const col = await getCollection<ManualIncidentRow>(
+    STATUS_MANUAL_INCIDENTS_COLLECTION,
+  );
+  if (!col) return false;
+  const now = new Date();
+  const r = await col.updateOne(
+    { _id: oid, deletedAt: { $exists: true } },
+    { $set: { updatedAt: now }, $unset: { deletedAt: "" } },
+  );
+  return r.matchedCount === 1;
+}
+
+/** Irreversible removal (e.g. GDPR). Prefer `archiveManualIncidentById` for normal ops. */
+export async function purgeManualIncidentById(hexId: string): Promise<boolean> {
   let oid: ObjectId;
   try {
     oid = new ObjectId(hexId);

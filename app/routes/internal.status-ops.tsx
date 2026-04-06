@@ -11,8 +11,9 @@ import {
   type ManualIncidentSeverity,
 } from "~/lib/status-manual-incidents";
 import {
-  deleteManualIncidentById,
+  archiveManualIncidentById,
   insertManualIncident,
+  restoreManualIncidentById,
   listManualIncidentsForAdmin,
   updateManualIncident,
 } from "~/lib/status-manual-incidents.server";
@@ -57,6 +58,8 @@ type IncidentAdminSerialized = {
   createdAt: string;
   affectedTargetIds?: string[];
   updatesCount: number;
+  archived: boolean;
+  archivedAt?: string;
 };
 
 type LoaderOk = {
@@ -105,13 +108,21 @@ export async function loader({ request }: Route.LoaderArgs): Promise<LoaderData>
       ? { affectedTargetIds: w.affectedTargetIds }
       : {}),
   }));
-  const incidents: IncidentAdminSerialized[] = incRows.map((e) => ({
+  const sortedIncidents = [...incRows].sort((a, b) => {
+    const ad = a.deletedAt ? 1 : 0;
+    const bd = b.deletedAt ? 1 : 0;
+    if (ad !== bd) return ad - bd;
+    return b.createdAt.getTime() - a.createdAt.getTime();
+  });
+  const incidents: IncidentAdminSerialized[] = sortedIncidents.map((e) => ({
     id: e._id.toHexString(),
     title: e.title,
     body: e.body,
     severity: e.severity,
     createdAt: e.createdAt.toISOString(),
     updatesCount: e.updates?.length ?? 0,
+    archived: Boolean(e.deletedAt),
+    ...(e.deletedAt ? { archivedAt: e.deletedAt.toISOString() } : {}),
     ...(e.affectedTargetIds?.length
       ? { affectedTargetIds: e.affectedTargetIds }
       : {}),
@@ -250,11 +261,26 @@ export async function action({ request }: Route.ActionArgs) {
     return redirect("/internal/status-ops");
   }
 
-  if (intent === "delete-incident") {
+  if (intent === "archive-incident") {
     const id = String(fd.get("incidentId") ?? "").trim();
-    const ok = await deleteManualIncidentById(id);
+    const ok = await archiveManualIncidentById(id);
     if (!ok) {
-      return data({ error: "Could not delete incident." }, { status: 400 });
+      return data(
+        { error: "Could not archive incident (already archived or missing)." },
+        { status: 400 },
+      );
+    }
+    return redirect("/internal/status-ops");
+  }
+
+  if (intent === "restore-incident") {
+    const id = String(fd.get("incidentId") ?? "").trim();
+    const ok = await restoreManualIncidentById(id);
+    if (!ok) {
+      return data(
+        { error: "Could not restore incident (not archived or missing)." },
+        { status: 400 },
+      );
     }
     return redirect("/internal/status-ops");
   }
@@ -511,7 +537,8 @@ export default function InternalStatusOps() {
           <a href="/status" className="text-brand hover:text-brand-hover">
             /status
           </a>{" "}
-          page under &quot;Operator notices&quot;.
+          page under &quot;Operator notices&quot;. Archiving removes a notice from
+          the public page but keeps it in the database so you can restore it.
         </p>
 
         <Form method="post" className="mt-6 space-y-3">
@@ -583,9 +610,18 @@ export default function InternalStatusOps() {
             {incidents.map((ev) => (
               <li
                 key={ev.id}
-                className="flex flex-col gap-2 py-3 sm:flex-row sm:items-start sm:justify-between"
+                className={`flex flex-col gap-2 py-3 sm:flex-row sm:items-start sm:justify-between ${
+                  ev.archived
+                    ? "rounded-lg bg-zinc-50 dark:bg-zinc-900/80"
+                    : ""
+                }`}
               >
                 <div className="min-w-0">
+                  {ev.archived ? (
+                    <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                      Archived — hidden from public status
+                    </p>
+                  ) : null}
                   <p className="font-medium text-zinc-900 dark:text-zinc-100">
                     {ev.title}
                   </p>
@@ -594,6 +630,9 @@ export default function InternalStatusOps() {
                   </p>
                   <p className="mt-1 text-xs text-zinc-500">
                     {ev.severity} · {ev.createdAt}
+                    {ev.archived && ev.archivedAt ? (
+                      <> · archived {ev.archivedAt}</>
+                    ) : null}
                   </p>
                   {ev.affectedTargetIds?.length ? (
                     <p className="mt-1 text-xs text-zinc-500">
@@ -608,62 +647,107 @@ export default function InternalStatusOps() {
                   ) : null}
                 </div>
                 <div className="flex shrink-0 flex-col items-stretch gap-2 sm:items-end sm:min-w-[220px]">
-                  <Form
-                    method="post"
-                    className="flex w-full flex-col gap-2"
-                  >
-                    <input
-                      type="hidden"
-                      name="intent"
-                      value="update-incident-severity"
-                    />
-                    <input type="hidden" name="incidentId" value={ev.id} />
-                    <label className="flex flex-col gap-1 text-xs text-zinc-500">
-                      <span className="sr-only">Status</span>
-                      <select
-                        name="severity"
-                        defaultValue={ev.severity}
-                        className="w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                  {ev.archived ? (
+                    <Form
+                      method="post"
+                      onSubmit={(e) => {
+                        if (
+                          !confirm(
+                            "Restore this operator notice to the public status page?",
+                          )
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
+                    >
+                      <input type="hidden" name="intent" value="restore-incident" />
+                      <input type="hidden" name="incidentId" value={ev.id} />
+                      <button
+                        type="submit"
+                        className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
                       >
-                        {MANUAL_INCIDENT_SEVERITIES.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="flex flex-col gap-1 text-xs text-zinc-500">
-                      <span className="text-zinc-600 dark:text-zinc-400">
-                        Update message (optional)
-                      </span>
-                      <textarea
-                        name="updateMessage"
-                        rows={3}
-                        placeholder="What changed?"
-                        className="w-full resize-y rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-800"
-                      />
-                    </label>
-                    <button
-                      type="submit"
-                      className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
-                    >
-                      Update status
-                    </button>
-                  </Form>
-                  <Form method="post">
-                    <input type="hidden" name="intent" value="delete-incident" />
-                    <input
-                      type="hidden"
-                      name="incidentId"
-                      value={ev.id}
-                    />
-                    <button
-                      type="submit"
-                      className="text-sm text-red-600 hover:underline dark:text-red-400"
-                    >
-                      Delete
-                    </button>
-                  </Form>
+                        Restore to status page
+                      </button>
+                    </Form>
+                  ) : (
+                    <>
+                      <Form
+                        method="post"
+                        className="flex w-full flex-col gap-2"
+                      >
+                        <input
+                          type="hidden"
+                          name="intent"
+                          value="update-incident-severity"
+                        />
+                        <input type="hidden" name="incidentId" value={ev.id} />
+                        <label className="flex flex-col gap-1 text-xs text-zinc-500">
+                          <span className="sr-only">Status</span>
+                          <select
+                            name="severity"
+                            defaultValue={ev.severity}
+                            className="w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                          >
+                            {MANUAL_INCIDENT_SEVERITIES.map((s) => (
+                              <option key={s} value={s}>
+                                {s}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="flex flex-col gap-1 text-xs text-zinc-500">
+                          <span className="text-zinc-600 dark:text-zinc-400">
+                            Update message (optional)
+                          </span>
+                          <textarea
+                            name="updateMessage"
+                            rows={3}
+                            placeholder="What changed?"
+                            className="w-full resize-y rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-800"
+                          />
+                        </label>
+                        <button
+                          type="submit"
+                          className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                        >
+                          Update status
+                        </button>
+                      </Form>
+                      <Form
+                        method="post"
+                        onSubmit={(e) => {
+                          if (
+                            !confirm(
+                              "Remove this operator notice from the public status page? It will be archived here so you can restore it later.",
+                            )
+                          ) {
+                            e.preventDefault();
+                            return;
+                          }
+                          if (
+                            !confirm(
+                              "Second step: archive this notice? (It will no longer appear on /status.)",
+                            )
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
+                      >
+                        <input type="hidden" name="intent" value="archive-incident" />
+                        <input
+                          type="hidden"
+                          name="incidentId"
+                          value={ev.id}
+                        />
+                        <button
+                          type="submit"
+                          className="text-sm text-red-600 hover:underline dark:text-red-400"
+                        >
+                          Archive
+                        </button>
+                      </Form>
+                    </>
+                  )}
                 </div>
               </li>
             ))}
