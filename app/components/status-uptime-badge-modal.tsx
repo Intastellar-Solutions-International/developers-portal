@@ -23,7 +23,9 @@ export function StatusUptimeBadgeModal({
 }) {
   const titleId = useId();
   const descId = useId();
+  const previewHeadingId = useId();
   const [copied, setCopied] = useState<"iframe" | "json" | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     if (!open) return;
@@ -46,6 +48,12 @@ export function StatusUptimeBadgeModal({
   }, [open]);
 
   useEffect(() => {
+    if (!open) return;
+    const isDark = document.documentElement.classList.contains("dark");
+    setPreviewTheme(isDark ? "dark" : "light");
+  }, [open]);
+
+  useEffect(() => {
     if (!copied) return;
     const tmr = window.setTimeout(() => setCopied(null), 2000);
     return () => window.clearTimeout(tmr);
@@ -55,7 +63,11 @@ export function StatusUptimeBadgeModal({
 
   const origin =
     typeof window !== "undefined" ? window.location.origin : "";
-  const badgeUrl = `${origin}/api/status/uptime/badge?locale=${locale}`;
+  const badgeParams = new URLSearchParams({
+    locale,
+    theme: previewTheme,
+  });
+  const badgeUrl = `${origin}/api/status/uptime/badge?${badgeParams.toString()}`;
   const jsonUrl = `${origin}/api/status/uptime?locale=${locale}`;
   const iframeTitleEscaped = escapeHtmlAttr(copy.embedIframeTitle);
   const iframeSnippet =
@@ -78,6 +90,11 @@ export function StatusUptimeBadgeModal({
       /* ignore */
     }
   }
+
+  const previewChrome =
+    previewTheme === "light"
+      ? "border-zinc-200 bg-zinc-100 dark:border-zinc-700"
+      : "border-zinc-700 bg-zinc-950";
 
   return (
     <div
@@ -114,6 +131,73 @@ export function StatusUptimeBadgeModal({
         >
           {copy.embedModalIntro}
         </p>
+
+        <section className="mt-5" aria-labelledby={previewHeadingId}>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3
+              id={previewHeadingId}
+              className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400"
+            >
+              {copy.embedPreviewHeading}
+            </h3>
+            <fieldset className="m-0 inline-flex rounded-lg border border-zinc-200 bg-zinc-100/90 p-0.5 dark:border-zinc-600 dark:bg-zinc-800/90">
+              <legend className="sr-only">{copy.embedThemeLabel}</legend>
+              <label
+                className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  previewTheme === "light"
+                    ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50"
+                    : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="badge-preview-theme"
+                  value="light"
+                  checked={previewTheme === "light"}
+                  onChange={() => setPreviewTheme("light")}
+                  className="sr-only"
+                />
+                {copy.embedThemeLight}
+              </label>
+              <label
+                className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  previewTheme === "dark"
+                    ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50"
+                    : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="badge-preview-theme"
+                  value="dark"
+                  checked={previewTheme === "dark"}
+                  onChange={() => setPreviewTheme("dark")}
+                  className="sr-only"
+                />
+                {copy.embedThemeDark}
+              </label>
+            </fieldset>
+          </div>
+          <div
+            className={`mt-3 flex min-h-[184px] items-center justify-center overflow-hidden rounded-xl border p-4 ${previewChrome}`}
+          >
+            {origin ? (
+              <iframe
+                key={`${locale}-${previewTheme}`}
+                src={badgeUrl}
+                title={`${copy.embedPreviewHeading}: ${copy.embedIframeTitle}`}
+                width={280}
+                height={168}
+                className="rounded-[10px] border-0 shadow-md"
+                loading="lazy"
+              />
+            ) : (
+              <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
+                {copy.embedOpenOnSite}
+              </p>
+            )}
+          </div>
+        </section>
 
         <section className="mt-5">
           <div className="flex flex-wrap items-center justify-between gap-2">

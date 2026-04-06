@@ -57,6 +57,10 @@ export type StatusPageCopy = {
   embedModalTitle: string;
   embedModalClose: string;
   embedModalIntro: string;
+  embedPreviewHeading: string;
+  embedThemeLabel: string;
+  embedThemeLight: string;
+  embedThemeDark: string;
   embedIframeHeading: string;
   embedIframeTitle: string;
   embedJsonHeading: string;
@@ -123,6 +127,10 @@ export function getStatusPageCopy(locale: Locale): StatusPageCopy {
     embedModalTitle: tp("status.embedModalTitle"),
     embedModalClose: tp("status.embedModalClose"),
     embedModalIntro: tp("status.embedModalIntro"),
+    embedPreviewHeading: tp("status.embedPreviewHeading"),
+    embedThemeLabel: tp("status.embedThemeLabel"),
+    embedThemeLight: tp("a11y.lightTheme"),
+    embedThemeDark: tp("a11y.darkTheme"),
     embedIframeHeading: tp("status.embedIframeHeading"),
     embedIframeTitle: tp("status.embedIframeTitle"),
     embedJsonHeading: tp("status.embedJsonHeading"),
@@ -143,7 +151,8 @@ export function resolveStatusPageCopy(
 ): StatusPageCopy {
   if (
     fromLoader != null &&
-    typeof fromLoader.timelineRecentChecks === "string"
+    typeof fromLoader.timelineRecentChecks === "string" &&
+    typeof fromLoader.embedPreviewHeading === "string"
   ) {
     return fromLoader;
   }

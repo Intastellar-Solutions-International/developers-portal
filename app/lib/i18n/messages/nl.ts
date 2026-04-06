@@ -370,6 +370,8 @@ export const nl: MessageTree = {
     embedModalTitle: "Uptime-badge insluiten",
     embedModalIntro:
       "Kopieer een iframe-fragment of de JSON-API-URL. Taal: ?locale= (en, de, da, fr, nl). Thema: ?theme=light of ?theme=dark voor vast licht of donker — zonder theme (of theme=auto) volgt de badge de systeeminstelling van de bezoeker.",
+    embedPreviewHeading: "Voorbeeld",
+    embedThemeLabel: "Uiterlijk van de badge",
     embedIframeHeading: "iframe-insluiting",
     embedIframeTitle: "Uptime-badge",
     embedJsonHeading: "JSON-API",
