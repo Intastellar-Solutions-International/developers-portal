@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useContext, useMemo, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 import {
@@ -32,13 +25,8 @@ export function I18nProvider({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [locale, setLocaleState] = useState<Locale>(
-    isLocale(initialLocale) ? initialLocale : DEFAULT_LOCALE,
-  );
-
-  useEffect(() => {
-    setLocaleState(isLocale(initialLocale) ? initialLocale : DEFAULT_LOCALE);
-  }, [initialLocale]);
+  /** Always follow the prop (URL-derived from root loader). Avoids hydration mismatches from `useState` lagging one frame behind `initialLocale`. */
+  const locale = isLocale(initialLocale) ? initialLocale : DEFAULT_LOCALE;
 
   const setLocale = useCallback(
     (next: Locale) => {

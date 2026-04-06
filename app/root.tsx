@@ -43,7 +43,12 @@ import {
   getColorSchemeIsDarkSnapshot,
   subscribeColorScheme,
 } from "~/lib/color-scheme";
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES, isLocale } from "~/lib/i18n/locale";
+import {
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  isLocale,
+  type Locale,
+} from "~/lib/i18n/locale";
 import {
   stripLocalePrefix,
   withLocalePrefix,
@@ -241,7 +246,8 @@ export const links: Route.LinksFunction = () => [
 
 /**
  * `useRouteLoaderData("root")` can be briefly undefined during hydration while `matches` still carries
- * `root` loader data — that mismatch caused the legacy banner (and main padding) to disagree with SSR HTML.
+ * `root` loader data — that mismatch caused the legacy banner (and main padding) to disagree with SSR HTML,
+ * and `I18nProvider` to render English copy while SSR used the URL locale (e.g. Account vs Konto).
  */
 function useResolvedRootLoaderData(): RootLoaderData | undefined {
   const fromRoute = useRouteLoaderData("root") as RootLoaderData | undefined;
@@ -249,6 +255,24 @@ function useResolvedRootLoaderData(): RootLoaderData | undefined {
   if (fromRoute !== undefined) return fromRoute;
   const rootMatch = matches.find((m) => m.id === "root");
   return rootMatch?.loaderData as RootLoaderData | undefined;
+}
+
+/**
+ * Locale for shell + `I18nProvider`. During hydration, loader hooks can be empty for a frame while
+ * `<html lang>` from SSR is already correct — read it so the first client render matches the server HTML.
+ */
+function useHydrationSafeUiLocale(): Locale {
+  const rootLoaderData = useResolvedRootLoaderData();
+  if (isLocale(rootLoaderData?.locale)) {
+    return rootLoaderData.locale;
+  }
+  if (typeof document !== "undefined") {
+    const htmlLang = document.documentElement.lang;
+    if (isLocale(htmlLang)) {
+      return htmlLang;
+    }
+  }
+  return DEFAULT_LOCALE;
 }
 
 /**
@@ -270,10 +294,7 @@ function IntastellarAppShell({ children }: { children: React.ReactNode }) {
  * Search data loading and navigation run here so router hooks match the root route context reliably.
  */
 function RootShell({ children }: { children: React.ReactNode }) {
-  const rootLoader = useRouteLoaderData("root") as RootLoaderData | undefined;
-  const uiLocale = isLocale(rootLoader?.locale)
-    ? rootLoader.locale
-    : DEFAULT_LOCALE;
+  const uiLocale = useHydrationSafeUiLocale();
   const [searchOpen, setSearchOpen] = useState(false);
   /** Avoid SSR/hydration mismatch: first paint has no banner node; mount it before the browser paints. */
   const [shellReady, setShellReady] = useState(false);
@@ -363,10 +384,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 export function Layout({ children }: { children: React.ReactNode }) {
   const analytics = isAnalyticsEnabled();
   const htmlIsDark = useRootHtmlIsDark();
-  const rootLoader = useRouteLoaderData("root") as RootLoaderData | undefined;
-  const uiLocale = isLocale(rootLoader?.locale)
-    ? rootLoader.locale
-    : DEFAULT_LOCALE;
+  const rootLoader = useResolvedRootLoaderData();
+  const uiLocale = useHydrationSafeUiLocale();
   const legacyBannerLayout =
     (rootLoader?.legacyBannerFromLegacyReferrer ?? false) &&
     isLegacyBannerActiveAt(Date.now());
