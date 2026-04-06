@@ -4,6 +4,7 @@ import {
   Form,
   Link,
   useActionData,
+  useFetcher,
   useLoaderData,
   useNavigation,
   useRevalidator,
@@ -14,6 +15,7 @@ import { copyToClipboard } from "~/lib/copy-to-clipboard";
 import {
   createApiKey,
   listApiKeysForUser,
+  revealApiKeyPlaintext,
   revokeApiKey,
   updateApiKeySignInMetadata,
 } from "~/lib/api-keys.server";
@@ -68,8 +70,13 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export type ApiKeysActionData =
-  | { ok: true; plaintextKey?: string; newKeyId?: string }
-  | { ok: false; error: string };
+  | {
+      ok: true;
+      plaintextKey?: string;
+      newKeyId?: string;
+      revealKeyId?: string;
+    }
+  | { ok: false; error: string; revealKeyId?: string };
 
 function actionResponse(
   body: ApiKeysActionData,
@@ -103,6 +110,29 @@ export async function action({ request }: Route.ActionArgs) {
 
   const form = await request.formData();
   const intent = String(form.get("intent") ?? "");
+
+  if (intent === "reveal") {
+    const keyId = String(form.get("keyId") ?? "");
+    const result = await revealApiKeyPlaintext(
+      user.accountId,
+      user.email,
+      keyId,
+    );
+    if (!result.ok) {
+      return actionResponse(
+        { ok: false, error: result.error, revealKeyId: keyId },
+        setCookieHeaders,
+      );
+    }
+    return actionResponse(
+      {
+        ok: true,
+        plaintextKey: result.plaintextKey,
+        revealKeyId: keyId,
+      },
+      setCookieHeaders,
+    );
+  }
 
   if (intent === "revoke") {
     const keyId = String(form.get("keyId") ?? "");
@@ -175,6 +205,8 @@ const btnDangerClass =
   "rounded-lg border border-red-300 px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-60 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40";
 const btnSecondaryClass =
   "rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800";
+const btnIconClass =
+  "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-300 bg-white text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100";
@@ -196,9 +228,52 @@ function KeyLogoThumb({ url }: { url: string }) {
   );
 }
 
-/** Session-only: full secret is not stored server-side; this lets users copy again until dismiss. */
-const REVEALED_KEY_STORAGE = "inta_portal_last_plain_api_key";
-const REVEALED_KEY_ID_STORAGE = "inta_portal_last_plain_api_key_id";
+/**
+ * Same-tab only: optional restore after refresh. Returning later uses the eye + server decrypt.
+ */
+const VISIBLE_KEY_STORAGE = "inta_portal_visible_api_key";
+
+function IconEye({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function IconEyeOff({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+      <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+      <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+      <line x1="2" x2="22" y1="2" y2="22" />
+    </svg>
+  );
+}
 
 function CopyApiKeyButton({ secret }: { secret: string }) {
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
@@ -232,17 +307,20 @@ export default function AccountApiKeys() {
     keys,
   } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const revealFetcher = useFetcher<typeof action>();
   const navigation = useNavigation();
   const busy = navigation.state !== "idle";
   const revalidator = useRevalidator();
   const sessionSyncRef = useRef(0);
   /** Until the new key appears in `keys`, don’t treat “missing id” as revoked. */
-  const revealedKeyPendingRowRef = useRef(false);
+  const pendingNewKeyIdRef = useRef<string | null>(null);
+  const storageSyncPass = useRef(0);
   const [sessionHardFail, setSessionHardFail] = useState(false);
-  /** Plaintext only exists right after create; kept in memory + sessionStorage until dismiss. */
-  const [revealedKey, setRevealedKey] = useState<string | null>(null);
-  /** Mongo id of the key row that owns `revealedKey` (for table Copy). */
-  const [revealedKeyId, setRevealedKeyId] = useState<string | null>(null);
+  /** Plaintext shown in UI: after create, reveal, or sessionStorage restore (same tab). */
+  const [visibleSecrets, setVisibleSecrets] = useState<Record<string, string>>(
+    {},
+  );
+  const [showNewKeyBanner, setShowNewKeyBanner] = useState(false);
   const [editingKeyId, setEditingKeyId] = useState<string | null>(null);
   const {
     authReady,
@@ -258,48 +336,75 @@ export default function AccountApiKeys() {
 
   useEffect(() => {
     try {
-      const s = sessionStorage.getItem(REVEALED_KEY_STORAGE);
-      const id = sessionStorage.getItem(REVEALED_KEY_ID_STORAGE);
-      if (s) setRevealedKey(s);
-      if (id) setRevealedKeyId(id);
+      const raw = sessionStorage.getItem(VISIBLE_KEY_STORAGE);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { id?: string; s?: string };
+      if (typeof parsed.id === "string" && typeof parsed.s === "string") {
+        setVisibleSecrets((p) => ({ ...p, [parsed.id!]: parsed.s! }));
+      }
     } catch {
-      /* private mode */
+      /* private mode / bad JSON */
     }
   }, []);
 
   useEffect(() => {
-    if (actionData?.ok === true && actionData.plaintextKey) {
-      setRevealedKey(actionData.plaintextKey);
-      const nid = actionData.newKeyId ?? null;
-      setRevealedKeyId(nid);
-      if (nid) revealedKeyPendingRowRef.current = true;
-      try {
-        sessionStorage.setItem(REVEALED_KEY_STORAGE, actionData.plaintextKey);
-        if (nid) sessionStorage.setItem(REVEALED_KEY_ID_STORAGE, nid);
-        else sessionStorage.removeItem(REVEALED_KEY_ID_STORAGE);
-      } catch {
-        /* ignore */
-      }
+    const d = revealFetcher.data;
+    if (!d || d.ok !== true || !d.plaintextKey || !d.revealKeyId) return;
+    setVisibleSecrets((p) => ({ ...p, [d.revealKeyId!]: d.plaintextKey! }));
+  }, [revealFetcher.data]);
+
+  useEffect(() => {
+    if (actionData?.ok !== true || !actionData.plaintextKey) return;
+    if (actionData.revealKeyId) return;
+    if (actionData.newKeyId) {
+      pendingNewKeyIdRef.current = actionData.newKeyId;
+      setShowNewKeyBanner(true);
+      setVisibleSecrets((p) => ({
+        ...p,
+        [actionData.newKeyId!]: actionData.plaintextKey!,
+      }));
     }
   }, [actionData]);
 
   useEffect(() => {
-    if (!revealedKeyId || !revealedKey) return;
-    const inList = keys.some((k) => k.id === revealedKeyId);
-    if (inList) {
-      revealedKeyPendingRowRef.current = false;
-      return;
+    const pid = pendingNewKeyIdRef.current;
+    if (pid && keys.some((k) => k.id === pid)) {
+      pendingNewKeyIdRef.current = null;
     }
-    if (revealedKeyPendingRowRef.current) return;
-    setRevealedKey(null);
-    setRevealedKeyId(null);
+  }, [keys]);
+
+  useEffect(() => {
+    setVisibleSecrets((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const id of Object.keys(next)) {
+        if (keys.some((k) => k.id === id)) continue;
+        if (id === pendingNewKeyIdRef.current) continue;
+        delete next[id];
+        changed = true;
+      }
+      return changed ? next : prev;
+    });
+  }, [keys]);
+
+  useEffect(() => {
+    storageSyncPass.current += 1;
+    if (storageSyncPass.current === 1) return;
     try {
-      sessionStorage.removeItem(REVEALED_KEY_STORAGE);
-      sessionStorage.removeItem(REVEALED_KEY_ID_STORAGE);
+      const ids = Object.keys(visibleSecrets);
+      if (ids.length === 1) {
+        const id = ids[0]!;
+        sessionStorage.setItem(
+          VISIBLE_KEY_STORAGE,
+          JSON.stringify({ id, s: visibleSecrets[id]! }),
+        );
+      } else {
+        sessionStorage.removeItem(VISIBLE_KEY_STORAGE);
+      }
     } catch {
       /* ignore */
     }
-  }, [keys, revealedKeyId, revealedKey]);
+  }, [visibleSecrets]);
 
   useEffect(() => {
     if (actionData?.ok !== true) return;
@@ -328,6 +433,17 @@ export default function AccountApiKeys() {
     signedInOnServer &&
     clientSignedIn &&
     clientConfigured;
+
+  const revealFd = revealFetcher.formData;
+  const revealingKeyId =
+    revealFetcher.state !== "idle" &&
+    revealFd &&
+    revealFd.get("intent") === "reveal"
+      ? String(revealFd.get("keyId") ?? "")
+      : null;
+
+  const actionFormError =
+    actionData?.ok === false ? actionData.error : null;
 
   return (
     <section className={panelClass}>
@@ -371,7 +487,8 @@ export default function AccountApiKeys() {
           <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-900">
             API_KEY_PEPPER
           </code>{" "}
-          (required in production — long random secret for hashing keys).
+          (required in production — hashing and encrypted-at-rest reveal in this
+          portal).
         </p>
       ) : !signedInOnServer ? (
         <div className="mt-4 space-y-3 text-sm text-amber-800 dark:text-amber-200">
@@ -428,50 +545,35 @@ export default function AccountApiKeys() {
         </div>
       ) : (
         <div className="mt-4 space-y-6">
-          {actionData?.ok === false ? (
+          {actionFormError ? (
             <p
               className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-100"
               role="alert"
             >
-              {actionData.error}
+              {actionFormError}
             </p>
           ) : null}
 
-          {revealedKey ? (
+          {showNewKeyBanner ? (
             <div
-              className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/50 dark:text-amber-50"
+              className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-950 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-50"
               role="status"
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <p className="font-medium sm:pt-0.5">
-                  Your new secret key — we only store a hash. Use{" "}
-                  <span className="whitespace-nowrap">Copy key</span> here or in the
-                  table row; dismiss when you’re done (this tab won’t show it again
-                  after that).
+                  Key created. The full secret is in the table below — use{" "}
+                  <span className="whitespace-nowrap">Copy key</span> there. You
+                  can hide it with the eye icon; open the eye anytime while signed in
+                  to reveal and copy again (we keep an encrypted copy server-side).
                 </p>
-                <div className="flex shrink-0 flex-wrap gap-2">
-                  <CopyApiKeyButton secret={revealedKey} />
-                  <button
-                    type="button"
-                    className={`${btnSecondaryClass} text-zinc-600 dark:text-zinc-300`}
-                    onClick={() => {
-                      setRevealedKey(null);
-                      setRevealedKeyId(null);
-                      try {
-                        sessionStorage.removeItem(REVEALED_KEY_STORAGE);
-                        sessionStorage.removeItem(REVEALED_KEY_ID_STORAGE);
-                      } catch {
-                        /* ignore */
-                      }
-                    }}
-                  >
-                    Dismiss
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className={`${btnSecondaryClass} shrink-0 text-zinc-600 dark:text-zinc-300`}
+                  onClick={() => setShowNewKeyBanner(false)}
+                >
+                  Dismiss
+                </button>
               </div>
-              <pre className="mt-3 overflow-x-auto rounded bg-white/80 px-3 py-2 font-mono text-xs text-zinc-900 select-all dark:bg-zinc-950 dark:text-zinc-100">
-                {revealedKey}
-              </pre>
             </div>
           ) : null}
 
@@ -555,8 +657,9 @@ export default function AccountApiKeys() {
 
           {canUseKeys && keys.length === 0 ? (
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              No keys yet. Create one to get a secret you can use from your
-              servers or tooling (store it safely; we only keep a hash).
+              No keys yet. Create one to get a secret for your servers or tooling.
+              We store a hash for validation and an encrypted copy so you can reveal
+              and copy it later from this page.
             </p>
           ) : null}
 
@@ -582,21 +685,77 @@ export default function AccountApiKeys() {
                         </td>
                         <td className="max-w-[min(100%,24rem)] py-3 pr-4 align-top">
                           <div className="flex flex-col gap-2">
-                            <span className="font-mono text-xs text-zinc-600 dark:text-zinc-400">
-                              {k.keyPrefix}
-                            </span>
-                            {revealedKey && revealedKeyId === k.id ? (
-                              <div className="flex flex-wrap items-center gap-2">
-                                <CopyApiKeyButton secret={revealedKey} />
-                                <span className="text-[0.65rem] font-medium text-amber-800 dark:text-amber-200">
-                                  Full secret — copy now
-                                </span>
-                              </div>
-                            ) : null}
-                            {revealedKey && revealedKeyId === k.id ? (
-                              <pre className="max-h-24 overflow-auto rounded border border-amber-200/80 bg-amber-50/60 px-2 py-1.5 font-mono text-[0.65rem] leading-snug text-zinc-900 select-all dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-zinc-100">
-                                {revealedKey}
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-mono text-xs text-zinc-600 dark:text-zinc-400">
+                                {k.keyPrefix}
+                              </span>
+                              {visibleSecrets[k.id] ? (
+                                <>
+                                  <CopyApiKeyButton
+                                    secret={visibleSecrets[k.id]!}
+                                  />
+                                  <button
+                                    type="button"
+                                    className={btnIconClass}
+                                    aria-label="Hide key"
+                                    onClick={() =>
+                                      setVisibleSecrets((p) => {
+                                        const { [k.id]: _, ...rest } = p;
+                                        return rest;
+                                      })
+                                    }
+                                  >
+                                    <IconEyeOff className="h-4 w-4" />
+                                  </button>
+                                </>
+                              ) : k.canReveal ? (
+                                <revealFetcher.Form method="post" className="inline">
+                                  <input
+                                    type="hidden"
+                                    name="intent"
+                                    value="reveal"
+                                  />
+                                  <input type="hidden" name="keyId" value={k.id} />
+                                  <button
+                                    type="submit"
+                                    className={btnIconClass}
+                                    disabled={revealFetcher.state !== "idle"}
+                                    aria-label={
+                                      revealingKeyId === k.id
+                                        ? "Loading…"
+                                        : "Reveal key to copy"
+                                    }
+                                  >
+                                    {revealingKeyId === k.id ? (
+                                      <span className="text-xs font-medium text-zinc-500">
+                                        …
+                                      </span>
+                                    ) : (
+                                      <IconEye className="h-4 w-4" />
+                                    )}
+                                  </button>
+                                </revealFetcher.Form>
+                              ) : null}
+                            </div>
+                            {visibleSecrets[k.id] ? (
+                              <pre className="max-h-24 overflow-auto rounded border border-zinc-200 bg-zinc-50 px-2 py-1.5 font-mono text-[0.65rem] leading-snug text-zinc-900 select-all dark:border-zinc-600 dark:bg-zinc-900/60 dark:text-zinc-100">
+                                {visibleSecrets[k.id]}
                               </pre>
+                            ) : !k.canReveal ? (
+                              <p className="text-[0.65rem] leading-snug text-zinc-500 dark:text-zinc-400">
+                                No encrypted secret on file (usually an older key).
+                                Create a new key to enable reveal and copy later.
+                              </p>
+                            ) : null}
+                            {revealFetcher.state === "idle" &&
+                            revealFetcher.data?.ok === false &&
+                            revealFetcher.data.revealKeyId === k.id ? (
+                              <p
+                                className="text-[0.65rem] leading-snug text-red-600 dark:text-red-400"
+                                role="alert"
+                              >
+                                {revealFetcher.data.error}
+                              </p>
                             ) : null}
                           </div>
                         </td>

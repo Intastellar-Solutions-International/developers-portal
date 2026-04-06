@@ -1,4 +1,9 @@
-import { createHmac, randomBytes } from "node:crypto";
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHmac,
+  randomBytes,
+} from "node:crypto";
 
 import { type Collection, type Filter, ObjectId } from "mongodb";
 
@@ -20,6 +25,11 @@ export type ApiKeyRecord = {
   signInDomain?: string | null;
   /** HTTPS URL for logo in sign-in UI. */
   signInLogoUrl?: string | null;
+  /**
+   * Encrypted plaintext (AES-256-GCM); same server secret as hashing allows reveal in UI.
+   * Legacy keys omit this — use “Create key” to replace.
+   */
+  keyCiphertext?: string | null;
 };
 
 export type ApiKeyListItem = {
@@ -29,6 +39,8 @@ export type ApiKeyListItem = {
   createdAt: string;
   signInDomain: string | null;
   signInLogoUrl: string | null;
+  /** True when the portal can decrypt and show the secret (eye icon). */
+  canReveal: boolean;
 };
 
 const MAX_DOMAIN_LEN = 253;
@@ -63,6 +75,52 @@ function parseSignInLogoUrlInput(raw: string): string | null | "invalid" {
   }
   if (u.protocol !== "https:") return "invalid";
   return u.href;
+}
+
+const GCM_IV_LEN = 12;
+const GCM_TAG_LEN = 16;
+const CIPHER = "aes-256-gcm" as const;
+const ENC_CONTEXT = "inta-portal-api-key-ciphertext-v1";
+
+/** 32-byte key derived from `API_KEY_PEPPER` (same as hashing). */
+function apiKeyEncryptionKey(): Buffer | null {
+  const pepper = process.env.API_KEY_PEPPER?.trim();
+  if (!pepper) {
+    if (process.env.NODE_ENV === "production") return null;
+    return createHmac("sha256", "dev-only-pepper-change-me")
+      .update(ENC_CONTEXT)
+      .digest();
+  }
+  return createHmac("sha256", pepper).update(ENC_CONTEXT).digest();
+}
+
+function encryptApiKeyPlaintext(plaintext: string): string | null {
+  const key = apiKeyEncryptionKey();
+  if (!key) return null;
+  const iv = randomBytes(GCM_IV_LEN);
+  const cipher = createCipheriv(CIPHER, key, iv);
+  const enc = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  return Buffer.concat([iv, tag, enc]).toString("base64url");
+}
+
+function decryptApiKeyCiphertext(blob: string): string | null {
+  const key = apiKeyEncryptionKey();
+  if (!key) return null;
+  try {
+    const buf = Buffer.from(blob, "base64url");
+    if (buf.length < GCM_IV_LEN + GCM_TAG_LEN + 1) return null;
+    const iv = buf.subarray(0, GCM_IV_LEN);
+    const tag = buf.subarray(GCM_IV_LEN, GCM_IV_LEN + GCM_TAG_LEN);
+    const data = buf.subarray(GCM_IV_LEN + GCM_TAG_LEN);
+    const decipher = createDecipheriv(CIPHER, key, iv);
+    decipher.setAuthTag(tag);
+    return Buffer.concat([decipher.update(data), decipher.final()]).toString(
+      "utf8",
+    );
+  } catch {
+    return null;
+  }
 }
 
 function hashApiKey(plaintext: string): string {
@@ -140,6 +198,7 @@ export async function listApiKeysForUser(
         createdAt: 1,
         signInDomain: 1,
         signInLogoUrl: 1,
+        keyCiphertext: 1,
       },
     })
     .sort({ createdAt: -1 })
@@ -151,6 +210,9 @@ export async function listApiKeysForUser(
     createdAt: d.createdAt.toISOString(),
     signInDomain: d.signInDomain ?? null,
     signInLogoUrl: d.signInLogoUrl ?? null,
+    canReveal: Boolean(
+      typeof d.keyCiphertext === "string" && d.keyCiphertext.length > 0,
+    ),
   }));
 }
 
@@ -226,6 +288,11 @@ export async function createApiKey(
   if (domainParsed) doc.signInDomain = domainParsed;
   if (logoParsed) doc.signInLogoUrl = logoParsed;
 
+  const enc = encryptApiKeyPlaintext(plaintextKey);
+  if (enc) {
+    doc.keyCiphertext = enc;
+  }
+
   const insertResult = await coll.insertOne(doc);
 
   return {
@@ -258,6 +325,51 @@ export async function revokeApiKey(
     return { ok: false, error: "Key not found or already revoked." };
   }
   return { ok: true };
+}
+
+export type RevealApiKeyResult =
+  | { ok: true; plaintextKey: string }
+  | { ok: false; error: string };
+
+export async function revealApiKeyPlaintext(
+  ownerAccountId: ObjectId | null,
+  ownerEmail: string,
+  keyId: string,
+): Promise<RevealApiKeyResult> {
+  const coll = await getCollection<ApiKeyRecord>(API_KEYS_COLLECTION);
+  if (!coll) {
+    return { ok: false, error: "Database is not configured." };
+  }
+  let oid: ObjectId;
+  try {
+    oid = new ObjectId(keyId);
+  } catch {
+    return { ok: false, error: "Invalid key id." };
+  }
+  const norm = ownerEmail.trim().toLowerCase();
+  const doc = await coll.findOne(revokeKeyFilter(oid, ownerAccountId, norm), {
+    projection: { keyCiphertext: 1 },
+  });
+  if (!doc) {
+    return { ok: false, error: "Key not found or already revoked." };
+  }
+  const ct = doc.keyCiphertext;
+  if (typeof ct !== "string" || !ct.trim()) {
+    return {
+      ok: false,
+      error:
+        "This key has no encrypted secret on file (usually created before reveal support). Create a new key to use reveal and copy later.",
+    };
+  }
+  const plain = decryptApiKeyCiphertext(ct);
+  if (!plain) {
+    return {
+      ok: false,
+      error:
+        "Could not decrypt this key (server secret may have changed). Create a new key.",
+    };
+  }
+  return { ok: true, plaintextKey: plain };
 }
 
 export async function updateApiKeySignInMetadata(

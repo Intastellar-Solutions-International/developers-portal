@@ -57,6 +57,8 @@ const apiKeyJsonSchema = {
     signInDomain: { bsonType: ["string", "null"] },
     /** HTTPS URL of logo shown in sign-in flows. */
     signInLogoUrl: { bsonType: ["string", "null"] },
+    /** AES-256-GCM ciphertext (base64url) so the owner can reveal the key later in the portal. */
+    keyCiphertext: { bsonType: ["string", "null"] },
   },
   additionalProperties: true,
 } as const;
