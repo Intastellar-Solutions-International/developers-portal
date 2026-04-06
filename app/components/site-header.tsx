@@ -5,7 +5,7 @@ import {
   ColorSchemeToggle,
   ColorSchemeToggleMobileRow,
 } from "~/components/color-scheme-toggle";
-import { BRAND } from "~/lib/brand";
+import { DevelopersBrandLogo } from "~/components/developers-brand-logo";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
 import {
   type RootLoaderData,
@@ -214,17 +214,7 @@ function SiteHeaderInner({
             className="min-w-0 shrink-0 transition-opacity hover:opacity-90"
             title="Intastellar Developers — home"
           >
-            <img
-              src={BRAND.developersLogoBlack}
-              alt="Intastellar Developers"
-              className="h-7 w-auto max-w-[11rem] object-left object-contain sm:h-8 sm:max-w-[13rem] dark:hidden"
-            />
-            <img
-              src={BRAND.developersLogoWhite}
-              alt=""
-              aria-hidden
-              className="hidden h-7 w-auto max-w-[11rem] object-left object-contain sm:h-8 sm:max-w-[13rem] dark:block"
-            />
+            <DevelopersBrandLogo variant="header" />
           </Link>
           <span
             className="hidden h-5 w-px shrink-0 bg-zinc-200 dark:bg-white/20 sm:block"

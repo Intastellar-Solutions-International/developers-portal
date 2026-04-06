@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 
+import { DevelopersBrandLogo } from "~/components/developers-brand-logo";
 import { StatusFooterLink } from "~/components/status-footer-link";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
@@ -24,10 +25,14 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-14">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8">
           <div className="sm:col-span-2 lg:col-span-1">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              inta.dev
-            </p>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <Link
+              to="/"
+              className="inline-block transition-opacity hover:opacity-90"
+              title="Intastellar Developers — home"
+            >
+              <DevelopersBrandLogo variant="footer" />
+            </Link>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
               Documentation, API keys, and integration guides for Intastellar
               Consents and Intastellar Accounts.
             </p>
