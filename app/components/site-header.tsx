@@ -181,7 +181,6 @@ export function SiteHeader({
           >
             <SearchIcon className="size-5" />
           </button>
-
           <button
             type="button"
             className="rounded-md p-2.5 text-zinc-400 transition-colors hover:bg-white/10 hover:text-brand lg:hidden"
@@ -211,6 +210,9 @@ export function SiteHeader({
             <NavLink to="/docs" className={navLinkClass}>
               Docs
             </NavLink>
+            <NavLink to="/account/api-keys" className={navLinkClass}>
+              API keys
+            </NavLink>
             {authReady && configured && !isSignedIn ? (
               <button
                 type="button"
@@ -222,7 +224,7 @@ export function SiteHeader({
               </button>
             ) : null}
             {authReady && configured && isSignedIn && user ? (
-              <>
+              <NavLink to="/account/profile">
                 <span
                   className="hidden max-w-[7rem] truncate px-2 text-xs text-zinc-500 xl:inline xl:max-w-[10rem]"
                   title={user.email}
@@ -236,14 +238,9 @@ export function SiteHeader({
                 >
                   Sign out
                 </button>
-              </>
+              </NavLink>
             ) : null}
-            <NavLink to="/account/profile" className={navLinkClass}>
-              Profile
-            </NavLink>
-            <NavLink to="/account/api-keys" className={navLinkClass}>
-              API keys
-            </NavLink>
+
           </nav>
         </div>
       </div>
