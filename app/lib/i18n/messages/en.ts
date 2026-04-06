@@ -118,6 +118,46 @@ export const en = {
     lightTheme: "Light theme",
     darkTheme: "Dark theme",
   },
+  docs: {
+    breadcrumbDocumentation: "Documentation",
+    hubMetaTitleCore: "Documentation",
+    hubMetaDescription:
+      "Documentation for Intastellar developer products: Intastellar Consents, accounts sign-in, and APIs.",
+    hubEyebrow: "Intastellar developers",
+    hubHeading: "Documentation",
+    hubLead:
+      "Guides for cookie consent and web sign-in with Intastellar Accounts — plus API keys and patterns you can reuse across sites and backends.",
+    hubVersionNote:
+      "Doc URLs include a version segment (e.g. /v1/) so we can publish new major guides without breaking bookmarks.",
+    hubSearchDocs: "Search docs",
+    hubChangelog: "Changelog",
+    hubApiKeys: "API keys",
+    popularGuides: "Popular guides",
+    popularGuidesHint: "Jump straight into common integration paths.",
+    allProducts: "All products",
+    allProductsHint:
+      "Full table of contents, versions, and cross-links inside each space.",
+    sidebarOverview: "Overview",
+    sidebarAccounts: "Sign in (Web)",
+    sidebarJavascript: "JavaScript",
+    sidebarWordpress: "WordPress",
+    sidebarIntegrations: "Integrations",
+    sidebarMore: "More",
+    relatedHeading: "Related",
+    relatedAccountsSignIn: "Accounts — Sign in (Web)",
+    ql1Label: "Consents — JavaScript",
+    ql1Hint: "Snippet, window.INTA, first deploy",
+    ql2Label: "Consents — WordPress",
+    ql2Hint: "Plugin install and config",
+    ql3Label: "Accounts — React & plain JS",
+    ql3Hint: "SDK on npm, HTML/JS on inta.dev, placeholder examples",
+    ql4Label: "Accounts — Plain HTML / CSS / JS",
+    ql4Hint: "Static sites, no framework — migrated js-docs",
+    ql5Label: "Accounts — Get started",
+    ql5Hint: "Register client, SDK vs manual OAuth, flows",
+    ql6Label: "Accounts — Auth code flow",
+    ql6Hint: "PKCE, callback, token exchange",
+  },
 } as const;
 
 export type MessageTree = DeepStringTree<typeof en>;

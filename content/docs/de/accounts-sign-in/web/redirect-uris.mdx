@@ -1,0 +1,44 @@
+---
+title: Redirect-URIs und Callbacks
+sidebar_label: Redirect-URIs
+description: Exakte Callback-URLs für Intastellar Accounts Web-Anmeldung registrieren und typische Redirect-Mismatch-Fehler vermeiden.
+order: 30
+---
+
+Intastellar schließt Rückleitungen zur Anmeldung nur an **vorregistrierte** URLs ab (oder URIs, die Ihre Client-Registrierung für die vom React-SDK genutzte **Login-URI** erlaubt). Tippfehler, falsches Schema oder ein abweichender Schrägstrich am Ende führen zu `redirect_uri_mismatch` oder ähnlichen Fehlern.
+
+Wenn Sie den **öffentlichen Hostnamen** Ihrer App ändern (z. B. nach Domain-Umzug), aktualisieren Sie Ihren Intastellar-Client, damit erlaubte **Redirect- / Login**-Einträge zum **neuen** Origin und den Pfaden passen. SDKs leiten die **Login-URI** oft von der aktuellen Seite ab (`hostname`, `port`, `pathname`), sofern nicht überschrieben — registrieren Sie die Werte, die Sie tatsächlich senden.
+
+## Faustregeln
+
+1. **HTTPS in Produktion** — `http://localhost` ist oft für Entwicklung erlaubt; Produktion sollte `https://` nutzen.
+2. **Exakte Übereinstimmung** — `https://app.example.com/callback` und `https://app.example.com/callback/` sind unterschiedliche Pfade; registrieren Sie die Variante aus der Authorize-Anfrage.
+3. **Keine Wildcards** in den meisten Setups — jeden konkreten Callback-Pfad registrieren (oder dem dokumentierten Muster Ihrer Konsole folgen, falls Pfad-Templates unterstützt werden).
+4. **Query-Strings** — dynamische Query-Strings in der registrierten URI vermeiden, sofern nicht ausdrücklich erlaubt; festen Pfad nutzen und Kontext intern über `state` führen.
+
+## Mehrere Umgebungen
+
+Getrennte Redirect-URIs (oder getrennte Clients) registrieren für:
+
+- Lokale Entwicklung (`http://127.0.0.1:5173/auth/callback`, usw.)
+- Staging
+- Produktion
+
+So begrenzen Sie Schaden, falls ein Geheimnis in einem Nicht-Produktions-Client leckt.
+
+## SPA-Router
+
+Bei Hash-Routing (`/#/callback`) prüfen Sie, ob Ihr Identity-Provider dieses Muster für Redirects erlaubt; viele verlangen **pfadbasierte** URLs (`/auth/callback`) für den OAuth-Callback.
+
+## Nach dem Redirect
+
+Auf der Callback-Route:
+
+1. `code` und `state` aus der Query lesen.
+2. `state` gegen den beim Start gespeicherten Wert prüfen.
+3. Code am Token-Endpunkt tauschen (siehe [Authorization-Code-Flow](/docs/accounts-sign-in/web/authorization-code-flow)).
+4. Nutzer zur finalen Zielseite in der App weiterleiten (Dashboard, in `state` gespeicherte Return-URL usw.).
+
+## Weiter
+
+[Sitzungen, Cookies und Tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — wie Sie den angemeldeten Nutzer nach erfolgreichem Callback sicher persistieren.

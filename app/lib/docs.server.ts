@@ -3,11 +3,16 @@ import path from "node:path";
 
 import matter from "gray-matter";
 
+import { DEFAULT_LOCALE, type Locale } from "~/lib/i18n/locale";
+import { translatePath } from "~/lib/i18n/messages";
 import { docHref, getDefaultVersionSlug, parseDocsProductPath } from "./docs-versions";
 import { bundleDocMdx } from "./mdx.server";
 import { absoluteUrl } from "./site";
 
 const DOCS_ROOT = path.join(process.cwd(), "content", "docs");
+
+/** `content/docs/de`, `content/docs/da` — not product slugs. */
+const LOCALE_ROOT_DIRS = new Set<string>(["de", "da"]);
 
 export type RelatedLink = { title: string; href: string };
 
@@ -65,14 +70,18 @@ const SIDEBAR_SECTION_ORDER = [
 
 type SidebarSectionId = (typeof SIDEBAR_SECTION_ORDER)[number];
 
-const SIDEBAR_SECTION_LABEL: Record<SidebarSectionId, string> = {
-  overview: "Overview",
-  accounts: "Sign in (Web)",
-  javascript: "JavaScript",
-  wordpress: "WordPress",
-  integrations: "Integrations",
-  other: "More",
+const SIDEBAR_SECTION_MSG: Record<SidebarSectionId, string> = {
+  overview: "docs.sidebarOverview",
+  accounts: "docs.sidebarAccounts",
+  javascript: "docs.sidebarJavascript",
+  wordpress: "docs.sidebarWordpress",
+  integrations: "docs.sidebarIntegrations",
+  other: "docs.sidebarMore",
 };
+
+function sidebarSectionHeading(id: SidebarSectionId, locale: Locale): string {
+  return translatePath(locale, SIDEBAR_SECTION_MSG[id]);
+}
 
 function sidebarSectionId(relFromProduct: string): SidebarSectionId {
   const n = relFromProduct.split(path.sep).join("/");
@@ -95,6 +104,18 @@ function sortSidebarItems(items: SidebarItem[]) {
 
 function isValidProductSlug(slug: string) {
   return /^[a-z0-9][a-z0-9-]*$/.test(slug);
+}
+
+function isDocsProductDirName(name: string): boolean {
+  return (
+    !name.startsWith("_") &&
+    !LOCALE_ROOT_DIRS.has(name) &&
+    isValidProductSlug(name)
+  );
+}
+
+function englishProductRoot(product: string): string {
+  return path.join(DOCS_ROOT, product);
 }
 
 function coerceLastUpdated(value: unknown): Date | null {
@@ -169,11 +190,12 @@ export async function getDocBreadcrumbs(
   version: string,
   pathname: string,
   docTitle: string,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<BreadcrumbItem[]> {
-  const products = await listProducts();
+  const products = await listProducts(locale);
   const p = products.find((x) => x.slug === product);
   const productTitle = p?.title ?? product;
-  const sections = await getSidebar(product, version);
+  const sections = await getSidebar(product, version, locale);
   let sectionLabel: string | undefined;
   for (const sec of sections) {
     if (sec.items.some((i) => i.href === pathname)) {
@@ -182,7 +204,10 @@ export async function getDocBreadcrumbs(
     }
   }
   const out: BreadcrumbItem[] = [
-    { label: "Documentation", href: "/docs" },
+    {
+      label: translatePath(locale, "docs.breadcrumbDocumentation"),
+      href: "/docs",
+    },
     { label: productTitle, href: docHref(product, version) },
   ];
   if (sectionLabel) {
@@ -195,44 +220,54 @@ export async function getDocBreadcrumbs(
 async function resolveDocFile(
   product: string,
   docPath: string | undefined,
+  locale: Locale,
 ): Promise<string | null> {
   if (!isValidProductSlug(product)) return null;
 
-  const base = path.join(DOCS_ROOT, product);
-  const realBase = await fs.realpath(base).catch(() => null);
-  if (!realBase) return null;
+  const tryResolveFrom = async (baseDir: string): Promise<string | null> => {
+    const realBase = await fs.realpath(baseDir).catch(() => null);
+    if (!realBase) return null;
 
-  const candidates: string[] = [];
-  if (!docPath || docPath === "") {
-    candidates.push(path.join(realBase, "index.mdx"));
-  } else {
-    const safe = docPath.replace(/^\/+|\/+$/g, "").replace(/\.\./g, "");
-    if (!safe) return null;
-    candidates.push(path.join(realBase, `${safe}.mdx`));
-    candidates.push(path.join(realBase, safe, "index.mdx"));
+    const candidates: string[] = [];
+    if (!docPath || docPath === "") {
+      candidates.push(path.join(realBase, "index.mdx"));
+    } else {
+      const safe = docPath.replace(/^\/+|\/+$/g, "").replace(/\.\./g, "");
+      if (!safe) return null;
+      candidates.push(path.join(realBase, `${safe}.mdx`));
+      candidates.push(path.join(realBase, safe, "index.mdx"));
+    }
+
+    for (const file of candidates) {
+      const realFile = await fs.realpath(file).catch(() => null);
+      if (!realFile) continue;
+      if (!realFile.startsWith(realBase + path.sep) && realFile !== realBase) {
+        continue;
+      }
+      try {
+        const st = await fs.stat(realFile);
+        if (st.isFile()) return realFile;
+      } catch {
+        /* missing */
+      }
+    }
+    return null;
+  };
+
+  if (locale !== "en") {
+    const localized = await tryResolveFrom(path.join(DOCS_ROOT, locale, product));
+    if (localized) return localized;
   }
 
-  for (const file of candidates) {
-    const realFile = await fs.realpath(file).catch(() => null);
-    if (!realFile) continue;
-    if (!realFile.startsWith(realBase + path.sep) && realFile !== realBase) {
-      continue;
-    }
-    try {
-      const st = await fs.stat(realFile);
-      if (st.isFile()) return realFile;
-    } catch {
-      /* missing */
-    }
-  }
-  return null;
+  return tryResolveFrom(englishProductRoot(product));
 }
 
 export async function loadDoc(
   product: string,
   splat: string | undefined,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<DocLoaderData | null> {
-  const filePath = await resolveDocFile(product, splat);
+  const filePath = await resolveDocFile(product, splat, locale);
   if (!filePath) return null;
 
   const [bundle, stat] = await Promise.all([
@@ -276,12 +311,30 @@ async function readFrontmatterTitle(
   };
 }
 
+async function readFrontmatterTitleForLocale(
+  product: string,
+  relFromProduct: string,
+  locale: Locale,
+): Promise<{ title: string; order: number }> {
+  const enPath = path.join(DOCS_ROOT, product, relFromProduct);
+  if (locale === "en") {
+    return readFrontmatterTitle(enPath);
+  }
+  const locPath = path.join(DOCS_ROOT, locale, product, relFromProduct);
+  try {
+    await fs.access(locPath);
+    return readFrontmatterTitle(locPath);
+  } catch {
+    return readFrontmatterTitle(enPath);
+  }
+}
+
 function filePathToHref(
   product: string,
   filePath: string,
   version: string,
 ): string {
-  const rel = path.relative(path.join(DOCS_ROOT, product), filePath);
+  const rel = path.relative(englishProductRoot(product), filePath);
   const withoutExt = rel.replace(/\/index\.mdx$/i, "").replace(/\.mdx$/i, "");
   if (!withoutExt || withoutExt === "index")
     return docHref(product, version);
@@ -292,10 +345,11 @@ function filePathToHref(
 export async function getSidebar(
   product: string,
   version: string,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<SidebarSection[]> {
   if (!isValidProductSlug(product)) return [];
 
-  const base = path.join(DOCS_ROOT, product);
+  const base = englishProductRoot(product);
   type Collected = SidebarItem & { rel: string };
   const collected: Collected[] = [];
 
@@ -307,8 +361,12 @@ export async function getSidebar(
       if (ent.isDirectory()) {
         await walk(full);
       } else if (ent.isFile() && ent.name.endsWith(".mdx")) {
-        const { title, order } = await readFrontmatterTitle(full);
         const rel = path.relative(base, full);
+        const { title, order } = await readFrontmatterTitleForLocale(
+          product,
+          rel,
+          locale,
+        );
         collected.push({
           href: filePathToHref(product, full, version),
           label: title,
@@ -338,7 +396,7 @@ export async function getSidebar(
       raw.map(({ href, label, order }) => ({ href, label, order })),
     );
     sections.push({
-      heading: SIDEBAR_SECTION_LABEL[id],
+      heading: sidebarSectionHeading(id, locale),
       items,
     });
   }
@@ -349,8 +407,9 @@ export async function getSidebar(
 export async function getDocsNavFlat(
   product: string,
   version: string,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<DocsNavLink[]> {
-  const sections = await getSidebar(product, version);
+  const sections = await getSidebar(product, version, locale);
   const out: DocsNavLink[] = [];
   for (const section of sections) {
     for (const item of section.items) {
@@ -396,7 +455,7 @@ async function walkDocsTree(
 }
 
 function mdxFileToPathname(product: string, filePath: string): string {
-  const rel = path.relative(path.join(DOCS_ROOT, product), filePath);
+  const rel = path.relative(englishProductRoot(product), filePath);
   const n = rel.split(path.sep).join("/");
   const withoutExt = n.replace(/\/index\.mdx$/i, "").replace(/\.mdx$/i, "");
   const version = getDefaultVersionSlug(product);
@@ -417,7 +476,7 @@ export async function getAllDocPathnamesForSitemap(): Promise<string[]> {
   for (const ent of entries) {
     if (!ent.isDirectory() || ent.name.startsWith("_")) continue;
     const product = ent.name;
-    if (!isValidProductSlug(product)) continue;
+    if (!isDocsProductDirName(product)) continue;
     const indexPath = path.join(DOCS_ROOT, product, "index.mdx");
     try {
       const raw = await fs.readFile(indexPath, "utf8");
@@ -441,16 +500,32 @@ export async function getAllDocPathnamesForSitemap(): Promise<string[]> {
   return [...pathnames].sort();
 }
 
-export async function listProducts(): Promise<ProductSummary[]> {
+export async function listProducts(
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<ProductSummary[]> {
   const entries = await fs.readdir(DOCS_ROOT, { withFileTypes: true }).catch(
     () => [],
   );
-  const dirs = entries.filter((e) => e.isDirectory() && !e.name.startsWith("_"));
+  const dirs = entries.filter(
+    (e) => e.isDirectory() && !e.name.startsWith("_") && isDocsProductDirName(e.name),
+  );
 
   const out: ProductSummary[] = [];
   for (const d of dirs) {
-    if (!isValidProductSlug(d.name)) continue;
-    const indexPath = path.join(DOCS_ROOT, d.name, "index.mdx");
+    const indexLocalized =
+      locale !== "en"
+        ? path.join(DOCS_ROOT, locale, d.name, "index.mdx")
+        : null;
+    const indexEn = path.join(DOCS_ROOT, d.name, "index.mdx");
+    let indexPath = indexEn;
+    if (indexLocalized) {
+      try {
+        await fs.access(indexLocalized);
+        indexPath = indexLocalized;
+      } catch {
+        indexPath = indexEn;
+      }
+    }
     try {
       const raw = await fs.readFile(indexPath, "utf8");
       const { data } = matter(raw);

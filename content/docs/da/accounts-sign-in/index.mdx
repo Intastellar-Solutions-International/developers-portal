@@ -1,0 +1,39 @@
+---
+title: Intastellar Accounts — log ind
+description: Web-login med Intastellar Accounts — React SDK, ren JS, OAuth-lignende flows, PKCE, redirects og sessioner.
+hub_order: 20
+hub_tagline: Web-login — React- og JS-SDK, OAuth-lignende flows, PKCE, redirects og sessioner.
+order: 0
+---
+
+**Intastellar Accounts** er identitetslaget for Intastellar-produkter. Disse guider forklarer, hvordan du tilføjer **web-login**, så brugere kan bruge samme konto på tværs af Intastellar-tjenester.
+
+**inta.dev** hoster denne dokumentation, søgning og kan tilbyde **værktøjer efter login** (f.eks. udviklernøgler) afhængigt af produktet — implementeringsdetaljer hører til i dine egne deployment-docs.
+
+## Hvad du kan bygge
+
+**På dine egne sites og apps:**
+
+1. **React SDK** ([integrering af React og JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript)) eller **ren HTML, CSS og JS** ([Plain HTML, CSS og JavaScript](/docs/accounts-sign-in/web/plain-html-css-js)) til browser-login, **eller**
+2. et **OAuth-lignende authorization code**-flow (ofte med **PKCE**) til egne stacks — se web-guiderne nedenfor.
+
+## Guider (Log ind — Web)
+
+- [Intastellar Sign-In — React SDK og plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) — **React**-mønstre med **pladsholder**-eksempler; links til [npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme).
+- [Plain HTML, CSS og JavaScript](/docs/accounts-sign-in/web/plain-html-css-js) — **migreret** fra [developers.intastellarsolutions.com/…/js-docs](https://developers.intastellarsolutions.com/identity/sign-in/web/docs/js-docs): statiske sites, script-tags, valgfrit bundler-appendiks med `IntastellarAPI`.
+- [Kom i gang](/docs/accounts-sign-in/web/getting-started) — registrer en klient, vælg offentlig vs. fortrolig, planlæg redirects og sessioner.
+- [Authorization code-flow](/docs/accounts-sign-in/web/authorization-code-flow) — auth-URL, `state`, PKCE og code-udveksling (tilpassede integrationer).
+- [Redirect-URI’er og callbacks](/docs/accounts-sign-in/web/redirect-uris) — tilladte URL’er, validering og almindelige fejl.
+- [Sessioner, cookies og tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — dit origin, SDK og din sessionsmodel.
+- [SPA’er og JavaScript-klienter](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE og SDK-sti.
+- [Serverside (fortrolige klienter)](/docs/accounts-sign-in/web/backend-exchange) — udveksl koden på dit backend.
+- [Log ud, fejl og fejlfinding](/docs/accounts-sign-in/web/logout-and-errors) — afslut sessioner og typiske problemer.
+
+## Relateret
+
+- [Ændringslog](/changelog) — `@intastellar/signin-sdk-react`-versioner på npm og releases på GitHub.
+- [Intastellar Consents (cookiebanner)](/docs/cookie-banner) — consent-UI hvis du også skal bruge et banner på samme property.
+
+## Legacy developer-URL
+
+Ældre links kan pege på **`developers.intastellarsolutions.com`** (inkl. **`…/identity/sign-in/web/docs/js-docs`**). Foretræk **HTTPS-redirects** til **inta.dev**; **plain HTML / JavaScript**-guiden ovenfor er hjem for det indhold. Opdater **OAuth-klient redirect- / login-URI’er**, så de matcher de URL’er, du faktisk serverer.

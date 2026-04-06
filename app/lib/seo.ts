@@ -66,12 +66,13 @@ export function buildDocPageMeta(opts: {
 
 export function buildDocsHubMeta(
   pathname: string,
+  locale: Locale = DEFAULT_LOCALE,
   opts?: { description?: string; ogImage?: string },
 ): MetaDescriptor[] {
-  const title = `Documentation · ${SITE_NAME}`;
+  const title = `${translatePath(locale, "docs.hubMetaTitleCore")} · ${SITE_NAME}`;
   const desc =
     opts?.description ??
-    "Documentation for Intastellar developer products: Intastellar Consents, accounts sign-in, and APIs.";
+    translatePath(locale, "docs.hubMetaDescription");
   const url = absoluteUrl(pathname);
   const ogImage = opts?.ogImage;
   const twitterCard = ogImage ? "summary_large_image" : "summary";

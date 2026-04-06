@@ -1,0 +1,83 @@
+---
+title: Authorization-Code-Flow
+sidebar_label: Authorization Code
+description: Authorize-Redirect bauen, State und PKCE prüfen und den Authorization Code bei Intastellar Accounts gegen Tokens tauschen.
+order: 20
+---
+
+Der **Authorization-Code**-Flow ist das übliche Muster für Web-Anmeldung: Der Browser besucht Intastellar, der Nutzer authentifiziert sich, und Intastellar leitet mit einem **Code** zurück, den Sie gegen Tokens eintauschen.
+
+## React-SDK (Popup) vs. dieser Leitfaden
+
+Mit **`@intastellar/signin-sdk-react`** läuft die Anmeldung typischerweise in einem **Popup**: Intastellar liefert ein Token per `postMessage` zurück, das SDK prüft es, optionale Hooks (z. B. `loginCallback`) laufen. In diesem Modus bauen Sie **nicht** manuell die `GET`-Authorize-URL und den `POST` zum Token-Endpunkt.
+
+Nutzen Sie diese Seite, wenn Sie die Sequenz **Authorize + Callback + Token** selbst implementieren (nicht React, mobil oder eigener Server). Für **React-SDK** oder **Plain JS** siehe [Intastellar Sign-In — React-SDK und Plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+Parameternamen folgen **üblicher** OAuth-2.0-/OIDC-Nutzung — **exakte** Namen, Scopes und Discovery-URLs in Ihrer Intastellar-Client-Registrierung und Integrationsdoku prüfen.
+
+## Schritt 1 — Nutzer zum Authorize-Endpunkt leiten
+
+Browser zur Authorization-URL mit Query-Parametern schicken:
+
+| Parameter | Zweck |
+| --------- | ------- |
+| `response_type` | Für diesen Flow: `code`. |
+| `client_id` | Ihre registrierte Client-ID. |
+| `redirect_uri` | Muss **exakt** einer registrierten URI entsprechen. |
+| `scope` | Leerzeichen-getrennte Scopes (oft inkl. `openid` für OIDC). |
+| `state` | Zufälliger, nicht erratbarer Wert; bei Rückkehr prüfen. |
+| `code_challenge` | PKCE: SHA-256-Hash von `code_verifier`, Base64url-kodiert (öffentliche Clients). |
+| `code_challenge_method` | Typisch `S256`. |
+
+Beispiel (Zeilenumbrüche der Lesbarkeit wegen):
+
+```http
+GET AUTHORIZATION_ENDPOINT?
+  response_type=code
+  &client_id=YOUR_CLIENT_ID
+  &redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+  &scope=openid%20profile%20email
+  &state=RANDOM_STATE
+  &code_challenge=CODE_CHALLENGE
+  &code_challenge_method=S256
+```
+
+**Speichern** Sie `state` und den rohen `code_verifier` (PKCE) serverseitig oder in einem sicheren, kurzlebigen Cookie für die Callback-Validierung.
+
+## Schritt 2 — Callback verarbeiten
+
+Intastellar leitet zu Ihrer `redirect_uri` mit:
+
+| Query-Parameter | Bedeutung |
+| ----------- | ------- |
+| `code` | Einmaliger Authorization Code. |
+| `state` | Echo Ihres Werts; **muss** dem gespeicherten `state` entsprechen. |
+
+Bei Ablehnung oder Fehler können `error` und `error_description` kommen — nicht als Erfolg behandeln.
+
+## Schritt 3 — Code gegen Tokens tauschen
+
+`POST` an den Token-Endpunkt (typisch `application/x-www-form-urlencoded`):
+
+| Feld | Zweck |
+| ----- | ------- |
+| `grant_type` | `authorization_code` |
+| `code` | Code aus dem Callback. |
+| `redirect_uri` | Dieselbe URI wie in Schritt 1. |
+| `client_id` | Ihre Client-ID. |
+| `code_verifier` | PKCE: der ursprüngliche Verifier (öffentliche Clients). |
+| `client_secret` | Nur vertrauliche Clients. |
+
+Die Antwort enthält meist `access_token`, optional `refresh_token` und bei angefordertem `openid` ein `id_token`. **ID-Token** validieren (`iss`, `aud`, `exp`, Signatur) per JWKS des Issuers, wenn Sie auf Claims vertrauen.
+
+## Sicherheits-Checkliste
+
+- **`state`** niemals weglassen — schützt vor CSRF am Callback.
+- **PKCE** für jeden Client ohne Client-Geheimnis (SPAs, mobil).
+- **HTTPS** für alle Redirect-URIs in Produktion.
+- **Refresh Tokens** und **Client-Geheimnisse** nur auf von Ihnen kontrollierten Servern.
+
+## Weiter
+
+- [Redirect-URIs und Callbacks](/docs/accounts-sign-in/web/redirect-uris) — Registrierung straffen und Mismatch-Fehler vermeiden.
+- [Sitzungen, Cookies und Tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — SDK-Cookies auf Ihrem Origin und eigenes Sitzungsmodell.

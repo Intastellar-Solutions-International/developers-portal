@@ -1,0 +1,22 @@
+---
+title: Logo hinzufügen
+description: Ihr Logo im JavaScript-Cookie-Banner anzeigen.
+order: 40
+lastUpdated: "2026-04-05"
+---
+
+# Logo hinzufügen (JavaScript)
+
+Setzen Sie eine **absolute HTTPS-URL** zu Ihrem Logo in `window.INTA.settings.logo`:
+
+```js
+window.INTA = {
+  // ...
+  settings: {
+    // ...
+    logo: "https://yourdomain.com/path/to/logo.png",
+  },
+};
+```
+
+Nutzen Sie ein quadratisches oder breites Logo, das auf hellem und dunklem Hintergrund funktioniert, oder passen Sie `color` / Styling in [Anpassen](/docs/cookie-banner/javascript/customize) an, damit der Kontrast barrierefrei bleibt.

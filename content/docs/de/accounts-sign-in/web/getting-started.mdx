@@ -1,0 +1,62 @@
+---
+title: Web-Anmeldung — Erste Schritte
+sidebar_label: Erste Schritte
+description: Intastellar-Client registrieren, öffentlich vs. vertraulich wählen und Redirects sowie Sitzungen planen.
+order: 10
+---
+
+Intastellar Sign-In unterstützt mehr als einen Integrationsstil. Wählen Sie den Pfad, der zu Ihrem Stack passt:
+
+| Sie bauen … | Start hier |
+| ----------------- | ---------- |
+| **React**-App | [Intastellar Sign-In — React-SDK und Plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) — passend zum [offiziellen npm-Paket](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme). |
+| **Plain HTML / CSS / JS** | [Plain HTML, CSS und JavaScript](/docs/accounts-sign-in/web/plain-html-css-js) — kein Framework; übernommen von den früheren JS-Docs der Developers-Site. |
+| **Eigenen OAuth-Code-Flow** (beliebiger Server) | Unten weiterlesen, dann [Authorization-Code-Flow](/docs/accounts-sign-in/web/authorization-code-flow). |
+
+Die folgenden Abschnitte fokussieren auf **Client-Registrierung** und die Planung von **Redirects / Sitzungen** für **Ihre** Anwendungen. Sie ergänzen den SDK-Leitfaden, der nur **illustrative** Codebeispiele nutzt.
+
+## 1. Anwendung registrieren
+
+Legen Sie einen **OAuth/OIDC-ähnlichen Client** im Intastellar-Registrierungsflow Ihres Teams an. Notieren Sie:
+
+- **Client-ID** — öffentlicher Bezeichner (für **öffentliche** Clients im Front-End unkritisch).
+- **Client-Geheimnis** — nur für **vertrauliche** (serverseitige) Clients; niemals im Browser oder in App-Binärdateien ausliefern.
+- **Redirect- / Login-URIs** — exakte URLs, die Intastellar bei Rückkehr des Nutzers oder Abschluss der Anmeldung nutzen darf. Siehe [Redirect-URIs und Callbacks](/docs/accounts-sign-in/web/redirect-uris).
+
+Nutzen Sie **getrennte** Clients (oder isolierte Redirect-Listen) für Produktion und Staging.
+
+## 2. Flow wählen
+
+| Ihre App | Empfohlenes Vorgehen |
+| -------- | -------------------- |
+| **React** | [`@intastellar/signin-sdk-react`](https://www.npmjs.com/package/@intastellar/signin-sdk-react) — siehe [React und JavaScript integrieren](/docs/accounts-sign-in/web/integrating-react-and-javascript). |
+| **Vanilla JS (statische Sites)** | [Plain HTML, CSS und JavaScript](/docs/accounts-sign-in/web/plain-html-css-js). |
+| **SPA (eigen)** | Authorization Code mit **PKCE**; kein Client-Geheimnis im Browser. |
+| **Servergerenderte Site** | Browser schließt Redirect ab; Ihr **Server** tauscht den Code mit dem **Client-Geheimnis**. |
+| **Mobil / nativ** | PKCE, Custom-Schema oder HTTPS-Redirect. |
+
+Details: [Authorization-Code-Flow](/docs/accounts-sign-in/web/authorization-code-flow), [SPAs und JavaScript](/docs/accounts-sign-in/web/spa-and-javascript), [Serverseitiger Austausch](/docs/accounts-sign-in/web/backend-exchange).
+
+## 3. Endpunkte und Metadaten
+
+Ihre Registrierung oder der Intastellar-Leitfaden sollten (oder per Discovery) enthalten:
+
+- **Authorization-Endpunkt** — Nutzer meldet sich an (für Code-Flow-Integrationen).
+- **Token-Endpunkt** — Code gegen Tokens tauschen.
+- **Issuer / JWKS** — zur Validierung von ID-Tokens mit OpenID Connect.
+
+Beispiele in diesen Leitfäden nutzen Platzhalter wie `AUTHORIZATION_ENDPOINT` und `TOKEN_ENDPOINT`.
+
+## 4. Sitzungen planen
+
+Legen Sie fest, wie **Ihr Origin** den Nutzer merkt:
+
+- **HttpOnly-Sitzungs-Cookies** von Ihrem Server (typisch für klassische Apps).
+- **Opake Sitzungs-ID** plus serverseitiger Store.
+- **Kurzlebige Access Tokens im Speicher** für SPAs, mit **BFF** wenn möglich.
+
+Wenn Sie das **SDK** nutzen, kann es **First-Party**-Cookies auf Ihrer Domain setzen; kombinieren Sie das mit einer eigenen Sitzung, falls Sie servergerenderte Seiten brauchen — siehe [Sitzungen, Cookies und Tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Nächste Schritte
+
+[Authorization-Code-Flow](/docs/accounts-sign-in/web/authorization-code-flow) — für manuell gebaute Authorize-, Callback- und Token-Schritte.

@@ -1,0 +1,44 @@
+---
+title: Redirect-URI’er og callbacks
+sidebar_label: Redirect-URI’er
+description: Registrér eksakte callback-URL’er til Intastellar Accounts web-login og undgå almindelige redirect mismatch-fejl.
+order: 30
+---
+
+Intastellar fuldfører kun returflows til **forhåndsregistrerede** URL’er (eller URI’er din klientregistrering tillader for **login-URI** brugt af React SDK). Stavefejl, forkert scheme eller trailing slash giver `redirect_uri_mismatch` eller lignende.
+
+Hvis du **ændrer appens offentlige værtsnavn** (f.eks. efter domænemigrering), skal du opdatere din Intastellar-klient så tilladte **redirect- / login**-poster matcher det **nye** origin og stier. SDK’er udleder ofte **login-URI** fra den aktuelle side (`hostname`, `port`, `pathname`) medmindre du overskriver — registrér de værdier du faktisk sender.
+
+## Tommelfingerregler
+
+1. **HTTPS i produktion** — `http://localhost` er ofte tilladt til udvikling; produktion bør bruge `https://`.
+2. **Eksakt match** — `https://app.example.com/callback` og `https://app.example.com/callback/` er forskellige stier; registrér den du bruger i authorize-kaldet.
+3. **Ingen wildcards** i de fleste opsætninger — registrér hver konkret callback-sti (eller følg dit konsols dokumenterede mønster hvis path-templates understøttes).
+4. **Query-strenge** — undgå dynamiske query-strenge i den registrerede URI medmindre registrering udtrykkeligt tillader det; brug en fast sti og send intern kontekst via `state`.
+
+## Flere miljøer
+
+Registrér separate redirect-URI’er (eller separate klienter) til:
+
+- Lokal udvikling (`http://127.0.0.1:5173/auth/callback`, osv.)
+- Staging
+- Produktion
+
+Det begrænser skade hvis en hemmelighed lækker i et ikke-produktionsklient.
+
+## SPA-routere
+
+Med hash-routing (`/#/callback`), tjek om din identity provider tillader det mønster til redirects; mange kræver **sti-baserede** URL’er (`/auth/callback`) til OAuth-callback.
+
+## Efter redirect
+
+På callback-ruten:
+
+1. Læs `code` og `state` fra query-strengen.
+2. Verificer `state` mod det du gemte, da du startede flowet.
+3. Udveksl koden på token-endpoint (se [Authorization code-flow](/docs/accounts-sign-in/web/authorization-code-flow)).
+4. Redirect brugeren til den endelige destination i appen (dashboard, retur-URL gemt i `state`, osv.).
+
+## Næste
+
+[Sessioner, cookies og tokens](/docs/accounts-sign-in/web/sessions-and-cookies) for hvordan du sikkert husker den loggede bruger efter et vellykket callback.

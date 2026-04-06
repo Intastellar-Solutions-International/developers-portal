@@ -1,0 +1,44 @@
+---
+title: Sessioner, cookies og tokens
+sidebar_label: Sessioner & cookies
+description: SDK-cookies på dit origin, IdP-værter og hvordan du designer din egen session til Intastellar Sign-In.
+order: 40
+---
+
+Betragt cookies og tokens i tre lag: **Intastellar-hostet** (login-UI), **dit sites origin** (SDK eller egen session) og **dit backend** (opake sessioner, verifikation).
+
+## På dit sites origin
+
+Når du bruger **`@intastellar/signin-sdk-react`** eller et **vanilla**-flow der spejler det, kan integrationen efter login sætte **first-party**-cookies, så fanen husker brugeren. Eksakte navne og semantik er defineret af **SDK’et og Intastellars dokumentation** ([npm readme](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme), [Plain HTML, CSS og JavaScript](/docs/accounts-sign-in/web/plain-html-css-js)) — antag ikke de matcher et andet projekts deployment.
+
+Din applikationskode bør behandle dem som **SDK-styrede** medmindre Intastellar siger andet.
+
+## Dit eget session-cookie (anbefalet mønster)
+
+Kører du **backend** eller **BFF**, foretræk:
+
+1. **Opak session-id** i et **HttpOnly**, **Secure**-cookie med `SameSite` der passer til din topologi.
+2. **Serverside store** der mapper id til bruger-id, udløb og refresh-håndtering.
+3. Opret eller forny den session først efter din server **stoler på** login-resultatet (f.eks. token-validering ifølge din integrationsguide).
+
+Se [integrering af React og JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) for et overordnet mønster „valgfri serversession“ med kun **eksempel**-URL’er.
+
+## På Intastellar-kontrollerede værter
+
+Mens brugeren logger ind hos Intastellar, kan **identity-værten** sætte **egne** cookies (SSO, session). De er **ikke** læsbare fra dit origins JavaScript. Stol på **tokens**, **din session** eller **SDK’et** — ikke på at læse IdP-cookies på tværs af sites.
+
+## ID-token vs. access-token
+
+Ved OAuth-lignende **token**-svar (manuel code-flow):
+
+- **ID-token** — JWT om autentificeringshændelsen; valider `iss`, `aud`, `exp`, signatur (og `nonce` hvis brugt).
+- **Access-token** — kald API’er; behandl som opak medmindre du skal parse det.
+
+## Log ud
+
+Ryd **din** session og følg **SDK- / Intastellar**-vejledning til logout. Hvis en **end-session**-URL findes, kan redirect dertil rydde IdP SSO-cookies på identity-domænet. Se [Log ud, fejl og fejlfinding](/docs/accounts-sign-in/web/logout-and-errors).
+
+## Næste
+
+- [SPA’er og JavaScript-klienter](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE og SDK-oversigt.
+- [Serverside (fortrolige klienter)](/docs/accounts-sign-in/web/backend-exchange) — code-udveksling uden at eksponere hemmeligheder.

@@ -1,0 +1,35 @@
+---
+title: SPA’er og JavaScript-klienter
+sidebar_label: SPA’er & JavaScript
+description: Brug PKCE uden client secret, beskytt tokens i browseren og undgå almindelige SPA-faldgruber med Intastellar Accounts.
+order: 50
+---
+
+Single-page applications kan ikke gemme et **client secret** sikkert. Brug authorization code-flow kun med **PKCE**, **eller** det officielle **`@intastellar/signin-sdk-react`**-pakke hvis du målretter React og Intastellar understøtter det for din klient — SDK’et bruger et **popup** og token-verifikation i stedet for at du selv bygger authorize-URL og token-`POST`.
+
+For React- og vanilla JS-mønstre (kun **pladsholder**-eksempler), se [Intastellar Sign-In — React SDK og plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Flow-resumé (manuel code + PKCE)
+
+1. Generér `code_verifier` (høj-entropi tilfældig streng) og udled `code_challenge` (S256).
+2. Gem `code_verifier` hvor du kan læse den ved callback — f.eks. `sessionStorage` for fanen, eller krypteret cookie via lille BFF.
+3. Redirect til `AUTHORIZATION_ENDPOINT` med `code_challenge` / `code_challenge_method=S256`.
+4. Ved callback send `code` + `code_verifier` til dit **backend** (anbefalet) eller til token-endpoint hvis produktet tillader offentlige klienter uden secret (bekræft i konsollen).
+
+## Foretræk backend-for-frontend (BFF)
+
+Selv i en SPA er **token-udveksling** og **refresh** sikrere på en same-origin API:
+
+- Browseren får kun et **opakt session-cookie** fra din API.
+- Refresh-tokens rører aldrig `localStorage`.
+- CORS og CSRF kan styres på dit domæne.
+
+Hvis du absolut skal håndtere tokens i browseren, minimer levetid, undgå refresh tokens i `localStorage`, og planlæg XSS som fuld kompromittering af sessionen.
+
+## CORS og iframes
+
+Indlejr ikke Intastellar login-UI i skjult iframe medmindre produktet udtrykkeligt understøtter stille eller indlejrede flows. Foretræk fuldside-redirect til login og logout.
+
+## Næste
+
+[Serverside (fortrolige klienter)](/docs/accounts-sign-in/web/backend-exchange) hvis du også har et traditionelt backend.

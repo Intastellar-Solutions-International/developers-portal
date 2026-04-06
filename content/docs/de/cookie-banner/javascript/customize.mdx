@@ -1,0 +1,24 @@
+---
+title: Anpassen
+description: Farben, Layout, Textrichtung und Branding für das JavaScript-Banner einstellen.
+order: 20
+lastUpdated: "2026-04-05"
+---
+
+# Anpassen
+
+Das JavaScript-Banner liest die Konfiguration aus `window.INTA`, bevor `uc.js` läuft. Siehe die vollständige [**JSON-Schema-Referenz**](/docs/cookie-banner/javascript/inta-schema). Häufige `settings`-Felder (siehe [Erste Schritte](/docs/cookie-banner/javascript/getting-started)):
+
+| Feld | Zweck |
+| --- | --- |
+| `rootDomain` | Root-Domain Ihrer Site |
+| `company` | Anzeigename Ihrer Organisation |
+| `arrange` | Layout-Richtung, z. B. `ltr` |
+| `color` | Primärfarbe der UI (Hex) |
+| `logo` | Absolute URL zum Logo |
+| `design` | Banner-Darstellung, z. B. `overlay` |
+| `gtagId` | Google-Tag / GA4-Mess-ID falls zutreffend |
+| `requiredCookies` | Als unbedingt notwendig behandelte Cookies |
+| `keepInLocalStorage` | Zu erhaltende localStorage-Schlüssel |
+
+Felder nach Dokumentation für Ihr Konto ergänzen oder anpassen. Für eine vollständig eigene UI behalten Sie das Skript und wenden die dokumentierten **CSS-Klassen** auf Ihr Markup an (siehe die FAQ auf der [Dokumentations-Startseite](/docs/cookie-banner#faq)).

@@ -1,0 +1,98 @@
+---
+title: Intastellar Sign-In — React SDK og plain JavaScript
+sidebar_label: React & plain JS
+description: "Integrér Intastellar Sign-In med @intastellar/signin-sdk-react eller vanilla HTML/JS — mønstre, pladsholdere og links til officielle referencer."
+order: 12
+---
+
+Denne guide beskriver **hvordan du** integrerer Intastellar Sign-In i browseren. Den bruger **illustrative** værdier (`your-client-id`, `https://app.example.com`, eksempel-endpoints). **Behandl ikke** stier, cookienavne eller miljøvariabler her som en kopi af et bestemt produktions-deployment.
+
+Autoritative pakkedetaljer:
+
+- **React:** [`@intastellar/signin-sdk-react` på npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react) — installation, `IntastellarButton`, `useIntastellar` og konfigurationstabel.
+- **Ren HTML, CSS og JavaScript:** [Plain HTML, CSS og JavaScript](/docs/accounts-sign-in/web/plain-html-css-js) (migreret fra den tidligere developers-site [js-docs](https://developers.intastellarsolutions.com/identity/sign-in/web/docs/js-docs)).
+
+Dokumentation til Intastellar-produkter (inkl. Consents og Accounts) publiceres på **inta.dev**. Peger ældre links stadig på tidligere developer-værter, foretræk **HTTPS-redirects** til den aktuelle docs-site og opdater **tilladte login- / redirect-URI’er** på din Intastellar-klient så de matcher de URL’er du faktisk bruger.
+
+## React (`@intastellar/signin-sdk-react`)
+
+Installer pakken (se [npm readme](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme)):
+
+```bash
+npm install @intastellar/signin-sdk-react
+```
+
+### Button-komponent (illustrativ)
+
+```jsx
+import { IntastellarButton } from "@intastellar/signin-sdk-react";
+
+function Example() {
+  const handleLogin = (account) => {
+    // Use account.user (shape per SDK types) in your app
+    console.log("Signed in:", account);
+  };
+
+  return (
+    <IntastellarButton
+      clientId="your-client-id"
+      loginCallback={handleLogin}
+    />
+  );
+}
+```
+
+### Hook (illustrativ)
+
+```jsx
+import { useIntastellar } from "@intastellar/signin-sdk-react";
+
+function Example() {
+  const { users, isLoading, signin, logout, isSignedIn } = useIntastellar({
+    clientId: "your-client-id",
+    scopes: "profile,email",
+    loginCallback: async (account) => {
+      /* optional: sync with your backend */
+    },
+  });
+
+  if (isLoading) return <p>Loading…</p>;
+  return isSignedIn ? (
+    <button type="button" onClick={logout}>Sign out</button>
+  ) : (
+    <button type="button" onClick={() => signin()}>Sign in</button>
+  );
+}
+```
+
+Konfigurér **`clientId`** (og valgfrie felter din integration kræver, f.eks. visningsnavn eller tema) ifølge din **Intastellar-klientregistrering**. Hvordan du **injicerer** `clientId` i bundlet (f.eks. build-time public env, runtime config) er op til dit værktøj — **undgå at hardkode rigtige id’er** i versionskontrol.
+
+Login kører typisk **popup-baseret**: SDK åbner Intastellars UI, fuldfører verifikation og kører dine callbacks. Den sti er **ikke** den samme som håndbygget OAuth **authorization code**-redirect og token-`POST`; for det, se [Authorization code-flow](/docs/accounts-sign-in/web/authorization-code-flow).
+
+## Ren HTML og JavaScript
+
+For **statiske HTML/CSS/JS**-sites (intet framework), følg **[Plain HTML, CSS og JavaScript](/docs/accounts-sign-in/web/plain-html-css-js)** — script-tags, hosted vanilla-script, valgfrit bundler-appendiks.
+
+## Valgfrit: din egen serversession
+
+Hvis du skal bruge **server-renderede sider** eller **beskyttede API’er** på dit domæne, er et almindeligt mønster:
+
+1. Efter SDK rapporterer en logget-ind bruger, kald **dit** backend (f.eks. `POST https://api.example.com/v1/session`) med en **minimal** profil-payload din server accepterer.
+2. Serveren validerer tillid **passende for din trusselsmodel** (f.eks. verificér access- eller ID-token hvis Intastellar dokumenterer hvordan, eller brug backend-for-frontend der holder hemmeligheder).
+3. Serveren sætter et **opakt, HttpOnly, Secure** session-cookie for din app.
+
+Eksakte rutenavne, cookienavne og session-stores er **implementeringsdetaljer** — design dem til dit stack; antag ikke de matcher et bestemt offentligt site.
+
+## Cookies på dit origin
+
+SDK’et kan sætte **first-party**-cookies på dit sites origin for at huske login-tilstand. Navne og levetider er defineret af **SDK’et og Intastellars integrationsguide** — henvis til npm-pakken, JS-docs eller supportmateriale frem for at kopiere værdier fra et urelateret deployment.
+
+## Loggede funktioner på dokumentationssites
+
+En developer-docs-property kan tilbyde **ekstra værktøjer** efter login (f.eks. håndtering af API-legitimation). Hvordan de er konfigureret (database, hemmeligheder, nøgleopbevaring) er **miljøspecifikt** og hører til i **dine** interne runbooks, ikke i denne generiske guide.
+
+## Næste skridt
+
+- [Kom i gang](/docs/accounts-sign-in/web/getting-started) — klienttyper, redirects og flows.
+- [Sessioner, cookies og tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — modelér egne cookies ved siden af SDK’et.
+- [Log ud, fejl og fejlfinding](/docs/accounts-sign-in/web/logout-and-errors) — popups, fejl og logout.

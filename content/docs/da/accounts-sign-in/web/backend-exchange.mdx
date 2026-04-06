@@ -1,0 +1,42 @@
+---
+title: Serverside (fortrolige klienter)
+sidebar_label: Backend-udveksling
+description: Udveksl authorization code på din server med client_id og client_secret til Intastellar Accounts web-login.
+order: 60
+---
+
+Når du har en betroet server (Node, .NET, PHP osv.), skal **token-udvekslingen** ske dér, så **client secret** aldrig når browseren.
+
+Det er den rigtige model for **tilpassede** OAuth code-integrationer. **React SDK**- og **plain JS**-stier (popup / script-integration) er separate — se [Intastellar Sign-In — React SDK og plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Sekvens
+
+1. Browser fuldfører redirect-flow og lander på dit callback med `code` og `state`.
+2. Din **callback-rute** verificerer `state`, kalder derefter dit **backend** (eller kører serverside i samme request) for at udveksle koden.
+3. Backend `POST` til `TOKEN_ENDPOINT` med `grant_type=authorization_code`, `code`, `redirect_uri`, `client_id` og `client_secret`.
+4. Backend opretter en **session** for brugeren (sæt cookie, gem tokens serverside).
+5. Browser redirect’es til appen med kun dit session-cookie.
+
+## Eksempel (konceptuelt)
+
+```http
+POST TOKEN_ENDPOINT
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code
+&code=AUTHORIZATION_CODE
+&redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+&client_id=YOUR_CLIENT_ID
+&client_secret=YOUR_CLIENT_SECRET
+```
+
+Tilføj PKCE-parametre hvis denne klient er hybrid eller authorization-trinnet brugte PKCE.
+
+## Hemmelig opbevaring
+
+- Indlæs `client_secret` fra miljøvariabler eller secret manager.
+- Roter ved eksponering; brug adskilte credentials per miljø.
+
+## Næste
+
+[Log ud, fejl og fejlfinding](/docs/accounts-sign-in/web/logout-and-errors).

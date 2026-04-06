@@ -1,0 +1,49 @@
+---
+title: Kom i gang
+description: Integrér Intastellar Consents på dit website via JavaScript.
+order: 10
+lastUpdated: "2026-04-05"
+related:
+  - title: window.INTA JSON Schema
+    href: /docs/cookie-banner/javascript/inta-schema
+  - title: Tilpas udseende og adfærd
+    href: /docs/cookie-banner/javascript/customize
+---
+
+# Kom i gang (JavaScript)
+
+Indsæt snippet’et **lige efter** det åbnende `<head>`-tag på hver side (eller én gang i dit root-layout). Samme konfigurationsform vises på den offentlige [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents)-oversigt — udskift med dine rigtige domæner, id’er og branding.
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://yourdomain.com/privacy-policy",
+    settings: {
+      rootDomain: "yourdomain.com",
+      company: "yourcompany",
+      arrange: "ltr",
+      color: "#000000",
+      logo: "https://yourdomain.com/logo.png",
+      design: "overlay",
+      gtagId: "G-XXXXXXXXXX",
+      requiredCookies: [],
+      keepInLocalStorage: [],
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+Erstat pladsholdere med dit domæne, firmanavn, farver, logo-URL og målings-id’er.
+
+## URL til privatlivspolitik
+
+Angiv en tilgængelig privatlivspolitik-URL. Brug `policy_link` og/eller `settings.privacy_policy` på `window.INTA`. Manglende eller ugyldige URL’er er en almindelig årsag til, at banneret forbliver skjult — se [FAQ](/docs/cookie-banner#faq) på doc-forsiden.
+
+## Relateret
+
+- [`window.INTA`-reference (JSON Schema)](/docs/cookie-banner/javascript/inta-schema)
+- [Tilpas](/docs/cookie-banner/javascript/customize)
+- [iFrames](/docs/cookie-banner/javascript/iframes)
+- [Tilføj logo](/docs/cookie-banner/javascript/logo)
+- [Prøv det](/docs/cookie-banner/javascript/try-out)

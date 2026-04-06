@@ -13,9 +13,11 @@ import {
   loadDoc,
 } from "~/lib/docs.server";
 import { docHref, parseDocSplat } from "~/lib/docs-versions";
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { buildDocPageMeta } from "~/lib/seo";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
+  const locale = resolveLocaleFromRequest(request);
   const splat = params["*"]?.replace(/^\/+|\/+$/g, "") ?? "";
   const product = params.product!;
   const parsed = parseDocSplat(product, splat);
@@ -30,18 +32,19 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     throw redirect(docHref(product, version, "web/plain-html-css-js"));
   }
 
-  const doc = await loadDoc(product, docPath);
+  const doc = await loadDoc(product, docPath, locale);
   if (!doc) throw data("Not found", { status: 404 });
   const pathname = new URL(request.url).pathname;
-  const navFlat = await getDocsNavFlat(product, version);
+  const navFlat = await getDocsNavFlat(product, version, locale);
   const { prev, next } = getAdjacentDocs(navFlat, pathname);
   const breadcrumbs = await getDocBreadcrumbs(
     product,
     version,
     pathname,
     doc.title,
+    locale,
   );
-  return { ...doc, prev, next, breadcrumbs, version };
+  return { ...doc, prev, next, breadcrumbs, version, locale };
 }
 
 export function meta({ data: doc, location }: Route.MetaArgs) {

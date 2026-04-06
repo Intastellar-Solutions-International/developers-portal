@@ -1,0 +1,44 @@
+---
+title: Sitzungen, Cookies und Tokens
+sidebar_label: Sitzungen & Cookies
+description: SDK-Cookies auf Ihrem Origin, IdP-Hosts und wie Sie eine eigene Sitzung für Intastellar Sign-In gestalten.
+order: 40
+---
+
+Cookies und Tokens in drei Schichten betrachten: **bei Intastellar gehostet** (Login-UI), **Origin Ihrer Site** (SDK oder eigene Sitzung) und **Ihr Backend** (opake Sitzungen, Verifikation).
+
+## Auf dem Origin Ihrer Site
+
+Mit **`@intastellar/signin-sdk-react`** oder einem **Vanilla**-Flow in gleicher Art kann die Integration nach der Anmeldung **First-Party**-Cookies setzen, damit der Tab den Nutzer merkt. Exakte Namen und Semantik stehen im **SDK und der Intastellar-Dokumentation** ([npm-Readme](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme), [Plain HTML, CSS und JavaScript](/docs/accounts-sign-in/web/plain-html-css-js)) — nicht annehmen, dass sie mit einem anderen Projekt übereinstimmen.
+
+Ihr Anwendungscode soll sie als **SDK-verwaltet** behandeln, sofern Intastellar nichts anderes vorgibt.
+
+## Eigenes Sitzungs-Cookie (empfohlenes Muster)
+
+Mit **Backend** oder **BFF** bevorzugen Sie:
+
+1. **Opake Sitzungs-ID** in einem **HttpOnly**-, **Secure**-Cookie, `SameSite` passend zu Ihrer Topologie.
+2. **Serverseitiger Store**, der diese ID Nutzer-ID, Ablauf und Refresh-Verhalten zuordnet.
+3. Diese Sitzung erst anlegen oder erneuern, nachdem Ihr Server das Anmeldeergebnis **vertraut** (z. B. Token-Validierung laut Integrationsleitfaden).
+
+Siehe [React und JavaScript integrieren](/docs/accounts-sign-in/web/integrating-react-and-javascript) für ein grobes Muster „optionale Serversitzung“ mit **Beispiel**-URLs.
+
+## Auf Intastellar-kontrollierten Hosts
+
+Während der Nutzer sich bei Intastellar anmeldet, kann der **Identity-Host** **eigene** Cookies setzen (SSO, Sitzung). Diese sind aus JavaScript Ihres Origins **nicht** lesbar. Vertrauen Sie auf **Tokens**, **Ihre Sitzung** oder das **SDK**, nicht auf das Auslesen von IdP-Cookies cross-site.
+
+## ID-Token vs. Access-Token
+
+Bei OAuth-ähnlichen **Token**-Antworten (manueller Code-Flow):
+
+- **ID-Token** — JWT zum Authentifizierungsereignis; `iss`, `aud`, `exp`, Signatur (und `nonce` falls genutzt) validieren.
+- **Access-Token** — API-Aufrufe; als opak behandeln, sofern Sie es nicht parsen müssen.
+
+## Abmeldung
+
+**Ihre** Sitzung löschen und **SDK- / Intastellar**-Hinweise zur Abmeldung befolgen. Steht eine **End-Session**-URL bereit, leitet ein Redirect dorthin IdP-SSO-Cookies auf der Identity-Domain ab. Siehe [Abmeldung, Fehler und Fehlersuche](/docs/accounts-sign-in/web/logout-and-errors).
+
+## Weiter
+
+- [SPAs und JavaScript-Clients](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE und SDK-Überblick.
+- [Serverseitig (vertrauliche Clients)](/docs/accounts-sign-in/web/backend-exchange) — Code-Austausch ohne Geheimnisse im Browser.

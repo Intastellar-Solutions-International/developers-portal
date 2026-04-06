@@ -1,0 +1,83 @@
+---
+title: Authorization code-flow
+sidebar_label: Authorization code
+description: Byg authorize-redirect, valider state og PKCE, og udveksl authorization code til tokens med Intastellar Accounts.
+order: 20
+---
+
+**Authorization code**-flowet er standardmønsteret for web-login: browseren besøger Intastellar, brugeren autentificerer, og Intastellar redirect’er tilbage med en **code**, du udveksler til tokens.
+
+## React SDK (popup) vs. denne guide
+
+Med **`@intastellar/signin-sdk-react`** kører login typisk i et **popup**: Intastellar returnerer et token til din side via `postMessage`, SDK’et verificerer det, og valgfrie hooks (f.eks. `loginCallback`) kører. I den tilstand bygger du **ikke** manuelt `GET` authorize-URL og `POST` token-kald.
+
+Brug denne side, når du selv implementerer **authorize + callback + token** (ikke-React, mobil eller custom server). For **React SDK** eller **plain JS**, se [Intastellar Sign-In — React SDK og plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+Parameternavne følger **almindelig** OAuth 2.0 / OIDC-brug — bekræft **eksakte** navne, scopes og discovery-URL’er i din Intastellar-klientregistrering og integrationsguide.
+
+## Trin 1 — Send brugeren til authorize
+
+Send brugerens browser til authorization-endpoint med query-parametre:
+
+| Parameter | Formål |
+| --------- | ------- |
+| `response_type` | Brug `code` til dette flow. |
+| `client_id` | Din registrerede client id. |
+| `redirect_uri` | Skal **præcis** matche en registreret URI. |
+| `scope` | Mellemrumsadskilte scopes (ofte inkl. `openid` til OIDC). |
+| `state` | Tilfældig, uforudsigelig værdi; du verificerer ved retur. |
+| `code_challenge` | PKCE: SHA-256-hash af `code_verifier`, Base64url-kodet (offentlige klienter). |
+| `code_challenge_method` | Typisk `S256`. |
+
+Eksempel (linjeskift for læsbarhed):
+
+```http
+GET AUTHORIZATION_ENDPOINT?
+  response_type=code
+  &client_id=YOUR_CLIENT_ID
+  &redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+  &scope=openid%20profile%20email
+  &state=RANDOM_STATE
+  &code_challenge=CODE_CHALLENGE
+  &code_challenge_method=S256
+```
+
+**Gem** `state` og den rå `code_verifier` (PKCE) serverside eller i en sikker, kortlivet cookie, så du kan validere ved callback.
+
+## Trin 2 — Håndter callback
+
+Intastellar redirect’er til din `redirect_uri` med:
+
+| Query-param | Betydning |
+| ----------- | ------- |
+| `code` | Engangs authorization code. |
+| `state` | Ekko af den værdi du sendte; **skal matche** gemt `state`. |
+
+Hvis brugeren nægter adgang eller der opstår fejl, kan du få `error` og `error_description` i stedet — håndter dem uden at behandle som succes.
+
+## Trin 3 — Udveksl code til tokens
+
+`POST` til token-endpoint (typisk `application/x-www-form-urlencoded`):
+
+| Felt | Formål |
+| ----- | ------- |
+| `grant_type` | `authorization_code` |
+| `code` | Koden fra callback. |
+| `redirect_uri` | Samme URI som i trin 1. |
+| `client_id` | Din client id. |
+| `code_verifier` | PKCE: den oprindelige hemmelige verifier (offentlige klienter). |
+| `client_secret` | Kun fortrolige klienter. |
+
+Svaret indeholder som regel `access_token`, valgfrit `refresh_token` og et `id_token` når `openid` blev anmodet om. Valider **ID-token** (`iss`, `aud`, `exp`, signatur) med JWKS fra issuer, når du stoler på claims i din app.
+
+## Sikkerhedstjekliste
+
+- **Aldrig** spring `state`-verifikation over — forebygger CSRF på callback.
+- Brug **PKCE** for enhver klient, der ikke kan holde et client secret (SPA’er, mobil).
+- Brug **HTTPS** for alle redirect-URI’er i produktion.
+- Hold **refresh tokens** og **client secrets** kun på servere du kontrollerer.
+
+## Næste
+
+- [Redirect-URI’er og callbacks](/docs/accounts-sign-in/web/redirect-uris) — stram registrering og undgå mismatch-fejl.
+- [Sessioner, cookies og tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — SDK-cookies på dit origin og din egen sessionsmodel.

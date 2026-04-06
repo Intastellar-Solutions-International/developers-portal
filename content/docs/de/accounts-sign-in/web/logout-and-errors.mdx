@@ -1,0 +1,50 @@
+---
+title: Abmeldung, Fehler und Fehlersuche
+sidebar_label: Abmeldung & Fehler
+description: Intastellar Accounts-Sitzungen sicher beenden und typische OAuth-Fehler von Authorize- und Token-Endpunkten einordnen.
+order: 70
+---
+
+## Abmeldung
+
+1. **Eigene Sitzung löschen** — Anwendungs-Sitzungs-Cookie entfernen oder invalidieren und serverseitigen Sitzungsdatensatz löschen.
+2. **IdP-Abmeldung (optional, empfohlen)** — wenn Intastellar eine End-Session- oder Logout-URL bereitstellt, Nutzer dorthin mit Parametern aus Ihrem Integrationsleitfaden weiterleiten (`id_token_hint`, `post_logout_redirect_uri`, `client_id` usw.), damit SSO-Cookies auf der Identity-Domain gelöscht werden.
+3. **Return-URL** — nach abgeschlossener Abmeldung auf eine öffentliche Seite Ihrer Site schicken.
+
+Ohne Schritt 2 kann der Nutzer bei Intastellar noch angemeldet sein und beim nächsten `authorize`-Redirect still SSO erhalten.
+
+## Typische Authorize-Fehler
+
+| `error` (typisch) | Bedeutung |
+| ----------------- | ------- |
+| `invalid_request` | Fehlender oder ungültiger Parameter (z. B. schlechte `redirect_uri`). |
+| `unauthorized_client` | Client nicht für diesen Flow oder Scope erlaubt. |
+| `access_denied` | Nutzer hat abgebrochen oder Zustimmung verweigert. |
+| `invalid_scope` | Angeforderter Scope für den Client nicht erlaubt. |
+
+Dem Nutzer immer eine sichere Meldung zeigen und `error_description` serverseitig für den Support loggen.
+
+## Typische Token-Fehler
+
+| `error` | Bedeutung |
+| ------- | ------- |
+| `invalid_grant` | Code abgelaufen, bereits verwendet oder `redirect_uri` / PKCE-Mismatch. |
+| `invalid_client` | Falsche `client_id` / `client_secret`. |
+| `invalid_request` | Fehlerhafter Body oder fehlendes Feld. |
+
+Authorization Codes sind meist **einmal nutzbar** und kurzlebig. Doppeltes Absenden des Callbacks oder Wiederholung mit demselben Code führt zu `invalid_grant`.
+
+## React-SDK (Popup)
+
+- **Popup blockiert** — das SDK öffnet ein neues Fenster; Browser können es blockieren. Popups für Ihr Origin erlauben oder einen Flow ohne `window.open` nutzen, falls Ihr Produkt das unterstützt.
+- **Noch „angemeldet“ nach Portal-Logout** — Drittanbieter-Cookies oder IdP-Sitzung können `getUsers()` noch einen Nutzer liefern, bis IdP-Abmeldung oder Cookie-Bereinigung; siehe [Sitzungen, Cookies und Tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Fehlersuche-Checkliste
+
+- [Redirect-URI](/docs/accounts-sign-in/web/redirect-uris) stimmt **exakt** mit dem registrierten Wert überein (Schema, Host, Pfad, keine Extra-Query).
+- `state` entspricht dem für diesen Versuch gespeicherten Wert.
+- PKCE: derselbe `code_verifier`, aus dem der gesendete `code_challenge` entstand.
+- Zeitsynchronisation: Serverzeit korrekt für JWT-`exp`-Validierung.
+- CORS: Token-Endpunkt-Aufrufe aus dem Browser scheitern oft by design — Backend nutzen.
+
+Für den Happy Path siehe [Authorization-Code-Flow](/docs/accounts-sign-in/web/authorization-code-flow).

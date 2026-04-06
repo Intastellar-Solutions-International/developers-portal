@@ -1,0 +1,50 @@
+---
+title: Log ud, fejl og fejlfinding
+sidebar_label: Log ud & fejl
+description: Afslut Intastellar Accounts-sessioner sikkert og fortolk almindelige OAuth-fejl fra authorize- og token-endpoints.
+order: 70
+---
+
+## Log ud
+
+1. **Ryd din session** — slet eller invalidér dit applikationssession-cookie og serverside session-record.
+2. **IdP-log ud (valgfrit men anbefalet)** — hvis Intastellar tilbyder end-session eller logout-URL, redirect brugeren dertil med parametre fra din integrationsguide (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, osv.) så SSO-cookies på identity-domænet ryddes.
+3. **Retur-URL** — send brugeren til en offentlig side på dit site efter logout er færdig.
+
+Uden trin 2 kan brugeren stadig være logget ind hos Intastellar og få stille SSO ved næste `authorize`-redirect.
+
+## Almindelige authorize-fejl
+
+| `error` (typisk) | Betydning |
+| ----------------- | ------- |
+| `invalid_request` | Manglende eller ugyldig parameter (f.eks. dårlig `redirect_uri`). |
+| `unauthorized_client` | Klient ikke tilladt til dette flow eller scope. |
+| `access_denied` | Bruger annullerede eller blokerede samtykke. |
+| `invalid_scope` | Anmodet scope ikke tilladt for klienten. |
+
+Vis altid en sikker besked til brugeren og log `error_description` serverside til support.
+
+## Almindelige token-fejl
+
+| `error` | Betydning |
+| ------- | ------- |
+| `invalid_grant` | Code udløbet, allerede brugt eller `redirect_uri` / PKCE mismatch. |
+| `invalid_client` | Forkert `client_id` / `client_secret`. |
+| `invalid_request` | Malformet body eller manglende felt. |
+
+Authorization codes er som regel **engangs** og kortlivede. Dobbel indsendelse af callback eller retry med samme code giver `invalid_grant`.
+
+## React SDK (popup)
+
+- **Popup blokeret** — SDK åbner nyt vindue; browsere kan blokere det. Tillad popups for dit origin eller brug et flow uden `window.open` hvis dit produkt understøtter det.
+- **Stadig „logget ind“ efter portal-log ud** — tredjeparts-cookies eller IdP-session kan få `getUsers()` til stadig at returnere en bruger indtil IdP-log ud eller cookie-oprydning; se [Sessioner, cookies og tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Fejlfindingstjekliste
+
+- [Redirect-URI](/docs/accounts-sign-in/web/redirect-uris) matcher den registrerede værdi **præcis** (scheme, host, sti, ingen ekstra query).
+- `state` matcher den værdi du gemte for dette forsøg.
+- PKCE: samme `code_verifier` som producerede den sendte `code_challenge`.
+- Ur-skævhed: servers tid korrekt til JWT `exp`-validering.
+- CORS: token-endpoint-kald fra browser fejler ofte med vilje — brug dit backend.
+
+For fuld gennemgang af happy path, se [Authorization code-flow](/docs/accounts-sign-in/web/authorization-code-flow).

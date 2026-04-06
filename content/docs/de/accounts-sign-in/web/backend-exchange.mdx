@@ -1,0 +1,42 @@
+---
+title: Serverseitig (vertrauliche Clients)
+sidebar_label: Backend-Austausch
+description: Authorization Code auf dem Server mit client_id und client_secret gegen Tokens tauschen — Intastellar Accounts Web-Anmeldung.
+order: 60
+---
+
+Wenn Sie einen vertrauenswürdigen Server haben (Node, .NET, PHP usw.), führen Sie den **Token-Austausch** dort aus, damit das **Client-Geheimnis** nie den Browser erreicht.
+
+Das passt zu **eigenen** OAuth-Code-Integrationen. **React-SDK** und **Plain-JS**-Pfade (Popup / Script-Integration) sind getrennt — siehe [Intastellar Sign-In — React-SDK und Plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Ablauf
+
+1. Browser schließt den Redirect-Flow ab und landet mit `code` und `state` auf Ihrem Callback.
+2. Ihre **Callback-Route** prüft `state`, ruft dann Ihr **Backend** auf (oder verarbeitet serverseitig in derselben Anfrage), um den Code zu tauschen.
+3. Backend `POST` an `TOKEN_ENDPOINT` mit `grant_type=authorization_code`, `code`, `redirect_uri`, `client_id` und `client_secret`.
+4. Backend legt eine **Sitzung** für den Nutzer an (Cookie setzen, Tokens serverseitig speichern).
+5. Browser wird in die App weitergeleitet, nur mit Ihrem Sitzungs-Cookie.
+
+## Beispiel (konzeptionell)
+
+```http
+POST TOKEN_ENDPOINT
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code
+&code=AUTHORIZATION_CODE
+&redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+&client_id=YOUR_CLIENT_ID
+&client_secret=YOUR_CLIENT_SECRET
+```
+
+PKCE-Parameter ergänzen, wenn dieser Client hybrid ist oder der Authorization-Schritt PKCE genutzt hat.
+
+## Geheimnis-Verwahrung
+
+- `client_secret` aus Umgebungsvariablen oder Secret-Manager laden.
+- Bei Exposition rotieren; getrennte Credentials pro Umgebung.
+
+## Weiter
+
+[Abmeldung, Fehler und Fehlersuche](/docs/accounts-sign-in/web/logout-and-errors).

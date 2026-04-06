@@ -11,6 +11,9 @@ import matter from "gray-matter";
 const DOCS_ROOT = path.join(process.cwd(), "content", "docs");
 const OUT = path.join(process.cwd(), "public", "search-index.json");
 
+/** Top-level locale folders under content/docs — not product slugs (see docs.server.ts). */
+const LOCALE_ROOT_DIRS = new Set(["de", "da"]);
+
 /** Keep in sync with app/lib/docs-versions.ts default version for each product. */
 const SEARCH_INDEX_VERSION = "v1";
 
@@ -51,6 +54,7 @@ async function main() {
 
   for (const ent of entries) {
     if (!ent.isDirectory() || ent.name.startsWith("_")) continue;
+    if (LOCALE_ROOT_DIRS.has(ent.name)) continue;
     const product = ent.name;
     await walk(path.join(DOCS_ROOT, product), async (filePath) => {
       if (!filePath.endsWith(".mdx")) return;

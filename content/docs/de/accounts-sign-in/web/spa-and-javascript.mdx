@@ -1,0 +1,35 @@
+---
+title: SPAs und JavaScript-Clients
+sidebar_label: SPAs & JavaScript
+description: PKCE ohne Client-Geheimnis nutzen, Tokens im Browser schützen und typische SPA-Fallen mit Intastellar Accounts vermeiden.
+order: 50
+---
+
+Single-Page-Anwendungen können ein **Client-Geheimnis** nicht sicher speichern. Nutzen Sie den Authorization-Code-Flow nur mit **PKCE**, **oder** das offizielle Paket **`@intastellar/signin-sdk-react`**, wenn Sie React anvisieren und Intastellar es für Ihren Client unterstützt — das SDK nutzt ein **Popup** und Token-Verifikation statt manuell gebauter Authorize-URL und Token-`POST`.
+
+Für React- und Vanilla-JS-Muster (nur **Platzhalter**-Beispiele) siehe [Intastellar Sign-In — React-SDK und Plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Flow-Kurzfassung (manueller Code + PKCE)
+
+1. `code_verifier` erzeugen (hoch entropischer Zufallsstring) und `code_challenge` ableiten (S256).
+2. `code_verifier` am Callback lesbar speichern — z. B. `sessionStorage` für den Tab oder verschlüsseltes Cookie via kleinem BFF.
+3. Zu `AUTHORIZATION_ENDPOINT` mit `code_challenge` / `code_challenge_method=S256` weiterleiten.
+4. Im Callback `code` + `code_verifier` an Ihr **Backend** senden (empfohlen) oder an den Token-Endpunkt, wenn das Produkt öffentliche Clients ohne Geheimnis erlaubt (in der Konsole bestätigen).
+
+## Backend-for-Frontend (BFF) bevorzugen
+
+Auch in einer SPA sind **Token-Austausch** und **Refresh** sicherer auf einer same-origin-API:
+
+- Der Browser erhält nur ein **opakes Sitzungs-Cookie** von Ihrer API.
+- Refresh-Tokens berühren nie `localStorage`.
+- CORS und CSRF sind auf Ihrer Domain steuerbar.
+
+Müssen Sie Tokens vollständig im Browser halten, Lebensdauer minimieren, Refresh-Tokens nicht in `localStorage` ablegen und XSS als vollständige Kompromittierung der Sitzung einplanen.
+
+## CORS und iFrames
+
+Intastellar-Login-UI nicht in versteckten iFrames einbetten, sofern das Produkt keine stillen oder eingebetteten Flows ausdrücklich unterstützt. Für An- und Abmeldung lieber Vollseiten-Redirect bevorzugen.
+
+## Weiter
+
+[Serverseitig (vertrauliche Clients)](/docs/accounts-sign-in/web/backend-exchange), wenn Sie zusätzlich ein klassisches Backend betreiben.

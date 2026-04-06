@@ -1,0 +1,24 @@
+---
+title: Tilpas
+description: Juster farver, layout, tekstretning og branding for JavaScript-banneret.
+order: 20
+lastUpdated: "2026-04-05"
+---
+
+# Tilpas
+
+JavaScript-banneret læser konfiguration fra `window.INTA`, før `uc.js` kører. Se den fulde [**JSON Schema-reference**](/docs/cookie-banner/javascript/inta-schema). Almindelige `settings`-felter (se [Kom i gang](/docs/cookie-banner/javascript/getting-started)):
+
+| Felt | Formål |
+| --- | --- |
+| `rootDomain` | Dit sites rod-domæne |
+| `company` | Vist navn for din organisation |
+| `arrange` | Layoutretning, f.eks. `ltr` |
+| `color` | Primær UI-farve (hex) |
+| `logo` | Absolut URL til dit logo |
+| `design` | Banner-præsentation, f.eks. `overlay` |
+| `gtagId` | Google-tag / GA4-målings-id hvor relevant |
+| `requiredCookies` | Cookies behandlet som strengt nødvendige |
+| `keepInLocalStorage` | localStorage-nøgler der skal bevares |
+
+Tilføj eller juster felter som dokumenteret for din konto. For et fuldt eget UI beholder du scriptet og anvender de dokumenterede **CSS-klasser** på dit markup (se FAQ på [dokumentationsforsiden](/docs/cookie-banner#faq)).

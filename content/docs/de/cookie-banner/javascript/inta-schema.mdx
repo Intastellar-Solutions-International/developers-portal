@@ -1,0 +1,60 @@
+---
+title: INTA-Referenz
+description: JSON Schema für das Konfigurationsobjekt `window.INTA` (JavaScript-Integration).
+order: 15
+lastUpdated: "2026-04-05"
+---
+
+# `window.INTA` (JSON Schema)
+
+`window.INTA` ist das globale **JavaScript-Objekt**, das Intastellar Consents vor dem Lauf von `uc.js` einliest. Definieren Sie es in einem Inline-`<script>` im `<head>`, laden Sie anschließend das CDN-Skript (siehe [Erste Schritte](/docs/cookie-banner/javascript/getting-started)).
+
+## Maschinenlesbares Schema
+
+- **JSON-Schema-Datei:** [`/schemas/window-inta.json`](/schemas/window-inta.json)  
+- **`$id`:** `https://inta.dev/schemas/window-inta.json`
+
+Nutzen Sie es mit Editoren, Validatoren oder Codegen-Tools, die JSON Schema Draft 2020-12 unterstützen.
+
+## Struktur (Kurzfassung)
+
+| Pfad | Typ | Hinweise |
+| --- | --- | --- |
+| `policy_link` | string (URI) | URL der Datenschutzerklärung |
+| `settings` | object | Banner-UI und Verhalten |
+| `settings.rootDomain` | string | Root-Domain |
+| `settings.company` | string | Anzeigename |
+| `settings.arrange` | `"ltr"` \| `"rtl"` | Textrichtung |
+| `settings.color` | string | Primärfarbe (z. B. Hex) |
+| `settings.logo` | string (URI) | Logo-URL |
+| `settings.design` | string | z. B. `overlay` |
+| `settings.gtagId` | string | Google / GA4-ID falls zutreffend |
+| `settings.privacy_policy` | string (URI) | Datenschutz-URL (oft nötig, damit das Banner erscheint) |
+| `settings.requiredCookies` | string[] | Unbedingt notwendige Cookies |
+| `settings.keepInLocalStorage` | string[] | zu erhaltende localStorage-Schlüssel |
+
+Das Schema setzt `additionalProperties: true` auf Root und `settings`, sodass **zusätzliche Schlüssel**, die Ihr Konto oder Ihre Version erwartet, weiterhin gültig sind — validieren Sie in Ihrer Pipeline, wenn Sie eine geschlossene Welt brauchen.
+
+## Beispiel
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://example.com/privacy",
+    settings: {
+      rootDomain: "example.com",
+      company: "Example ApS",
+      arrange: "ltr",
+      color: "#111827",
+      logo: "https://example.com/logo.svg",
+      design: "overlay",
+      gtagId: "G-XXXXXXXXXX",
+      requiredCookies: [],
+      keepInLocalStorage: [],
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+Für Feldsemantik über diese Referenz hinaus siehe [Anpassen](/docs/cookie-banner/javascript/customize) und die [Dokumentations-Startseite](/docs/cookie-banner).

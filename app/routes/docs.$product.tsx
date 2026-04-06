@@ -15,42 +15,44 @@ import {
   resolveSidebarVersion,
 } from "~/lib/docs.server";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
-
-/** Shown on other product docs; sign-in content lives on inta.dev only. */
-function relatedSectionsForProduct(product: string): ExtraNavSection[] | undefined {
-  if (product === "accounts-sign-in") return undefined;
-  return [
-    {
-      heading: "Related",
-      items: [
-        {
-          href: docHref(
-            "accounts-sign-in",
-            getDefaultVersionSlug("accounts-sign-in"),
-          ),
-          label: "Accounts — Sign in (Web)",
-        },
-      ],
-    },
-  ];
-}
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
+import { useI18n } from "~/providers/i18n-provider";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
+  const locale = resolveLocaleFromRequest(request);
   const product = params.product;
-  const products = await listProducts();
+  const products = await listProducts(locale);
   if (!product || !products.some((p) => p.slug === product)) {
     throw data("Product not found", { status: 404 });
   }
   const pathname = new URL(request.url).pathname;
   const version = resolveSidebarVersion(product, pathname);
-  const sidebar = await getSidebar(product, version);
+  const sidebar = await getSidebar(product, version, locale);
   const productRootHref = docHref(product, version);
   return { product, sidebar, productRootHref };
 }
 
 export default function DocsProductLayout() {
   const { product, sidebar, productRootHref } = useLoaderData<typeof loader>();
-  const extraSections = relatedSectionsForProduct(product);
+  const { t } = useI18n();
+
+  const extraSections: ExtraNavSection[] | undefined =
+    product === "accounts-sign-in"
+      ? undefined
+      : [
+          {
+            heading: t("docs.relatedHeading"),
+            items: [
+              {
+                href: docHref(
+                  "accounts-sign-in",
+                  getDefaultVersionSlug("accounts-sign-in"),
+                ),
+                label: t("docs.relatedAccountsSignIn"),
+              },
+            ],
+          },
+        ];
 
   return (
     <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">

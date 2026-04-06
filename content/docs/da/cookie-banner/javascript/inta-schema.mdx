@@ -1,0 +1,60 @@
+---
+title: INTA-reference
+description: JSON Schema for konfigurationsobjektet `window.INTA` (JavaScript-integration).
+order: 15
+lastUpdated: "2026-04-05"
+---
+
+# `window.INTA` (JSON Schema)
+
+`window.INTA` er det globale **JavaScript-objekt**, som Intastellar Consents læser, før `uc.js` kører. Definér det i et inline `<script>` i `<head>`, og indlæs derefter CDN-scriptet (se [Kom i gang](/docs/cookie-banner/javascript/getting-started)).
+
+## Maskinlæsbart schema
+
+- **JSON Schema-fil:** [`/schemas/window-inta.json`](/schemas/window-inta.json)  
+- **`$id`:** `https://inta.dev/schemas/window-inta.json`
+
+Brug det med editorer, validatorer eller codegen-værktøjer, der understøtter JSON Schema Draft 2020-12.
+
+## Form (resumé)
+
+| Sti | Type | Noter |
+| --- | --- | --- |
+| `policy_link` | string (URI) | URL til privatlivspolitik |
+| `settings` | object | Banner-UI og adfærd |
+| `settings.rootDomain` | string | Rod-domæne |
+| `settings.company` | string | Vist navn |
+| `settings.arrange` | `"ltr"` \| `"rtl"` | Layoutretning |
+| `settings.color` | string | Primærfarve (f.eks. hex) |
+| `settings.logo` | string (URI) | Logo-URL |
+| `settings.design` | string | f.eks. `overlay` |
+| `settings.gtagId` | string | Google / GA4-id hvor relevant |
+| `settings.privacy_policy` | string (URI) | Privatlivs-URL (ofte påkrævet for at banneret vises) |
+| `settings.requiredCookies` | string[] | Strengt nødvendige cookies |
+| `settings.keepInLocalStorage` | string[] | localStorage-nøgler der skal bevares |
+
+Schemaet sætter `additionalProperties: true` på rod og `settings`, så **ekstra nøgler**, som din konto eller version forventer, stadig er gyldige — valider i din pipeline, hvis du skal have et lukket univers.
+
+## Eksempel
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://example.com/privacy",
+    settings: {
+      rootDomain: "example.com",
+      company: "Example ApS",
+      arrange: "ltr",
+      color: "#111827",
+      logo: "https://example.com/logo.svg",
+      design: "overlay",
+      gtagId: "G-XXXXXXXXXX",
+      requiredCookies: [],
+      keepInLocalStorage: [],
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+For feltsemantik ud over denne reference, se [Tilpas](/docs/cookie-banner/javascript/customize) og [dokumentationsforsiden](/docs/cookie-banner).

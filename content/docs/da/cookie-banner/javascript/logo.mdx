@@ -1,0 +1,22 @@
+---
+title: Tilføj logo
+description: Vis dit logo i JavaScript-cookiebanneret.
+order: 40
+lastUpdated: "2026-04-05"
+---
+
+# Tilføj logo (JavaScript)
+
+Angiv en **absolut HTTPS-URL** til dit logo i `window.INTA.settings.logo`:
+
+```js
+window.INTA = {
+  // ...
+  settings: {
+    // ...
+    logo: "https://yourdomain.com/path/to/logo.png",
+  },
+};
+```
+
+Brug et kvadratisk eller bredt logo, der fungerer på lys og mørk baggrund, eller juster `color` / styling i [Tilpas](/docs/cookie-banner/javascript/customize), så kontrasten forbliver tilgængelig.

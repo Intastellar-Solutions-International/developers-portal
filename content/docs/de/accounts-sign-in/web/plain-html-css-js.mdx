@@ -1,0 +1,232 @@
+---
+title: Plain HTML, CSS und JavaScript — Intastellar Sign-In
+sidebar_label: Plain HTML / CSS / JS
+description: "Vanilla-Sites: derselbe Popup-Flow, URLs, Cookies und postMessage-Handshake wie @intastellar/signin-sdk-react — übernommen von developers.intastellarsolutions.com js-docs."
+order: 13
+lastUpdated: "2026-04-06"
+---
+
+Dieser Leitfaden richtet sich an Sites, die **nur HTML, CSS und JavaScript** nutzen (kein React oder anderes UI-Framework). Er ersetzt die Dokumentation unter  
+[developers.intastellarsolutions.com/identity/sign-in/web/docs/js-docs](https://developers.intastellarsolutions.com/identity/sign-in/web/docs/js-docs).
+
+**Technische Quelle der Wahrheit:** Das unten beschriebene Verhalten stammt aus dem veröffentlichten npm-Paket [**`@intastellar/signin-sdk-react`**](https://www.npmjs.com/package/@intastellar/signin-sdk-react) (wie in `dist/api.js` und `dist/useIntastellar.js` ausgeliefert, z. B. [api.js auf jsDelivr](https://cdn.jsdelivr.net/npm/@intastellar/signin-sdk-react@1.1.303/dist/api.js)). Ihr Plain-JS-Code sollte dieser Implementierung entsprechen, damit die Kompatibilität mit Intastellar Accounts erhalten bleibt.
+
+> **Hinweis:** Automatisierte HTTP-Anfragen an die Legacy-**js-docs**-URL liefern oft nur die gemeinsame Site-Hülle (der Response-Body kann direkt nach dem Header enden), nicht den vollständigen Artikel. Wenn Sie noch eine gespeicherte Kopie der alten Seite haben, nutzen Sie sie ergänzend zu diesem Leitfaden; der Flow hier folgt dem **SDK**, damit er nicht von der Produktion abweicht.
+
+## Legacy-Script-Tag (nur Referenz)
+
+Die alte Developers-Site-Vorlage enthielt dieses Tag im `<head>`:
+
+```html
+<script src="https://account.api.intastellarsolutions.com/insign/client.js"></script>
+```
+
+Diese URL **liefert das Skript nicht mehr** (404). Neue Integrationen sollten **`IntastellarAPI`** aus dem npm-Paket (für den Browser gebündelt) nutzen, nicht diese Legacy-URL.
+
+## Voraussetzungen
+
+- **HTTPS** in Produktion (Popups und Cookies).
+- **Popup-Fenster** für Ihr Origin erlaubt.
+- Eine Intastellar-**Client-ID** und registrierter **App-Anzeigename** (`appName` / `service`).
+- Ein **Bundler** (oder kleiner Build-Schritt), der **`@intastellar/signin-sdk-react`** für Browser-Output auflösen kann. Das Paket ist als CommonJS veröffentlicht; **esbuild**, **Vite** oder **Webpack** eignen sich gut. Das Paket deklariert **React als Peer Dependency**; für ein Bundle, das nur `IntastellarAPI` importiert, konfigurieren Sie den Bundler so, dass React **weggelassen oder gestubbt** wird, falls es mitgezogen wird, oder installieren Sie die Peers zur Auflösung.
+
+## Konfiguration (wie `IntastellarConfig`)
+
+| Feld | Erforderlich | Standard / Hinweise |
+| --- | --- | --- |
+| `appName` | Ja | Registrierter **Service** / App-Anzeigename. |
+| `clientId` | Ja | OAuth-**key**, als Query-Parameter `key` gesendet. |
+| `loginUri` | Nein | Wenn weggelassen, nutzt das SDK nur `hostname + port + pathname` (ohne `https://`). Wird als Query-Parameter `continue` verwendet. |
+| `scopes` | Nein | Standard im React-Hook ist **`profile`**. Wird als `scope` übergeben und in `entryFlow` als `btoa(scopes)` kodiert. |
+| `type` | Nein | `'signin'` (Standard) oder `'signup'` — ändert die gehostete URL (siehe unten). |
+| `email` | Nein | Wenn mit `type: 'signin'` gesetzt, öffnet die **Passwort**-Einstiegs-URL. |
+
+## Gehostete URLs (`IntastellarAPI.buildLoginUrl`)
+
+Das SDK wählt die Basis-URL wie folgt ([`api.js`](https://cdn.jsdelivr.net/npm/@intastellar/signin-sdk-react@1.1.303/dist/api.js)):
+
+- **Standard (OAuth-Auswahl):**  
+  `https://www.intastellaraccounts.com/signin/v2/ws/oauth/oauthchooser`
+- **E-Mail + Anmeldung (`email` gesetzt und `type === 'signin'`):**  
+  `https://www.intastellaraccounts.com/signin/v2/ws/oauth/pwd`
+- **Registrierung (`type === 'signup'`):**  
+  `https://www.intastellaraccounts.com/Signup/`
+
+Query-Parameter umfassen (Namen aus der Implementierung): `service` (App-Name), `continue` (Login-URI), `entryFlow` (`btoa(scopes)`), `key` (Client-ID), `access_id` (kodierter **Parent-Style**-Host, mit Port falls vorhanden), `passive`, `flowName`, `Entry`, `scope` und optional `identifier` (E-Mail).
+
+## API-Basis-URL und HTTP-Endpunkte
+
+- **Basis:** `https://apis.intastellaraccounts.com` (`IntastellarAPI.baseUrl`).
+
+**Token verifizieren** (nachdem das Popup die Token-Zeichenkette an den Opener postet):
+
+- `GET /verify`
+- Header: `Authorization: Bearer <token>`
+- `Content-Type: application/json`
+
+**Aktueller Nutzer** (First-Party-Cookie-Sitzung auf Ihrer Domain):
+
+- `GET /usercontent/js/getuser?origin=<window.location.host>`
+- `credentials: 'include'`, CORS-Modus `cors`
+
+## Popup-Flow und `postMessage` (wie `useIntastellar`)
+
+1. Login-URL mit `IntastellarAPI.buildLoginUrl(...)` bauen.
+2. Öffnen mit:
+
+   ```text
+   window.open(url, 'intastellarLogin', 'height=719,width=500,left=100,top=100,resizable=no')
+   ```
+
+3. Auf `window` auf `message` hören.
+4. Wenn `event.data` eine **nicht leere Zeichenkette** (das Token) ist, **sofort** an das Popup senden:
+
+   ```javascript
+   loginWindow.postMessage("iframe-token-received", event.origin);
+   ```
+
+   Ohne diesen Schritt **bricht** der gehostete Flow.
+
+5. Listener entfernen, `IntastellarAPI.verifyToken(token)` aufrufen, dann Sitzung persistieren. Der React-Hook setzt ein First-Party-Cookie:
+
+   - Name: **`inta_acc`**
+   - Wert: die **Token**-Zeichenkette
+   - **Domain:** Parent-Style-Host wie im SDK-`getDomain()` (Subdomains streichen, wenn das erste Label nicht numerisch ist, dann **Port für die Cookie-Domain weglassen**)
+   - **Pfad:** `/`
+   - **Ablauf:** Hook nutzt etwa 2 Jahre voraus
+
+6. Schließt der Nutzer das Popup ohne abgeschlossene Anmeldung, Intervall löschen und Listener entfernen (das SDK prüft `popup.closed` jede Sekunde).
+
+In Produktion **`event.origin`** gegen die von Intastellar für Ihre Umgebung dokumentierten Origins validieren, bevor Sie `event.data` vertrauen.
+
+## Beispiel: `index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anmeldung</title>
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body>
+    <button type="button" id="inta-signin">Mit Intastellar anmelden</button>
+    <script src="/js/intastellar-signin-bundle.js"></script>
+  </body>
+</html>
+```
+
+Erzeugen Sie `intastellar-signin-bundle.js` aus einer Entry-Datei, die `IntastellarAPI` importiert und den Klick-Handler bindet (siehe unten).
+
+## Beispiel: Vanilla-Entry-Modul (spiegelt `useIntastellar`-Sign-in)
+
+Derselbe Ablauf wie die **`signin()`**-Funktion in [`useIntastellar.js`](https://cdn.jsdelivr.net/npm/@intastellar/signin-sdk-react@1.1.303/dist/useIntastellar.js), ohne React-State.
+
+```javascript
+import { IntastellarAPI } from "@intastellar/signin-sdk-react";
+
+const config = {
+  appName: "Your registered app display name",
+  clientId: "your-client-id",
+  // loginUri: optional — defaults to hostname + port + pathname
+  scopes: "profile",
+  type: "signin",
+};
+
+function getDomain() {
+  let domain = window.location.hostname || window.location.host;
+  const domainParts = domain.split(".");
+  if (domainParts.length > 2) domainParts.shift();
+  if (isNaN(Number(domainParts[0]))) domain = domainParts.join(".");
+  return domain.split(":")[0];
+}
+
+function setCookie(name, value, domain, expires) {
+  let cookieString = `${name}=${value}; domain=${domain}; path=/`;
+  if (expires) cookieString += `; expires=${expires.toUTCString()}`;
+  document.cookie = cookieString;
+}
+
+function openIntastellarSignIn(email) {
+  const loginUri =
+    config.loginUri ??
+    `${location.hostname}${location.port ? ":" + location.port : ""}${location.pathname}`;
+
+  const loginUrl = IntastellarAPI.buildLoginUrl({
+    appName: config.appName,
+    clientId: config.clientId,
+    loginUri,
+    scopes: config.scopes || "profile",
+    email,
+    type: config.type || "signin",
+  });
+
+  const loginWindow = window.open(
+    loginUrl,
+    "intastellarLogin",
+    "height=719,width=500,left=100,top=100,resizable=no",
+  );
+  if (!loginWindow) {
+    alert("Bitte erlauben Sie Popups für diese Website");
+    return;
+  }
+
+  function onMessage(event) {
+    const token = event.data;
+    if (!(token && typeof token === "string")) return;
+
+    loginWindow.postMessage("iframe-token-received", event.origin);
+    window.removeEventListener("message", onMessage);
+
+    IntastellarAPI.verifyToken(token)
+      .then((account) => {
+        const expires = new Date();
+        expires.setFullYear(expires.getFullYear() + 2);
+        setCookie("inta_acc", token, getDomain(), expires);
+        console.log("Signed in:", account.user);
+        if (!loginWindow.closed) loginWindow.close();
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!loginWindow.closed) loginWindow.close();
+      });
+  }
+
+  window.addEventListener("message", onMessage);
+
+  const timer = setInterval(() => {
+    if (loginWindow.closed) {
+      clearInterval(timer);
+      window.removeEventListener("message", onMessage);
+    }
+  }, 1000);
+}
+
+document.getElementById("inta-signin")?.addEventListener("click", () => {
+  openIntastellarSignIn();
+});
+```
+
+Optional: Nach erfolgreicher Anmeldung **`IntastellarAPI.getUsers()`** aufrufen, um mit der SDK-Prüfung „wer ist angemeldet“ übereinzustimmen (gleiches Cookie- und Origin-Verhalten).
+
+## Abmeldung (wie der Hook)
+
+Sitzungs-Cookie auf Ihrer Parent-Domain löschen und neu laden, analog zum SDK-`logout`:
+
+```javascript
+const domain = getDomain();
+document.cookie = `inta_acc=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+window.location.reload();
+```
+
+## Lieber React?
+
+Nutzen Sie [**`@intastellar/signin-sdk-react`**](https://www.npmjs.com/package/@intastellar/signin-sdk-react)-Komponenten und **`useIntastellar`** — [Intastellar Sign-In — React-SDK und Plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Verwandt
+
+- [Erste Schritte](/docs/accounts-sign-in/web/getting-started)  
+- [Sitzungen, Cookies und Tokens](/docs/accounts-sign-in/web/sessions-and-cookies)  
+- [Abmeldung, Fehler und Fehlersuche](/docs/accounts-sign-in/web/logout-and-errors)  
+- Nach `npm install` siehe **`TROUBLESHOOTING.md`** in **`node_modules/@intastellar/signin-sdk-react/`** für SDK-spezifische Themen.

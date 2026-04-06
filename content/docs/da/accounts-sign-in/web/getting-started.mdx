@@ -1,0 +1,62 @@
+---
+title: Web-login — kom i gang
+sidebar_label: Kom i gang
+description: Registrér din Intastellar-klient, vælg offentlig vs. fortrolig, og planlæg redirects og sessioner.
+order: 10
+---
+
+Intastellar Sign-In understøtter mere end én integrationsstil. Vælg den sti, der matcher dit stack:
+
+| Du bygger … | Start her |
+| ----------------- | ---------- |
+| **React**-app | [Intastellar Sign-In — React SDK og plain JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) — stemmer med [det officielle npm-pakke](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme). |
+| **Ren HTML / CSS / JS** | [Plain HTML, CSS og JavaScript](/docs/accounts-sign-in/web/plain-html-css-js) — intet framework; migreret fra den tidligere developers-site JS-docs. |
+| **Tilpasset OAuth code-flow** (enhver server) | Læs videre nedenfor, derefter [Authorization code-flow](/docs/accounts-sign-in/web/authorization-code-flow). |
+
+Afsnittene nedenfor fokuserer på **klientregistrering** og planlægning af **redirects / sessioner** for **dine** apps. De supplerer SDK-guiden, som kun bruger **illustrative** kodeeksempler.
+
+## 1. Registrér din applikation
+
+Opret en **OAuth/OIDC-lignende klient** i den Intastellar-registreringsflow dit team bruger. Notér:
+
+- **Client ID** — offentlig identifikator (OK i front-end for **offentlige** klienter).
+- **Client secret** — kun til **fortrolige** (serverside) klienter; send det aldrig i browseren eller app-binaries.
+- **Redirect- / login-URI’er** — eksakte URL’er Intastellar må bruge, når brugeren returneres eller login afsluttes. Se [Redirect-URI’er og callbacks](/docs/accounts-sign-in/web/redirect-uris).
+
+Brug **adskilte** klienter (eller isolerede redirect-lister) til produktion og staging.
+
+## 2. Vælg et flow
+
+| Din app | Anbefalet tilgang |
+| -------- | -------------------- |
+| **React** | [`@intastellar/signin-sdk-react`](https://www.npmjs.com/package/@intastellar/signin-sdk-react) — se [integrering af React og JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript). |
+| **Vanilla JS (statiske sites)** | [Plain HTML, CSS og JavaScript](/docs/accounts-sign-in/web/plain-html-css-js). |
+| **SPA (tilpasset)** | Authorization code med **PKCE**; intet client secret i browseren. |
+| **Server-rendered site** | Browser fuldfører redirect; din **server** udveksler koden med **client secret**. |
+| **Mobil / native** | PKCE, custom scheme eller HTTPS-redirect. |
+
+Detaljer: [Authorization code-flow](/docs/accounts-sign-in/web/authorization-code-flow), [SPA’er og JavaScript](/docs/accounts-sign-in/web/spa-and-javascript), [Serverside-udveksling](/docs/accounts-sign-in/web/backend-exchange).
+
+## 3. Endpoints og metadata
+
+Din registrering eller Intastellars guide bør liste (eller linke til discovery for):
+
+- **Authorization-endpoint** — bruger logger ind (til code-flow-integrationer).
+- **Token-endpoint** — udveksl code til tokens.
+- **Issuer / JWKS** — til validering af ID-tokens med OpenID Connect.
+
+Eksempler i disse guider bruger pladsholdere som `AUTHORIZATION_ENDPOINT` og `TOKEN_ENDPOINT`.
+
+## 4. Planlæg sessioner
+
+Beslut hvordan **dit origin** husker brugeren:
+
+- **HttpOnly session-cookies** fra din server (typisk for traditionelle apps).
+- **Opak session-id** plus serverside store.
+- **Kortlivede access tokens i hukommelsen** for SPA’er, med **BFF** når muligt.
+
+Hvis du bruger **SDK’et**, kan det sætte **first-party**-cookies på dit domæne; kombinér med egen session hvis du skal bruge server-renderede sider — se [Sessioner, cookies og tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Næste skridt
+
+[Authorization code-flow](/docs/accounts-sign-in/web/authorization-code-flow) — til håndbyggede authorize + callback + token-integrationer.
