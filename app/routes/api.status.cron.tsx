@@ -1,6 +1,7 @@
 import type { Route } from "./+types/api.status.cron";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import { overallOk, runStatusProbes } from "~/lib/status-probe.server";
+import { appendStatusHistoryRun } from "~/lib/status-history.server";
 import { saveStatusSnapshot } from "~/lib/status-snapshot.server";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
@@ -35,6 +36,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   let persisted = false;
   if (isMongoConfigured()) {
     persisted = await saveStatusSnapshot(results, ok);
+    await appendStatusHistoryRun(results, ok);
   }
 
   const body = JSON.stringify({

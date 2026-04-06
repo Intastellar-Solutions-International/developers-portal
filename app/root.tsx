@@ -176,15 +176,36 @@ export const links: Route.LinksFunction = () => [
 ];
 
 /**
+ * `useRouteLoaderData("root")` can be briefly undefined during hydration while `matches` still carries
+ * `root` loader data — that mismatch caused the legacy banner (and main padding) to disagree with SSR HTML.
+ */
+function useResolvedRootLoaderData(): RootLoaderData | undefined {
+  const fromRoute = useRouteLoaderData("root") as RootLoaderData | undefined;
+  const matches = useMatches();
+  if (fromRoute !== undefined) return fromRoute;
+  const rootMatch = matches.find((m) => m.id === "root");
+  return rootMatch?.loaderData as RootLoaderData | undefined;
+}
+
+/**
+ * When root loader data is missing on the first client paint, treating `undefined` as falsy hid the banner
+ * while SSR still rendered it. Re-run the same rule as the root loader (`isLegacyBannerActiveAt`) until
+ * hydrated loader data includes an explicit boolean (matches loader: `legacyBannerActive` is always set there).
+ */
+function resolveLegacyBannerVisible(
+  rootLoader: RootLoaderData | undefined,
+): boolean {
+  const flag = rootLoader?.legacyBannerActive;
+  if (flag === true || flag === false) return flag;
+  return isLegacyBannerActiveAt(Date.now());
+}
+
+/**
  * Resolves root loader data next to the data router (with `useMatches` fallback) and wraps the UI shell
  * in `IntastellarAuthProvider` so consumers always see the same context instance as the header.
  */
 function IntastellarAppShell({ children }: { children: React.ReactNode }) {
-  const fromRoute = useRouteLoaderData("root") as RootLoaderData | undefined;
-  const matches = useMatches();
-  const rootMatch = matches.find((m) => m.id === "root");
-  const rootLoaderData =
-    fromRoute ?? (rootMatch?.loaderData as RootLoaderData | undefined);
+  const rootLoaderData = useResolvedRootLoaderData();
 
   return (
     <IntastellarAuthProvider rootLoaderData={rootLoaderData}>
@@ -199,8 +220,8 @@ function IntastellarAppShell({ children }: { children: React.ReactNode }) {
  */
 function RootShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
-  const rootLoader = useRouteLoaderData("root") as RootLoaderData | undefined;
-  const showLegacyBanner = rootLoader?.legacyBannerActive === true;
+  const rootLoader = useResolvedRootLoaderData();
+  const showLegacyBanner = resolveLegacyBannerVisible(rootLoader);
   const fetcher = useFetcher<SearchLoaderData>();
   const navigate = useNavigate();
 

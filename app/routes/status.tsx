@@ -1,7 +1,12 @@
 import { useLoaderData } from "react-router";
 
 import type { Route } from "./+types/status";
+import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
 import { isMongoConfigured } from "~/lib/mongodb.server";
+import {
+  getStatusTimelines,
+  type StatusTimelinePoint,
+} from "~/lib/status-history.server";
 import { overallOk, runStatusProbes } from "~/lib/status-probe.server";
 import { getLatestStatusSnapshot } from "~/lib/status-snapshot.server";
 import { getStatusTargets } from "~/lib/status-targets.server";
@@ -20,10 +25,24 @@ export async function loader(_: Route.LoaderArgs) {
     source = "live";
   }
 
+  const timelines: Record<string, StatusTimelinePoint[]> = {};
+  if (snapshot) {
+    const ids = snapshot.results.map((r) => r.id);
+    if (source === "mongodb") {
+      Object.assign(timelines, await getStatusTimelines(ids));
+    } else {
+      const iso = snapshot.checkedAt;
+      for (const r of snapshot.results) {
+        timelines[r.id] = [{ ok: r.ok, checkedAt: iso }];
+      }
+    }
+  }
+
   return {
     snapshot,
     source,
     mongoConfigured: isMongoConfigured(),
+    timelines,
   };
 }
 
@@ -50,7 +69,8 @@ function formatWhen(iso: string) {
 }
 
 export default function StatusPage() {
-  const { snapshot, source, mongoConfigured } = useLoaderData<typeof loader>();
+  const { snapshot, source, mongoConfigured, timelines } =
+    useLoaderData<typeof loader>();
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -122,36 +142,39 @@ export default function StatusPage() {
 
           <ul className="mt-8 divide-y divide-zinc-200 dark:divide-zinc-700">
             {snapshot.results.map((r) => (
-              <li
-                key={r.id}
-                className="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    {r.name}
-                  </p>
-                  <p className="mt-0.5 break-all text-xs text-zinc-500 dark:text-zinc-400">
-                    {r.url}
-                  </p>
-                  {r.error ? (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                      {r.error}
+              <li key={r.id} className="py-4">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                      {r.name}
                     </p>
-                  ) : null}
-                </div>
-                <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
-                  <span
-                    className={
-                      r.ok
-                        ? "text-sm font-medium text-emerald-600 dark:text-emerald-400"
-                        : "text-sm font-medium text-red-600 dark:text-red-400"
-                    }
-                  >
-                    {r.statusCode != null ? `HTTP ${r.statusCode}` : "No response"}
-                  </span>
-                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                    {r.latencyMs} ms
-                  </span>
+                    <p className="mt-0.5 break-all text-xs text-zinc-500 dark:text-zinc-400">
+                      {r.url}
+                    </p>
+                    {r.error ? (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                        {r.error}
+                      </p>
+                    ) : null}
+                    <StatusMonitorTimeline
+                      points={timelines[r.id] ?? []}
+                      liveSingleCheck={source === "live"}
+                    />
+                  </div>
+                  <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end sm:pt-0.5">
+                    <span
+                      className={
+                        r.ok
+                          ? "text-sm font-medium text-emerald-600 dark:text-emerald-400"
+                          : "text-sm font-medium text-red-600 dark:text-red-400"
+                      }
+                    >
+                      {r.statusCode != null ? `HTTP ${r.statusCode}` : "No response"}
+                    </span>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {r.latencyMs} ms
+                    </span>
+                  </div>
                 </div>
               </li>
             ))}
@@ -169,6 +192,8 @@ export default function StatusPage() {
           STATUS_CHECK_EXTRA_JSON
         </code>{" "}
         (append). A check is “passing” when the response status is below 500.
+        Timelines use the last <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">STATUS_HISTORY_POINTS</code>{" "}
+        stored runs (14-day TTL in Mongo).
       </p>
     </div>
   );

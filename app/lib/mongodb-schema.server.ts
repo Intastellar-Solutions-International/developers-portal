@@ -9,6 +9,9 @@ export const API_KEYS_COLLECTION = "api_keys";
 /** Latest uptime snapshot written by `/api/status/cron` (single doc `_id: "current"`). */
 export const STATUS_SNAPSHOT_COLLECTION = "platform_status";
 
+/** Append-only cron runs for per-monitor timelines (TTL on `checkedAt`). */
+export const STATUS_HISTORY_COLLECTION = "platform_status_history";
+
 /**
  * MongoDB JSON Schema validators (`createCollection` / `collMod`).
  * @see https://www.mongodb.com/docs/manual/reference/operator/query/jsonSchema/
@@ -130,6 +133,21 @@ async function ensureStatusSnapshotCollection(db: Db): Promise<void> {
   }
 }
 
+const STATUS_HISTORY_TTL_SECONDS = 14 * 24 * 60 * 60;
+
+async function ensureStatusHistoryCollection(db: Db): Promise<void> {
+  if (!(await collectionExists(db, STATUS_HISTORY_COLLECTION))) {
+    await db.createCollection(STATUS_HISTORY_COLLECTION);
+  }
+  await db.collection(STATUS_HISTORY_COLLECTION).createIndex(
+    { checkedAt: 1 },
+    {
+      name: "checkedAt_1_ttl",
+      expireAfterSeconds: STATUS_HISTORY_TTL_SECONDS,
+    },
+  );
+}
+
 /**
  * Creates collections (with JSON Schema validators) and indexes for portal data.
  * Idempotent; safe to call on every DB handle acquisition.
@@ -142,6 +160,7 @@ export async function ensureMongoDbSchema(db: Db): Promise<void> {
         await ensureUserAccountsCollection(db);
         await ensureApiKeysCollection(db);
         await ensureStatusSnapshotCollection(db);
+        await ensureStatusHistoryCollection(db);
       } catch (err) {
         if (process.env.NODE_ENV !== "production") {
           console.warn("[mongodb] ensureMongoDbSchema failed:", err);
