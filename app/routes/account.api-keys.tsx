@@ -68,7 +68,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export type ApiKeysActionData =
-  | { ok: true; plaintextKey?: string }
+  | { ok: true; plaintextKey?: string; newKeyId?: string }
   | { ok: false; error: string };
 
 function actionResponse(
@@ -125,7 +125,11 @@ export async function action({ request }: Route.ActionArgs) {
       return actionResponse({ ok: false, error: result.error }, setCookieHeaders);
     }
     return actionResponse(
-      { ok: true, plaintextKey: result.plaintextKey },
+      {
+        ok: true,
+        plaintextKey: result.plaintextKey,
+        newKeyId: result.id,
+      },
       setCookieHeaders,
     );
   }
@@ -194,6 +198,7 @@ function KeyLogoThumb({ url }: { url: string }) {
 
 /** Session-only: full secret is not stored server-side; this lets users copy again until dismiss. */
 const REVEALED_KEY_STORAGE = "inta_portal_last_plain_api_key";
+const REVEALED_KEY_ID_STORAGE = "inta_portal_last_plain_api_key_id";
 
 function CopyApiKeyButton({ secret }: { secret: string }) {
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
@@ -231,9 +236,13 @@ export default function AccountApiKeys() {
   const busy = navigation.state !== "idle";
   const revalidator = useRevalidator();
   const sessionSyncRef = useRef(0);
+  /** Until the new key appears in `keys`, don’t treat “missing id” as revoked. */
+  const revealedKeyPendingRowRef = useRef(false);
   const [sessionHardFail, setSessionHardFail] = useState(false);
   /** Plaintext only exists right after create; kept in memory + sessionStorage until dismiss. */
   const [revealedKey, setRevealedKey] = useState<string | null>(null);
+  /** Mongo id of the key row that owns `revealedKey` (for table Copy). */
+  const [revealedKeyId, setRevealedKeyId] = useState<string | null>(null);
   const [editingKeyId, setEditingKeyId] = useState<string | null>(null);
   const {
     authReady,
@@ -250,7 +259,9 @@ export default function AccountApiKeys() {
   useEffect(() => {
     try {
       const s = sessionStorage.getItem(REVEALED_KEY_STORAGE);
+      const id = sessionStorage.getItem(REVEALED_KEY_ID_STORAGE);
       if (s) setRevealedKey(s);
+      if (id) setRevealedKeyId(id);
     } catch {
       /* private mode */
     }
@@ -259,13 +270,36 @@ export default function AccountApiKeys() {
   useEffect(() => {
     if (actionData?.ok === true && actionData.plaintextKey) {
       setRevealedKey(actionData.plaintextKey);
+      const nid = actionData.newKeyId ?? null;
+      setRevealedKeyId(nid);
+      if (nid) revealedKeyPendingRowRef.current = true;
       try {
         sessionStorage.setItem(REVEALED_KEY_STORAGE, actionData.plaintextKey);
+        if (nid) sessionStorage.setItem(REVEALED_KEY_ID_STORAGE, nid);
+        else sessionStorage.removeItem(REVEALED_KEY_ID_STORAGE);
       } catch {
         /* ignore */
       }
     }
   }, [actionData]);
+
+  useEffect(() => {
+    if (!revealedKeyId || !revealedKey) return;
+    const inList = keys.some((k) => k.id === revealedKeyId);
+    if (inList) {
+      revealedKeyPendingRowRef.current = false;
+      return;
+    }
+    if (revealedKeyPendingRowRef.current) return;
+    setRevealedKey(null);
+    setRevealedKeyId(null);
+    try {
+      sessionStorage.removeItem(REVEALED_KEY_STORAGE);
+      sessionStorage.removeItem(REVEALED_KEY_ID_STORAGE);
+    } catch {
+      /* ignore */
+    }
+  }, [keys, revealedKeyId, revealedKey]);
 
   useEffect(() => {
     if (actionData?.ok !== true) return;
@@ -411,8 +445,9 @@ export default function AccountApiKeys() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <p className="font-medium sm:pt-0.5">
                   Your new secret key — we only store a hash. Use{" "}
-                  <span className="whitespace-nowrap">Copy key</span> anytime; dismiss
-                  when you’re done (this tab won’t show it again after that).
+                  <span className="whitespace-nowrap">Copy key</span> here or in the
+                  table row; dismiss when you’re done (this tab won’t show it again
+                  after that).
                 </p>
                 <div className="flex shrink-0 flex-wrap gap-2">
                   <CopyApiKeyButton secret={revealedKey} />
@@ -421,8 +456,10 @@ export default function AccountApiKeys() {
                     className={`${btnSecondaryClass} text-zinc-600 dark:text-zinc-300`}
                     onClick={() => {
                       setRevealedKey(null);
+                      setRevealedKeyId(null);
                       try {
                         sessionStorage.removeItem(REVEALED_KEY_STORAGE);
+                        sessionStorage.removeItem(REVEALED_KEY_ID_STORAGE);
                       } catch {
                         /* ignore */
                       }
@@ -543,8 +580,25 @@ export default function AccountApiKeys() {
                         <td className="py-3 pr-4 text-zinc-900 dark:text-zinc-100">
                           {k.label}
                         </td>
-                        <td className="py-3 pr-4 font-mono text-xs text-zinc-600 dark:text-zinc-400">
-                          {k.keyPrefix}
+                        <td className="max-w-[min(100%,24rem)] py-3 pr-4 align-top">
+                          <div className="flex flex-col gap-2">
+                            <span className="font-mono text-xs text-zinc-600 dark:text-zinc-400">
+                              {k.keyPrefix}
+                            </span>
+                            {revealedKey && revealedKeyId === k.id ? (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <CopyApiKeyButton secret={revealedKey} />
+                                <span className="text-[0.65rem] font-medium text-amber-800 dark:text-amber-200">
+                                  Full secret — copy now
+                                </span>
+                              </div>
+                            ) : null}
+                            {revealedKey && revealedKeyId === k.id ? (
+                              <pre className="max-h-24 overflow-auto rounded border border-amber-200/80 bg-amber-50/60 px-2 py-1.5 font-mono text-[0.65rem] leading-snug text-zinc-900 select-all dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-zinc-100">
+                                {revealedKey}
+                              </pre>
+                            ) : null}
+                          </div>
                         </td>
                         <td className="max-w-[10rem] truncate py-3 pr-4 text-zinc-700 dark:text-zinc-300">
                           {k.signInDomain ?? (
