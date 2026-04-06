@@ -4,8 +4,9 @@ import { de } from "./de";
 import { en, type MessageTree } from "./en";
 import { fr } from "./fr";
 import { nl } from "./nl";
+import { pt } from "./pt";
 
-const trees: Record<Locale, MessageTree> = { en, de, da, fr, nl };
+const trees: Record<Locale, MessageTree> = { en, de, da, fr, nl, pt };
 
 function getLeaf(obj: unknown, path: string): string | undefined {
   const parts = path.split(".");

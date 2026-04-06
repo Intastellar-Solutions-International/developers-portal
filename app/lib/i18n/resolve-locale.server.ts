@@ -1,13 +1,13 @@
 import {
   DEFAULT_LOCALE,
-  isLocale,
+  parseLocaleFromLanguageTag,
   type Locale,
 } from "~/lib/i18n/locale";
 
 import { getLocaleFromPathname } from "./localized-path";
 
 /**
- * Resolves UI locale from the URL path: `/de/...`, `/da/...`, `/fr/...`, `/nl/...` for localized trees;
+ * Resolves UI locale from the URL path: `/de/...`, `/da/...`, `/fr/...`, `/nl/...`, `/pt/...` for localized trees;
  * unprefixed routes (e.g. `/`, `/docs/...`) use English.
  */
 export function resolveLocaleFromRequest(request: Request): Locale {
@@ -22,15 +22,15 @@ export function resolveLocaleFromRequest(request: Request): Locale {
 export function resolveLocaleForApiRequest(request: Request): Locale {
   const url = new URL(request.url);
   const q = url.searchParams.get("locale");
-  if (q && isLocale(q)) return q;
+  const fromQuery = parseLocaleFromLanguageTag(q);
+  if (fromQuery) return fromQuery;
 
   const accept = request.headers.get("Accept-Language");
   if (accept) {
     for (const part of accept.split(",")) {
-      const tag = part.trim().split(";")[0]?.trim().toLowerCase();
-      if (!tag) continue;
-      const primary = tag.split("-")[0]!;
-      if (isLocale(primary)) return primary;
+      const tag = part.trim().split(";")[0]?.trim();
+      const parsed = parseLocaleFromLanguageTag(tag);
+      if (parsed) return parsed;
     }
   }
 

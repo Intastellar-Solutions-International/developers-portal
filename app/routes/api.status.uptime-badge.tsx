@@ -1,5 +1,6 @@
 import type { Route } from "./+types/api.status.uptime-badge";
 import { BRAND } from "~/lib/brand";
+import { localeToHtmlLang } from "~/lib/i18n/locale";
 import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
 import { resolveLocaleForApiRequest } from "~/lib/i18n/resolve-locale.server";
@@ -57,7 +58,7 @@ const BADGE_DARK_CSS = `
  * Minimal standalone HTML for <iframe src="…/api/status/uptime/badge"> embeds.
  * Opens full status page in a new tab when clicked.
  *
- * Language: `?locale=de|da|fr|nl|en` or `Accept-Language`; defaults to English.
+ * Language: `?locale=de|da|fr|nl|pt|en` or `Accept-Language`; defaults to English.
  * Theme: `?theme=light` | `?theme=dark` | omit / `?theme=auto` — follow `prefers-color-scheme`.
  */
 export async function loader({ request }: Route.LoaderArgs) {
@@ -107,7 +108,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const homeUrl = escapeHtml(new URL("/", request.url).href);
   const logoBlack = escapeHtml(BRAND.consentsLogo.black);
   const logoWhite = escapeHtml(BRAND.consentsLogo.white);
-  const htmlLang = locale;
+  const htmlLang = localeToHtmlLang(locale);
   const themeAttr =
     theme === "auto" ? "" : ` data-theme="${theme}"`;
 

@@ -13,6 +13,7 @@ export const da: MessageTree = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
+    pt: "Portugisisk (Brasilien)",
   },
   nav: {
     docs: "Dokumentation",
@@ -368,7 +369,7 @@ export const da: MessageTree = {
     embedBadgeButton: "Indlejr badge",
     embedModalTitle: "Indlejr oppetids-badge",
     embedModalIntro:
-      "Kopiér et iframe-uddrag eller JSON-API-URL. Sprog: ?locale= (en, de, da, fr, nl). Udseende: ?theme=light eller ?theme=dark for fast lys/mørk — uden theme (eller theme=auto) følger badge besøgerens systemindstilling.",
+      "Kopiér et iframe-uddrag eller JSON-API-URL. Sprog: ?locale= (en, de, da, fr, nl, pt). Udseende: ?theme=light eller ?theme=dark for fast lys/mørk — uden theme (eller theme=auto) følger badge besøgerens systemindstilling.",
     embedPreviewHeading: "Forhåndsvisning",
     embedThemeLabel: "Badge-udseende",
     embedIframeHeading: "iframe-indlejring",

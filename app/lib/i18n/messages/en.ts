@@ -7,7 +7,7 @@ type DeepStringTree<T> = {
       : T[K];
 };
 
-/** English UI strings — structure mirrored in `de.ts`, `da.ts`, `fr.ts`, and `nl.ts`. */
+/** English UI strings — structure mirrored in `de.ts`, `da.ts`, `fr.ts`, `nl.ts`, and `pt.ts`. */
 export const en = {
   meta: {
     homeTitle: "inta.dev · Intastellar Developers",
@@ -21,6 +21,7 @@ export const en = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
+    pt: "Português (Brasil)",
   },
   nav: {
     docs: "Docs",
@@ -378,7 +379,7 @@ export const en = {
     embedBadgeButton: "Embed badge",
     embedModalTitle: "Embed uptime badge",
     embedModalIntro:
-      "Copy an iframe snippet or the JSON API URL. Language matches this page; change ?locale= (en, de, da, fr, nl) or add ?theme=light / ?theme=dark to pin light or dark styling — omit theme (or use theme=auto) to follow the visitor’s system setting.",
+      "Copy an iframe snippet or the JSON API URL. Language matches this page; change ?locale= (en, de, da, fr, nl, pt) or add ?theme=light / ?theme=dark to pin light or dark styling — omit theme (or use theme=auto) to follow the visitor’s system setting.",
     embedPreviewHeading: "Preview",
     embedThemeLabel: "Badge appearance",
     embedIframeHeading: "iframe embed",

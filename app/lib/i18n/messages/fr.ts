@@ -13,6 +13,7 @@ export const fr: MessageTree = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
+    pt: "Portugais (Brésil)",
   },
   nav: {
     docs: "Documentation",
@@ -369,7 +370,7 @@ export const fr: MessageTree = {
     embedBadgeButton: "Intégrer le badge",
     embedModalTitle: "Intégrer le badge de disponibilité",
     embedModalIntro:
-      "Copiez un extrait iframe ou l’URL de l’API JSON. Langue : ?locale= (en, de, da, fr, nl). Apparence : ?theme=light ou ?theme=dark pour forcer clair ou sombre — sans theme (ou theme=auto), le badge suit le réglage système du visiteur.",
+      "Copiez un extrait iframe ou l’URL de l’API JSON. Langue : ?locale= (en, de, da, fr, nl, pt). Apparence : ?theme=light ou ?theme=dark pour forcer clair ou sombre — sans theme (ou theme=auto), le badge suit le réglage système du visiteur.",
     embedPreviewHeading: "Aperçu",
     embedThemeLabel: "Apparence du badge",
     embedIframeHeading: "Intégration iframe",

@@ -45,8 +45,11 @@ import {
 } from "~/lib/color-scheme";
 import {
   DEFAULT_LOCALE,
+  HREFLANG_TAG,
   SUPPORTED_LOCALES,
+  htmlLangToLocale,
   isLocale,
+  localeToHtmlLang,
   type Locale,
 } from "~/lib/i18n/locale";
 import {
@@ -143,7 +146,7 @@ function LocaleAlternateLinks() {
         <link
           key={l}
           rel="alternate"
-          hrefLang={l}
+          hrefLang={HREFLANG_TAG[l]}
           href={absoluteUrl(withLocalePrefix(bare + search, l))}
         />
       ))}
@@ -267,10 +270,8 @@ function useHydrationSafeUiLocale(): Locale {
     return rootLoaderData.locale;
   }
   if (typeof document !== "undefined") {
-    const htmlLang = document.documentElement.lang;
-    if (isLocale(htmlLang)) {
-      return htmlLang;
-    }
+    const fromHtml = htmlLangToLocale(document.documentElement.lang);
+    if (fromHtml) return fromHtml;
   }
   return DEFAULT_LOCALE;
 }
@@ -392,7 +393,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <html
-      lang={uiLocale}
+      lang={localeToHtmlLang(uiLocale)}
       className={htmlIsDark ? "dark" : undefined}
       suppressHydrationWarning
     >

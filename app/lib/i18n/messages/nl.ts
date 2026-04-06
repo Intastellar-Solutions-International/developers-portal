@@ -13,6 +13,7 @@ export const nl: MessageTree = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
+    pt: "Portugees (Brazilië)",
   },
   nav: {
     docs: "Documentatie",
@@ -369,7 +370,7 @@ export const nl: MessageTree = {
     embedBadgeButton: "Badge insluiten",
     embedModalTitle: "Uptime-badge insluiten",
     embedModalIntro:
-      "Kopieer een iframe-fragment of de JSON-API-URL. Taal: ?locale= (en, de, da, fr, nl). Thema: ?theme=light of ?theme=dark voor vast licht of donker — zonder theme (of theme=auto) volgt de badge de systeeminstelling van de bezoeker.",
+      "Kopieer een iframe-fragment of de JSON-API-URL. Taal: ?locale= (en, de, da, fr, nl, pt). Thema: ?theme=light of ?theme=dark voor vast licht of donker — zonder theme (of theme=auto) volgt de badge de systeeminstelling van de bezoeker.",
     embedPreviewHeading: "Voorbeeld",
     embedThemeLabel: "Uiterlijk van de badge",
     embedIframeHeading: "iframe-insluiting",

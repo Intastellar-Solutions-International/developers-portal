@@ -11,7 +11,7 @@ import {
  * Public JSON for embedding an uptime widget on marketing / product pages.
  * Same calculation as `/status` (stored scheduled runs where every check passed).
  *
- * Language for `widgetTitle`, `widgetDescription`, and URL fields: `?locale=de|da|fr|nl|en`
+ * Language for `widgetTitle`, `widgetDescription`, and URL fields: `?locale=de|da|fr|nl|pt|en`
  * or `Accept-Language`; defaults to English. `badgeEmbedUrl` includes `?locale=` so iframe
  * badges stay aligned with the JSON locale. Add `&theme=light` or `&theme=dark` on the badge
  * URL to pin styling; omit for `prefers-color-scheme` (auto).
