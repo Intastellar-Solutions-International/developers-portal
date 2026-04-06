@@ -2,11 +2,14 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import type { Route } from "./+types/account.login";
+import { translatePath } from "~/lib/i18n/messages";
+import { resolveMetaLocale } from "~/lib/seo";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 import { useLocalizedHref } from "~/providers/i18n-provider";
 
-export function meta({}: Route.MetaArgs) {
-  return [{ title: "Sign in · inta.dev" }];
+export function meta({ matches, location }: Route.MetaArgs) {
+  const locale = resolveMetaLocale(matches, location.pathname);
+  return [{ title: translatePath(locale, "seo.accountLoginTitle") }];
 }
 
 export default function AccountLogin() {

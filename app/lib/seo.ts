@@ -1,10 +1,31 @@
 import type { MetaDescriptor } from "react-router";
 
-import { DEFAULT_LOCALE, type Locale } from "~/lib/i18n/locale";
-import { translatePath } from "~/lib/i18n/messages";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "~/lib/i18n/locale";
+import { getLocaleFromPathname } from "~/lib/i18n/localized-path";
+import {
+  interpolate,
+  translatePath,
+} from "~/lib/i18n/messages";
 import { absoluteUrl } from "~/lib/site";
 
 const SITE_NAME = "inta.dev";
+
+type MetaMatch = { id?: string; data?: unknown } | undefined;
+
+/** Locale for `<meta>` from root loader data or URL prefix (e.g. `/de/docs`). */
+export function resolveMetaLocale(
+  matches: readonly MetaMatch[],
+  pathname: string,
+): Locale {
+  for (const m of matches) {
+    if (!m || m.id !== "root" || m.data == null || typeof m.data !== "object") {
+      continue;
+    }
+    const loc = (m.data as { locale?: string }).locale;
+    if (isLocale(loc)) return loc;
+  }
+  return getLocaleFromPathname(pathname);
+}
 
 export function buildDocPageMeta(opts: {
   title: string;
@@ -14,13 +35,23 @@ export function buildDocPageMeta(opts: {
   modifiedTime?: string;
   /** Absolute image URL for Open Graph / Twitter */
   ogImage?: string;
+  locale?: Locale;
 }): MetaDescriptor[] {
-  const { title, description, pathname, modifiedTime, ogImage } = opts;
+  const {
+    title,
+    description,
+    pathname,
+    modifiedTime,
+    ogImage,
+    locale = DEFAULT_LOCALE,
+  } = opts;
   const pageTitle = `${title} · ${SITE_NAME}`;
   const url = absoluteUrl(pathname);
   const desc =
     description ??
-    `${title} — Intastellar developer documentation on ${SITE_NAME}.`;
+    interpolate(translatePath(locale, "docs.docPageFallbackDescription"), {
+      title,
+    });
 
   const twitterCard = ogImage ? "summary_large_image" : "summary";
 

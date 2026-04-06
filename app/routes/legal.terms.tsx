@@ -2,15 +2,17 @@ import { Link } from "react-router";
 
 import type { Route } from "./+types/legal.terms";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
+import { translatePath } from "~/lib/i18n/messages";
+import { resolveMetaLocale } from "~/lib/seo";
 import { useLocalizedHref } from "~/providers/i18n-provider";
 
-export function meta(_: Route.MetaArgs) {
+export function meta({ matches, location }: Route.MetaArgs) {
+  const locale = resolveMetaLocale(matches, location.pathname);
   return [
-    { title: "Terms of use · inta.dev" },
+    { title: translatePath(locale, "seo.legalTermsTitle") },
     {
       name: "description",
-      content:
-        "Terms of use for the inta.dev developer portal, documentation, and account features.",
+      content: translatePath(locale, "seo.legalTermsDescription"),
     },
   ];
 }

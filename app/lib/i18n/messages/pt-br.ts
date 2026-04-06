@@ -1,10 +1,29 @@
 import type { MessageTree } from "./en";
 
-export const pt: MessageTree = {
+export const ptBr: MessageTree = {
   meta: {
     homeTitle: "inta.dev · Intastellar Developers",
     homeDescription:
       "Documentação, chaves de API e guias de integração para Intastellar Consents e Intastellar Accounts no inta.dev.",
+  },
+  seo: {
+    searchTitle: "Busca · inta.dev",
+    searchDescription: "Buscar na documentação para desenvolvedores Intastellar.",
+    changelogTitle: "Changelog · inta.dev",
+    changelogDescription:
+      "Histórico de versões do Intastellar Consents (GitHub) e Intastellar Sign-In (npm + GitHub).",
+    legalIndexTitle: "Jurídico · inta.dev",
+    legalIndexDescription:
+      "Informações jurídicas do inta.dev: privacidade, termos e links para políticas da Intastellar Solutions e DPA.",
+    legalPrivacyTitle: "Política de privacidade · inta.dev",
+    legalPrivacyDescription:
+      "Como o inta.dev trata dados pessoais, cookies, Google Tag Manager, Intastellar Consents e login.",
+    legalTermsTitle: "Termos de uso · inta.dev",
+    legalTermsDescription:
+      "Termos de uso do portal do desenvolvedor inta.dev, da documentação e dos recursos de conta.",
+    accountLoginTitle: "Entrar · inta.dev",
+    notFoundTitle: "Página não encontrada · inta.dev",
+    notFoundDescription: "Esta página não existe no inta.dev.",
   },
   lang: {
     label: "Idioma",
@@ -13,7 +32,7 @@ export const pt: MessageTree = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
-    pt: "Português (Brasil)",
+    "pt-br": "Português (Brasil)",
   },
   nav: {
     docs: "Documentação",
@@ -68,7 +87,7 @@ export const pt: MessageTree = {
   home: {
     heroTitle: "Construído com Intastellar",
     heroLead1: "Documentação, guias e ferramentas para entregar ",
-    heroLeadConsent: "consentimento alinhado ao GDPR",
+    heroLeadConsent: "consentimento alinhado à LGPD",
     heroLead2: " e ",
     heroLeadSignin: "login seguro",
     heroLead3: " com a mesma stack que a Intastellar usa — tudo em ",
@@ -151,6 +170,8 @@ export const pt: MessageTree = {
     ql5Hint: "Registrar cliente, SDK vs OAuth manual, fluxos",
     ql6Label: "Accounts — Fluxo authorization code",
     ql6Hint: "PKCE, callback, troca de token",
+    docPageFallbackDescription:
+      "{{title}} — Documentação para desenvolvedores Intastellar no inta.dev.",
   },
   search: {
     inputAria: "Buscar na documentação",
@@ -371,7 +392,7 @@ export const pt: MessageTree = {
     embedBadgeButton: "Incorporar badge",
     embedModalTitle: "Incorporar badge de disponibilidade",
     embedModalIntro:
-      "Copie um trecho iframe ou a URL da API JSON. O idioma segue esta página; altere ?locale= (en, de, da, fr, nl, pt) ou adicione ?theme=light / ?theme=dark para fixar claro ou escuro — omita theme (ou use theme=auto) para seguir o sistema do visitante.",
+      "Copie um trecho iframe ou a URL da API JSON. O idioma segue esta página; altere ?locale= (en, de, da, fr, nl, pt-br) ou adicione ?theme=light / ?theme=dark para fixar claro ou escuro — omita theme (ou use theme=auto) para seguir o sistema do visitante.",
     embedPreviewHeading: "Pré-visualização",
     embedThemeLabel: "Aparência do badge",
     embedIframeHeading: "Incorporação iframe",

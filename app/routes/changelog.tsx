@@ -12,6 +12,8 @@ import {
   fetchNpmPackageVersions,
 } from "~/lib/changelog.server";
 import { formatDateMedium } from "~/lib/format-datetime";
+import { translatePath } from "~/lib/i18n/messages";
+import { resolveMetaLocale } from "~/lib/seo";
 
 const DEFAULT_CONSENTS_REPO = "felixaschultz/intastellar-cookie-solutions";
 const DEFAULT_SIGNIN_REPO = "Intastellar-Solutions-International/intastellar-signin";
@@ -41,13 +43,13 @@ export async function loader(_: Route.LoaderArgs) {
   };
 }
 
-export function meta(_: Route.MetaArgs) {
+export function meta({ matches, location }: Route.MetaArgs) {
+  const locale = resolveMetaLocale(matches, location.pathname);
   return [
-    { title: "Changelog · inta.dev" },
+    { title: translatePath(locale, "seo.changelogTitle") },
     {
       name: "description",
-      content:
-        "Version history for Intastellar Consents (GitHub) and Intastellar Sign-In (npm + GitHub).",
+      content: translatePath(locale, "seo.changelogDescription"),
     },
   ];
 }

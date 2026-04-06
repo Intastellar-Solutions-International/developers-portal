@@ -1,4 +1,11 @@
-export const SUPPORTED_LOCALES = ["en", "de", "da", "fr", "nl", "pt"] as const;
+export const SUPPORTED_LOCALES = [
+  "en",
+  "de",
+  "da",
+  "fr",
+  "nl",
+  "pt-br",
+] as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -11,17 +18,17 @@ export const LOCALE_FLAG_EMOJI: Record<Locale, string> = {
   da: "🇩🇰",
   fr: "🇫🇷",
   nl: "🇳🇱",
-  pt: "🇧🇷",
+  "pt-br": "🇧🇷",
 };
 
-/** BCP 47 tags for `<link rel="alternate" hreflang>` (Brazilian Portuguese uses `pt-BR`). */
+/** BCP 47 tags for `<link rel="alternate" hreflang>`. */
 export const HREFLANG_TAG: Record<Locale, string> = {
   en: "en",
   de: "de",
   da: "da",
   fr: "fr",
   nl: "nl",
-  pt: "pt-BR",
+  "pt-br": "pt-BR",
 };
 
 export function isLocale(value: string | undefined | null): value is Locale {
@@ -31,25 +38,32 @@ export function isLocale(value: string | undefined | null): value is Locale {
     value === "da" ||
     value === "fr" ||
     value === "nl" ||
-    value === "pt"
+    value === "pt-br"
   );
 }
 
-/** `?locale=` and Accept-Language tags: full tag (e.g. pt-BR) or primary subtag (e.g. pt). */
+/**
+ * `?locale=` and Accept-Language tags. Unqualified `pt` maps to Brazilian Portuguese (`pt-br`);
+ * `pt-PT` is not mapped (European Portuguese is not offered).
+ */
 export function parseLocaleFromLanguageTag(
   raw: string | undefined | null,
 ): Locale | null {
   if (raw == null) return null;
   const v = raw.trim().toLowerCase().replace(/_/g, "-");
   if (!v) return null;
+  if (v === "pt-pt") return null;
   if (isLocale(v)) return v;
-  const primary = v.split("-")[0];
-  return primary && isLocale(primary) ? primary : null;
+  if (v === "pt") return "pt-br";
+  const primary = v.split("-")[0] ?? "";
+  if (primary === "pt") return "pt-br";
+  if (primary && isLocale(primary)) return primary;
+  return null;
 }
 
-/** `<html lang>` — Brazilian Portuguese uses `pt-BR` while routes and `Locale` stay `pt`. */
+/** `<html lang>` — Brazilian locale uses BCP 47 `pt-BR`. */
 export function localeToHtmlLang(locale: Locale): string {
-  return locale === "pt" ? "pt-BR" : locale;
+  return locale === "pt-br" ? "pt-BR" : locale;
 }
 
 export function htmlLangToLocale(
@@ -57,6 +71,6 @@ export function htmlLangToLocale(
 ): Locale | null {
   if (lang == null || !lang.trim()) return null;
   const v = lang.trim().toLowerCase().replace(/_/g, "-");
-  if (v === "pt-br") return "pt";
+  if (v === "pt-br") return "pt-br";
   return isLocale(v) ? v : null;
 }

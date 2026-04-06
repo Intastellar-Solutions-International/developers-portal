@@ -7,12 +7,31 @@ type DeepStringTree<T> = {
       : T[K];
 };
 
-/** English UI strings — structure mirrored in `de.ts`, `da.ts`, `fr.ts`, `nl.ts`, and `pt.ts`. */
+/** English UI strings — structure mirrored in `de.ts`, `da.ts`, `fr.ts`, `nl.ts`, and `pt-br.ts`. */
 export const en = {
   meta: {
     homeTitle: "inta.dev · Intastellar Developers",
     homeDescription:
       "Documentation, API keys, and integration guides for Intastellar Consents and Intastellar Accounts on inta.dev.",
+  },
+  seo: {
+    searchTitle: "Search · inta.dev",
+    searchDescription: "Search Intastellar developer documentation.",
+    changelogTitle: "Changelog · inta.dev",
+    changelogDescription:
+      "Version history for Intastellar Consents (GitHub) and Intastellar Sign-In (npm + GitHub).",
+    legalIndexTitle: "Legal · inta.dev",
+    legalIndexDescription:
+      "Legal information for inta.dev: privacy, terms, and links to Intastellar Solutions policies and DPA.",
+    legalPrivacyTitle: "Privacy policy · inta.dev",
+    legalPrivacyDescription:
+      "How inta.dev handles personal data, cookies, Google Tag Manager, Intastellar Consents, and sign-in.",
+    legalTermsTitle: "Terms of use · inta.dev",
+    legalTermsDescription:
+      "Terms of use for the inta.dev developer portal, documentation, and account features.",
+    accountLoginTitle: "Sign in · inta.dev",
+    notFoundTitle: "Page not found · inta.dev",
+    notFoundDescription: "This page does not exist on inta.dev.",
   },
   lang: {
     label: "Language",
@@ -21,7 +40,7 @@ export const en = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
-    pt: "Português (Brasil)",
+    "pt-br": "Português (Brasil)",
   },
   nav: {
     docs: "Docs",
@@ -160,6 +179,8 @@ export const en = {
     ql5Hint: "Register client, SDK vs manual OAuth, flows",
     ql6Label: "Accounts — Auth code flow",
     ql6Hint: "PKCE, callback, token exchange",
+    docPageFallbackDescription:
+      "{{title}} — Intastellar developer documentation on inta.dev.",
   },
   search: {
     inputAria: "Search documentation",
@@ -379,7 +400,7 @@ export const en = {
     embedBadgeButton: "Embed badge",
     embedModalTitle: "Embed uptime badge",
     embedModalIntro:
-      "Copy an iframe snippet or the JSON API URL. Language matches this page; change ?locale= (en, de, da, fr, nl, pt) or add ?theme=light / ?theme=dark to pin light or dark styling — omit theme (or use theme=auto) to follow the visitor’s system setting.",
+      "Copy an iframe snippet or the JSON API URL. Language matches this page; change ?locale= (en, de, da, fr, nl, pt-br) or add ?theme=light / ?theme=dark to pin light or dark styling — omit theme (or use theme=auto) to follow the visitor’s system setting.",
     embedPreviewHeading: "Preview",
     embedThemeLabel: "Badge appearance",
     embedIframeHeading: "iframe embed",

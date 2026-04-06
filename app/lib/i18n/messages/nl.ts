@@ -6,6 +6,25 @@ export const nl: MessageTree = {
     homeDescription:
       "Documentatie, API-sleutels en integratiegidsen voor Intastellar Consents en Intastellar Accounts op inta.dev.",
   },
+  seo: {
+    searchTitle: "Zoeken · inta.dev",
+    searchDescription: "Zoek in de Intastellar-ontwikkelaarsdocumentatie.",
+    changelogTitle: "Changelog · inta.dev",
+    changelogDescription:
+      "Versiegeschiedenis voor Intastellar Consents (GitHub) en Intastellar Sign-In (npm + GitHub).",
+    legalIndexTitle: "Juridisch · inta.dev",
+    legalIndexDescription:
+      "Juridische informatie over inta.dev: privacy, voorwaarden en links naar beleid en DPA van Intastellar Solutions.",
+    legalPrivacyTitle: "Privacybeleid · inta.dev",
+    legalPrivacyDescription:
+      "Hoe inta.dev persoonsgegevens, cookies, Google Tag Manager, Intastellar Consents en aanmelding afhandelt.",
+    legalTermsTitle: "Gebruiksvoorwaarden · inta.dev",
+    legalTermsDescription:
+      "Gebruiksvoorwaarden voor het inta.dev-ontwikkelaarsportaal, de documentatie en accountfuncties.",
+    accountLoginTitle: "Inloggen · inta.dev",
+    notFoundTitle: "Pagina niet gevonden · inta.dev",
+    notFoundDescription: "Deze pagina bestaat niet op inta.dev.",
+  },
   lang: {
     label: "Taal",
     en: "English",
@@ -13,7 +32,7 @@ export const nl: MessageTree = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
-    pt: "Portugees (Brazilië)",
+    "pt-br": "Portugees (Brazilië)",
   },
   nav: {
     docs: "Documentatie",
@@ -151,6 +170,8 @@ export const nl: MessageTree = {
     ql5Hint: "Client registreren, SDK vs. handmatige OAuth, flows",
     ql6Label: "Accounts — Authorization code-flow",
     ql6Hint: "PKCE, callback, token-uitwisseling",
+    docPageFallbackDescription:
+      "{{title}} — Intastellar-ontwikkelaarsdocumentatie op inta.dev.",
   },
   search: {
     inputAria: "Zoek in documentatie",
@@ -370,7 +391,7 @@ export const nl: MessageTree = {
     embedBadgeButton: "Badge insluiten",
     embedModalTitle: "Uptime-badge insluiten",
     embedModalIntro:
-      "Kopieer een iframe-fragment of de JSON-API-URL. Taal: ?locale= (en, de, da, fr, nl, pt). Thema: ?theme=light of ?theme=dark voor vast licht of donker — zonder theme (of theme=auto) volgt de badge de systeeminstelling van de bezoeker.",
+      "Kopieer een iframe-fragment of de JSON-API-URL. Taal: ?locale= (en, de, da, fr, nl, pt-br). Thema: ?theme=light of ?theme=dark voor vast licht of donker — zonder theme (of theme=auto) volgt de badge de systeeminstelling van de bezoeker.",
     embedPreviewHeading: "Voorbeeld",
     embedThemeLabel: "Uiterlijk van de badge",
     embedIframeHeading: "iframe-insluiting",

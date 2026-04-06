@@ -2,6 +2,8 @@ import { useLoaderData } from "react-router";
 
 import type { Route } from "./+types/search";
 import { SearchPanel } from "~/components/search-panel";
+import { translatePath } from "~/lib/i18n/messages";
+import { resolveMetaLocale } from "~/lib/seo";
 import { readSearchIndex } from "~/lib/search-index.server";
 
 export async function loader(_: Route.LoaderArgs) {
@@ -9,10 +11,14 @@ export async function loader(_: Route.LoaderArgs) {
   return { documents };
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ matches, location }: Route.MetaArgs) {
+  const locale = resolveMetaLocale(matches, location.pathname);
   return [
-    { title: "Search · inta.dev" },
-    { name: "description", content: "Search Intastellar developer documentation." },
+    { title: translatePath(locale, "seo.searchTitle") },
+    {
+      name: "description",
+      content: translatePath(locale, "seo.searchDescription"),
+    },
   ];
 }
 

@@ -6,6 +6,25 @@ export const fr: MessageTree = {
     homeDescription:
       "Documentation, clés API et guides d’intégration pour Intastellar Consents et Intastellar Accounts sur inta.dev.",
   },
+  seo: {
+    searchTitle: "Recherche · inta.dev",
+    searchDescription: "Rechercher dans la documentation développeur Intastellar.",
+    changelogTitle: "Journal des versions · inta.dev",
+    changelogDescription:
+      "Historique des versions pour Intastellar Consents (GitHub) et Intastellar Sign-In (npm + GitHub).",
+    legalIndexTitle: "Mentions légales · inta.dev",
+    legalIndexDescription:
+      "Informations juridiques pour inta.dev : confidentialité, conditions et liens vers les politiques Intastellar Solutions et le DPA.",
+    legalPrivacyTitle: "Politique de confidentialité · inta.dev",
+    legalPrivacyDescription:
+      "Comment inta.dev traite les données personnelles, les cookies, Google Tag Manager, Intastellar Consents et la connexion.",
+    legalTermsTitle: "Conditions d’utilisation · inta.dev",
+    legalTermsDescription:
+      "Conditions d’utilisation du portail développeur inta.dev, de la documentation et des fonctionnalités de compte.",
+    accountLoginTitle: "Connexion · inta.dev",
+    notFoundTitle: "Page introuvable · inta.dev",
+    notFoundDescription: "Cette page n’existe pas sur inta.dev.",
+  },
   lang: {
     label: "Langue",
     en: "English",
@@ -13,7 +32,7 @@ export const fr: MessageTree = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
-    pt: "Portugais (Brésil)",
+    "pt-br": "Portugais (Brésil)",
   },
   nav: {
     docs: "Documentation",
@@ -151,6 +170,8 @@ export const fr: MessageTree = {
     ql5Hint: "Enregistrer le client, SDK vs OAuth manuel, flux",
     ql6Label: "Accounts — Flux authorization code",
     ql6Hint: "PKCE, callback, échange de jetons",
+    docPageFallbackDescription:
+      "{{title}} — Documentation développeur Intastellar sur inta.dev.",
   },
   search: {
     inputAria: "Rechercher dans la documentation",
@@ -370,7 +391,7 @@ export const fr: MessageTree = {
     embedBadgeButton: "Intégrer le badge",
     embedModalTitle: "Intégrer le badge de disponibilité",
     embedModalIntro:
-      "Copiez un extrait iframe ou l’URL de l’API JSON. Langue : ?locale= (en, de, da, fr, nl, pt). Apparence : ?theme=light ou ?theme=dark pour forcer clair ou sombre — sans theme (ou theme=auto), le badge suit le réglage système du visiteur.",
+      "Copiez un extrait iframe ou l’URL de l’API JSON. Langue : ?locale= (en, de, da, fr, nl, pt-br). Apparence : ?theme=light ou ?theme=dark pour forcer clair ou sombre — sans theme (ou theme=auto), le badge suit le réglage système du visiteur.",
     embedPreviewHeading: "Aperçu",
     embedThemeLabel: "Apparence du badge",
     embedIframeHeading: "Intégration iframe",

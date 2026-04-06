@@ -2,15 +2,17 @@ import { Link } from "react-router";
 
 import type { Route } from "./+types/legal._index";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
+import { translatePath } from "~/lib/i18n/messages";
+import { resolveMetaLocale } from "~/lib/seo";
 import { useLocalizedHref } from "~/providers/i18n-provider";
 
-export function meta(_: Route.MetaArgs) {
+export function meta({ matches, location }: Route.MetaArgs) {
+  const locale = resolveMetaLocale(matches, location.pathname);
   return [
-    { title: "Legal · inta.dev" },
+    { title: translatePath(locale, "seo.legalIndexTitle") },
     {
       name: "description",
-      content:
-        "Legal information for inta.dev: privacy, terms, and links to Intastellar Solutions policies and DPA.",
+      content: translatePath(locale, "seo.legalIndexDescription"),
     },
   ];
 }

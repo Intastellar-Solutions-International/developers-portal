@@ -6,6 +6,25 @@ export const de: MessageTree = {
     homeDescription:
       "Dokumentation, API-Schlüssel und Integrationsleitfäden für Intastellar Consents und Intastellar Accounts auf inta.dev.",
   },
+  seo: {
+    searchTitle: "Suche · inta.dev",
+    searchDescription: "Intastellar-Entwicklerdokumentation durchsuchen.",
+    changelogTitle: "Changelog · inta.dev",
+    changelogDescription:
+      "Versionsverlauf für Intastellar Consents (GitHub) und Intastellar Sign-In (npm + GitHub).",
+    legalIndexTitle: "Rechtliches · inta.dev",
+    legalIndexDescription:
+      "Rechtliche Informationen zu inta.dev: Datenschutz, Nutzungsbedingungen und Links zu Richtlinien sowie DPA von Intastellar Solutions.",
+    legalPrivacyTitle: "Datenschutz · inta.dev",
+    legalPrivacyDescription:
+      "Wie inta.dev personenbezogene Daten, Cookies, Google Tag Manager, Intastellar Consents und die Anmeldung behandelt.",
+    legalTermsTitle: "Nutzungsbedingungen · inta.dev",
+    legalTermsDescription:
+      "Nutzungsbedingungen für das inta.dev-Entwicklerportal, die Dokumentation und Kontofunktionen.",
+    accountLoginTitle: "Anmelden · inta.dev",
+    notFoundTitle: "Seite nicht gefunden · inta.dev",
+    notFoundDescription: "Diese Seite gibt es auf inta.dev nicht.",
+  },
   lang: {
     label: "Sprache",
     en: "English",
@@ -13,7 +32,7 @@ export const de: MessageTree = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
-    pt: "Portugiesisch (Brasilien)",
+    "pt-br": "Portugiesisch (Brasilien)",
   },
   nav: {
     docs: "Dokumentation",
@@ -152,6 +171,8 @@ export const de: MessageTree = {
     ql5Hint: "Client registrieren, SDK vs. manuelles OAuth, Flows",
     ql6Label: "Accounts — Authorization-Code-Flow",
     ql6Hint: "PKCE, Callback, Token-Austausch",
+    docPageFallbackDescription:
+      "{{title}} — Intastellar-Entwicklerdokumentation auf inta.dev.",
   },
   search: {
     inputAria: "Dokumentation durchsuchen",
@@ -374,7 +395,7 @@ export const de: MessageTree = {
     embedBadgeButton: "Badge einbinden",
     embedModalTitle: "Verfügbarkeits-Badge einbinden",
     embedModalIntro:
-      "Kopieren Sie ein iframe-Snippet oder die JSON-API-URL. Sprache: ?locale= (en, de, da, fr, nl, pt). Erscheinungsbild: ?theme=light oder ?theme=dark für festes Hell-/Dunkelschema — ohne theme (oder theme=auto) folgt das Badge der Systemeinstellung des Besuchers.",
+      "Kopieren Sie ein iframe-Snippet oder die JSON-API-URL. Sprache: ?locale= (en, de, da, fr, nl, pt-br). Erscheinungsbild: ?theme=light oder ?theme=dark für festes Hell-/Dunkelschema — ohne theme (oder theme=auto) folgt das Badge der Systemeinstellung des Besuchers.",
     embedPreviewHeading: "Vorschau",
     embedThemeLabel: "Badge-Erscheinungsbild",
     embedIframeHeading: "iframe-Einbindung",

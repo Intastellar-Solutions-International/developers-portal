@@ -58,7 +58,7 @@ const BADGE_DARK_CSS = `
  * Minimal standalone HTML for <iframe src="…/api/status/uptime/badge"> embeds.
  * Opens full status page in a new tab when clicked.
  *
- * Language: `?locale=de|da|fr|nl|pt|en` or `Accept-Language`; defaults to English.
+ * Language: `?locale=de|da|fr|nl|pt-br|en` or `Accept-Language` (`pt` maps to Brazilian); defaults to English.
  * Theme: `?theme=light` | `?theme=dark` | omit / `?theme=auto` — follow `prefers-color-scheme`.
  */
 export async function loader({ request }: Route.LoaderArgs) {

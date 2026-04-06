@@ -6,6 +6,25 @@ export const da: MessageTree = {
     homeDescription:
       "Dokumentation, API-nøgler og integrationsvejledninger til Intastellar Consents og Intastellar Accounts på inta.dev.",
   },
+  seo: {
+    searchTitle: "Søg · inta.dev",
+    searchDescription: "Søg i Intastellar-udviklerdokumentationen.",
+    changelogTitle: "Ændringslog · inta.dev",
+    changelogDescription:
+      "Versionshistorik for Intastellar Consents (GitHub) og Intastellar Sign-In (npm + GitHub).",
+    legalIndexTitle: "Juridisk · inta.dev",
+    legalIndexDescription:
+      "Juridiske oplysninger om inta.dev: privatliv, vilkår og links til Intastellar Solutions-politikker og DPA.",
+    legalPrivacyTitle: "Privatlivspolitik · inta.dev",
+    legalPrivacyDescription:
+      "Sådan håndterer inta.dev persondata, cookies, Google Tag Manager, Intastellar Consents og login.",
+    legalTermsTitle: "Vilkår for brug · inta.dev",
+    legalTermsDescription:
+      "Vilkår for brug af inta.dev-udviklerportalen, dokumentationen og kontofunktioner.",
+    accountLoginTitle: "Log ind · inta.dev",
+    notFoundTitle: "Siden findes ikke · inta.dev",
+    notFoundDescription: "Denne side findes ikke på inta.dev.",
+  },
   lang: {
     label: "Sprog",
     en: "English",
@@ -13,7 +32,7 @@ export const da: MessageTree = {
     da: "Dansk",
     fr: "Français",
     nl: "Nederlands",
-    pt: "Portugisisk (Brasilien)",
+    "pt-br": "Portugisisk (Brasilien)",
   },
   nav: {
     docs: "Dokumentation",
@@ -151,6 +170,8 @@ export const da: MessageTree = {
     ql5Hint: "Registrer klient, SDK vs. manuelt OAuth, flows",
     ql6Label: "Accounts — authorization code-flow",
     ql6Hint: "PKCE, callback, token-udveksling",
+    docPageFallbackDescription:
+      "{{title}} — Intastellar-udviklerdokumentation på inta.dev.",
   },
   search: {
     inputAria: "Søg i dokumentationen",
@@ -369,7 +390,7 @@ export const da: MessageTree = {
     embedBadgeButton: "Indlejr badge",
     embedModalTitle: "Indlejr oppetids-badge",
     embedModalIntro:
-      "Kopiér et iframe-uddrag eller JSON-API-URL. Sprog: ?locale= (en, de, da, fr, nl, pt). Udseende: ?theme=light eller ?theme=dark for fast lys/mørk — uden theme (eller theme=auto) følger badge besøgerens systemindstilling.",
+      "Kopiér et iframe-uddrag eller JSON-API-URL. Sprog: ?locale= (en, de, da, fr, nl, pt-br). Udseende: ?theme=light eller ?theme=dark for fast lys/mørk — uden theme (eller theme=auto) følger badge besøgerens systemindstilling.",
     embedPreviewHeading: "Forhåndsvisning",
     embedThemeLabel: "Badge-udseende",
     embedIframeHeading: "iframe-indlejring",

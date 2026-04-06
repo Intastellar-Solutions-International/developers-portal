@@ -14,7 +14,8 @@ import {
 } from "~/lib/docs.server";
 import { docHref, parseDocSplat } from "~/lib/docs-versions";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
-import { buildDocPageMeta } from "~/lib/seo";
+import { buildDocPageMeta, resolveMetaLocale } from "~/lib/seo";
+import { translatePath } from "~/lib/i18n/messages";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const locale = resolveLocaleFromRequest(request);
@@ -49,14 +50,20 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   return { ...doc, prev, next, breadcrumbs, version, locale };
 }
 
-export function meta({ data: doc, location }: Route.MetaArgs) {
-  if (!doc) return [{ title: "Docs · inta.dev" }];
+export function meta({ data: doc, location, matches }: Route.MetaArgs) {
+  if (!doc) {
+    const locale = resolveMetaLocale(matches, location.pathname);
+    return [
+      { title: `${translatePath(locale, "docs.hubMetaTitleCore")} · inta.dev` },
+    ];
+  }
   return buildDocPageMeta({
     title: doc.title,
     description: doc.description,
     pathname: location.pathname,
     modifiedTime: doc.lastUpdated,
     ogImage: doc.ogImage,
+    locale: doc.locale,
   });
 }
 

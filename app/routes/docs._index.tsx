@@ -6,7 +6,8 @@ import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
 import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { requestOpenSearch } from "~/lib/search-overlay-context";
-import { buildDocsHubMeta } from "~/lib/seo";
+import { buildDocsHubMeta, resolveMetaLocale } from "~/lib/seo";
+import { translatePath } from "~/lib/i18n/messages";
 import { useI18n } from "~/providers/i18n-provider";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -18,8 +19,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { products, locale };
 }
 
-export function meta({ data, location }: Route.MetaArgs) {
-  if (!data) return [{ title: "Docs · inta.dev" }];
+export function meta({ data, location, matches }: Route.MetaArgs) {
+  if (!data) {
+    const locale = resolveMetaLocale(matches, location.pathname);
+    return [
+      { title: `${translatePath(locale, "docs.hubMetaTitleCore")} · inta.dev` },
+    ];
+  }
   return buildDocsHubMeta(location.pathname, data.locale);
 }
 

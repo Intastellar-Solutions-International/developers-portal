@@ -7,7 +7,7 @@ import {
 import { getLocaleFromPathname } from "./localized-path";
 
 /**
- * Resolves UI locale from the URL path: `/de/...`, `/da/...`, `/fr/...`, `/nl/...`, `/pt/...` for localized trees;
+ * Resolves UI locale from the URL path: `/de/...`, `/da/...`, `/fr/...`, `/nl/...`, `/pt-br/...` for localized trees;
  * unprefixed routes (e.g. `/`, `/docs/...`) use English.
  */
 export function resolveLocaleFromRequest(request: Request): Locale {

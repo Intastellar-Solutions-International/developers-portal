@@ -1,13 +1,15 @@
 import type { Route } from "./+types/legal.privacy";
 import { CORPORATE_LEGAL } from "~/lib/legal-links";
+import { translatePath } from "~/lib/i18n/messages";
+import { resolveMetaLocale } from "~/lib/seo";
 
-export function meta(_: Route.MetaArgs) {
+export function meta({ matches, location }: Route.MetaArgs) {
+  const locale = resolveMetaLocale(matches, location.pathname);
   return [
-    { title: "Privacy policy · inta.dev" },
+    { title: translatePath(locale, "seo.legalPrivacyTitle") },
     {
       name: "description",
-      content:
-        "How inta.dev handles personal data, cookies, Google Tag Manager, Intastellar Consents, and sign-in.",
+      content: translatePath(locale, "seo.legalPrivacyDescription"),
     },
   ];
 }
