@@ -20,6 +20,8 @@
       "routes/status": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.status.cron": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.status.json": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.uptime": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.uptime-badge": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/consents.changelog": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/legal.privacy": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -126,6 +128,24 @@
         "parentId": "root",
         "file": "app/routes/api.status.json.tsx",
         "path": "api/status.json",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.uptime": {
+        "id": "routes/api.status.uptime",
+        "parentId": "root",
+        "file": "app/routes/api.status.uptime.tsx",
+        "path": "api/status/uptime",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.uptime-badge": {
+        "id": "routes/api.status.uptime-badge",
+        "parentId": "root",
+        "file": "app/routes/api.status.uptime-badge.tsx",
+        "path": "api/status/uptime/badge",
         "config": {
           "runtime": "nodejs"
         }
@@ -348,6 +368,18 @@
         "file": "routes/api.status.json.tsx",
         "path": "api/status.json"
       },
+      "routes/api.status.uptime": {
+        "id": "routes/api.status.uptime",
+        "parentId": "root",
+        "file": "routes/api.status.uptime.tsx",
+        "path": "api/status/uptime"
+      },
+      "routes/api.status.uptime-badge": {
+        "id": "routes/api.status.uptime-badge",
+        "parentId": "root",
+        "file": "routes/api.status.uptime-badge.tsx",
+        "path": "api/status/uptime/badge"
+      },
       "routes/consents.changelog": {
         "id": "routes/consents.changelog",
         "parentId": "root",
@@ -498,6 +530,14 @@
           {
             "file": "routes/api.status.json.tsx",
             "path": "api/status.json"
+          },
+          {
+            "file": "routes/api.status.uptime.tsx",
+            "path": "api/status/uptime"
+          },
+          {
+            "file": "routes/api.status.uptime-badge.tsx",
+            "path": "api/status/uptime/badge"
           },
           {
             "file": "routes/consents.changelog.tsx",

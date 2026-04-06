@@ -88,24 +88,3 @@ export function applyColorSchemeToDocument(
   );
 }
 
-/**
- * Cycles stored preference. From `system`, the next step is the **opposite** of the
- * resolved appearance — not always `light` — so one click actually changes the UI
- * when the site followed a light OS (system + light looked like light; forcing `light`
- * again was a no-op).
- */
-export function cycleColorSchemePreference(
-  current: ColorSchemePreference,
-): ColorSchemePreference {
-  if (current === "system") {
-    return resolvedColorSchemeIsDark("system") ? "light" : "dark";
-  }
-  if (current === "light") return "dark";
-  return "system";
-}
-
-export function colorSchemePreferenceLabel(p: ColorSchemePreference): string {
-  if (p === "light") return "Light";
-  if (p === "dark") return "Dark";
-  return "System";
-}

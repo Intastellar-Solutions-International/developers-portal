@@ -1,6 +1,9 @@
+import { useSyncExternalStore } from "react";
+
 import {
-  colorSchemePreferenceLabel,
-  type ColorSchemePreference,
+  getColorSchemeIsDarkServerSnapshot,
+  getColorSchemeIsDarkSnapshot,
+  subscribeColorScheme,
 } from "~/lib/color-scheme";
 import { useColorScheme } from "~/providers/color-scheme-provider";
 
@@ -43,73 +46,71 @@ function MoonIcon({ className }: { className?: string }) {
   );
 }
 
-function MonitorIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <rect width="20" height="14" x="2" y="3" rx="2" />
-      <path d="M8 21h8M12 17v4" />
-    </svg>
+function useResolvedColorSchemeIsDark(): boolean {
+  return useSyncExternalStore(
+    subscribeColorScheme,
+    getColorSchemeIsDarkSnapshot,
+    getColorSchemeIsDarkServerSnapshot,
   );
 }
 
-function iconForPreference(p: ColorSchemePreference) {
-  if (p === "light") return SunIcon;
-  if (p === "dark") return MoonIcon;
-  return MonitorIcon;
-}
+const trackClass =
+  "inline-flex rounded-full bg-zinc-200/90 p-0.5 dark:bg-zinc-600/80";
 
-const toggleBtnClass =
-  "rounded-md p-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-brand dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-brand";
+const segmentClass =
+  "flex h-9 w-9 items-center justify-center rounded-full transition-colors";
+
+const segmentInactiveClass =
+  "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100";
+
+const segmentActiveClass =
+  "bg-white text-brand shadow-sm dark:bg-zinc-800 dark:text-brand";
+
+function SunMoonToggle({ className = "" }: { className?: string }) {
+  const { setPreference } = useColorScheme();
+  const isDark = useResolvedColorSchemeIsDark();
+
+  return (
+    <div
+      className={`${trackClass} ${className}`.trim()}
+      role="radiogroup"
+      aria-label="Color theme"
+    >
+      <button
+        type="button"
+        role="radio"
+        className={`${segmentClass} ${!isDark ? segmentActiveClass : segmentInactiveClass}`}
+        aria-checked={!isDark}
+        aria-label="Light theme"
+        title="Light theme"
+        onClick={() => setPreference("light")}
+      >
+        <SunIcon className="size-4.5" />
+      </button>
+      <button
+        type="button"
+        role="radio"
+        className={`${segmentClass} ${isDark ? segmentActiveClass : segmentInactiveClass}`}
+        aria-checked={isDark}
+        aria-label="Dark theme"
+        title="Dark theme"
+        onClick={() => setPreference("dark")}
+      >
+        <MoonIcon className="size-4.5" />
+      </button>
+    </div>
+  );
+}
 
 export function ColorSchemeToggle() {
-  const { preference, cyclePreference } = useColorScheme();
-  const Icon = iconForPreference(preference);
-  const label = colorSchemePreferenceLabel(preference);
-
-  return (
-    <button
-      type="button"
-      className={toggleBtnClass}
-      onClick={() => cyclePreference()}
-      title={`Theme: ${label} — click to change`}
-      aria-label={`Color theme: ${label}. Click to change theme.`}
-    >
-      <Icon className="size-5" />
-    </button>
-  );
+  return <SunMoonToggle />;
 }
 
-/** Same control with full-width styling for the mobile drawer. */
+/** Full-width row for the mobile drawer — icons only, same behavior as the header control. */
 export function ColorSchemeToggleMobileRow() {
-  const { preference, cyclePreference } = useColorScheme();
-  const Icon = iconForPreference(preference);
-  const label = colorSchemePreferenceLabel(preference);
-
   return (
-    <button
-      type="button"
-      className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-white/10"
-      onClick={() => cyclePreference()}
-      aria-label={`Color theme: ${label}. Click to cycle.`}
-    >
-      <Icon className="size-5 shrink-0 opacity-80" />
-      <span>
-        Theme: <span className="font-semibold">{label}</span>
-      </span>
-      <span className="ml-auto text-xs text-zinc-500 dark:text-zinc-500">
-        Tap to change
-      </span>
-    </button>
+    <div className="flex w-full items-center justify-center px-4 py-2">
+      <SunMoonToggle />
+    </div>
   );
 }

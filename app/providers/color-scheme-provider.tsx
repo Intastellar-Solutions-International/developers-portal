@@ -10,7 +10,6 @@ import {
 } from "react";
 
 import {
-  cycleColorSchemePreference,
   notifyColorSchemeChanged,
   persistColorScheme,
   readStoredColorScheme,
@@ -20,7 +19,6 @@ import {
 type ColorSchemeContextValue = {
   preference: ColorSchemePreference;
   setPreference: (p: ColorSchemePreference) => void;
-  cyclePreference: () => void;
 };
 
 const ColorSchemeContext = createContext<ColorSchemeContextValue | null>(null);
@@ -52,18 +50,9 @@ export function ColorSchemeProvider({ children }: { children: ReactNode }) {
     notifyColorSchemeChanged();
   }, []);
 
-  const cyclePreference = useCallback(() => {
-    setPreferenceState((prev) => {
-      const next = cycleColorSchemePreference(prev);
-      persistColorScheme(next);
-      notifyColorSchemeChanged();
-      return next;
-    });
-  }, []);
-
   const value = useMemo(
-    () => ({ preference, setPreference, cyclePreference }),
-    [preference, setPreference, cyclePreference],
+    () => ({ preference, setPreference }),
+    [preference, setPreference],
   );
 
   return (
