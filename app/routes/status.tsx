@@ -8,7 +8,10 @@ import { StatusLatencyTrend } from "~/components/status-latency-trend";
 import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
-import { getStatusPageCopy } from "~/lib/status-page-copy.server";
+import {
+  getStatusPageCopy,
+  resolveStatusPageCopy,
+} from "~/lib/status-page-copy";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import {
   formatDateTimeMediumUtc,
@@ -126,7 +129,7 @@ export default function StatusPage() {
   const [embedModalOpen, setEmbedModalOpen] = useState(false);
   const {
     locale,
-    copy,
+    copy: copyFromLoader,
     snapshot,
     source,
     mongoConfigured,
@@ -136,6 +139,7 @@ export default function StatusPage() {
     targetNames,
     uptime,
   } = useLoaderData<typeof loader>();
+  const copy = resolveStatusPageCopy(locale, copyFromLoader);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">

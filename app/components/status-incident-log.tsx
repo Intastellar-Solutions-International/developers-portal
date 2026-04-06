@@ -1,4 +1,4 @@
-import type { StatusPageCopy } from "~/lib/status-page-copy.server";
+import type { StatusPageCopy } from "~/lib/status-page-copy";
 import type { StatusIncident } from "~/lib/status-history.server";
 
 type Props = {

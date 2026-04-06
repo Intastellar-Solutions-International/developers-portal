@@ -132,3 +132,20 @@ export function getStatusPageCopy(locale: Locale): StatusPageCopy {
     embedOpenOnSite: tp("status.embedOpenOnSite"),
   };
 }
+
+/**
+ * Prefer loader-serialized copy (SSR + navigations). Rebuild on the client when `copy` is
+ * missing (e.g. HMR, stale flight data, or duplicate route ids) so UI never reads undefined.
+ */
+export function resolveStatusPageCopy(
+  locale: Locale,
+  fromLoader: StatusPageCopy | undefined | null,
+): StatusPageCopy {
+  if (
+    fromLoader != null &&
+    typeof fromLoader.timelineRecentChecks === "string"
+  ) {
+    return fromLoader;
+  }
+  return getStatusPageCopy(locale);
+}

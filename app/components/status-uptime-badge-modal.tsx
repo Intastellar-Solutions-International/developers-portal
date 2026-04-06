@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from "react";
 
-import type { StatusPageCopy } from "~/lib/status-page-copy.server";
+import type { StatusPageCopy } from "~/lib/status-page-copy";
 import type { Locale } from "~/lib/i18n/locale";
 
 function escapeHtmlAttr(s: string): string {

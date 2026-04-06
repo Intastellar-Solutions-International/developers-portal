@@ -1,5 +1,5 @@
 import { interpolate } from "~/lib/i18n/messages";
-import type { StatusPageCopy } from "~/lib/status-page-copy.server";
+import type { StatusPageCopy } from "~/lib/status-page-copy";
 import type { StatusTimelinePoint } from "~/lib/status-history.server";
 
 type Props = {
