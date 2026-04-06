@@ -30,9 +30,11 @@ export function publicAccountToResolved(
       accountId = null;
     }
   }
+  const email = account.email?.trim().toLowerCase() ?? "";
+  if (!email) return null;
   return {
     accountId,
-    email: account.email,
+    email,
     displayName: account.displayName,
     authProvider: "intastellar",
   };

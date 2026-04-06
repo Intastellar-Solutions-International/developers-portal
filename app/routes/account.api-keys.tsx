@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import {
   data,
   Form,
@@ -5,6 +6,7 @@ import {
   useActionData,
   useLoaderData,
   useNavigation,
+  useRevalidator,
 } from "react-router";
 
 import type { Route } from "./+types/account.api-keys";
@@ -15,11 +17,10 @@ import {
 } from "~/lib/api-keys.server";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
 import { isMongoConfigured } from "~/lib/mongodb.server";
-import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import {
-  getResolvedPortalUser,
-  publicAccountToResolved,
-} from "~/lib/portal-user.server";
+  resolvePortalSessionForRequest,
+} from "~/lib/portal-account.server";
+import { publicAccountToResolved } from "~/lib/portal-user.server";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 
 export function meta(_: Route.MetaArgs) {
@@ -33,20 +34,34 @@ export type ApiKeysLoaderData = {
   keys: Awaited<ReturnType<typeof listApiKeysForUser>>;
 };
 
-export async function loader({ request }: Route.LoaderArgs): Promise<ApiKeysLoaderData> {
+function loaderHeadersFromSetCookie(setCookieHeaders: string[]): Headers {
+  const headers = new Headers();
+  for (const c of setCookieHeaders) {
+    headers.append("Set-Cookie", c);
+  }
+  return headers;
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
   const ssoConfigured = getIntastellarClientConfig() != null;
   const mongoConfigured = isMongoConfigured();
-  const user = await getResolvedPortalUser(request);
+  const { account, setCookieHeaders } =
+    await resolvePortalSessionForRequest(request);
+  const user = publicAccountToResolved(account);
   const keys =
     user && mongoConfigured
       ? await listApiKeysForUser(user.accountId, user.email)
       : [];
-  return {
+  const payload: ApiKeysLoaderData = {
     ssoConfigured,
     mongoConfigured,
     signedInOnServer: user != null,
     keys,
   };
+  if (setCookieHeaders.length === 0) {
+    return payload;
+  }
+  return data(payload, { headers: loaderHeadersFromSetCookie(setCookieHeaders) });
 }
 
 export type ApiKeysActionData =
@@ -140,11 +155,35 @@ export default function AccountApiKeys() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const busy = navigation.state !== "idle";
+  const revalidator = useRevalidator();
+  const sessionSyncRef = useRef(0);
+  const [sessionHardFail, setSessionHardFail] = useState(false);
   const {
     authReady,
     configured: clientConfigured,
     isSignedIn: clientSignedIn,
   } = useIntastellarAuth();
+
+  const sessionUiMismatch =
+    mongoConfigured &&
+    clientConfigured &&
+    clientSignedIn &&
+    !signedInOnServer;
+
+  useEffect(() => {
+    if (!sessionUiMismatch) {
+      sessionSyncRef.current = 0;
+      setSessionHardFail(false);
+      return;
+    }
+    if (revalidator.state !== "idle") return;
+    if (sessionSyncRef.current >= 8) {
+      setSessionHardFail(true);
+      return;
+    }
+    sessionSyncRef.current += 1;
+    revalidator.revalidate();
+  }, [sessionUiMismatch, revalidator.state, revalidator.revalidate]);
 
   const canUseKeys =
     ssoConfigured &&
@@ -198,11 +237,64 @@ export default function AccountApiKeys() {
           (required in production — long random secret for hashing keys).
         </p>
       ) : !signedInOnServer ? (
-        <div className="mt-4 space-y-2 text-sm text-amber-800 dark:text-amber-200">
-          <p>
-            The server could not verify your session cookie. Try refreshing this
-            page after sign-in, or sign out and sign in again.
-          </p>
+        <div className="mt-4 space-y-3 text-sm text-amber-800 dark:text-amber-200">
+          {sessionUiMismatch && revalidator.state !== "idle" ? (
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Syncing your session with the server…
+            </p>
+          ) : null}
+          {sessionUiMismatch && sessionHardFail ? (
+            <div className="space-y-2">
+              <p>
+                Signed in in the app, but the API keys request still has no
+                verified server session. Common causes: stale loader cache,
+                <code className="mx-1 text-xs">localhost</code> vs{" "}
+                <code className="text-xs">127.0.0.1</code>, missing{" "}
+                <code className="text-xs">SESSION_SECRET</code> in production, or
+                the server cannot call Intastellar verify.
+              </p>
+              <ul className="list-inside list-disc space-y-1 text-zinc-700 dark:text-zinc-300">
+                <li>
+                  Hard-refresh this page (full reload), or open API keys in a new
+                  tab.
+                </li>
+                <li>
+                  Use one host only for dev (
+                  <code className="text-xs">localhost</code> or{" "}
+                  <code className="text-xs">127.0.0.1</code>).
+                </li>
+                <li>
+                  Set <code className="text-xs">SESSION_SECRET</code> in production.
+                </li>
+                <li>
+                  Allow outbound HTTPS to{" "}
+                  <code className="break-all text-xs">
+                    apis.intastellaraccounts.com
+                  </code>
+                  .
+                </li>
+              </ul>
+              <p>
+                <Link to="/account/login" className={linkClass}>
+                  Sign in again
+                </Link>
+              </p>
+            </div>
+          ) : sessionUiMismatch ? (
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Aligning server session with your account… If this persists, reload
+              the page.
+            </p>
+          ) : (
+            <p>
+              The server could not verify your session cookie. Try refreshing this
+              page after sign-in, or{" "}
+              <Link to="/account/login" className={linkClass}>
+                sign out and sign in again
+              </Link>
+              .
+            </p>
+          )}
         </div>
       ) : (
         <div className="mt-4 space-y-6">

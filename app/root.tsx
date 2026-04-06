@@ -11,6 +11,7 @@ import {
   useMatches,
   useNavigate,
   useRouteLoaderData,
+  type ShouldRevalidateFunctionArgs,
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -51,6 +52,17 @@ export async function loader({ request }: Route.LoaderArgs) {
     { ssoConfigured, portalAccount: account },
     { headers },
   );
+}
+
+/** Avoid stale `portalAccount` when navigating under `/account/*` (partial loads vs child loaders). */
+export function shouldRevalidate({
+  defaultShouldRevalidate,
+  nextUrl,
+}: ShouldRevalidateFunctionArgs) {
+  if (nextUrl.pathname.startsWith("/account")) {
+    return true;
+  }
+  return defaultShouldRevalidate;
 }
 
 export const links: Route.LinksFunction = () => [

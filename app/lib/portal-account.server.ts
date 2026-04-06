@@ -13,6 +13,18 @@ import {
   type UserAccountRecord,
 } from "./user-accounts.server";
 
+function emailFromUserDoc(doc: UserAccountRecord): string {
+  const p = doc.primaryEmail?.trim();
+  if (p) return p.toLowerCase();
+  for (const id of doc.identities ?? []) {
+    const e = typeof id.email === "string" ? id.email.trim().toLowerCase() : "";
+    if (e) return e;
+  }
+  const subj = doc.identities?.find((i) => i.provider === "intastellar")?.subject;
+  if (typeof subj === "string" && subj.trim()) return subj.trim().toLowerCase();
+  return "";
+}
+
 export type PublicPortalAccount = {
   accountId: string;
   email: string;
@@ -23,10 +35,11 @@ export type PublicPortalAccount = {
 function docToPublic(
   doc: UserAccountRecord & { _id: ObjectId },
 ): PublicPortalAccount {
+  const email = emailFromUserDoc(doc);
   return {
     accountId: doc._id.toHexString(),
-    email: doc.primaryEmail ?? "",
-    displayName: doc.displayName?.trim() || doc.primaryEmail || "Account",
+    email,
+    displayName: doc.displayName?.trim() || email || "Account",
     avatarUrl: doc.avatarUrl,
   };
 }

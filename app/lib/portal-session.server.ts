@@ -18,11 +18,12 @@ function sessionSecret(): Buffer | null {
 
 function parseCookie(header: string | null, name: string): string | null {
   if (!header) return null;
+  const nameLower = name.toLowerCase();
   for (const part of header.split(";")) {
     const idx = part.indexOf("=");
     if (idx === -1) continue;
     const k = part.slice(0, idx).trim();
-    if (k !== name) continue;
+    if (k.toLowerCase() !== nameLower) continue;
     const v = part.slice(idx + 1).trim();
     try {
       return decodeURIComponent(v);
@@ -79,6 +80,12 @@ export function verifyPortalSessionToken(token: string): ObjectId | null {
 }
 
 function requestIsHttps(request: Request): boolean {
+  const forwarded = request.headers.get("x-forwarded-proto");
+  if (forwarded) {
+    const first = forwarded.split(",")[0]?.trim().toLowerCase();
+    if (first === "https") return true;
+    if (first === "http") return false;
+  }
   try {
     return new URL(request.url).protocol === "https:";
   } catch {

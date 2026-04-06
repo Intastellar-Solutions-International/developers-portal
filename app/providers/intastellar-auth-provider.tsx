@@ -14,7 +14,7 @@ import {
   useRouteLoaderData,
 } from "react-router";
 import { useIntastellar } from "@intastellar/signin-sdk-react";
-import type { IntastellarUser } from "@intastellar/signin-sdk-react";
+import type { IntastellarAccount, IntastellarUser } from "@intastellar/signin-sdk-react";
 
 import {
   DEFAULT_UNCONFIGURED_AUTH,
@@ -23,6 +23,10 @@ import {
   type IntastellarAuthContextValue,
 } from "~/lib/intastellar-auth-context";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
+import {
+  readIntaAccFromDocument,
+  syncIntastellarPortalSession,
+} from "~/lib/intastellar-portal-session-sync.client";
 import { clearIntastellarBrowserSession } from "~/lib/intastellar-session";
 
 export type { IntastellarAuthContextValue } from "~/lib/intastellar-auth-context";
@@ -108,13 +112,22 @@ function IntastellarAuthEnabled({
 
   const { clientId, appName } = getIntastellarClientConfig()!;
 
+  const onIntastellarSignedIn = useCallback(
+    async (account: IntastellarAccount) => {
+      const ok = await syncIntastellarPortalSession(account.token);
+      if (ok) revalidator.revalidate();
+    },
+    [revalidator.revalidate],
+  );
+
   const config = useMemo(
     () => ({
       clientId,
       appName,
       scopes: "profile,email",
+      loginCallback: onIntastellarSignedIn,
     }),
-    [clientId, appName],
+    [clientId, appName, onIntastellarSignedIn],
   );
 
   const { users, isLoading, error, signin, isSignedIn } = useIntastellar(config);
@@ -164,14 +177,19 @@ function IntastellarAuthEnabled({
       portalSyncAttempts.current < 5
     ) {
       portalSyncAttempts.current += 1;
-      revalidator.revalidate();
+      void (async () => {
+        const token = readIntaAccFromDocument();
+        if (token) await syncIntastellarPortalSession(token);
+        revalidator.revalidate();
+      })();
     }
   }, [
     ignoreSdkSession,
     portalAccount,
     isSignedIn,
     users.length,
-    revalidator,
+    revalidator.state,
+    revalidator.revalidate,
   ]);
 
   const signinWrapped = useCallback(

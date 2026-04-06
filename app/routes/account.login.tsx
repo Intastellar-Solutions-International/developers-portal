@@ -13,12 +13,6 @@ export default function AccountLogin() {
   const { authReady, configured, isLoading, isSignedIn, signin, error } =
     useIntastellarAuth();
 
-  console.log("isLoading", isLoading);
-  console.log("authReady", authReady);
-  console.log("configured", configured);
-  console.log("isSignedIn", isSignedIn);
-  console.log("error", error);
-
   useEffect(() => {
     if (!authReady || !configured || !isSignedIn) return;
     navigate("/account/profile", { replace: true });

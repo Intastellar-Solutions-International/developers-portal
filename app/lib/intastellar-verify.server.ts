@@ -8,13 +8,55 @@ export type PortalAccountSession = {
   imageUrl?: string;
 };
 
+/**
+ * `/verify` may return `account.user` as an array or an object that carries
+ * extra fields under numeric key `0` (see `@intastellar/signin-sdk-react` verifyToken).
+ */
+function normalizeIntastellarVerifyUser(raw: unknown): {
+  email?: string;
+  primaryEmail?: string;
+  name?: { first?: string; last?: string };
+  image?: string;
+} | null {
+  if (raw == null) return null;
+  if (Array.isArray(raw)) {
+    const merged: Record<string, unknown> = {};
+    for (const item of raw) {
+      if (item && typeof item === "object" && !Array.isArray(item)) {
+        Object.assign(merged, item as object);
+      }
+    }
+    return merged as {
+      email?: string;
+      primaryEmail?: string;
+      name?: { first?: string; last?: string };
+      image?: string;
+    };
+  }
+  if (typeof raw !== "object") return null;
+  const o = raw as Record<string, unknown>;
+  const merged: Record<string, unknown> = { ...o };
+  const slot0 = o["0"];
+  if (slot0 && typeof slot0 === "object" && !Array.isArray(slot0)) {
+    Object.assign(merged, slot0 as object);
+  }
+  delete merged["0"];
+  return merged as {
+    email?: string;
+    primaryEmail?: string;
+    name?: { first?: string; last?: string };
+    image?: string;
+  };
+}
+
 function cookieValue(header: string | null, name: string): string | null {
   if (!header) return null;
+  const nameLower = name.toLowerCase();
   for (const part of header.split(";")) {
     const idx = part.indexOf("=");
     if (idx === -1) continue;
     const k = part.slice(0, idx).trim();
-    if (k !== name) continue;
+    if (k.toLowerCase() !== nameLower) continue;
     const v = part.slice(idx + 1).trim();
     try {
       return decodeURIComponent(v);
@@ -47,18 +89,22 @@ export async function verifyIntastellarToken(
     });
     const result = (await res.json()) as {
       statusCode?: number;
-      account?: {
-        user: {
-          email?: string;
-          name?: { first?: string; last?: string };
-          image?: string;
-        };
-      };
+      status?: number | string;
+      account?: { user?: unknown };
     };
-    if (result.statusCode !== 200 || !result.account?.user) return null;
-    const u = result.account.user;
-    const email =
-      typeof u.email === "string" ? u.email.trim().toLowerCase() : "";
+    if (!res.ok) return null;
+    if (!result.account?.user) return null;
+    const sc = result.statusCode ?? result.status;
+    if (sc !== undefined && sc !== 200 && sc !== "200" && String(sc).toLowerCase() !== "ok") {
+      return null;
+    }
+    const u = normalizeIntastellarVerifyUser(result.account.user);
+    if (!u) return null;
+    const rawEmail =
+      (typeof u.email === "string" && u.email) ||
+      (typeof u.primaryEmail === "string" && u.primaryEmail) ||
+      "";
+    const email = rawEmail.trim().toLowerCase();
     if (!email) return null;
     const first = u.name?.first ?? "";
     const last = u.name?.last ?? "";
