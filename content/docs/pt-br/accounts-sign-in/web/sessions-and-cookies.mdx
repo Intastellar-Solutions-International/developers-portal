@@ -1,0 +1,44 @@
+---
+title: Sessões, cookies e tokens
+sidebar_label: Sessões e cookies
+description: Cookies do SDK na sua origem, hosts do IdP e como desenhar sua própria sessão com Intastellar Sign-In.
+order: 40
+---
+
+Trate cookies e tokens em três camadas: **hospedado pela Intastellar** (UI de login), **origem do seu site** (SDK ou sua sessão) e **seu backend** (sessões opacas, verificação).
+
+## Na origem do seu site
+
+Ao usar **`@intastellar/signin-sdk-react`** ou um fluxo **vanilla** equivalente, a integração pode definir cookies **first-party** após a entrada para a aba lembrar o usuário. Nomes e semântica exatos vêm da **documentação do SDK e da Intastellar** ([readme no npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme), [HTML, CSS e JavaScript puros](/docs/accounts-sign-in/web/plain-html-css-js)) — não assuma que coincidem com outro deploy.
+
+Seu código deve tratá-los como **gerenciados pelo SDK** salvo indicação contrária da Intastellar.
+
+## Seu próprio cookie de sessão (padrão recomendado)
+
+Se você roda um **backend** ou **BFF**, prefira:
+
+1. **ID de sessão opaco** em cookie **HttpOnly**, **Secure**, com `SameSite` adequado à sua topologia.
+2. **Armazenamento no servidor** mapeando esse id a user id, expiração e renovação.
+3. Estabeleça ou renove essa sessão só depois que o servidor **confia** no resultado da entrada (ex.: validação de token conforme o guia de integração).
+
+Veja [integrar React e JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript) para um padrão de alto nível de “sessão opcional no servidor” usando URLs de **exemplo** apenas.
+
+## Em hosts controlados pela Intastellar
+
+Enquanto o usuário entra na Intastellar, o **host de identidade** pode definir **próprios** cookies (SSO, sessão). Eles **não** são legíveis pelo JavaScript da sua origem. Confie em **tokens**, **sua sessão** ou o **SDK**, não em ler cookies do IdP entre sites.
+
+## ID token vs access token
+
+Quando você usa respostas **token** estilo OAuth (fluxo de código manual):
+
+- **ID token** — JWT sobre o evento de autenticação; valide `iss`, `aud`, `exp`, assinatura (e `nonce` se usado).
+- **Access token** — chamar APIs; trate como opaco salvo necessidade de parse.
+
+## Logout
+
+Limpe **sua** sessão e siga as orientações do **SDK / Intastellar** para sair. Se houver URL de **end-session**, redirecionar para lá limpa cookies SSO no domínio de identidade. Veja [Logout, erros e solução de problemas](/docs/accounts-sign-in/web/logout-and-errors).
+
+## Próximo
+
+- [SPAs e clientes JavaScript](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE e visão geral do SDK.
+- [Lado do servidor (clientes confidenciais)](/docs/accounts-sign-in/web/backend-exchange) — troca de código sem expor segredos.

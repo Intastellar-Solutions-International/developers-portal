@@ -1,0 +1,44 @@
+---
+title: URIs de redirecionamento e callbacks
+sidebar_label: URIs de redirecionamento
+description: Registre URLs de callback exatas para entrada web Intastellar Accounts e evite erros comuns de incompatibilidade de redirect.
+order: 30
+---
+
+A Intastellar só conclui fluxos de retorno da entrada em URLs **pré-registradas** (ou URIs permitidas no registro do cliente para a **login URI** usada pelo SDK React). Um typo, esquema errado ou barra final diferente gera `redirect_uri_mismatch` ou erros semelhantes.
+
+Se você **mudar o hostname público** do app (por exemplo após migração de domínio), atualize o cliente Intastellar para que **redirect / login** permitidos coincidam com a **nova** origem e caminhos. SDKs costumam derivar uma **login URI** da página atual (`hostname`, `port`, `pathname`) salvo override — registre os valores que você realmente envia.
+
+## Regras práticas
+
+1. **HTTPS em produção** — `http://localhost` costuma ser permitido em desenvolvimento; produção deve usar `https://`.
+2. **Correspondência exata** — `https://app.example.com/callback` e `https://app.example.com/callback/` são caminhos diferentes; registre o que você usa na requisição authorize.
+3. **Sem curingas** na maioria dos setups — registre cada caminho de callback concreto (ou siga o padrão documentado no console se houver templates de caminho).
+4. **Query strings** — evite colocar query dinâmica na URI registrada salvo o registro permitir explicitamente; prefira caminho fixo e passe contexto interno via `state`.
+
+## Vários ambientes
+
+Registre URIs de redirecionamento separadas (ou clientes separados) para:
+
+- Desenvolvimento local (`http://127.0.0.1:5173/auth/callback`, etc.)
+- Homologação
+- Produção
+
+Isso limita o impacto se um segredo vazar em cliente não produtivo.
+
+## Roteadores SPA
+
+Se você usa roteamento com hash (`/#/callback`), verifique se o provedor de identidade permite esse padrão para redirects; muitos exigem URLs **baseadas em caminho** (`/auth/callback`) para o callback OAuth.
+
+## Depois do redirect
+
+Na rota de callback:
+
+1. Leia `code` e `state` da query string.
+2. Verifique `state` contra o valor guardado ao iniciar o fluxo.
+3. Troque o código no endpoint de token (veja [Fluxo authorization code](/docs/accounts-sign-in/web/authorization-code-flow)).
+4. Redirecione o usuário ao destino final no app (painel, URL de retorno em `state`, etc.).
+
+## Próximo
+
+[Sessões, cookies e tokens](/docs/accounts-sign-in/web/sessions-and-cookies) para persistir o usuário com sessão iniciada com segurança após um callback bem-sucedido.

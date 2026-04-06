@@ -1,0 +1,62 @@
+---
+title: Entrada na web — Primeiros passos
+sidebar_label: Primeiros passos
+description: Registre seu cliente Intastellar, escolha público vs confidencial e planeje redirecionamentos e sessões.
+order: 10
+---
+
+O Intastellar Sign-In suporta mais de um estilo de integração. Escolha o caminho que combina com sua stack:
+
+| Você está construindo… | Comece aqui |
+| ----------------- | ---------- |
+| App **React** | [Intastellar Sign-In — SDK React e JavaScript puro](/docs/accounts-sign-in/web/integrating-react-and-javascript) — alinhado ao [pacote oficial no npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme). |
+| **HTML / CSS / JS puros** | [HTML, CSS e JavaScript puros](/docs/accounts-sign-in/web/plain-html-css-js) — sem framework; migrado da antiga documentação JS do site de desenvolvedores. |
+| **Fluxo OAuth code personalizado** (qualquer servidor) | Continue abaixo, depois [Fluxo authorization code](/docs/accounts-sign-in/web/authorization-code-flow). |
+
+As seções abaixo focam em **registrar um cliente** e planejar **redirecionamentos / sessões** para **suas** aplicações. Elas complementam o guia centrado no SDK, que usa código apenas **ilustrativo**.
+
+## 1. Registre sua aplicação
+
+Crie um **cliente estilo OAuth/OIDC** no fluxo de registro Intastellar que sua equipe usa. Anote:
+
+- **Client ID** — identificador público (seguro em código front-end para clientes **públicos**).
+- **Client secret** — apenas para clientes **confidenciais** (lado do servidor); nunca envie ao navegador ou binários do app.
+- **URIs de redirecionamento / login** — URLs exatas que a Intastellar pode usar ao devolver o usuário ou concluir a entrada. Veja [URIs de redirecionamento e callbacks](/docs/accounts-sign-in/web/redirect-uris).
+
+Use **clientes separados** (ou listas de redirecionamento isoladas) para produção e homologação.
+
+## 2. Escolha um fluxo
+
+| Seu app | Abordagem recomendada |
+| -------- | -------------------- |
+| **React** | [`@intastellar/signin-sdk-react`](https://www.npmjs.com/package/@intastellar/signin-sdk-react) — veja [integrar React e JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript). |
+| **JS vanilla (sites estáticos)** | [HTML, CSS e JavaScript puros](/docs/accounts-sign-in/web/plain-html-css-js). |
+| **SPA (personalizado)** | Authorization code com **PKCE**; sem client secret no navegador. |
+| **Site renderizado no servidor** | O navegador conclui o redirecionamento; seu **servidor** troca o código com o **client secret**. |
+| **Mobile / nativo** | PKCE, esquema personalizado ou redirecionamento HTTPS. |
+
+Detalhes: [Fluxo authorization code](/docs/accounts-sign-in/web/authorization-code-flow), [SPAs e JavaScript](/docs/accounts-sign-in/web/spa-and-javascript), [Troca no servidor](/docs/accounts-sign-in/web/backend-exchange).
+
+## 3. Endpoints e metadados
+
+Seu registro ou o guia Intastellar deve listar (ou apontar para discovery):
+
+- **Endpoint de autorização** — o usuário entra (para integrações em fluxo de código).
+- **Endpoint de token** — trocar código por tokens.
+- **Issuer / JWKS** — para validar ID tokens com OpenID Connect.
+
+Os exemplos nestes guias usam placeholders como `AUTHORIZATION_ENDPOINT` e `TOKEN_ENDPOINT`.
+
+## 4. Planeje sessões
+
+Defina como **sua origem** lembra o usuário:
+
+- **Cookies de sessão HttpOnly** do seu servidor (típico em apps tradicionais).
+- **ID de sessão opaco** mais armazenamento no servidor.
+- **Access token de curta duração em memória** para SPAs, com **BFF** quando possível.
+
+Se você usa o **SDK**, ele pode definir cookies **first-party** no seu domínio; combine com sua própria sessão se precisar de páginas renderizadas no servidor — veja [Sessões, cookies e tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+
+## Próximos passos
+
+[Fluxo authorization code](/docs/accounts-sign-in/web/authorization-code-flow) — para integrações manuais authorize + callback + token.

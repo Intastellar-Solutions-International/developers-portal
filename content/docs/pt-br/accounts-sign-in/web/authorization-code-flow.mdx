@@ -1,0 +1,83 @@
+---
+title: Fluxo authorization code
+sidebar_label: Authorization code
+description: Monte o redirecionamento authorize, valide state e PKCE e troque o authorization code por tokens com Intastellar Accounts.
+order: 20
+---
+
+O fluxo **authorization code** é o padrão para entrada na web: o navegador visita a Intastellar, o usuário se autentica e a Intastellar redireciona de volta ao seu site com um **código** que você troca por tokens.
+
+## SDK React (popup) vs este guia
+
+Se você usa **`@intastellar/signin-sdk-react`**, a entrada costuma rodar em **popup**: a Intastellar devolve um token à sua página via `postMessage`, o SDK verifica e hooks opcionais (ex.: `loginCallback`) executam. Nesse modo você **não** monta manualmente a URL `GET` authorize nem o `POST` ao endpoint de token.
+
+Use esta página quando implementar a sequência **authorize + callback + token** você mesmo (não React, mobile ou servidor personalizado). Para **SDK React** ou **JS puro**, veja [Intastellar Sign-In — SDK React e JavaScript puro](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+Os nomes de parâmetro abaixo seguem o uso **comum** em OAuth 2.0 / OIDC — confira **exatamente** nomes, escopos e URLs de discovery no registro do cliente e no guia de integração Intastellar.
+
+## Etapa 1 — Redirecionar o usuário para autorizar
+
+Envie o navegador do usuário ao endpoint de autorização com parâmetros de query:
+
+| Parâmetro | Finalidade |
+| --------- | ------- |
+| `response_type` | Use `code` neste fluxo. |
+| `client_id` | Seu client ID registrado. |
+| `redirect_uri` | Deve **coincidir exatamente** com uma URI registrada. |
+| `scope` | Escopos separados por espaço (muitas vezes inclui `openid` para OIDC). |
+| `state` | Valor aleatório e difícil de adivinhar; você valida no retorno. |
+| `code_challenge` | PKCE: hash SHA-256 do `code_verifier`, codificado em Base64url (clientes públicos). |
+| `code_challenge_method` | Normalmente `S256`. |
+
+Exemplo (quebras de linha para legibilidade):
+
+```http
+GET AUTHORIZATION_ENDPOINT?
+  response_type=code
+  &client_id=YOUR_CLIENT_ID
+  &redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fcallback
+  &scope=openid%20profile%20email
+  &state=RANDOM_STATE
+  &code_challenge=CODE_CHALLENGE
+  &code_challenge_method=S256
+```
+
+**Guarde** `state` e o `code_verifier` bruto (PKCE) no servidor ou em cookie seguro de curta duração para validar no callback.
+
+## Etapa 2 — Tratar o callback
+
+A Intastellar redireciona para seu `redirect_uri` com:
+
+| Query param | Significado |
+| ----------- | ------- |
+| `code` | Authorization code de uso único. |
+| `state` | Eco do valor enviado; **deve coincidir** com o `state` armazenado. |
+
+Se o usuário negar acesso ou ocorrer erro, você pode receber `error` e `error_description` — trate sem considerar sucesso.
+
+## Etapa 3 — Trocar o código por tokens
+
+`POST` no endpoint de token (normalmente `application/x-www-form-urlencoded`):
+
+| Campo | Finalidade |
+| ----- | ------- |
+| `grant_type` | `authorization_code` |
+| `code` | O código do callback. |
+| `redirect_uri` | Mesma URI da etapa 1. |
+| `client_id` | Seu client ID. |
+| `code_verifier` | PKCE: o verificador secreto original (clientes públicos). |
+| `client_secret` | Apenas clientes confidenciais. |
+
+A resposta costuma incluir `access_token`, `refresh_token` opcional e `id_token` quando `openid` foi solicitado. Valide o **ID token** (issuer, audience, expiração, assinatura) com JWKS do issuer quando depender das claims no app.
+
+## Checklist de segurança
+
+- **Nunca** pule a verificação de `state` — evita CSRF no callback.
+- Use **PKCE** em qualquer cliente que não pode guardar client secret (SPAs, mobile).
+- Use **HTTPS** em toda URI de redirecionamento em produção.
+- Mantenha **refresh tokens** e **client secrets** apenas em servidores sob seu controle.
+
+## Próximo
+
+- [URIs de redirecionamento e callbacks](/docs/accounts-sign-in/web/redirect-uris) — aperte o registro e evite erros de incompatibilidade.
+- [Sessões, cookies e tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — cookies do SDK na sua origem e seu próprio modelo de sessão.

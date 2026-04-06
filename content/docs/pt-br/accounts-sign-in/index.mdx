@@ -1,0 +1,39 @@
+---
+title: Intastellar Accounts — Entrar
+description: Entrada na web com Intastellar Accounts — SDK React, JS puro, fluxos estilo OAuth, PKCE, redirecionamentos e sessões.
+hub_order: 20
+hub_tagline: Entrada na web — SDK React e JS, fluxos estilo OAuth, PKCE, redirecionamentos e sessões.
+order: 0
+---
+
+**Intastellar Accounts** é a camada de identidade dos produtos Intastellar. Estes guias explicam como adicionar **entrada na web** para que as pessoas usem a mesma conta nos serviços Intastellar.
+
+**inta.dev** hospeda esta documentação, a busca e pode oferecer **ferramentas com sessão iniciada** (como credenciais de desenvolvedor), conforme o produto — os detalhes de implementação ficam na documentação do seu próprio deploy.
+
+## O que você pode construir
+
+**Nos seus sites e aplicativos:**
+
+1. Use o **SDK React** ([Integrar React e JavaScript](/docs/accounts-sign-in/web/integrating-react-and-javascript)) ou **HTML, CSS e JS puros** ([HTML, CSS e JavaScript puros](/docs/accounts-sign-in/web/plain-html-css-js)) para entrada no navegador, **ou**
+2. Implemente um fluxo **authorization code** estilo OAuth (muitas vezes com **PKCE**) para stacks personalizadas — veja os guias web abaixo.
+
+## Guias (Entrar — Web)
+
+- [Intastellar Sign-In — SDK React e JavaScript puro](/docs/accounts-sign-in/web/integrating-react-and-javascript) — padrões **React** com exemplos **ilustrativos**; links para o [npm](https://www.npmjs.com/package/@intastellar/signin-sdk-react?activeTab=readme).
+- [HTML, CSS e JavaScript puros](/docs/accounts-sign-in/web/plain-html-css-js) — **migrado** de [developers.intastellarsolutions.com/…/js-docs](https://developers.intastellarsolutions.com/identity/sign-in/web/docs/js-docs): sites estáticos, tags script, apêndice opcional com bundler e `IntastellarAPI`.
+- [Primeiros passos](/docs/accounts-sign-in/web/getting-started) — registrar um cliente, escolher público vs confidencial, planejar redirecionamentos e sessões.
+- [Fluxo authorization code](/docs/accounts-sign-in/web/authorization-code-flow) — URL de autorização, `state`, PKCE e troca do código (integrações personalizadas).
+- [URIs de redirecionamento e callbacks](/docs/accounts-sign-in/web/redirect-uris) — URLs permitidas, validação e erros comuns.
+- [Sessões, cookies e tokens](/docs/accounts-sign-in/web/sessions-and-cookies) — sua origem, o SDK e seu modelo de sessão.
+- [SPAs e clientes JavaScript](/docs/accounts-sign-in/web/spa-and-javascript) — PKCE e caminho com SDK.
+- [Lado do servidor (clientes confidenciais)](/docs/accounts-sign-in/web/backend-exchange) — trocar o código no backend.
+- [Logout, erros e solução de problemas](/docs/accounts-sign-in/web/logout-and-errors) — encerrar sessões e problemas típicos.
+
+## Relacionados
+
+- [Changelog](/changelog) — versões de `@intastellar/signin-sdk-react` no npm e releases no GitHub.
+- [Intastellar Consents (banner de cookies)](/docs/cookie-banner) — interface de consentimento se você também precisar de um banner na mesma propriedade.
+
+## URL legada de desenvolvedores
+
+Links antigos podem apontar para **`developers.intastellarsolutions.com`** (incluindo **`…/identity/sign-in/web/docs/js-docs`**). Prefira **redirecionamentos HTTPS** para **inta.dev**; o guia **HTML / JavaScript puro** acima é o lugar desses conteúdos. Atualize as **URIs de redirecionamento / login do cliente OAuth** para coincidir com as URLs reais que você publica.

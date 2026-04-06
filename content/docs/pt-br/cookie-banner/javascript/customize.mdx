@@ -1,0 +1,24 @@
+---
+title: Personalizar
+description: Ajuste cores, layout, direção de idioma e marca para o banner JavaScript.
+order: 20
+lastUpdated: "2026-04-05"
+---
+
+# Personalizar
+
+O banner JavaScript lê a configuração de `window.INTA` antes de `uc.js` executar. Veja a [**referência do esquema JSON**](/docs/cookie-banner/javascript/inta-schema). Campos comuns de `settings` (veja [Primeiros passos](/docs/cookie-banner/javascript/getting-started)):
+
+| Campo | Finalidade |
+| --- | --- |
+| `rootDomain` | Domínio raiz do seu site |
+| `company` | Nome de exibição da sua organização |
+| `arrange` | Direção do layout, ex.: `ltr` |
+| `color` | Cor principal da UI (hex) |
+| `logo` | URL absoluta da imagem do logo |
+| `design` | Apresentação do banner, ex.: `overlay` |
+| `gtagId` | ID de tag Google / GA4 quando aplicável |
+| `requiredCookies` | Cookies tratados como estritamente necessários |
+| `keepInLocalStorage` | Chaves de localStorage a preservar |
+
+Preencha ou ajuste campos conforme documentado para sua conta. Para uma UI totalmente personalizada, mantenha o script e aplique as **classes CSS** documentadas ao seu markup (veja a [FAQ](/docs/cookie-banner#perguntas-frequentes) na página inicial da documentação).

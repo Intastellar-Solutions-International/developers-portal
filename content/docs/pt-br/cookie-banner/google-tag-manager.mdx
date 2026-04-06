@@ -1,0 +1,16 @@
+---
+title: Google Tag Manager
+description: Carregue o Intastellar Consents pelo Google Tag Manager.
+order: 60
+lastUpdated: "2026-04-05"
+---
+
+# Google Tag Manager
+
+Use o GTM para injetar o mesmo bootstrap que você adicionaria manualmente no HTML.
+
+1. Crie uma tag **HTML personalizado** com o bloco `window.INTA` e o script `uc.js` de [Primeiros passos (JavaScript)](/docs/cookie-banner/javascript/getting-started).
+2. Dispare em **Consent Initialization – All pages** (ou o equivalente do seu container) para o banner carregar antes de analytics e anúncios.
+3. Adicione outras tags com gatilhos que rodem **somente depois** de o estado de consentimento do Intastellar Consents estar disponível — não corra contra o banner.
+
+[← Início da documentação](/docs/cookie-banner)

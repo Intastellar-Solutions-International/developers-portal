@@ -1,0 +1,35 @@
+---
+title: SPAs e clientes JavaScript
+sidebar_label: SPAs e JavaScript
+description: Use PKCE sem client secret, proteja tokens no navegador e evite armadilhas comuns de SPA com Intastellar Accounts.
+order: 50
+---
+
+Aplicações de página única não podem guardar com segurança um **client secret**. Use o fluxo authorization code apenas com **PKCE**, **ou** o pacote oficial **`@intastellar/signin-sdk-react`** se você usa React e a Intastellar o suporta para seu cliente — o SDK usa **popup** e verificação de token em vez de você montar a URL authorize e o `POST` de token manualmente.
+
+Para padrões React e JS vanilla (apenas exemplos **placeholder**), veja [Intastellar Sign-In — SDK React e JavaScript puro](/docs/accounts-sign-in/web/integrating-react-and-javascript).
+
+## Resumo do fluxo (código manual + PKCE)
+
+1. Gere `code_verifier` (string aleatória de alta entropia) e derive `code_challenge` (S256).
+2. Guarde `code_verifier` onde possa lê-lo no callback — ex.: `sessionStorage` da aba, ou cookie cifrado via um BFF pequeno.
+3. Redirecione para `AUTHORIZATION_ENDPOINT` com `code_challenge` / `code_challenge_method=S256`.
+4. No callback, envie `code` + `code_verifier` ao seu **backend** (recomendado) ou ao endpoint de token se o produto permitir clientes públicos sem secret (confirme no console).
+
+## Prefira um backend-for-frontend (BFF)
+
+Mesmo em SPA, **troca de token** e **refresh** são mais seguros em uma API mesma origem:
+
+- O navegador recebe só um **cookie de sessão opaco** da sua API.
+- Refresh tokens nunca passam por `localStorage`.
+- CORS e CSRF podem ser controlados no seu domínio.
+
+Se precisar tratar tokens inteiramente no navegador, minimize a vida útil, evite `localStorage` para refresh tokens e planeje XSS como comprometimento total da sessão.
+
+## CORS e iframes
+
+Não incorpore a UI de login Intastellar em iframe oculto salvo o produto suportar fluxos silenciosos ou embutidos explicitamente. Prefira redirecionamento de página inteira para entrar e sair.
+
+## Próximo
+
+[Lado do servidor (clientes confidenciais)](/docs/accounts-sign-in/web/backend-exchange) se você também serve um backend tradicional.
