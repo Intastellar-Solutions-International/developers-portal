@@ -1,4 +1,8 @@
-/** “Formerly developers.intastellarsolutions.com” strip — parent decides visibility (from root loader). */
+/**
+ * “Formerly developers.intastellarsolutions.com” strip.
+ * Shown only when the document request had a Referer from that host (see root loader) and the
+ * migration window in `~/lib/legacy-banner` is still active.
+ */
 export function LegacyDevelopersBanner() {
   return (
     <div

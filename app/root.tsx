@@ -42,7 +42,10 @@ import {
   getColorSchemeIsDarkSnapshot,
   subscribeColorScheme,
 } from "~/lib/color-scheme";
-import { isLegacyBannerActiveAt } from "~/lib/legacy-banner";
+import {
+  isLegacyBannerActiveAt,
+  isReferrerFromLegacyDevelopersSite,
+} from "~/lib/legacy-banner";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import {
   IntastellarAuthProvider,
@@ -53,17 +56,6 @@ import "./app.css";
 const colorSchemeBootScript = `(function(){try{var k=${JSON.stringify(COLOR_SCHEME_STORAGE_KEY)};var v=localStorage.getItem(k);var d=v==="dark"||(v!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
 
 const LegacyBannerLayoutContext = createContext<boolean>(false);
-
-/** Match SSR: read `data-legacy-banner` from the hydrated document before recomputing from env (can differ SSR vs client). */
-function layoutLegacyBannerFromEnv(): boolean {
-  if (typeof document === "undefined") {
-    return isLegacyBannerActiveAt(Date.now());
-  }
-  const raw = document.body?.getAttribute("data-legacy-banner");
-  if (raw === "1") return true;
-  if (raw === "0") return false;
-  return isLegacyBannerActiveAt(Date.now());
-}
 
 function useRootHtmlIsDark(): boolean {
   return useSyncExternalStore(
@@ -86,10 +78,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   for (const c of setCookieHeaders) {
     headers.append("Set-Cookie", c);
   }
+  const referer = request.headers.get("Referer");
   return data(
     {
       ssoConfigured,
       portalAccount: account,
+      legacyBannerFromLegacyReferrer:
+        isReferrerFromLegacyDevelopersSite(referer),
     },
     { headers },
   );
@@ -304,7 +299,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 export function Layout({ children }: { children: React.ReactNode }) {
   const analytics = isAnalyticsEnabled();
   const htmlIsDark = useRootHtmlIsDark();
-  const legacyBannerLayout = layoutLegacyBannerFromEnv();
+  const rootLoader = useRouteLoaderData("root") as RootLoaderData | undefined;
+  const legacyBannerLayout =
+    (rootLoader?.legacyBannerFromLegacyReferrer ?? false) &&
+    isLegacyBannerActiveAt(Date.now());
 
   return (
     <html
