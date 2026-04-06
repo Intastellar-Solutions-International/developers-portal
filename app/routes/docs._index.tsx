@@ -19,14 +19,15 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { products, locale };
 }
 
-export function meta({ data, location, matches }: Route.MetaArgs) {
-  if (!data) {
+export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
+  const payload = loaderData ?? data;
+  if (!payload) {
     const locale = resolveMetaLocale(matches, location.pathname);
     return [
       { title: `${translatePath(locale, "docs.hubMetaTitleCore")} · inta.dev` },
     ];
   }
-  return buildDocsHubMeta(location.pathname, data.locale);
+  return buildDocsHubMeta(location.pathname, payload.locale);
 }
 
 function SearchIcon({ className }: { className?: string }) {

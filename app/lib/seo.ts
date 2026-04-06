@@ -10,7 +10,13 @@ import { absoluteUrl } from "~/lib/site";
 
 const SITE_NAME = "inta.dev";
 
-type MetaMatch = { id?: string; data?: unknown } | undefined;
+type MetaMatch =
+  | { id?: string; data?: unknown; loaderData?: unknown }
+  | undefined;
+
+function rootLoaderPayload(m: NonNullable<MetaMatch>): unknown {
+  return m.loaderData ?? m.data;
+}
 
 /** Locale for `<meta>` from root loader data or URL prefix (e.g. `/de/docs`). */
 export function resolveMetaLocale(
@@ -18,10 +24,10 @@ export function resolveMetaLocale(
   pathname: string,
 ): Locale {
   for (const m of matches) {
-    if (!m || m.id !== "root" || m.data == null || typeof m.data !== "object") {
-      continue;
-    }
-    const loc = (m.data as { locale?: string }).locale;
+    if (!m || m.id !== "root") continue;
+    const payload = rootLoaderPayload(m);
+    if (payload == null || typeof payload !== "object") continue;
+    const loc = (payload as { locale?: string }).locale;
     if (isLocale(loc)) return loc;
   }
   return getLocaleFromPathname(pathname);

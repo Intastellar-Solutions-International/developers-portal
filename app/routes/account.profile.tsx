@@ -25,9 +25,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
-export function meta({ data }: Route.MetaArgs) {
-  if (!data) return [{ title: translatePath("en", "profile.metaTitle") }];
-  return [{ title: translatePath(data.locale, "profile.metaTitle") }];
+export function meta({ data, loaderData }: Route.MetaArgs) {
+  const payload = loaderData ?? data;
+  if (!payload) return [{ title: translatePath("en", "profile.metaTitle") }];
+  return [{ title: translatePath(payload.locale, "profile.metaTitle") }];
 }
 
 export default function AccountProfile() {

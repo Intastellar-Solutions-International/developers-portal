@@ -50,7 +50,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   return { ...doc, prev, next, breadcrumbs, version, locale };
 }
 
-export function meta({ data: doc, location, matches }: Route.MetaArgs) {
+export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
+  const doc = loaderData ?? data;
   if (!doc) {
     const locale = resolveMetaLocale(matches, location.pathname);
     return [

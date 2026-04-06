@@ -33,9 +33,10 @@ import { publicAccountToResolved } from "~/lib/portal-user.server";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 import { useI18n, useLocalizedHref } from "~/providers/i18n-provider";
 
-export function meta({ data }: Route.MetaArgs) {
-  if (!data) return [{ title: translatePath("en", "apiKeys.metaTitle") }];
-  return [{ title: translatePath(data.locale, "apiKeys.metaTitle") }];
+export function meta({ data, loaderData }: Route.MetaArgs) {
+  const payload = loaderData ?? data;
+  if (!payload) return [{ title: translatePath("en", "apiKeys.metaTitle") }];
+  return [{ title: translatePath(payload.locale, "apiKeys.metaTitle") }];
 }
 
 export type ApiKeysLoaderData = {

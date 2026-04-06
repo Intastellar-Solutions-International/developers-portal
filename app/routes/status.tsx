@@ -114,8 +114,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
-export function meta({ data }: Route.MetaArgs) {
-  const locale = data?.locale ?? "en";
+export function meta({ data, loaderData }: Route.MetaArgs) {
+  const payload = loaderData ?? data;
+  const locale = payload?.locale ?? "en";
   return [
     { title: translatePath(locale, "status.metaTitle") },
     {
