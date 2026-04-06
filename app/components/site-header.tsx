@@ -215,9 +215,15 @@ function SiteHeaderInner({
             title="Intastellar Developers — home"
           >
             <img
-              src={BRAND.developersLogoWhite}
+              src={BRAND.developersLogoBlack}
               alt="Intastellar Developers"
-              className="h-7 w-auto max-w-[11rem] object-left object-contain brightness-0 sm:h-8 sm:max-w-[13rem] dark:brightness-100"
+              className="h-7 w-auto max-w-[11rem] object-left object-contain sm:h-8 sm:max-w-[13rem] dark:hidden"
+            />
+            <img
+              src={BRAND.developersLogoWhite}
+              alt=""
+              aria-hidden
+              className="hidden h-7 w-auto max-w-[11rem] object-left object-contain sm:h-8 sm:max-w-[13rem] dark:block"
             />
           </Link>
           <span
