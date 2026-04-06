@@ -253,13 +253,13 @@ export default function StatusPage() {
         </p>
       ) : null}
 
+      <StatusTrustSection copy={copy} historyMaxPoints={historyWindowSize} />
+
       <StatusSubscribeSection
         copy={copy}
         feedUrl={feedUrl}
         subscribeEmailAvailable={subscribeEmailAvailable}
       />
-
-      <StatusTrustSection copy={copy} historyMaxPoints={historyWindowSize} />
       <StatusMaintenanceSection copy={copy} windows={maintenance} />
       <StatusDeploySection copy={copy} deploy={deploy} />
 

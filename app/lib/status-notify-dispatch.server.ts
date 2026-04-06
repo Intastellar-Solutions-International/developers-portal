@@ -40,7 +40,7 @@ export async function notifySubscribersNewMaintenance(payload: {
         endsAtLabel,
         monitorsLine: line,
       });
-      if (!r.ok && process.env.NODE_ENV !== "production") {
+      if (!r.ok) {
         console.warn("[status-notify] maintenance email failed:", s.email, r);
       }
     }
@@ -71,7 +71,7 @@ export async function notifySubscribersNewIncident(payload: {
         body: payload.body,
         monitorsLine: line,
       });
-      if (!r.ok && process.env.NODE_ENV !== "production") {
+      if (!r.ok) {
         console.warn("[status-notify] incident email failed:", s.email, r);
       }
     }

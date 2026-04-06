@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFetcher } from "react-router";
 
 import type { StatusPageCopy } from "~/lib/status-page-copy";
@@ -30,7 +30,7 @@ type Props = {
   subscribeEmailAvailable: boolean;
 };
 
-export function StatusSubscribeSection({
+function StatusSubscribeSectionInteractive({
   copy,
   feedUrl,
   subscribeEmailAvailable,
@@ -230,4 +230,18 @@ export function StatusSubscribeSection({
       </div>
     </section>
   );
+}
+
+/**
+ * Client-only: render nothing until after mount so SSR HTML and the first client pass both
+ * skip this subtree. Otherwise the subscribe `<section>` can desync from `StatusTrustSection`
+ * under localized routes / streaming (Trust hydrates into the wrong DOM node).
+ */
+export function StatusSubscribeSection(props: Props) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) return null;
+  return <StatusSubscribeSectionInteractive {...props} />;
 }

@@ -177,6 +177,13 @@ export async function action({ request }: Route.ActionArgs) {
     if (!ins.ok) {
       return data({ error: ins.error }, { status: 400 });
     }
+    await notifySubscribersNewMaintenance({
+      title,
+      summary: summary || undefined,
+      startsAt: startsAt.toISOString(),
+      endsAt: endsAt.toISOString(),
+      affectedTargetIds: affectedTargets,
+    });
     return redirect("/internal/status-ops");
   }
 
@@ -207,7 +214,7 @@ export async function action({ request }: Route.ActionArgs) {
     if (!ins.ok) {
       return data({ error: ins.error }, { status: 400 });
     }
-    void notifySubscribersNewIncident({
+    await notifySubscribersNewIncident({
       title,
       body,
       severity,

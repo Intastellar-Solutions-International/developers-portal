@@ -39,9 +39,7 @@ async function sendResendEmail(opts: {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    if (process.env.NODE_ENV !== "production") {
-      console.warn("[status-notify] Resend error:", res.status, text);
-    }
+    console.warn("[status-notify] Resend error:", res.status, text);
     return { ok: false, error: "Could not send email." };
   }
   return { ok: true };
