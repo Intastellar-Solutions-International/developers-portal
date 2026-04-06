@@ -14,11 +14,13 @@ const SKIP_ROUTE_FILES = new Set([
   "routes/$.tsx",
 ]);
 
-/** Indexable static routes we still omit (e.g. account shell / private pages). */
+/** Indexable static routes we still omit (private pages, auth actions, non-HTML). */
 const SKIP_PATHNAMES = new Set([
   "/account",
   "/account/profile",
   "/account/api-keys",
+  "/auth/logout",
+  "/auth/session",
 ]);
 
 function routeFileSkipped(file: string): boolean {
