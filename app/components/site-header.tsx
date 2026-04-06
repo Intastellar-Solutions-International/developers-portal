@@ -1,9 +1,12 @@
 import { useEffect, useId, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router";
+import { Link, NavLink, useLocation, useRouteLoaderData } from "react-router";
 
 import { BRAND } from "~/lib/brand";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
-import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
+import {
+  type RootLoaderData,
+  useIntastellarAuth,
+} from "~/providers/intastellar-auth-provider";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -26,6 +29,56 @@ const headerBtnClass =
 
 const mobileHeaderBtnClass =
   "flex w-full items-center justify-center rounded-lg px-4 py-3 text-base font-medium text-zinc-200 transition-colors hover:bg-white/10 hover:text-brand disabled:cursor-not-allowed disabled:opacity-50";
+
+type PortalAccount = NonNullable<RootLoaderData["portalAccount"]>;
+
+function splitPortalDisplayName(displayName: string): { first: string; last: string } {
+  const t = displayName.trim();
+  const i = t.indexOf(" ");
+  if (i === -1) return { first: t || "Member", last: "" };
+  return { first: t.slice(0, i), last: t.slice(i + 1).trim() };
+}
+
+function portalSessionInitials(account: PortalAccount): string {
+  const { first, last } = splitPortalDisplayName(account.displayName);
+  const a = first[0];
+  const b = last[0];
+  const pair = `${a ?? ""}${b ?? ""}`.toUpperCase();
+  if (pair) return pair;
+  const e = account.email.trim()[0];
+  return e ? e.toUpperCase() : "?";
+}
+
+function HeaderSessionAvatar({
+  account,
+  className = "h-8 w-8",
+}: {
+  account: PortalAccount;
+  className?: string;
+}) {
+  const src = account.avatarUrl?.trim();
+  return (
+    <span
+      className={`flex shrink-0 overflow-hidden rounded-full bg-zinc-600 ring-2 ring-white/15 ${className}`}
+    >
+      {src ? (
+        <img
+          src={src}
+          alt=""
+          className="h-full w-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+      ) : (
+        <span
+          className="flex h-full w-full items-center justify-center text-[0.65rem] font-semibold leading-none text-zinc-100 sm:text-xs"
+          aria-hidden
+        >
+          {portalSessionInitials(account)}
+        </span>
+      )}
+    </span>
+  );
+}
 
 function SearchIcon({ className }: { className?: string }) {
   return (
@@ -91,9 +144,10 @@ export function SiteHeader({
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const menuTitleId = useId();
-  const { authReady, configured, isLoading, isSignedIn, users, signin, logout } =
-    useIntastellarAuth();
-  const user = users[0];
+  const { authReady, configured, isLoading, signin, logout } = useIntastellarAuth();
+  const rootLoaderData = useRouteLoaderData("root") as RootLoaderData | undefined;
+  const portalAccount = rootLoaderData?.portalAccount ?? null;
+  const hasPortalSession = Boolean(portalAccount?.email?.trim());
 
   const consentsDocsHref = docHref(
     "cookie-banner",
@@ -213,7 +267,7 @@ export function SiteHeader({
             <NavLink to="/account/api-keys" className={navLinkClass}>
               API keys
             </NavLink>
-            {authReady && configured && !isSignedIn ? (
+            {authReady && configured && !hasPortalSession ? (
               <button
                 type="button"
                 className={headerBtnClass}
@@ -223,22 +277,26 @@ export function SiteHeader({
                 {isLoading ? "…" : "Sign in"}
               </button>
             ) : null}
-            {authReady && configured && isSignedIn && user ? (
-              <NavLink to="/account/profile">
-                <span
-                  className="hidden max-w-[7rem] truncate px-2 text-xs text-zinc-500 xl:inline xl:max-w-[10rem]"
-                  title={user.email}
+            {authReady && configured && hasPortalSession && portalAccount ? (
+              <>
+                <Link
+                  to="/account/profile"
+                  className="flex max-w-[11rem] items-center gap-2 rounded-md py-1 pl-1 pr-2 transition-colors hover:bg-white/10"
+                  title={portalAccount.email}
                 >
-                  {user.name.first}
-                </span>
+                  <HeaderSessionAvatar account={portalAccount} />
+                  <span className="hidden min-w-0 truncate text-sm text-zinc-300 xl:inline">
+                    {splitPortalDisplayName(portalAccount.displayName).first}
+                  </span>
+                </Link>
                 <button
                   type="button"
                   className={headerBtnClass}
-                  onClick={logout}
+                  onClick={() => void logout()}
                 >
                   Sign out
                 </button>
-              </NavLink>
+              </>
             ) : null}
 
           </nav>
@@ -312,7 +370,7 @@ export function SiteHeader({
               </NavLink>
             </nav>
             <div className="border-t border-zinc-600/80 p-3">
-              {authReady && configured && !isSignedIn ? (
+              {authReady && configured && !hasPortalSession ? (
                 <button
                   type="button"
                   className={mobileHeaderBtnClass}
@@ -325,22 +383,32 @@ export function SiteHeader({
                   {isLoading ? "Signing in…" : "Sign in"}
                 </button>
               ) : null}
-              {authReady && configured && isSignedIn && user ? (
+              {authReady && configured && hasPortalSession && portalAccount ? (
                 <div className="space-y-2">
-                  <p className="truncate px-1 text-xs text-zinc-500" title={user.email}>
-                    {user.name.first}
-                    {user.email ? (
-                      <span className="mt-0.5 block truncate text-zinc-400">
-                        {user.email}
-                      </span>
-                    ) : null}
-                  </p>
+                  <Link
+                    to="/account/profile"
+                    className="flex items-center gap-3 rounded-lg px-1 py-2 transition-colors hover:bg-white/5"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <HeaderSessionAvatar account={portalAccount} className="h-10 w-10" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-zinc-200">
+                        {splitPortalDisplayName(portalAccount.displayName).first}
+                      </p>
+                      <p
+                        className="mt-0.5 truncate text-xs text-zinc-500"
+                        title={portalAccount.email}
+                      >
+                        {portalAccount.email}
+                      </p>
+                    </div>
+                  </Link>
                   <button
                     type="button"
                     className={mobileHeaderBtnClass}
                     onClick={() => {
                       setMenuOpen(false);
-                      logout();
+                      void logout();
                     }}
                   >
                     Sign out
