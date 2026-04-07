@@ -61,6 +61,14 @@ export function parseLocaleFromLanguageTag(
   return null;
 }
 
+/** Short UI label for the language control (e.g. `EN`, `DE`, `PT-BR`). */
+export function localeToShortLabel(locale: Locale): string {
+  return locale
+    .split("-")
+    .map((part) => part.toUpperCase())
+    .join("-");
+}
+
 /** `<html lang>` — Brazilian locale uses BCP 47 `pt-BR`. */
 export function localeToHtmlLang(locale: Locale): string {
   return locale === "pt-br" ? "pt-BR" : locale;

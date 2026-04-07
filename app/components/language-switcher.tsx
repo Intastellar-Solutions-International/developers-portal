@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import {
   LOCALE_FLAG_EMOJI,
   SUPPORTED_LOCALES,
+  localeToShortLabel,
   type Locale,
 } from "~/lib/i18n/locale";
 import { useI18n } from "~/providers/i18n-provider";
@@ -82,6 +83,12 @@ function LanguageFlagMenu({ className = "" }: { className?: string }) {
         <span className="select-none" aria-hidden>
           {LOCALE_FLAG_EMOJI[locale]}
         </span>
+        <span
+          className="select-none text-[0.7rem] font-semibold tabular-nums tracking-wide text-zinc-700 dark:text-zinc-200"
+          aria-hidden
+        >
+          {localeToShortLabel(locale)}
+        </span>
         <ChevronDownIcon className="size-3.5 shrink-0 text-zinc-500 dark:text-zinc-400" />
       </button>
       {open ? (
@@ -103,7 +110,13 @@ function LanguageFlagMenu({ className = "" }: { className?: string }) {
                 <span className="text-lg leading-none" aria-hidden>
                   {LOCALE_FLAG_EMOJI[l]}
                 </span>
-                <span>{t(`lang.${l}`)}</span>
+                <span
+                  className="w-11 shrink-0 text-xs font-semibold tabular-nums tracking-wide text-zinc-500 dark:text-zinc-400"
+                  aria-hidden
+                >
+                  {localeToShortLabel(l)}
+                </span>
+                <span className="min-w-0">{t(`lang.${l}`)}</span>
               </button>
             </li>
           ))}
@@ -148,8 +161,8 @@ export function LanguageSwitcherMobileRow() {
             <span className="text-2xl leading-none" aria-hidden>
               {LOCALE_FLAG_EMOJI[l]}
             </span>
-            <span className="text-[0.65rem] font-medium uppercase tracking-wide opacity-80">
-              {l}
+            <span className="text-[0.65rem] font-semibold tabular-nums tracking-wide opacity-90">
+              {localeToShortLabel(l)}
             </span>
           </button>
         ))}
