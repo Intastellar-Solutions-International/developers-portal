@@ -16,7 +16,7 @@ import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
 import {
-  getStatusPageCopy,
+  getStatusPageCopyForLoader,
   resolveStatusPageCopy,
 } from "~/lib/status-page-copy";
 import { isMongoConfigured } from "~/lib/mongodb.server";
@@ -65,7 +65,6 @@ export async function loader({ request }: Route.LoaderArgs) {
         | "unsub_missing"
         | "unsub_invalid")
     : null;
-  const copy = getStatusPageCopy(locale);
   const targetList = getStatusTargets();
   const targetNames = Object.fromEntries(
     targetList.map((t) => [t.id, t.name] as const),
@@ -89,6 +88,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   let checkedAtLabel: string | null = null;
   const historyWindowHours = getStatusHistoryWindowHours();
   const historyMaxRowsCap = getStatusHistoryMaxRowsCap();
+  const copy = getStatusPageCopyForLoader(
+    locale,
+    historyWindowHours,
+    historyMaxRowsCap,
+  );
   const mongoConfigured = isMongoConfigured();
   const subscribeEmailAvailable =
     mongoConfigured && isStatusEmailConfigured();
@@ -161,8 +165,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     uptime,
     maintenance,
     deploy,
-    historyWindowHours,
-    historyMaxRowsCap,
     manualIncidents,
     feedUrl: absoluteUrl("/api/status/feed.xml"),
     notifyFlash,
@@ -205,8 +207,6 @@ export default function StatusPage() {
     uptime,
     maintenance,
     deploy,
-    historyWindowHours,
-    historyMaxRowsCap,
     manualIncidents,
     feedUrl,
     notifyFlash,
@@ -258,11 +258,7 @@ export default function StatusPage() {
         </p>
       ) : null}
 
-      <StatusTrustSection
-        copy={copy}
-        historyWindowHours={historyWindowHours}
-        historyMaxRowsCap={historyMaxRowsCap}
-      />
+      <StatusTrustSection copy={copy} />
 
       <StatusSubscribeSection
         copy={copy}
@@ -294,9 +290,7 @@ export default function StatusPage() {
             </span>
           </p>
           <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-            {interpolate(copy.uptimeStoredRunsBefore, {
-              hours: historyWindowHours,
-            })}{" "}
+            {copy.uptimeStoredRunsBefore}{" "}
             <strong className="font-medium text-zinc-700 dark:text-zinc-300">
               {uptime.totalRuns}
             </strong>{" "}
@@ -403,7 +397,6 @@ export default function StatusPage() {
                       points={timelines[r.id] ?? []}
                       liveSingleCheck={source === "live"}
                       copy={copy}
-                      historyWindowHours={historyWindowHours}
                     />
                     <StatusLatencyTrend
                       points={timelines[r.id] ?? []}
@@ -485,10 +478,7 @@ export default function StatusPage() {
               STATUS_CHECK_EXTRA_JSON
             </code>{" "}
             {copy.footnoteP2c}{" "}
-            {interpolate(copy.footnoteP2d, {
-              hours: historyWindowHours,
-              maxRows: historyMaxRowsCap,
-            })}{" "}
+            {copy.footnoteP2d}{" "}
             <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
               latencyMs
             </code>

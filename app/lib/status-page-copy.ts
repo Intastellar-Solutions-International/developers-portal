@@ -1,5 +1,5 @@
 import type { Locale } from "~/lib/i18n/locale";
-import { translatePath } from "~/lib/i18n/messages";
+import { interpolate, translatePath } from "~/lib/i18n/messages";
 
 /** Pre-resolved status UI strings for SSR + hydration (same pattern as `account.profile`). */
 export type StatusPageCopy = {
@@ -93,6 +93,10 @@ export type StatusPageCopy = {
   trustBulletPass: string;
   trustBulletHistory: string;
   trustBulletUtc: string;
+  /** Rolling history window (hours); set in loader via `finalizeStatusPageCopy`. */
+  statusHistoryWindowHours: number;
+  /** Max rows cap per request; set in loader. */
+  statusHistoryMaxRowsCap: number;
   manualNoticesHeading: string;
   manualNoticesIntro: string;
   manualPostedBy: string;
@@ -134,7 +138,7 @@ export type StatusPageCopy = {
   notifyFlashUnsubInvalid: string;
 };
 
-export function getStatusPageCopy(locale: Locale): StatusPageCopy {
+function buildStatusPageCopyTemplates(locale: Locale): StatusPageCopy {
   const tp = (path: string) => translatePath(locale, path);
   return {
     heading: tp("status.heading"),
@@ -227,6 +231,8 @@ export function getStatusPageCopy(locale: Locale): StatusPageCopy {
     trustBulletPass: tp("status.trustBulletPass"),
     trustBulletHistory: tp("status.trustBulletHistory"),
     trustBulletUtc: tp("status.trustBulletUtc"),
+    statusHistoryWindowHours: 0,
+    statusHistoryMaxRowsCap: 0,
     manualNoticesHeading: tp("status.manualNoticesHeading"),
     manualNoticesIntro: tp("status.manualNoticesIntro"),
     manualPostedBy: tp("status.manualPostedBy"),
@@ -268,6 +274,34 @@ export function getStatusPageCopy(locale: Locale): StatusPageCopy {
   };
 }
 
+/** Bakes env window + row cap into copy strings that use `{{hours}}` / `{{maxRows}}`. */
+export function finalizeStatusPageCopy(
+  base: StatusPageCopy,
+  hours: number,
+  maxRows: number,
+): StatusPageCopy {
+  return {
+    ...base,
+    statusHistoryWindowHours: hours,
+    statusHistoryMaxRowsCap: maxRows,
+    trustBulletHistory: interpolate(base.trustBulletHistory, { hours, maxRows }),
+    footnoteP2d: interpolate(base.footnoteP2d, { hours, maxRows }),
+    uptimeStoredRunsBefore: interpolate(base.uptimeStoredRunsBefore, { hours }),
+  };
+}
+
+export function getStatusPageCopyForLoader(
+  locale: Locale,
+  hours: number,
+  maxRows: number,
+): StatusPageCopy {
+  return finalizeStatusPageCopy(buildStatusPageCopyTemplates(locale), hours, maxRows);
+}
+
+export function getStatusPageCopy(locale: Locale): StatusPageCopy {
+  return getStatusPageCopyForLoader(locale, 48, 5000);
+}
+
 /**
  * Prefer loader-serialized copy (SSR + navigations). Rebuild on the client when `copy` is
  * missing (e.g. HMR, stale flight data, or duplicate route ids) so UI never reads undefined.
@@ -284,7 +318,9 @@ export function resolveStatusPageCopy(
     typeof fromLoader.manualNoticesHeading === "string" &&
     typeof fromLoader.subscribeRss === "string" &&
     typeof fromLoader.subscribeSectionHeading === "string" &&
-    typeof fromLoader.timelineIssueListIntro === "string"
+    typeof fromLoader.timelineIssueListIntro === "string" &&
+    typeof fromLoader.statusHistoryWindowHours === "number" &&
+    typeof fromLoader.statusHistoryMaxRowsCap === "number"
   ) {
     return fromLoader;
   }

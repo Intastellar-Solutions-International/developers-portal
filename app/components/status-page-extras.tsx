@@ -3,15 +3,7 @@ import type { StatusMaintenanceWindowPublic } from "~/lib/status-maintenance.ser
 import { interpolate } from "~/lib/i18n/messages";
 import type { StatusPageCopy } from "~/lib/status-page-copy";
 
-export function StatusTrustSection({
-  copy,
-  historyWindowHours,
-  historyMaxRowsCap,
-}: {
-  copy: StatusPageCopy;
-  historyWindowHours: number;
-  historyMaxRowsCap: number;
-}) {
+export function StatusTrustSection({ copy }: { copy: StatusPageCopy }) {
   return (
     <section
       className="mt-8 rounded-xl border border-zinc-200 bg-white px-5 py-4 dark:border-zinc-700 dark:bg-zinc-900/40"
@@ -30,12 +22,7 @@ export function StatusTrustSection({
         <li>{copy.trustBulletSynthetic}</li>
         <li>{copy.trustBulletFrequency}</li>
         <li>{copy.trustBulletPass}</li>
-        <li>
-          {interpolate(copy.trustBulletHistory, {
-            hours: historyWindowHours,
-            maxRows: historyMaxRowsCap,
-          })}
-        </li>
+        <li>{copy.trustBulletHistory}</li>
         <li>{copy.trustBulletUtc}</li>
       </ul>
     </section>
