@@ -7,11 +7,12 @@ order: 70
 
 ## Afmelden
 
-1. **Wis uw sessie** — verwijder of invalideer het applicatiesessiecookie en het serverside sessierecord.
-2. **IdP-afmelden (optioneel maar aanbevolen)** — als Intastellar een end-session- of logout-URL biedt, redirect de gebruiker daarheen met parameters uit uw integratiegids (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, enz.) zodat SSO-cookies op het identity-domein worden gewist.
-3. **Return-URL** — stuur de gebruiker na afmelden naar een publieke pagina op uw site.
+1. **Intastellar-clientcookie op uw origin wissen** — roep **`Intastellar.accounts.signout()`** aan. De Intastellar-browserclient verwijdert daarmee momenteel de cookie **`inta_account`** (first-party op de origin van uw site). Laad eerst het Intastellar-accounts-script / de globale namespace en roep de API defensief aan (bijv. `Intastellar?.accounts?.signout?.()`).
+2. **Uw applicatiesessie wissen** — verwijder of invalideer **uw eigen** appsessiecookie (bijv. HttpOnly) en serverside sessierecord. De SDK-stap vervangt geen eigen backend- of BFF-sessie.
+3. **IdP- / SSO-afmelden (optioneel, aanbevolen voor volledige SSO-afbouw)** — als uw integratie een **end-session**- of logout-URL op de identity-host gebruikt, stuur de gebruiker daarheen met parameters uit uw integratiegids (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, enz.) zodat SSO-cookies op Intastellars identity-domein worden gewist.
+4. **Return-URL** — stuur de gebruiker na afmelden naar een publieke pagina op uw site.
 
-Zonder stap 2 kan de gebruiker nog bij Intastellar ingelogd zijn en stille SSO krijgen bij de volgende `authorize`-redirect.
+Zonder stap 3 (als u afhankelijk bent van SSO op het identity-domein) kan de gebruiker nog een IdP-sessie hebben en **stille SSO** krijgen bij de volgende `authorize`-redirect, ook als `inta_account` al weg is.
 
 ## Veelvoorkomende authorize-fouten
 
@@ -37,7 +38,8 @@ Authorization codes zijn meestal **eenmalig** en kortlevend. Bij dubbele submit 
 ## React-SDK (popup)
 
 - **Popup geblokkeerd** — de SDK opent een nieuw venster; browsers kunnen het blokkeren. Sta popups toe voor uw origin of gebruik een flow zonder `window.open` als uw product dat ondersteunt.
-- **Nog « ingelogd » na portal-afmelden** — third-party cookies of IdP-sessie kunnen ervoor zorgen dat `getUsers()` een gebruiker teruggeeft tot IdP-afmelden of cookie-opruiming; zie [Sessies, cookies en tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+- **`logout` vs globaal `signout`** — de hook-**`logout`** beëindigt de clientsessie in uw app; de onderliggende API is **`Intastellar.accounts.signout()`**, die het **`inta_account`**-cookie op uw origin verwijdert.
+- **Nog « ingelogd » na portal of cookie-opruiming** — third-party cookies of IdP-sessie kunnen ervoor zorgen dat **`getUsers()`** nog een gebruiker teruggeeft tot **end-session** / IdP-afmelden of verdere opruiming; alleen **`inta_account`** wissen leegt niet altijd de identity-host. Zie [Sessies, cookies en tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
 
 ## Troubleshooting-checklist
 

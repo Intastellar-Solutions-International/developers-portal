@@ -95,6 +95,8 @@ Query parameters include (names from the implementation): `service` (app name), 
    - **Path:** `/`
    - **Expiry:** hook uses ~2 years ahead
 
+   To clear Intastellar’s browser session from your origin, call **`Intastellar.accounts.signout()`** (it removes the **`inta_account`** cookie). See [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).
+
 6. If the user closes the popup without completing sign-in, clear the interval and remove the listener (the SDK checks `popup.closed` every second).
 
 In production, **validate `event.origin`** against the origins Intastellar documents for your environment before trusting `event.data`.
@@ -212,11 +214,19 @@ Optional: after a successful sign-in, call **`IntastellarAPI.getUsers()`** to al
 
 ## Logout (same idea as the hook)
 
-Clear the session cookie on your parent domain and reload, matching the SDK’s `logout`:
+Prefer Intastellar’s sign-out API so the **`inta_account`** cookie is removed the same way as in production:
+
+```javascript
+Intastellar.accounts.signout();
+// Then redirect or reload as your app requires, e.g.:
+// window.location.href = "/";
+```
+
+If you cannot call the API (e.g. script not loaded), you can clear the cookie manually for your parent domain—match the **name** and **domain/path** your integration uses (see the SDK readme):
 
 ```javascript
 const domain = getDomain();
-document.cookie = `inta_acc=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+document.cookie = `inta_account=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
 window.location.reload();
 ```
 

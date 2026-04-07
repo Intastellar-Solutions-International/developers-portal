@@ -212,11 +212,19 @@ Optional: Nach erfolgreicher Anmeldung **`IntastellarAPI.getUsers()`** aufrufen,
 
 ## Abmeldung (wie der Hook)
 
-Sitzungs-Cookie auf Ihrer Parent-Domain löschen und neu laden, analog zum SDK-`logout`:
+Nutzen Sie bevorzugt Intastellars Abmelde-API, damit das **`inta_account`**-Cookie wie in Produktion entfernt wird:
+
+```javascript
+Intastellar.accounts.signout();
+// Anschließend weiterleiten oder neu laden, z. B.:
+// window.location.href = "/";
+```
+
+Wenn die API nicht verfügbar ist (z. B. Skript nicht geladen), können Sie das Cookie manuell für Ihre Parent-Domain löschen — **Name** sowie **Domain/Pfad** müssen Ihrer Integration entsprechen (siehe SDK-Readme):
 
 ```javascript
 const domain = getDomain();
-document.cookie = `inta_acc=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+document.cookie = `inta_account=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
 window.location.reload();
 ```
 

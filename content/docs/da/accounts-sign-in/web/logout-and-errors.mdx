@@ -7,11 +7,12 @@ order: 70
 
 ## Log ud
 
-1. **Ryd din session** — slet eller invalidér dit applikationssession-cookie og serverside session-record.
-2. **IdP-log ud (valgfrit men anbefalet)** — hvis Intastellar tilbyder end-session eller logout-URL, redirect brugeren dertil med parametre fra din integrationsguide (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, osv.) så SSO-cookies på identity-domænet ryddes.
-3. **Retur-URL** — send brugeren til en offentlig side på dit site efter logout er færdig.
+1. **Ryd Intastellars klient-cookie på din origin** — kald **`Intastellar.accounts.signout()`**. Intastellars browser-klient sletter dermed i øjeblikket cookien **`inta_account`** (first-party på dit sites origin). Indlæs Intastellar accounts-scriptet / det globale namespace først, og kald API’et defensivt (fx `Intastellar?.accounts?.signout?.()`).
+2. **Ryd din applikationssession** — slet eller invalidér **dit eget** app-session-cookie (fx HttpOnly) og serverside session. SDK-trinnet erstatter ikke din egen backend- eller BFF-session.
+3. **IdP- / SSO-log ud (valgfrit, anbefales for fuld SSO-nedlukning)** — hvis din integration bruger en **end-session**- eller logout-URL på identity-værten, redirect brugeren dertil med parametre fra din guide (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, osv.) så SSO-cookies på Intastellars identity-domæne ryddes.
+4. **Retur-URL** — send brugeren til en offentlig side på dit site, når logout er færdig.
 
-Uden trin 2 kan brugeren stadig være logget ind hos Intastellar og få stille SSO ved næste `authorize`-redirect.
+Uden trin 3 (når I stoler på SSO på identity-domænet) kan brugeren stadig have en IdP-session og få **stille SSO** ved næste `authorize`-redirect, selv efter at `inta_account` er væk.
 
 ## Almindelige authorize-fejl
 
@@ -37,7 +38,8 @@ Authorization codes er som regel **engangs** og kortlivede. Dobbel indsendelse a
 ## React SDK (popup)
 
 - **Popup blokeret** — SDK åbner nyt vindue; browsere kan blokere det. Tillad popups for dit origin eller brug et flow uden `window.open` hvis dit produkt understøtter det.
-- **Stadig „logget ind“ efter portal-log ud** — tredjeparts-cookies eller IdP-session kan få `getUsers()` til stadig at returnere en bruger indtil IdP-log ud eller cookie-oprydning; se [Sessioner, cookies og tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+- **`logout` vs. globalt `signout`** — hook’ens **`logout`** afslutter klient-sessionen i din app; den underliggende API er **`Intastellar.accounts.signout()`**, som sletter cookien **`inta_account`** på din origin.
+- **Stadig „logget ind“ efter portal eller cookie-oprydning** — tredjeparts-cookies eller IdP-session kan få **`getUsers()`** til stadig at returnere en bruger indtil **end-session** / IdP-log ud eller yderligere oprydning; kun at fjerne **`inta_account`** rydder ikke altid identity-værten. Se [Sessioner, cookies og tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
 
 ## Fejlfindingstjekliste
 

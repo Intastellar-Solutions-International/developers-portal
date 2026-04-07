@@ -36,7 +36,7 @@ Lorsque vous utilisez des réponses **jeton** de type OAuth (flux code manuel) :
 
 ## Déconnexion
 
-Effacez **votre** session et suivez les indications **SDK / Intastellar** pour la sortie. Si une URL **end-session** est disponible, y rediriger efface les cookies SSO IdP sur le domaine d’identité. Voir [Déconnexion, erreurs et dépannage](/docs/accounts-sign-in/web/logout-and-errors).
+Appelez **`Intastellar.accounts.signout()`** pour supprimer le cookie **`inta_account`** d’Intastellar sur votre origine, puis terminez **votre** session applicative (cookies + état serveur). Si une URL **end-session** fait partie de votre flux, une redirection y efface les cookies SSO IdP sur le domaine d’identité. Voir [Déconnexion, erreurs et dépannage](/docs/accounts-sign-in/web/logout-and-errors).
 
 ## Suite
 

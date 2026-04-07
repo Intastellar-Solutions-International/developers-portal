@@ -67,6 +67,8 @@ function Example() {
 
 Configure **`clientId`** (e campos opcionais que sua integração exija, como nome de exibição ou tema) conforme o **registro do cliente Intastellar**. Como você **injeta** `clientId` no bundle (ex.: env pública em build, config em runtime) fica a cargo da sua stack — **evite IDs reais** fixos no controle de versão.
 
+**Logout (API global):** a Intastellar expõe **`Intastellar.accounts.signout()`**, que remove o cookie **`inta_account`** na sua origem. Em apps React, use **`logout`** do **`useIntastellar`**; em páginas vanilla com o global de contas, chame **`signout()`** depois que o script estiver disponível.
+
 A entrada costuma ser **por popup**: o SDK abre a UI Intastellar, conclui a verificação e executa seus callbacks. Esse caminho **não** é o mesmo que montar manualmente o redirect OAuth **authorization code** e o `POST` de token; para isso, veja [Fluxo authorization code](/docs/accounts-sign-in/web/authorization-code-flow).
 
 ## HTML e JavaScript puros

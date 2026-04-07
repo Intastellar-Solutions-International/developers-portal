@@ -36,7 +36,7 @@ When you use OAuth-style **token** responses (manual code flow):
 
 ## Logout
 
-Clear **your** session and follow **SDK / Intastellar** guidance for signing out. If an **end-session** URL is available, redirecting there clears IdP SSO cookies on the identity domain. See [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).
+Call **`Intastellar.accounts.signout()`** to clear Intastellar’s **`inta_account`** cookie on your origin, then clear **your** app session (cookies + server state). If an **end-session** URL is part of your flow, redirecting there clears IdP SSO cookies on the identity domain. See [Logout, errors, and troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).
 
 ## Next
 

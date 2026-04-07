@@ -67,6 +67,8 @@ function Example() {
 
 Konfigurér **`clientId`** (og valgfrie felter din integration kræver, f.eks. visningsnavn eller tema) ifølge din **Intastellar-klientregistrering**. Hvordan du **injicerer** `clientId` i bundlet (f.eks. build-time public env, runtime config) er op til dit værktøj — **undgå at hardkode rigtige id’er** i versionskontrol.
 
+**Log ud (global API):** Intastellar tilbyder **`Intastellar.accounts.signout()`**, som fjerner cookien **`inta_account`** på din origin. Brug **`logout`** fra **`useIntastellar`** i React-apps; på vanilla-sider med det globale accounts-API, kald **`signout()`**, når scriptet er indlæst.
+
 Login kører typisk **popup-baseret**: SDK åbner Intastellars UI, fuldfører verifikation og kører dine callbacks. Den sti er **ikke** den samme som håndbygget OAuth **authorization code**-redirect og token-`POST`; for det, se [Authorization code-flow](/docs/accounts-sign-in/web/authorization-code-flow).
 
 ## Ren HTML og JavaScript

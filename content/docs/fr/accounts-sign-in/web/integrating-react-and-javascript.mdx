@@ -67,6 +67,8 @@ function Example() {
 
 Configurez **`clientId`** (et les champs optionnels requis par votre intégration, ex. nom d’affichage ou thème) selon votre **enregistrement client Intastellar**. La manière d’**injecter** `clientId` dans le bundle (ex. variable d’environnement publique au build, config runtime) dépend de votre chaîne d’outils — **évitez de coder en dur de vrais ID** dans le contrôle de version.
 
+**Déconnexion (API globale) :** Intastellar expose **`Intastellar.accounts.signout()`**, qui supprime le cookie **`inta_account`** sur votre origine. Dans les apps React, utilisez **`logout`** de **`useIntastellar`** ; sur les pages vanilla qui chargent le global accounts, appelez **`signout()`** une fois le script disponible.
+
 La connexion repose en général sur une **popup** : le SDK ouvre l’UI Intastellar, puis termine la vérification et exécute vos callbacks. Ce chemin **n’est pas** le même que de câbler à la main la redirection OAuth **code d’autorisation** et le `POST` token ; pour cela, voir [Flux code d’autorisation](/docs/accounts-sign-in/web/authorization-code-flow).
 
 ## HTML et JavaScript simples

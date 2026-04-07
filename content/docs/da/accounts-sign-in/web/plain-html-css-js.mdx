@@ -212,11 +212,19 @@ Valgfrit: efter vellykket login, kald **`IntastellarAPI.getUsers()`** for at mat
 
 ## Log ud (samme idé som hook)
 
-Ryd session-cookie på dit parent-domæne og genindlæs, svarende til SDK’ets `logout`:
+Brug helst Intastellars log-ud-API, så cookien **`inta_account`** fjernes som i produktion:
+
+```javascript
+Intastellar.accounts.signout();
+// Omdiriger eller genindlæs derefter efter behov, fx:
+// window.location.href = "/";
+```
+
+Hvis API’et ikke kan kaldes (fx script ikke indlæst), kan du manuelt slette cookien på dit parent-domæne — **navn** og **domæne/sti** skal matche din integration (se SDK-readme):
 
 ```javascript
 const domain = getDomain();
-document.cookie = `inta_acc=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+document.cookie = `inta_account=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
 window.location.reload();
 ```
 

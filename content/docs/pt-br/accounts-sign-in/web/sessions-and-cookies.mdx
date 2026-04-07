@@ -36,7 +36,7 @@ Quando você usa respostas **token** estilo OAuth (fluxo de código manual):
 
 ## Logout
 
-Limpe **sua** sessão e siga as orientações do **SDK / Intastellar** para sair. Se houver URL de **end-session**, redirecionar para lá limpa cookies SSO no domínio de identidade. Veja [Logout, erros e solução de problemas](/docs/accounts-sign-in/web/logout-and-errors).
+Chame **`Intastellar.accounts.signout()`** para remover o cookie **`inta_account`** da Intastellar na sua origem e, em seguida, limpe **sua** sessão de app (cookies + estado no servidor). Se uma URL de **end-session** fizer parte do fluxo, o redirecionamento limpa cookies SSO no domínio de identidade. Veja [Logout, erros e solução de problemas](/docs/accounts-sign-in/web/logout-and-errors).
 
 ## Próximo
 

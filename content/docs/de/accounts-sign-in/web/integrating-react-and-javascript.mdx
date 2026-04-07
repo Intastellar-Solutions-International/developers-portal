@@ -67,6 +67,8 @@ function Example() {
 
 **`clientId`** (und optionale Felder Ihrer Integration wie Anzeigename oder Theme) gemäß **Intastellar-Client-Registrierung** setzen. Wie Sie `clientId` ins Bundle bringen (z. B. öffentliche Build-Zeit-Env, Laufzeit-Config), entscheidet Ihr Tooling — **echte IDs nicht** in der Quellcodeverwaltung hardcoden.
 
+**Abmeldung (globale API):** Intastellar stellt **`Intastellar.accounts.signout()`** bereit; damit wird das **`inta_account`**-Cookie auf Ihrer Origin entfernt. In React-Apps **`logout`** aus **`useIntastellar`** nutzen; auf Vanilla-Seiten mit globalem Accounts-API nach dem Laden des Skripts **`signout()`** aufrufen.
+
 Anmeldung läuft typischerweise **per Popup**: Das SDK öffnet Intastellars UI, verifiziert anschließend und führt Ihre Callbacks aus. Das ist **nicht** dasselbe wie manuell gebauter OAuth-**Authorization-Code**-Redirect und Token-`POST`; dafür siehe [Authorization-Code-Flow](/docs/accounts-sign-in/web/authorization-code-flow).
 
 ## Plain HTML und JavaScript

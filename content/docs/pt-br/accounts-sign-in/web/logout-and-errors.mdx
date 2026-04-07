@@ -7,11 +7,12 @@ order: 70
 
 ## Logout
 
-1. **Limpe sua sessão** — apague ou invalide o cookie de sessão do app e o registro no servidor.
-2. **Logout no IdP (opcional, recomendado)** — se a Intastellar fornecer URL de end-session ou logout, redirecione o usuário para lá com os parâmetros do guia de integração (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, etc.) para limpar cookies SSO no domínio de identidade.
-3. **URL de retorno** — após o logout, leve o usuário a uma página pública do site.
+1. **Limpar o cookie do cliente Intastellar na sua origem** — chame **`Intastellar.accounts.signout()`**. O cliente no navegador da Intastellar remove, no estado atual, o cookie **`inta_account`** (first-party na origem do seu site). Carregue antes o script / namespace global de contas Intastellar e chame a API de forma defensiva (por exemplo `Intastellar?.accounts?.signout?.()`).
+2. **Limpar a sessão da sua aplicação** — apague ou invalide o **seu** cookie de sessão do app (por exemplo HttpOnly) e o registro no servidor. A etapa do SDK não substitui a sessão própria no backend ou BFF.
+3. **Logout no IdP / SSO (opcional, recomendado para desmontar o SSO por completo)** — se a integração usar URL de **end-session** ou logout no host de identidade, redirecione o usuário com os parâmetros do guia (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, etc.) para limpar cookies SSO no domínio de identidade da Intastellar.
+4. **URL de retorno** — após o logout, leve o usuário a uma página pública do site.
 
-Sem a etapa 2, o usuário pode continuar autenticado na Intastellar e receber SSO silencioso no próximo redirect `authorize`.
+Sem a etapa 3 (quando há dependência de SSO no domínio de identidade), o usuário pode manter sessão no IdP e receber **SSO silencioso** no próximo redirect `authorize`, mesmo após remover `inta_account`.
 
 ## Erros comuns no authorize
 
@@ -37,7 +38,8 @@ Authorization codes costumam ser **uso único** e de curta duração. Se o usuá
 ## SDK React (popup)
 
 - **Popup bloqueado** — o SDK abre nova janela; navegadores podem bloquear. Permita popups para sua origem ou use fluxo sem `window.open` se o produto suportar.
-- **Ainda “logado” após logout no portal** — cookies de terceiros ou sessão no IdP podem fazer `getUsers()` retornar usuário até logout no IdP ou limpeza de cookies; veja [Sessões, cookies e tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+- **`logout` vs `signout` global** — o **`logout`** do hook encerra a sessão do cliente no seu app; a API subjacente é **`Intastellar.accounts.signout()`**, que remove o cookie **`inta_account`** na sua origem.
+- **Ainda “logado” após o portal ou limpeza de cookies** — cookies de terceiros ou sessão no IdP podem fazer **`getUsers()`** retornar usuário até **end-session** / logout no IdP ou limpeza adicional; remover só **`inta_account`** nem sempre limpa o host de identidade. Veja [Sessões, cookies e tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
 
 ## Checklist de solução de problemas
 

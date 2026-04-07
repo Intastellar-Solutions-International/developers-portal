@@ -7,11 +7,12 @@ order: 70
 
 ## Déconnexion
 
-1. **Effacer votre session** — supprimez ou invalidez le cookie de session de votre application et l’enregistrement de session côté serveur.
-2. **Déconnexion IdP (optionnelle mais recommandée)** — si Intastellar fournit une URL end-session ou logout, redirigez-y l’utilisateur avec les paramètres indiqués dans votre guide d’intégration (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, etc.) pour effacer les cookies SSO sur le domaine d’identité.
-3. **URL de retour** — renvoyez l’utilisateur vers une page publique de votre site après la déconnexion.
+1. **Supprimer le cookie client Intastellar sur votre origine** — appelez **`Intastellar.accounts.signout()`**. Le client navigateur Intastellar supprime actuellement le cookie **`inta_account`** (first-party sur l’origine de votre site). Chargez d’abord le script / l’espace de noms global des comptes Intastellar, et appelez l’API de façon défensive (par ex. `Intastellar?.accounts?.signout?.()`).
+2. **Terminer la session applicative** — supprimez ou invalidez **votre** cookie de session d’application (par ex. HttpOnly) et l’enregistrement côté serveur. L’étape SDK ne remplace pas votre propre session backend ou BFF.
+3. **Déconnexion IdP / SSO (optionnelle, recommandée pour un démontage SSO complet)** — si votre intégration utilise une URL **end-session** ou de déconnexion sur l’hôte d’identité, redirigez-y l’utilisateur avec les paramètres de votre guide (`id_token_hint`, `post_logout_redirect_uri`, `client_id`, etc.) pour effacer les cookies SSO sur le domaine d’identité Intastellar.
+4. **URL de retour** — renvoyez l’utilisateur vers une page publique après la déconnexion.
 
-Sans l’étape 2, l’utilisateur peut rester connecté à Intastellar et bénéficier d’un SSO silencieux au prochain redirect `authorize`.
+Sans l’étape 3 (lorsque vous dépendez du SSO sur le domaine d’identité), l’utilisateur peut conserver une session IdP et obtenir un **SSO silencieux** au prochain redirect `authorize`, même après suppression de `inta_account`.
 
 ## Erreurs authorize courantes
 
@@ -37,7 +38,8 @@ Les codes d’autorisation sont en général **à usage unique** et à courte du
 ## SDK React (popup)
 
 - **Popup bloquée** — le SDK ouvre une nouvelle fenêtre ; les navigateurs peuvent la bloquer. Autorisez les popups pour votre origine ou utilisez un flux sans `window.open` si votre produit le permet.
-- **Toujours « connecté » après déconnexion du portail** — cookies tiers ou session IdP peuvent faire que `getUsers()` renvoie un utilisateur jusqu’à déconnexion IdP ou nettoyage des cookies ; voir [Sessions, cookies et jetons](/docs/accounts-sign-in/web/sessions-and-cookies).
+- **`logout` vs `signout` global** — le **`logout`** du hook termine la session client dans votre app ; l’API sous-jacente est **`Intastellar.accounts.signout()`**, qui supprime le cookie **`inta_account`** sur votre origine.
+- **Toujours « connecté » après le portail ou un nettoyage de cookies** — cookies tiers ou session IdP peuvent faire que **`getUsers()`** renvoie un utilisateur jusqu’à **end-session** / déconnexion IdP ou nettoyage supplémentaire ; supprimer seulement **`inta_account`** ne vide pas toujours l’hôte d’identité. Voir [Sessions, cookies et jetons](/docs/accounts-sign-in/web/sessions-and-cookies).
 
 ## Liste de dépannage
 

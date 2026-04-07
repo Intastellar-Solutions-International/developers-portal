@@ -36,7 +36,7 @@ Bei OAuth-ähnlichen **Token**-Antworten (manueller Code-Flow):
 
 ## Abmeldung
 
-**Ihre** Sitzung löschen und **SDK- / Intastellar**-Hinweise zur Abmeldung befolgen. Steht eine **End-Session**-URL bereit, leitet ein Redirect dorthin IdP-SSO-Cookies auf der Identity-Domain ab. Siehe [Abmeldung, Fehler und Fehlersuche](/docs/accounts-sign-in/web/logout-and-errors).
+**`Intastellar.accounts.signout()`** aufrufen, um Intastellars **`inta_account`**-Cookie auf Ihrer Origin zu entfernen, danach **Ihre** App-Sitzung (Cookies + Serverzustand) löschen. Ist eine **End-Session**-URL Teil Ihres Flows, leitet ein Redirect dorthin IdP-SSO-Cookies auf der Identity-Domain ab. Siehe [Abmeldung, Fehler und Fehlersuche](/docs/accounts-sign-in/web/logout-and-errors).
 
 ## Weiter
 

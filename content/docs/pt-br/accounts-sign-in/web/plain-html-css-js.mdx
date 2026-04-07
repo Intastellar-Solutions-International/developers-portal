@@ -212,11 +212,19 @@ Opcional: após login bem-sucedido, chame **`IntastellarAPI.getUsers()`** para a
 
 ## Logout (mesma ideia do hook)
 
-Limpe o cookie de sessão no domínio pai e recarregue, como o `logout` do SDK:
+Prefira a API de logout da Intastellar para remover o cookie **`inta_account`** como em produção:
+
+```javascript
+Intastellar.accounts.signout();
+// Em seguida redirecione ou recarregue conforme o app, ex.:
+// window.location.href = "/";
+```
+
+Se a API não estiver disponível (script não carregado), limpe o cookie manualmente no domínio pai — **nome** e **domínio/caminho** devem bater com a integração (veja o readme do SDK):
 
 ```javascript
 const domain = getDomain();
-document.cookie = `inta_acc=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+document.cookie = `inta_account=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
 window.location.reload();
 ```
 

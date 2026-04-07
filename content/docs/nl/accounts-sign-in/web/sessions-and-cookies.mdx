@@ -36,7 +36,7 @@ Bij OAuth-achtige **token**-antwoorden (handmatige code-flow):
 
 ## Afmelden
 
-Wis **uw** sessie en volg **SDK / Intastellar**-richtlijnen voor uitloggen. Als een **end-session**-URL beschikbaar is, zorgt redirecten daarheen voor wissen van IdP SSO-cookies op het identity-domein. Zie [Afmelden, fouten en troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).
+Roep **`Intastellar.accounts.signout()`** aan om Intastellars **`inta_account`**-cookie op uw origin te wissen, en wis daarna **uw** appsessie (cookies + serverstatus). Is een **end-session**-URL onderdeel van uw flow, dan wist een redirect daarheen IdP SSO-cookies op het identity-domein. Zie [Afmelden, fouten en troubleshooting](/docs/accounts-sign-in/web/logout-and-errors).
 
 ## Volgende
 

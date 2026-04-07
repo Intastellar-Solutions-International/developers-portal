@@ -212,11 +212,19 @@ Optionnel : après une connexion réussie, appelez **`IntastellarAPI.getUsers()`
 
 ## Déconnexion (même idée que le hook)
 
-Effacez le cookie de session sur votre domaine parent et rechargez, comme `logout` du SDK :
+Préférez l’API de déconnexion Intastellar pour supprimer le cookie **`inta_account`** comme en production :
+
+```javascript
+Intastellar.accounts.signout();
+// Puis redirigez ou rechargez selon votre app, par ex. :
+// window.location.href = "/";
+```
+
+Si l’API n’est pas disponible (script non chargé), vous pouvez effacer le cookie manuellement sur votre domaine parent — le **nom** et le **domaine/chemin** doivent correspondre à votre intégration (voir le readme du SDK) :
 
 ```javascript
 const domain = getDomain();
-document.cookie = `inta_acc=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+document.cookie = `inta_account=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
 window.location.reload();
 ```
 

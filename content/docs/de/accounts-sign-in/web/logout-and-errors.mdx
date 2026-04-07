@@ -7,11 +7,12 @@ order: 70
 
 ## Abmeldung
 
-1. **Eigene Sitzung löschen** — Anwendungs-Sitzungs-Cookie entfernen oder invalidieren und serverseitigen Sitzungsdatensatz löschen.
-2. **IdP-Abmeldung (optional, empfohlen)** — wenn Intastellar eine End-Session- oder Logout-URL bereitstellt, Nutzer dorthin mit Parametern aus Ihrem Integrationsleitfaden weiterleiten (`id_token_hint`, `post_logout_redirect_uri`, `client_id` usw.), damit SSO-Cookies auf der Identity-Domain gelöscht werden.
-3. **Return-URL** — nach abgeschlossener Abmeldung auf eine öffentliche Seite Ihrer Site schicken.
+1. **Intastellar-Client-Cookie auf Ihrer Origin löschen** — **`Intastellar.accounts.signout()`** aufrufen. Der Browser-Client von Intastellar entfernt damit derzeit das **`inta_account`**-Cookie (First-Party auf der Origin Ihrer Site). Laden Sie zuvor das Intastellar-Accounts-Skript / den globalen Namespace; rufen Sie die API nur abgesichert auf (z. B. `Intastellar?.accounts?.signout?.()`).
+2. **Eigene Anwendungssitzung löschen** — **Ihr** App-Sitzungs-Cookie (z. B. HttpOnly) und serverseitige Sitzung entfernen oder invalidieren. Der SDK-Schritt ersetzt keine eigene Backend- oder BFF-Sitzung.
+3. **IdP- / SSO-Abmeldung (optional, für vollständiges SSO-Teardown empfohlen)** — nutzt Ihre Integration eine **End-Session**- oder Logout-URL auf dem Identity-Host, leiten Sie den Nutzer mit den Parametern aus Ihrem Integrationsleitfaden dorthin (`id_token_hint`, `post_logout_redirect_uri`, `client_id` usw.), damit SSO-Cookies auf Intastellars Identity-Domain gelöscht werden.
+4. **Return-URL** — nach abgeschlossener Abmeldung auf eine öffentliche Seite Ihrer Site schicken.
 
-Ohne Schritt 2 kann der Nutzer bei Intastellar noch angemeldet sein und beim nächsten `authorize`-Redirect still SSO erhalten.
+Ohne Schritt 3 (wenn Sie SSO auf der Identity-Domain nutzen) kann der Nutzer noch eine IdP-Sitzung haben und beim nächsten `authorize`-Redirect **stilles SSO** erhalten, auch wenn `inta_account` bereits fehlt.
 
 ## Typische Authorize-Fehler
 
@@ -37,7 +38,8 @@ Authorization Codes sind meist **einmal nutzbar** und kurzlebig. Doppeltes Absen
 ## React-SDK (Popup)
 
 - **Popup blockiert** — das SDK öffnet ein neues Fenster; Browser können es blockieren. Popups für Ihr Origin erlauben oder einen Flow ohne `window.open` nutzen, falls Ihr Produkt das unterstützt.
-- **Noch „angemeldet“ nach Portal-Logout** — Drittanbieter-Cookies oder IdP-Sitzung können `getUsers()` noch einen Nutzer liefern, bis IdP-Abmeldung oder Cookie-Bereinigung; siehe [Sitzungen, Cookies und Tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
+- **`logout` vs. globales `signout`** — der Hook-**`logout`** beendet die Client-Sitzung in Ihrer App; die zugrunde liegende Client-API ist **`Intastellar.accounts.signout()`**, die das **`inta_account`**-Cookie auf Ihrer Origin löscht.
+- **Noch „angemeldet“ nach Portal oder Cookie-Bereinigung** — Drittanbieter-Cookies oder eine IdP-Sitzung können **`getUsers()`** noch einen Nutzer liefern, bis **End-Session** / IdP-Abmeldung oder weitere Bereinigung; allein das Entfernen von **`inta_account`** löscht nicht immer den Identity-Host. Siehe [Sitzungen, Cookies und Tokens](/docs/accounts-sign-in/web/sessions-and-cookies).
 
 ## Fehlersuche-Checkliste
 

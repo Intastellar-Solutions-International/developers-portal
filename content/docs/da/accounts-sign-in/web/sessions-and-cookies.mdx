@@ -36,7 +36,7 @@ Ved OAuth-lignende **token**-svar (manuel code-flow):
 
 ## Log ud
 
-Ryd **din** session og følg **SDK- / Intastellar**-vejledning til logout. Hvis en **end-session**-URL findes, kan redirect dertil rydde IdP SSO-cookies på identity-domænet. Se [Log ud, fejl og fejlfinding](/docs/accounts-sign-in/web/logout-and-errors).
+Kald **`Intastellar.accounts.signout()`** for at fjerne Intastellars **`inta_account`**-cookie på din origin, og ryd derefter **din** app-session (cookies + servertilstand). Findes en **end-session**-URL i dit flow, kan redirect dertil rydde IdP SSO-cookies på identity-domænet. Se [Log ud, fejl og fejlfinding](/docs/accounts-sign-in/web/logout-and-errors).
 
 ## Næste
 
