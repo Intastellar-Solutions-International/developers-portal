@@ -359,7 +359,7 @@ export const nl: MessageTree = {
     incidentEmptyBody:
       "Een incident is een opgeslagen cron-run waarin minstens één doel uitviel (HTTP 5xx, time-out of geen antwoord — dezelfde regels als live controles). Als recente geschiedenis overal slaagde, blijft deze lijst leeg.",
     incidentListIntro:
-      "Elke rij is één cron-run waarin minstens één controle faalde (nieuwste eerst), binnen hetzelfde rollende venster als tijdlijnen en uptime. Tijden in UTC. Berichten komen van de probe indien beschikbaar; oudere geschiedenis kan alleen een generieke reden tonen.",
+      "Opeenvolgende mislukte runs met dezelfde doelen en probeberichten worden samengevoegd tot één rij met een UTC-tijdsvenster (nieuwste groepen eerst), binnen hetzelfde rollende venster als tijdlijnen en uptime. Berichten komen van de probe indien beschikbaar; oudere geschiedenis kan alleen een generieke reden tonen.",
     degraded: "Verstoord",
     timelineNoHistory:
       "Nog geen geschiedenis. Zodra MongoDB en cron runs opslaan, verschijnen recente controles hier.",

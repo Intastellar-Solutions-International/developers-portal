@@ -1,3 +1,4 @@
+import { groupConsecutiveStatusIncidents } from "~/lib/status-incident-grouping";
 import type { StatusPageCopy } from "~/lib/status-page-copy";
 import type { StatusIncident } from "~/lib/status-history.server";
 
@@ -8,6 +9,8 @@ type Props = {
 };
 
 export function StatusIncidentLog({ incidents, targetNames, copy }: Props) {
+  const grouped = groupConsecutiveStatusIncidents(incidents);
+
   if (incidents.length === 0) {
     return (
       <section className="mt-10" aria-labelledby="status-incidents-heading">
@@ -36,15 +39,21 @@ export function StatusIncidentLog({ incidents, targetNames, copy }: Props) {
         {copy.incidentListIntro}
       </p>
       <ul className="mt-4 divide-y divide-zinc-200 rounded-lg border border-zinc-200 dark:divide-zinc-700 dark:border-zinc-700">
-        {incidents.map((ev) => (
-          <li key={ev.checkedAt} className="px-4 py-3">
+        {grouped.map((ev) => (
+          <li
+            key={`${ev.startAt}-${ev.endAt}-${ev.failures.map((f) => f.id).join(",")}`}
+            className="px-4 py-3"
+          >
             <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-              <time
-                className="text-sm font-medium text-zinc-900 dark:text-zinc-100"
-                dateTime={ev.checkedAt}
-              >
-                {ev.checkedAtLabel}
-              </time>
+              <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                {ev.startAt === ev.endAt ? (
+                  <time dateTime={ev.startAt}>{ev.rangeLabel}</time>
+                ) : (
+                  <span title={`${ev.startAt} → ${ev.endAt}`}>
+                    {ev.rangeLabel}
+                  </span>
+                )}
+              </p>
               <span className="text-xs font-medium uppercase tracking-wide text-red-600 dark:text-red-400">
                 {copy.degraded}
               </span>

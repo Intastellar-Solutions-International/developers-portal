@@ -359,7 +359,7 @@ export const fr: MessageTree = {
     incidentEmptyBody:
       "Un incident est une exécution cron stockée où au moins une cible était indisponible (HTTP 5xx, délai dépassé ou pas de réponse — mêmes règles que les vérifications en direct). Si tout l’historique récent a réussi, cette liste reste vide.",
     incidentListIntro:
-      "Chaque ligne est une exécution cron où au moins une vérification a échoué (les plus récentes en premier), dans la même fenêtre glissante que les chronologies et la disponibilité. Heures en UTC. Les messages proviennent de la sonde lorsque c’est possible ; les entrées plus anciennes peuvent n’indiquer qu’une raison générique.",
+      "Les exécutions échouées consécutives avec les mêmes cibles et messages de sonde sont regroupées sur une ligne avec une plage horaire UTC (groupes les plus récents en premier), dans la même fenêtre glissante que les chronologies et la disponibilité. Les messages proviennent de la sonde lorsque c’est possible ; les entrées plus anciennes peuvent n’indiquer qu’une raison générique.",
     degraded: "Dégradé",
     timelineNoHistory:
       "Pas encore d’historique. Une fois MongoDB et le cron enregistrés, les vérifications récentes apparaissent ici.",
