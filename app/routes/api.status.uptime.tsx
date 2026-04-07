@@ -3,7 +3,8 @@ import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
 import { resolveLocaleForApiRequest } from "~/lib/i18n/resolve-locale.server";
 import {
-  getStatusHistoryMaxPoints,
+  getStatusHistoryMaxRowsCap,
+  getStatusHistoryWindowHours,
   getStoredOverallUptime,
 } from "~/lib/status-history.server";
 
@@ -20,8 +21,9 @@ import {
 export async function loader({ request }: Route.LoaderArgs) {
   const locale = resolveLocaleForApiRequest(request);
   const computedAt = new Date().toISOString();
-  const windowMaxRuns = getStatusHistoryMaxPoints();
-  const stored = await getStoredOverallUptime(windowMaxRuns);
+  const windowHours = getStatusHistoryWindowHours();
+  const windowMaxRuns = getStatusHistoryMaxRowsCap();
+  const stored = await getStoredOverallUptime();
   const statusPageUrl = new URL(
     withLocalePrefix("/status", locale),
     request.url,
@@ -44,6 +46,7 @@ export async function loader({ request }: Route.LoaderArgs) {
             : `${stored.percent.toFixed(1)}%`,
         passedRuns: stored.passedRuns,
         totalRuns: stored.totalRuns,
+        windowHours,
         windowMaxRuns,
         statusPageUrl,
         badgeEmbedUrl,
@@ -58,6 +61,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         widgetDescription: interpolate(
           translatePath(locale, "status.uptimeJsonWidgetDescription"),
           {
+            hours: windowHours,
             totalRuns: stored.totalRuns,
             passedRuns: stored.passedRuns,
           },
@@ -72,6 +76,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         displayPercent: null,
         passedRuns: 0,
         totalRuns: 0,
+        windowHours,
         windowMaxRuns,
         statusPageUrl,
         badgeEmbedUrl,

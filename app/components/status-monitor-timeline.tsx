@@ -6,6 +6,7 @@ type Props = {
   points: StatusTimelinePoint[];
   liveSingleCheck?: boolean;
   copy: StatusPageCopy;
+  historyWindowHours: number;
 };
 
 /**
@@ -15,6 +16,7 @@ export function StatusMonitorTimeline({
   points,
   liveSingleCheck,
   copy,
+  historyWindowHours,
 }: Props) {
   if (points.length === 0) {
     return (
@@ -32,7 +34,10 @@ export function StatusMonitorTimeline({
       <p className="mb-1 text-[0.65rem] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
         {liveSingleCheck
           ? copy.timelineCurrentCheckDev
-          : interpolate(copy.timelineRecentChecks, { count: points.length })}
+          : interpolate(copy.timelineRecentChecks, {
+              count: points.length,
+              hours: historyWindowHours,
+            })}
       </p>
       <div
         className="flex h-5 w-full max-w-md gap-px rounded-md bg-zinc-200/80 p-px dark:bg-zinc-700/80"

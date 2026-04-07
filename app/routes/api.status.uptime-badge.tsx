@@ -5,7 +5,8 @@ import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
 import { resolveLocaleForApiRequest } from "~/lib/i18n/resolve-locale.server";
 import {
-  getStatusHistoryMaxPoints,
+  getStatusHistoryMaxRowsCap,
+  getStatusHistoryWindowHours,
   getStoredOverallUptime,
 } from "~/lib/status-history.server";
 
@@ -66,8 +67,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   const theme = parseBadgeTheme(request);
   const statusPath = withLocalePrefix("/status", locale);
   const statusPageUrl = escapeHtml(new URL(statusPath, request.url).href);
-  const windowMaxRuns = getStatusHistoryMaxPoints();
-  const stored = await getStoredOverallUptime(windowMaxRuns);
+  const windowHours = getStatusHistoryWindowHours();
+  const windowMaxRuns = getStatusHistoryMaxRowsCap();
+  const stored = await getStoredOverallUptime();
 
   let pctClass: "good" | "warn" | "bad" | "muted";
   let mainLine: string;
@@ -93,6 +95,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       interpolate(translatePath(locale, "status.badgeSubOk"), {
         passedRuns: stored.passedRuns,
         totalRuns: stored.totalRuns,
+        hours: windowHours,
         windowMaxRuns,
       }),
     );

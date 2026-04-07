@@ -5,10 +5,12 @@ import type { StatusPageCopy } from "~/lib/status-page-copy";
 
 export function StatusTrustSection({
   copy,
-  historyMaxPoints,
+  historyWindowHours,
+  historyMaxRowsCap,
 }: {
   copy: StatusPageCopy;
-  historyMaxPoints: number;
+  historyWindowHours: number;
+  historyMaxRowsCap: number;
 }) {
   return (
     <section
@@ -29,7 +31,10 @@ export function StatusTrustSection({
         <li>{copy.trustBulletFrequency}</li>
         <li>{copy.trustBulletPass}</li>
         <li>
-          {interpolate(copy.trustBulletHistory, { n: historyMaxPoints })}
+          {interpolate(copy.trustBulletHistory, {
+            hours: historyWindowHours,
+            maxRows: historyMaxRowsCap,
+          })}
         </li>
         <li>{copy.trustBulletUtc}</li>
       </ul>

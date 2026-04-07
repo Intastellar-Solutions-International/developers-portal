@@ -317,10 +317,10 @@ export const ptBr: MessageTree = {
     ariaUptimeStored: "Disponibilidade a partir de verificações agendadas armazenadas",
     uptimeWord: "disponibilidade",
     uptimeStoredRunsBefore:
-      "Executamos essas verificações automaticamente em cronograma. Nas últimas",
-    uptimeStoredRunsMid: "execuções,",
+      "Executamos essas verificações automaticamente em cronograma. Nas últimas {{hours}} horas (UTC), armazenamos",
+    uptimeStoredRunsMid: "execuções ·",
     uptimeStoredRunsAfter:
-      "terminaram com todos os serviços respondendo normalmente (sem falhas nessa execução).",
+      "contam como totalmente OK (todos os serviços responderam normalmente na execução, sem aviso da equipe ou manutenção aplicável naquele instante).",
     devLiveProbeBefore: "Modo de desenvolvimento: exibindo uma verificação",
     devLiveProbeStrong: "ao vivo",
     devLiveProbeAfter:
@@ -351,21 +351,22 @@ export const ptBr: MessageTree = {
     footnoteP2a: "Configure alvos com",
     footnoteP2b: "(substituição total) ou",
     footnoteP2c:
-      "(acrescentar). Uma verificação conta como OK quando o status HTTP é menor que 500. O log de incidentes mostra execuções cron armazenadas em que algum alvo falhou, incluindo texto de erro do probe quando salvo. Linhas do tempo, log de incidentes e tendências de latência usam as últimas",
+      "(acrescentar). Uma verificação conta como OK quando o status HTTP é menor que 500. O log de incidentes lista execuções com falha nessa janela, incluindo texto de erro do probe quando salvo.",
     footnoteP2d:
-      "execuções (TTL de 14 dias no Mongo). O percentual de disponibilidade no topo usa a mesma janela: a fração dessas execuções em que todos os alvos passaram. Os horários nesta página são UTC. Novas linhas de histórico armazenam por alvo",
+      "Linhas do tempo, log de incidentes e tendências de latência compartilham o mesmo armazenamento deslizante: as últimas {{hours}} horas (UTC), até {{maxRows}} amostras por solicitação (TTL de ~14 dias no Mongo). O percentual de disponibilidade no topo usa a mesma janela: só conta como “up” se todos os alvos passaram e o instante está fora de avisos da equipe e manutenção aplicáveis. Ajuste com STATUS_HISTORY_WINDOW_HOURS e STATUS_HISTORY_MAX_ROWS. Horários em UTC. Novas linhas de histórico armazenam por alvo",
     footnoteP2e:
       "; linhas antigas ainda alimentam segmentos de alta/baixa até expirarem.",
     incidentHeading: "Log de incidentes",
     incidentEmptyBody:
       "Um incidente é uma execução cron armazenada em que pelo menos um alvo estava fora (HTTP 5xx, timeout ou sem resposta — mesmas regras das verificações ao vivo). Se todo o histórico recente passou, esta lista fica vazia.",
     incidentListIntro:
-      "Cada linha é uma execução cron em que pelo menos uma verificação falhou (mais recente primeiro). Horários em UTC. As mensagens vêm do probe quando disponíveis; histórico antigo pode mostrar apenas um motivo genérico.",
+      "Cada linha é uma execução cron em que pelo menos uma verificação falhou (mais recente primeiro), na mesma janela deslizante das linhas do tempo e da disponibilidade. Horários em UTC. As mensagens vêm do probe quando disponíveis; histórico antigo pode mostrar apenas um motivo genérico.",
     degraded: "Degradado",
     timelineNoHistory:
       "Ainda não há histórico. Depois que MongoDB e o cron armazenarem execuções, as verificações recentes aparecem aqui.",
     timelineCurrentCheckDev: "Apenas verificação atual (dev)",
-    timelineRecentChecks: "Verificações recentes ({{count}})",
+    timelineRecentChecks:
+      "Verificações recentes — últimas {{hours}} horas ({{count}} amostras)",
     timelineAriaSummary: "{{n}} verificações: {{ups}} OK, {{fails}} com falha",
     timelineTooltipUp: "{{time}} — OK",
     timelineTooltipDown: "{{time}} — Falha",
@@ -379,14 +380,14 @@ export const ptBr: MessageTree = {
     latencyLatest: "Última",
     badgeMainUptime: "{{percent}} de disponibilidade",
     badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} execuções todas OK · até {{windowMaxRuns}} na visualização",
+      "{{passedRuns}}/{{totalRuns}} OK · janela {{hours}}h · teto {{windowMaxRuns}} amostras",
     badgePlaceholder: "Disponibilidade",
     badgeCollecting: "Coletando verificações agendadas…",
     badgeLink: "Status do sistema →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Oferecido por inta.dev",
     uptimeJsonWidgetDescription:
-      "Nas últimas {{totalRuns}} execuções agendadas, {{passedRuns}} terminaram com todos os serviços respondendo normalmente.",
+      "Nas últimas {{hours}} horas foram armazenadas {{totalRuns}} execuções agendadas; {{passedRuns}} contam como totalmente OK (todas as sondas OK, sem aviso da equipe ou manutenção aplicável).",
     uptimeJsonNoHistoryDescription:
       "A disponibilidade aparecerá aqui depois que verificações de saúde agendadas forem armazenadas.",
     embedBadgeButton: "Incorporar badge",
@@ -426,7 +427,7 @@ export const ptBr: MessageTree = {
     trustBulletPass:
       "Uma verificação passa quando o status HTTP é menor que 500; timeouts e erros de rede contam como falha.",
     trustBulletHistory:
-      "Linhas do tempo e o percentual de disponibilidade no topo usam as últimas {{n}} execuções armazenadas (TTL no MongoDB de cerca de 14 dias).",
+      "Linhas do tempo, log de incidentes, tendências de latência e o percentual no topo usam verificações armazenadas nas últimas {{hours}} horas (UTC), até {{maxRows}} amostras por carregamento (TTL MongoDB ~14 dias). Avisos da equipe e manutenção ativa contam como indisponibilidade quando aplicáveis.",
     trustBulletUtc: "Todos os horários nesta página estão em UTC.",
     manualNoticesHeading: "Avisos da equipe",
     manualNoticesIntro:

@@ -321,10 +321,10 @@ export const de: MessageTree = {
     ariaUptimeStored: "Verfügbarkeit aus gespeicherten geplanten Prüfungen",
     uptimeWord: "Verfügbarkeit",
     uptimeStoredRunsBefore:
-      "Wir führen diese Prüfungen automatisch nach Zeitplan aus. Von den letzten",
-    uptimeStoredRunsMid: "Läufen waren",
+      "Wir führen diese Prüfungen automatisch nach Zeitplan aus. In den letzten {{hours}} Stunden (UTC) wurden",
+    uptimeStoredRunsMid: "Läufe erfasst ·",
     uptimeStoredRunsAfter:
-      "vollständig erfolgreich (alle Dienste haben in diesem Lauf normal geantwortet).",
+      "gelten als vollständig erfolgreich (alle Dienste in dem Lauf normal, ohne zutreffende Betreiber-Hinweise oder Wartung zu diesem Zeitpunkt).",
     devLiveProbeBefore: "Entwicklungsmodus:",
     devLiveProbeStrong: "Live-Prüfung",
     devLiveProbeAfter:
@@ -354,21 +354,22 @@ export const de: MessageTree = {
     footnoteP2a: "Ziele konfigurieren mit",
     footnoteP2b: "(vollständiger Ersatz) oder",
     footnoteP2c:
-      "(anhängen). Eine Prüfung gilt als bestanden, wenn der HTTP-Status unter 500 liegt. Das Incident-Log zeigt gespeicherte Cron-Läufe, in denen mindestes ein Ziel fehlgeschlagen ist, inkl. Prüftext wenn gespeichert. Zeitlinien, Incident-Log und Latenz-Trends nutzen die letzten",
+      "(anhängen). Eine Prüfung gilt als bestanden, wenn der HTTP-Status unter 500 liegt. Das Incident-Log zeigt fehlgeschlagene Cron-Läufe in diesem Fenster, inkl. Prüftext wenn gespeichert.",
     footnoteP2d:
-      "Läufe (14-Tage-TTL in Mongo). Die Kopf-Verfügbarkeit nutzt dasselbe Fenster: Anteil der Läufe, in denen alle Ziele bestanden haben. Zeiten auf dieser Seite sind UTC. Neue Historienzeilen speichern pro Ziel",
+      "Zeitlinien, Incident-Log und Latenz-Trends nutzen denselben rollierenden Speicher: die letzten {{hours}} Stunden (UTC), bis zu {{maxRows}} Einträge pro Anfrage (14-Tage-TTL in Mongo). Die Kopf-Verfügbarkeit nutzt dasselbe Fenster: Läufe zählen nur als „vollständig up“, wenn alle Ziele bestanden haben und der Zeitpunkt außerhalb zutreffender Betreiber-Hinweise und Wartung liegt. Einstellbar mit STATUS_HISTORY_WINDOW_HOURS und STATUS_HISTORY_MAX_ROWS. Zeiten sind UTC. Neue Historienzeilen speichern pro Ziel",
     footnoteP2e:
       "; ältere Zeilen steuern weiter Hoch/Tief-Segmente bis zum Ablauf.",
     incidentHeading: "Incident-Protokoll",
     incidentEmptyBody:
       "Ein Incident ist ein gespeicherter Cron-Lauf, in dem mindestens ein Ziel ausgefallen ist (HTTP 5xx, Timeout oder keine Antwort — dieselben Regeln wie bei Live-Prüfungen). Wenn die jüngste Historie überall bestanden hat, bleibt diese Liste leer.",
     incidentListIntro:
-      "Jede Zeile ist ein Cron-Lauf mit mindestens einer fehlgeschlagenen Prüfung (neueste zuerst). Zeiten in UTC. Meldungen stammen von der Prüfung wenn vorhanden; ältere Historienzeilen können nur einen generischen Grund zeigen.",
+      "Jede Zeile ist ein Cron-Lauf mit mindestens einer fehlgeschlagenen Prüfung (neueste zuerst), im selben rollierenden Fenster wie Zeitlinien und Verfügbarkeit. Zeiten in UTC. Meldungen stammen von der Prüfung wenn vorhanden; ältere Historienzeilen können nur einen generischen Grund zeigen.",
     degraded: "Beeinträchtigt",
     timelineNoHistory:
       "Noch keine Historie. Sobald MongoDB und Cron Läufe speichern, erscheinen die letzten Prüfungen hier.",
     timelineCurrentCheckDev: "Nur aktuelle Prüfung (Dev)",
-    timelineRecentChecks: "Letzte Prüfungen ({{count}})",
+    timelineRecentChecks:
+      "Letzte Prüfungen — letzte {{hours}} Stunden ({{count}} Messungen)",
     timelineAriaSummary: "{{n}} Prüfungen: {{ups}} OK, {{fails}} fehlgeschlagen",
     timelineTooltipUp: "{{time}} — OK",
     timelineTooltipDown: "{{time}} — Ausfall",
@@ -382,14 +383,14 @@ export const de: MessageTree = {
     latencyLatest: "Zuletzt",
     badgeMainUptime: "{{percent}} Verfügbarkeit",
     badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} Läufe vollständig OK · bis zu {{windowMaxRuns}} sichtbar",
+      "{{passedRuns}}/{{totalRuns}} OK · {{hours}}h-Fenster · max. {{windowMaxRuns}} Messungen",
     badgePlaceholder: "Verfügbarkeit",
     badgeCollecting: "Geplante Prüfungen werden erfasst…",
     badgeLink: "Systemstatus →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Bereitgestellt von inta.dev",
     uptimeJsonWidgetDescription:
-      "In den letzten {{totalRuns}} geplanten Läufen waren {{passedRuns}} vollständig erfolgreich (alle Dienste normal).",
+      "In den letzten {{hours}} Stunden wurden {{totalRuns}} geplante Läufe gespeichert; {{passedRuns}} gelten als vollständig erfolgreich (alle Proben OK, keine zutreffende Betreiber-Meldung oder Wartung).",
     uptimeJsonNoHistoryDescription:
       "Die Verfügbarkeit erscheint hier, sobald geplante Health-Checks gespeichert wurden.",
     embedBadgeButton: "Badge einbinden",
@@ -429,7 +430,7 @@ export const de: MessageTree = {
     trustBulletPass:
       "Eine Prüfung gilt als bestanden, wenn der HTTP-Status unter 500 liegt; Timeouts und Netzwerkfehler zählen als fehlgeschlagen.",
     trustBulletHistory:
-      "Zeitlinien und die Kopf-Verfügbarkeit nutzen die letzten {{n}} gespeicherten Läufe (MongoDB-TTL etwa 14 Tage).",
+      "Zeitlinien, Incident-Log, Latenz-Trends und die Kopf-Verfügbarkeit nutzen gespeicherte Prüfungen der letzten {{hours}} Stunden (UTC), bis zu {{maxRows}} Messungen pro Abruf (MongoDB-TTL etwa 14 Tage). Betreiber-Hinweise und Wartung werden in der Kopfzahl wie Ausfallzeit behandelt, wenn sie zutreffen.",
     trustBulletUtc: "Alle Zeiten auf dieser Seite sind UTC.",
     manualNoticesHeading: "Hinweise vom Betrieb",
     manualNoticesIntro:

@@ -316,10 +316,10 @@ export const da: MessageTree = {
     ariaUptimeStored: "Oppetid fra gemte planlagte tjek",
     uptimeWord: "oppetid",
     uptimeStoredRunsBefore:
-      "Vi kører disse tjek automatisk efter en tidsplan. Af de seneste",
-    uptimeStoredRunsMid: "kørsler var",
+      "Vi kører disse tjek automatisk efter en tidsplan. I de seneste {{hours}} timer (UTC) blev der gemt",
+    uptimeStoredRunsMid: "kørsler ·",
     uptimeStoredRunsAfter:
-      "fuldt succesfulde (alle tjenester svarede normalt i den kørsel).",
+      "regnes som fuldt oppe (alle tjenester svarede normalt i kørslen, uden gældende driftsmeddelelse eller vedligehold på det tidspunkt).",
     devLiveProbeBefore: "Udviklingstilstand:",
     devLiveProbeStrong: "live-tjek",
     devLiveProbeAfter:
@@ -349,21 +349,22 @@ export const da: MessageTree = {
     footnoteP2a: "Konfigurér mål med",
     footnoteP2b: "(fuld erstatning) eller",
     footnoteP2c:
-      "(tilføj). Et tjek tæller som bestået når HTTP-status er under 500. Incident-loggen viser gemte cron-kørsler hvor et mål fejlede, inkl. prober-fejltekst når gemt. Tidslinjer, incident-log og latenstrends bruger de seneste",
+      "(tilføj). Et tjek tæller som bestået når HTTP-status er under 500. Incident-loggen viser fejlede cron-kørsler i samme vindue, inkl. prober-fejltekst når gemt.",
     footnoteP2d:
-      "kørsler (14 dages TTL i Mongo). Top-oppetidsprocenten bruger samme vindue: andelen af kørsler hvor alle mål bestod. Tider på siden er UTC. Nye historikrækker gemmer per-mål",
+      "Tidslinjer, incident-log og latenstrends bruger samme rullende lager: de seneste {{hours}} timer (UTC), op til {{maxRows}} prøver pr. forespørgsel (14 dages TTL i Mongo). Top-oppetidsprocenten bruger samme vindue: kørsler tæller kun som oppe, når alle mål bestod og tidspunktet er uden for gældende driftsmeddelelser og vedligehold. Juster med STATUS_HISTORY_WINDOW_HOURS og STATUS_HISTORY_MAX_ROWS. Tider er UTC. Nye historikrækker gemmer per-mål",
     footnoteP2e:
       "; ældre rækker styrer stadig op/ned-segmenter indtil udløb.",
     incidentHeading: "Incident-log",
     incidentEmptyBody:
       "Et incident er en gemt cron-kørsel hvor mindst ét mål var nede (HTTP 5xx, timeout eller intet svar — samme regler som live-tjek). Hvis al nyere historik bestod, forbliver listen tom.",
     incidentListIntro:
-      "Hver række er én cron-kørsel med mindst ét fejlet tjek (nyeste først). Tider i UTC. Beskeder kommer fra prober når tilgængeligt; ældre historik kan kun vise en generisk årsag.",
+      "Hver række er én cron-kørsel med mindst ét fejlet tjek (nyeste først), i samme rullende vindue som tidslinjer og oppetid. Tider i UTC. Beskeder kommer fra prober når tilgængeligt; ældre historik kan kun vise en generisk årsag.",
     degraded: "Forringet",
     timelineNoHistory:
       "Ingen historik endnu. Når MongoDB og cron gemmer kørsler, vises seneste tjek her.",
     timelineCurrentCheckDev: "Kun aktuelt tjek (dev)",
-    timelineRecentChecks: "Seneste tjek ({{count}})",
+    timelineRecentChecks:
+      "Seneste tjek — seneste {{hours}} timer ({{count}} prøver)",
     timelineAriaSummary: "{{n}} tjek: {{ups}} oppe, {{fails}} nede",
     timelineTooltipUp: "{{time}} — Oppe",
     timelineTooltipDown: "{{time}} — Nede",
@@ -377,14 +378,14 @@ export const da: MessageTree = {
     latencyLatest: "Seneste",
     badgeMainUptime: "{{percent}} oppetid",
     badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} kørsler helt OK · op til {{windowMaxRuns}} i visning",
+      "{{passedRuns}}/{{totalRuns}} oppe · {{hours}}t-vindue · max {{windowMaxRuns}} prøver",
     badgePlaceholder: "Oppetid",
     badgeCollecting: "Indsamler planlagte tjek…",
     badgeLink: "Systemstatus →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Leveret af inta.dev",
     uptimeJsonWidgetDescription:
-      "Af de seneste {{totalRuns}} planlagte kørsler var {{passedRuns}} fuldt succesfulde (alle tjenester svarede normalt).",
+      "I de seneste {{hours}} timer blev {{totalRuns}} planlagte kørsler gemt; {{passedRuns}} regnes som fuldt oppe (alle prober OK, ingen gældende driftsmeddelelse eller vedligehold).",
     uptimeJsonNoHistoryDescription:
       "Oppetid vises her, når planlagte sundhedstjek er blevet gemt.",
     embedBadgeButton: "Indlejr badge",
@@ -424,7 +425,7 @@ export const da: MessageTree = {
     trustBulletPass:
       "Et tjek består, når HTTP-status er under 500; timeouts og netværksfejl tæller som fejl.",
     trustBulletHistory:
-      "Tidslinjer og den viste oppetidsprocent bruger de seneste {{n}} gemte kørsler (MongoDB TTL ca. 14 dage).",
+      "Tidslinjer, incident-log, latenstrends og top-oppetidsprocent bruger gemte tjek fra de seneste {{hours}} timer (UTC), op til {{maxRows}} prøver pr. indlæsning (MongoDB TTL ca. 14 dage). Aktive driftsmeddelelser og planlagt vedligehold tæller som nedetid i top-tallet, når de gælder.",
     trustBulletUtc: "Alle tidspunkter på siden er UTC.",
     manualNoticesHeading: "Driftsmeddelelser",
     manualNoticesIntro:

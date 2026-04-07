@@ -317,10 +317,10 @@ export const fr: MessageTree = {
     ariaUptimeStored: "Disponibilité à partir des vérifications planifiées stockées",
     uptimeWord: "disponibilité",
     uptimeStoredRunsBefore:
-      "Nous exécutons ces vérifications automatiquement selon un planning. Sur les",
-    uptimeStoredRunsMid: "dernières exécutions, ",
+      "Nous exécutons ces vérifications automatiquement selon un planning. Au cours des {{hours}} dernières heures (UTC), nous comptons",
+    uptimeStoredRunsMid: "exécutions stockées ·",
     uptimeStoredRunsAfter:
-      "se sont terminées sans incident (tous les services ont répondu normalement pendant l’exécution).",
+      "comptent comme entièrement opérationnelles (tous les services OK sur l’exécution, sans incident opérateur ni maintenance applicable à cet instant).",
     devLiveProbeBefore: "Mode développement : affichage d’une sonde",
     devLiveProbeStrong: "en direct",
     devLiveProbeAfter:
@@ -350,21 +350,22 @@ export const fr: MessageTree = {
     footnoteP2a: "Configurez les cibles avec",
     footnoteP2b: "(remplacement complet) ou",
     footnoteP2c:
-      "(ajout). Une vérification est considérée comme réussie lorsque le statut HTTP est strictement inférieur à 500. Le journal d’incidents liste les exécutions cron stockées où une cible a échoué, avec le texte d’erreur de la sonde lorsqu’il est enregistré. Les chronologies, le journal et les tendances de latence utilisent les",
+      "(ajout). Une vérification est considérée comme réussie lorsque le statut HTTP est strictement inférieur à 500. Le journal d’incidents liste les exécutions en échec dans cette fenêtre, avec le texte d’erreur de la sonde lorsqu’il est enregistré.",
     footnoteP2d:
-      "dernières exécutions (TTL 14 jours dans Mongo). Le pourcentage de disponibilité en tête utilise la même fenêtre : la fraction d’exécutions où toutes les cibles ont réussi. Les heures sur cette page sont en UTC. Les nouvelles lignes d’historique enregistrent par cible",
+      "Chronologies, journal d’incidents et tendances de latence partagent le même stock roulant : les {{hours}} dernières heures (UTC), jusqu’à {{maxRows}} échantillons par requête (TTL Mongo ~14 jours). Le pourcentage de disponibilité en tête utilise la même fenêtre : une exécution ne compte comme « up » que si toutes les cibles ont réussi et que l’instant est hors incidents opérateur et maintenance applicables. Réglez STATUS_HISTORY_WINDOW_HOURS et STATUS_HISTORY_MAX_ROWS. Heures en UTC. Les nouvelles lignes d’historique enregistrent par cible",
     footnoteP2e:
       " ; les lignes plus anciennes alimentent encore les segments haut/bas jusqu’à expiration.",
     incidentHeading: "Journal des incidents",
     incidentEmptyBody:
       "Un incident est une exécution cron stockée où au moins une cible était indisponible (HTTP 5xx, délai dépassé ou pas de réponse — mêmes règles que les vérifications en direct). Si tout l’historique récent a réussi, cette liste reste vide.",
     incidentListIntro:
-      "Chaque ligne est une exécution cron où au moins une vérification a échoué (les plus récentes en premier). Heures en UTC. Les messages proviennent de la sonde lorsque c’est possible ; les entrées plus anciennes peuvent n’indiquer qu’une raison générique.",
+      "Chaque ligne est une exécution cron où au moins une vérification a échoué (les plus récentes en premier), dans la même fenêtre glissante que les chronologies et la disponibilité. Heures en UTC. Les messages proviennent de la sonde lorsque c’est possible ; les entrées plus anciennes peuvent n’indiquer qu’une raison générique.",
     degraded: "Dégradé",
     timelineNoHistory:
       "Pas encore d’historique. Une fois MongoDB et le cron enregistrés, les vérifications récentes apparaissent ici.",
     timelineCurrentCheckDev: "Vérification actuelle uniquement (dev)",
-    timelineRecentChecks: "Vérifications récentes ({{count}})",
+    timelineRecentChecks:
+      "Vérifications récentes — {{hours}} dernières heures ({{count}} échantillons)",
     timelineAriaSummary: "{{n}} vérifications : {{ups}} OK, {{fails}} en échec",
     timelineTooltipUp: "{{time}} — OK",
     timelineTooltipDown: "{{time}} — Échec",
@@ -378,14 +379,14 @@ export const fr: MessageTree = {
     latencyLatest: "Dernier",
     badgeMainUptime: "{{percent}} de disponibilité",
     badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} exécutions entièrement OK · jusqu’à {{windowMaxRuns}} affichées",
+      "{{passedRuns}}/{{totalRuns}} OK · fenêtre {{hours}}h · plafond {{windowMaxRuns}} échantillons",
     badgePlaceholder: "Disponibilité",
     badgeCollecting: "Collecte des vérifications planifiées…",
     badgeLink: "État du système →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Propulsé par inta.dev",
     uptimeJsonWidgetDescription:
-      "Sur les {{totalRuns}} dernières exécutions planifiées, {{passedRuns}} se sont terminées sans incident (tous les services ont répondu normalement).",
+      "Au cours des {{hours}} dernières heures, {{totalRuns}} exécutions planifiées ont été stockées ; {{passedRuns}} comptent comme entièrement opérationnelles (toutes les sondes OK, sans incident opérateur ni maintenance applicable).",
     uptimeJsonNoHistoryDescription:
       "La disponibilité apparaîtra ici une fois les contrôles de santé planifiés enregistrés.",
     embedBadgeButton: "Intégrer le badge",
@@ -425,7 +426,7 @@ export const fr: MessageTree = {
     trustBulletPass:
       "Un contrôle est réussi lorsque le statut HTTP est strictement inférieur à 500 ; timeouts et erreurs réseau comptent comme échecs.",
     trustBulletHistory:
-      "Les chronologies et le pourcentage de disponibilité en tête utilisent les {{n}} dernières exécutions stockées (TTL MongoDB d’environ 14 jours).",
+      "Chronologies, journal d’incidents, tendances de latence et pourcentage de disponibilité en tête utilisent les vérifications stockées sur les {{hours}} dernières heures (UTC), jusqu’à {{maxRows}} échantillons par chargement (TTL MongoDB ~14 jours). Les incidents opérateur et la maintenance active comptent comme indisponibilité lorsqu’ils s’appliquent.",
     trustBulletUtc: "Toutes les heures de cette page sont en UTC.",
     manualNoticesHeading: "Messages d’exploitation",
     manualNoticesIntro:

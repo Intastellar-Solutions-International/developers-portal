@@ -317,10 +317,10 @@ export const nl: MessageTree = {
     ariaUptimeStored: "Beschikbaarheid uit opgeslagen geplande controles",
     uptimeWord: "beschikbaarheid",
     uptimeStoredRunsBefore:
-      "We voeren deze controles automatisch volgens een schema uit. Van de laatste",
-    uptimeStoredRunsMid: "runs waren",
+      "We voeren deze controles automatisch volgens een schema uit. In de laatste {{hours}} uur (UTC) hebben we",
+    uptimeStoredRunsMid: "runs opgeslagen ·",
     uptimeStoredRunsAfter:
-      "volledig succesvol (alle services reageerden normaal in die run).",
+      "tellen als volledig up (alle services OK in die run, zonder van toepassing zijnde teammelding of onderhoud op dat moment).",
     devLiveProbeBefore: "Ontwikkelmodus:",
     devLiveProbeStrong: "live-controle",
     devLiveProbeAfter:
@@ -350,21 +350,22 @@ export const nl: MessageTree = {
     footnoteP2a: "Configureer doelen met",
     footnoteP2b: "(volledige vervanging) of",
     footnoteP2c:
-      "(toevoegen). Een controle telt als geslaagd als de HTTP-status onder 500 is. Het incidentlog toont opgeslagen cron-runs waarbij een doel faalde, inclusief probetekst indien opgeslagen. Tijdlijnen, incidentlog en latentietrends gebruiken de laatste",
+      "(toevoegen). Een controle telt als geslaagd als de HTTP-status onder 500 is. Het incidentlog toont mislukte cron-runs in dat venster, inclusief probetekst indien opgeslagen.",
     footnoteP2d:
-      "runs (14 dagen TTL in Mongo). Het kop-beschikbaarheidspercentage gebruikt hetzelfde venster: het deel runs waarin alle doelen slaagden. Tijden op deze pagina zijn UTC. Nieuwe geschiedenisrijen slaan per doel",
+      "Tijdlijnen, incidentlog en latentietrends delen dezelfde rollende opslag: de laatste {{hours}} uur (UTC), tot {{maxRows}} samples per aanvraag (14 dagen TTL in Mongo). Het kop-beschikbaarheidspercentage gebruikt hetzelfde venster: een run telt alleen als up als alle doelen slaagden en het tijdstip buiten van toepassing zijnde teammeldingen en onderhoud valt. Stel in met STATUS_HISTORY_WINDOW_HOURS en STATUS_HISTORY_MAX_ROWS. Tijden zijn UTC. Nieuwe geschiedenisrijen slaan per doel",
     footnoteP2e:
       " op; oudere rijen sturen nog steeds omhoog/omlaag-segmenten tot ze verlopen.",
     incidentHeading: "Incidentlog",
     incidentEmptyBody:
       "Een incident is een opgeslagen cron-run waarin minstens één doel uitviel (HTTP 5xx, time-out of geen antwoord — dezelfde regels als live controles). Als recente geschiedenis overal slaagde, blijft deze lijst leeg.",
     incidentListIntro:
-      "Elke rij is één cron-run waarin minstens één controle faalde (nieuwste eerst). Tijden in UTC. Berichten komen van de probe indien beschikbaar; oudere geschiedenis kan alleen een generieke reden tonen.",
+      "Elke rij is één cron-run waarin minstens één controle faalde (nieuwste eerst), binnen hetzelfde rollende venster als tijdlijnen en uptime. Tijden in UTC. Berichten komen van de probe indien beschikbaar; oudere geschiedenis kan alleen een generieke reden tonen.",
     degraded: "Verstoord",
     timelineNoHistory:
       "Nog geen geschiedenis. Zodra MongoDB en cron runs opslaan, verschijnen recente controles hier.",
     timelineCurrentCheckDev: "Alleen huidige controle (dev)",
-    timelineRecentChecks: "Recente controles ({{count}})",
+    timelineRecentChecks:
+      "Recente controles — laatste {{hours}} uur ({{count}} metingen)",
     timelineAriaSummary: "{{n}} controles: {{ups}} OK, {{fails}} mislukt",
     timelineTooltipUp: "{{time}} — OK",
     timelineTooltipDown: "{{time}} — Mislukt",
@@ -378,14 +379,14 @@ export const nl: MessageTree = {
     latencyLatest: "Laatste",
     badgeMainUptime: "{{percent}} beschikbaarheid",
     badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} runs volledig OK · tot {{windowMaxRuns}} in beeld",
+      "{{passedRuns}}/{{totalRuns}} up · {{hours}}u-venster · max {{windowMaxRuns}} metingen",
     badgePlaceholder: "Beschikbaarheid",
     badgeCollecting: "Geplande controles verzamelen…",
     badgeLink: "Systeemstatus →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Mogelijk gemaakt door inta.dev",
     uptimeJsonWidgetDescription:
-      "Van de laatste {{totalRuns}} geplande runs waren {{passedRuns}} volledig succesvol (alle services reageerden normaal).",
+      "In de laatste {{hours}} uur werden {{totalRuns}} geplande runs opgeslagen; {{passedRuns}} tellen als volledig up (alle probes OK, geen van toepassing zijnde teammelding of onderhoud).",
     uptimeJsonNoHistoryDescription:
       "Beschikbaarheid verschijnt hier zodra geplande healthchecks zijn opgeslagen.",
     embedBadgeButton: "Badge insluiten",
@@ -425,7 +426,7 @@ export const nl: MessageTree = {
     trustBulletPass:
       "Een check slaagt als de HTTP-status lager is dan 500; timeouts en netwerkfouten tellen als mislukt.",
     trustBulletHistory:
-      "Tijdlijnen en het uptime-percentage bovenaan gebruiken de laatste {{n}} opgeslagen runs (MongoDB-TTL ongeveer 14 dagen).",
+      "Tijdlijnen, incidentlog, latentietrends en het uptime-percentage bovenaan gebruiken opgeslagen controles van de laatste {{hours}} uur (UTC), tot {{maxRows}} metingen per laden (MongoDB-TTL ongeveer 14 dagen). Actieve teammeldingen en onderhoud tellen als downtime wanneer van toepassing.",
     trustBulletUtc: "Alle tijden op deze pagina zijn UTC.",
     manualNoticesHeading: "Mededelingen van het team",
     manualNoticesIntro:

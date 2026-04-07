@@ -325,8 +325,8 @@ export const en = {
     ariaUptimeStored: "Uptime from stored scheduled checks",
     uptimeWord: "uptime",
     uptimeStoredRunsBefore:
-      "We run these checks automatically on a schedule. In the last",
-    uptimeStoredRunsMid: "runs,",
+      "We run these checks automatically on a schedule. Over the last {{hours}} hours (UTC), we stored",
+    uptimeStoredRunsMid: "runs ·",
     uptimeStoredRunsAfter:
       "count as fully up: every service responded normally in that run, with no active operator notice or scheduled maintenance applying to that moment.",
     devLiveProbeBefore: "Development mode: showing a",
@@ -359,21 +359,22 @@ export const en = {
     footnoteP2a: "Configure targets with",
     footnoteP2b: "(full replace) or",
     footnoteP2c:
-      "(append). A check counts as passing when the HTTP status is below 500. The incident log shows stored cron runs where any target failed, including probe error text when saved. Timelines, the incident log, and latency trends use the last",
+      "(append). A check counts as passing when the HTTP status is below 500. The incident log shows stored cron runs where any target failed in that window, including probe error text when saved.",
     footnoteP2d:
-      "runs (14-day TTL in Mongo). The headline uptime percentage uses the same window: runs count as up only when every target passed and the run time is outside operator notices and maintenance windows that apply (global or to those targets). Times on this page are UTC. New history rows store per-target",
+      "Timelines, the incident log, and latency trends use the same rolling store: the last {{hours}} hours (UTC), up to {{maxRows}} samples per request (14-day TTL in Mongo). The headline uptime percentage uses the same window: runs count as up only when every target passed and the run time is outside operator notices and maintenance windows that apply (global or to those targets). Tune with STATUS_HISTORY_WINDOW_HOURS and STATUS_HISTORY_MAX_ROWS. Times on this page are UTC. New history rows store per-target",
     footnoteP2e:
       "; older rows still drive up/down segments until they expire.",
     incidentHeading: "Incident log",
     incidentEmptyBody:
       "An incident is a stored cron run where at least one target was down (HTTP 5xx, timeout, or no response — same rules as the live checks). If everything in recent history passed, this list stays empty.",
     incidentListIntro:
-      "Each row is one cron run where at least one check failed (newest first). Times are UTC. Messages come from the probe when available; older history rows may only show a generic reason.",
+      "Each row is one cron run where at least one check failed (newest first), within the same rolling window as timelines and uptime. Times are UTC. Messages come from the probe when available; older history rows may only show a generic reason.",
     degraded: "Degraded",
     timelineNoHistory:
       "No history yet. After MongoDB and cron store runs, recent checks appear here.",
     timelineCurrentCheckDev: "Current check only (dev)",
-    timelineRecentChecks: "Recent checks ({{count}})",
+    timelineRecentChecks:
+      "Recent checks — last {{hours}} hours ({{count}} samples)",
     timelineAriaSummary: "{{n}} checks: {{ups}} up, {{fails}} down",
     timelineTooltipUp: "{{time}} — Up",
     timelineTooltipDown: "{{time}} — Down",
@@ -387,14 +388,14 @@ export const en = {
     latencyLatest: "Latest",
     badgeMainUptime: "{{percent}} uptime",
     badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} runs counted as up · up to {{windowMaxRuns}} in view",
+      "{{passedRuns}}/{{totalRuns}} up · {{hours}}h window · cap {{windowMaxRuns}} samples",
     badgePlaceholder: "Uptime",
     badgeCollecting: "Collecting scheduled checks…",
     badgeLink: "System status →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Powered by inta.dev",
     uptimeJsonWidgetDescription:
-      "In the last {{totalRuns}} scheduled runs, {{passedRuns}} count as fully up (all probes OK, no applying operator notice or maintenance at that time).",
+      "In the last {{hours}} hours we stored {{totalRuns}} scheduled runs; {{passedRuns}} count as fully up (all probes OK, no applying operator notice or maintenance at that time).",
     uptimeJsonNoHistoryDescription:
       "Uptime will appear here after scheduled health checks have been stored.",
     embedBadgeButton: "Embed badge",
@@ -434,7 +435,7 @@ export const en = {
     trustBulletPass:
       "A check passes when the HTTP status is below 500; timeouts and network errors count as failed.",
     trustBulletHistory:
-      "Timelines and the headline uptime percentage use the last {{n}} stored runs (MongoDB TTL about 14 days). The headline figure also treats active operator notices and scheduled maintenance (when they apply) like downtime for that run.",
+      "Timelines, incident log, latency trends, and the headline uptime percentage use stored checks from the last {{hours}} hours (UTC), up to {{maxRows}} samples per load (MongoDB TTL about 14 days). The headline figure also treats active operator notices and scheduled maintenance (when they apply) like downtime for that run.",
     trustBulletUtc: "All times on this page are UTC.",
     manualNoticesHeading: "Operator notices",
     manualNoticesIntro:

@@ -47,14 +47,46 @@ export type StatusIncident = {
   failures: StatusIncidentFailure[];
 };
 
-function historyMaxPoints(): number {
-  const n = Number(process.env.STATUS_HISTORY_POINTS);
-  if (Number.isFinite(n) && n >= 1 && n <= 200) return Math.floor(n);
+/** Rolling window for timelines, uptime, and incident log (UTC clock on `checkedAt`). */
+function historyWindowHours(): number {
+  const n = Number(process.env.STATUS_HISTORY_WINDOW_HOURS);
+  if (Number.isFinite(n) && n >= 1 && n <= 168) return Math.floor(n);
   return 48;
 }
 
+/** Safety cap on how many history rows we load per request (cron may run more often than once per minute). */
+function historyMaxRowsCap(): number {
+  const n = Number(process.env.STATUS_HISTORY_MAX_ROWS);
+  if (Number.isFinite(n) && n >= 50 && n <= 20000) return Math.floor(n);
+  return 5000;
+}
+
+export function getStatusHistoryWindowHours(): number {
+  return historyWindowHours();
+}
+
+export function getStatusHistoryMaxRowsCap(): number {
+  return historyMaxRowsCap();
+}
+
+/**
+ * Max rows loaded for history queries (safety cap). Kept for JSON/badge field names that
+ * historically used “points”.
+ */
 export function getStatusHistoryMaxPoints(): number {
-  return historyMaxPoints();
+  return historyMaxRowsCap();
+}
+
+async function loadHistoryRowsNewestFirst(): Promise<StatusHistoryRow[]> {
+  const col = await getCollection<StatusHistoryRow>(STATUS_HISTORY_COLLECTION);
+  if (!col) return [];
+  const sinceMs = Date.now() - historyWindowHours() * 60 * 60 * 1000;
+  const since = new Date(sinceMs);
+  return col
+    .find({ checkedAt: { $gte: since } })
+    .sort({ checkedAt: -1 })
+    .limit(historyMaxRowsCap())
+    .toArray();
 }
 
 export type StoredOverallUptime = {
@@ -140,21 +172,12 @@ function runCountsAsPassedForUptime(
 }
 
 /**
- * Share of stored cron runs that count as “up” over the last `maxPoints` rows (same window as
+ * Share of stored cron runs that count as “up” in the configured time window (same rows as
  * per-monitor timelines): `overallOk` plus no overlapping operator notice / maintenance for that
  * instant (see `runCountsAsPassedForUptime`).
  */
-export async function getStoredOverallUptime(
-  maxPoints?: number,
-): Promise<StoredOverallUptime | null> {
-  const limit = maxPoints ?? historyMaxPoints();
-  const col = await getCollection<StatusHistoryRow>(STATUS_HISTORY_COLLECTION);
-  if (!col) return null;
-  const rows = await col
-    .find({})
-    .sort({ checkedAt: -1 })
-    .limit(limit)
-    .toArray();
+export async function getStoredOverallUptime(): Promise<StoredOverallUptime | null> {
+  const rows = await loadHistoryRowsNewestFirst();
   if (rows.length === 0) return null;
 
   const times = rows.map((r) => r.checkedAt.getTime());
@@ -208,24 +231,17 @@ export async function appendStatusHistoryRun(
 }
 
 /**
- * Latest `maxPoints` runs, oldest → newest per target (for left-to-right timelines).
+ * Stored runs in the configured time window, oldest → newest per target (left-to-right timelines).
  */
 export async function getStatusTimelines(
   targetIds: string[],
-  maxPoints?: number,
 ): Promise<Record<string, StatusTimelinePoint[]>> {
-  const limit = maxPoints ?? historyMaxPoints();
   const empty = (): Record<string, StatusTimelinePoint[]> =>
     Object.fromEntries(targetIds.map((id) => [id, [] as StatusTimelinePoint[]]));
 
-  const col = await getCollection<StatusHistoryRow>(STATUS_HISTORY_COLLECTION);
-  if (!col || targetIds.length === 0) return empty();
+  if (targetIds.length === 0) return empty();
 
-  const rowsNewestFirst = await col
-    .find({})
-    .sort({ checkedAt: -1 })
-    .limit(limit)
-    .toArray();
+  const rowsNewestFirst = await loadHistoryRowsNewestFirst();
   const rows = rowsNewestFirst.reverse();
 
   const out = empty();
@@ -258,19 +274,13 @@ function incidentFailureSummary(r: {
 }
 
 /**
- * Recent runs where at least one target failed (newest first).
+ * Recent runs where at least one target failed (newest first), within the same history window as
+ * timelines and uptime.
  */
 export async function getRecentStatusIncidents(
   limit = 25,
 ): Promise<StatusIncident[]> {
-  const col = await getCollection<StatusHistoryRow>(STATUS_HISTORY_COLLECTION);
-  if (!col) return [];
-  const cap = Math.min(400, Math.max(limit * 8, 48));
-  const rowsNewestFirst = await col
-    .find({})
-    .sort({ checkedAt: -1 })
-    .limit(cap)
-    .toArray();
+  const rowsNewestFirst = await loadHistoryRowsNewestFirst();
 
   const out: StatusIncident[] = [];
   for (const row of rowsNewestFirst) {

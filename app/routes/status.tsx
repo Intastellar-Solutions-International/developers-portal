@@ -26,7 +26,8 @@ import {
 } from "~/lib/format-datetime";
 import {
   getRecentStatusIncidents,
-  getStatusHistoryMaxPoints,
+  getStatusHistoryMaxRowsCap,
+  getStatusHistoryWindowHours,
   getStatusTimelines,
   getStoredOverallUptime,
   type StatusIncident,
@@ -86,7 +87,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const timelines: Record<string, StatusTimelinePoint[]> = {};
   let incidents: StatusIncident[] = [];
   let checkedAtLabel: string | null = null;
-  const historyWindowSize = getStatusHistoryMaxPoints();
+  const historyWindowHours = getStatusHistoryWindowHours();
+  const historyMaxRowsCap = getStatusHistoryMaxRowsCap();
   const mongoConfigured = isMongoConfigured();
   const subscribeEmailAvailable =
     mongoConfigured && isStatusEmailConfigured();
@@ -116,7 +118,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     if (source === "mongodb") {
       Object.assign(timelines, await getStatusTimelines(ids));
       incidents = await getRecentStatusIncidents(25);
-      const u = await getStoredOverallUptime(historyWindowSize);
+      const u = await getStoredOverallUptime();
       if (u) {
         uptime = {
           variant: "stored",
@@ -158,7 +160,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     uptime,
     maintenance,
     deploy,
-    historyWindowSize,
+    historyWindowHours,
+    historyMaxRowsCap,
     manualIncidents,
     feedUrl: absoluteUrl("/api/status/feed.xml"),
     notifyFlash,
@@ -201,7 +204,8 @@ export default function StatusPage() {
     uptime,
     maintenance,
     deploy,
-    historyWindowSize,
+    historyWindowHours,
+    historyMaxRowsCap,
     manualIncidents,
     feedUrl,
     notifyFlash,
@@ -253,7 +257,11 @@ export default function StatusPage() {
         </p>
       ) : null}
 
-      <StatusTrustSection copy={copy} historyMaxPoints={historyWindowSize} />
+      <StatusTrustSection
+        copy={copy}
+        historyWindowHours={historyWindowHours}
+        historyMaxRowsCap={historyMaxRowsCap}
+      />
 
       <StatusSubscribeSection
         copy={copy}
@@ -285,7 +293,9 @@ export default function StatusPage() {
             </span>
           </p>
           <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-            {copy.uptimeStoredRunsBefore}{" "}
+            {interpolate(copy.uptimeStoredRunsBefore, {
+              hours: historyWindowHours,
+            })}{" "}
             <strong className="font-medium text-zinc-700 dark:text-zinc-300">
               {uptime.totalRuns}
             </strong>{" "}
@@ -392,6 +402,7 @@ export default function StatusPage() {
                       points={timelines[r.id] ?? []}
                       liveSingleCheck={source === "live"}
                       copy={copy}
+                      historyWindowHours={historyWindowHours}
                     />
                     <StatusLatencyTrend
                       points={timelines[r.id] ?? []}
@@ -473,10 +484,10 @@ export default function StatusPage() {
               STATUS_CHECK_EXTRA_JSON
             </code>{" "}
             {copy.footnoteP2c}{" "}
-            <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
-              STATUS_HISTORY_POINTS
-            </code>{" "}
-            {copy.footnoteP2d}{" "}
+            {interpolate(copy.footnoteP2d, {
+              hours: historyWindowHours,
+              maxRows: historyMaxRowsCap,
+            })}{" "}
             <code className="rounded bg-zinc-100 px-1 font-mono text-[0.7rem] dark:bg-zinc-800">
               latencyMs
             </code>
