@@ -275,7 +275,7 @@ export default function StatusPage() {
         <StatusDeploySection copy={copy} deploy={deploy} />
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2 lg:items-start lg:gap-8">
+      <div className="mt-8 grid gap-6 lg:gap-8">
         <div className="min-w-0 space-y-4">
           {uptime?.variant === "stored" ? (
             <div
