@@ -27,8 +27,16 @@ export type StatusHistoryRow = {
   }>;
 };
 
+/** Per-sample bar colour on monitor timelines (probe vs operator notice vs maintenance). */
+export type StatusTimelineSegmentKind =
+  | "up"
+  | "probe_down"
+  | "operator_notice"
+  | "maintenance";
+
 export type StatusTimelinePoint = {
   ok: boolean;
+  segmentKind: StatusTimelineSegmentKind;
   checkedAt: string;
   /** Precomputed on the server so SSR HTML matches hydration (no client `Intl`). */
   checkedAtLabel: string;
@@ -147,6 +155,59 @@ function manualIncidentFailsRunAt(
   return affected.some((id) => ids.has(id));
 }
 
+function maintenanceAppliesToTargetAt(
+  w: StatusMaintenanceWindow,
+  checkedAt: Date,
+  targetId: string,
+): boolean {
+  if (!instantInMaintenanceWindow(w, checkedAt)) return false;
+  const affected = w.affectedTargetIds;
+  if (!affected?.length) return true;
+  return affected.includes(targetId);
+}
+
+function manualNoticeAppliesToTargetAt(
+  incident: {
+    createdAt: Date;
+    resolvedAt: Date | null;
+    affectedTargetIds?: string[];
+  },
+  checkedAt: Date,
+  targetId: string,
+): boolean {
+  if (!manualIncidentActiveAt(incident, checkedAt)) return false;
+  const affected = incident.affectedTargetIds;
+  if (!affected?.length) return true;
+  return affected.includes(targetId);
+}
+
+function resolveTimelineSegmentKind(
+  probeOk: boolean,
+  checkedAt: Date,
+  targetId: string,
+  maintenance: StatusMaintenanceWindow[],
+  manualIncidents: Array<{
+    createdAt: Date;
+    resolvedAt: Date | null;
+    affectedTargetIds?: string[];
+  }>,
+): StatusTimelineSegmentKind {
+  if (!probeOk) return "probe_down";
+  if (
+    manualIncidents.some((i) =>
+      manualNoticeAppliesToTargetAt(i, checkedAt, targetId),
+    )
+  ) {
+    return "operator_notice";
+  }
+  if (
+    maintenance.some((w) => maintenanceAppliesToTargetAt(w, checkedAt, targetId))
+  ) {
+    return "maintenance";
+  }
+  return "up";
+}
+
 /**
  * A stored cron run counts toward headline uptime only when every probe passed and the timestamp
  * is not inside an active operator notice or scheduled maintenance window (env + Mongo) that
@@ -242,16 +303,45 @@ export async function getStatusTimelines(
   if (targetIds.length === 0) return empty();
 
   const rowsNewestFirst = await loadHistoryRowsNewestFirst();
-  const rows = rowsNewestFirst.reverse();
+  if (rowsNewestFirst.length === 0) return empty();
+
+  const times = rowsNewestFirst.map((r) => r.checkedAt.getTime());
+  const rangeStart = new Date(Math.min(...times));
+  const rangeEnd = new Date(Math.max(...times));
+
+  const envOverlapping = filterMaintenanceWindowsOverlappingRange(
+    getConfiguredMaintenanceWindows(),
+    rangeStart,
+    rangeEnd,
+  );
+  const [mongoMaintOverlapping, manualIncidents] = await Promise.all([
+    listMaintenanceWindowsOverlappingRange(rangeStart, rangeEnd),
+    listManualIncidentRowsOverlappingRange(rangeStart, rangeEnd),
+  ]);
+  const maintenance = mergeMaintenanceById(
+    envOverlapping,
+    mongoMaintOverlapping,
+  );
+
+  const rows = rowsNewestFirst.slice().reverse();
 
   const out = empty();
   for (const row of rows) {
     const iso = row.checkedAt.toISOString();
     const label = formatDateTimeShortUtc(iso);
+    const at = row.checkedAt;
     for (const id of targetIds) {
       const hit = row.results.find((r) => r.id === id);
+      const probeOk = hit?.ok ?? false;
       out[id].push({
-        ok: hit?.ok ?? false,
+        ok: probeOk,
+        segmentKind: resolveTimelineSegmentKind(
+          probeOk,
+          at,
+          id,
+          maintenance,
+          manualIncidents,
+        ),
         checkedAt: iso,
         checkedAtLabel: label,
         latencyMs: hit?.latencyMs,

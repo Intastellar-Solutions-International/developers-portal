@@ -370,9 +370,17 @@ export const de: MessageTree = {
     timelineCurrentCheckDev: "Nur aktuelle Prüfung (Dev)",
     timelineRecentChecks:
       "Letzte Prüfungen — letzte {{hours}} Stunden ({{count}} Messungen)",
-    timelineAriaSummary: "{{n}} Prüfungen: {{ups}} OK, {{fails}} fehlgeschlagen",
+    timelineAriaSummary:
+      "{{n}} Prüfungen: {{clear}} vollständig OK, {{flagged}} mit Ausfall, Hinweis oder Wartung",
     timelineTooltipUp: "{{time}} — OK",
     timelineTooltipDown: "{{time}} — Ausfall",
+    timelineTooltipNotice: "{{time}} — Operatorenhinweis",
+    timelineTooltipMaintenance: "{{time}} — Geplante Wartung",
+    timelineIssueListIntro: "Nicht vollständig OK (UTC)",
+    timelineIssueLabelDown: "Prüfung fehlgeschlagen",
+    timelineIssueLabelNotice: "Operatorenhinweis",
+    timelineIssueLabelMaintenance: "Geplante Wartung",
+    timelineIssueMore: "+ {{n}} weitere…",
     latencyNeedsTwoRuns:
       "Antwortzeit-Trend braucht mindestens zwei gespeicherte Läufe mit Latenz (nachdem der nächste Cron latencyMs schreibt).",
     latencyResponseTime: "Antwortzeit ({{label}})",

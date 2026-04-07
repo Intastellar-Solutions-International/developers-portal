@@ -134,6 +134,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         timelines[r.id] = [
           {
             ok: r.ok,
+            segmentKind: r.ok ? "up" : "probe_down",
             checkedAt: iso,
             checkedAtLabel: tip,
             latencyMs: r.latencyMs,

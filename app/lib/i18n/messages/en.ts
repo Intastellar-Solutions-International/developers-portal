@@ -375,9 +375,17 @@ export const en = {
     timelineCurrentCheckDev: "Current check only (dev)",
     timelineRecentChecks:
       "Recent checks — last {{hours}} hours ({{count}} samples)",
-    timelineAriaSummary: "{{n}} checks: {{ups}} up, {{fails}} down",
+    timelineAriaSummary:
+      "{{n}} checks: {{clear}} all clear, {{flagged}} with downtime, notice, or maintenance",
     timelineTooltipUp: "{{time}} — Up",
     timelineTooltipDown: "{{time}} — Down",
+    timelineTooltipNotice: "{{time}} — Operator notice",
+    timelineTooltipMaintenance: "{{time}} — Scheduled maintenance",
+    timelineIssueListIntro: "Not fully clear (UTC)",
+    timelineIssueLabelDown: "Failed check",
+    timelineIssueLabelNotice: "Operator notice",
+    timelineIssueLabelMaintenance: "Scheduled maintenance",
+    timelineIssueMore: "+ {{n}} more…",
     latencyNeedsTwoRuns:
       "Response-time trend needs at least two stored runs with latency (after the next cron writes latencyMs).",
     latencyResponseTime: "Response time ({{label}})",

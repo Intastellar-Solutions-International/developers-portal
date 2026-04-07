@@ -366,9 +366,17 @@ export const nl: MessageTree = {
     timelineCurrentCheckDev: "Alleen huidige controle (dev)",
     timelineRecentChecks:
       "Recente controles — laatste {{hours}} uur ({{count}} metingen)",
-    timelineAriaSummary: "{{n}} controles: {{ups}} OK, {{fails}} mislukt",
+    timelineAriaSummary:
+      "{{n}} controles: {{clear}} volledig OK, {{flagged}} met storing, melding of onderhoud",
     timelineTooltipUp: "{{time}} — OK",
     timelineTooltipDown: "{{time}} — Mislukt",
+    timelineTooltipNotice: "{{time}} — Operateursmelding",
+    timelineTooltipMaintenance: "{{time}} — Gepland onderhoud",
+    timelineIssueListIntro: "Niet volledig OK (UTC)",
+    timelineIssueLabelDown: "Controle mislukt",
+    timelineIssueLabelNotice: "Operateursmelding",
+    timelineIssueLabelMaintenance: "Gepland onderhoud",
+    timelineIssueMore: "+ {{n}} meer…",
     latencyNeedsTwoRuns:
       "Responstijd-trend heeft minstens twee opgeslagen runs met latentie nodig (nadat de volgende cron latencyMs schrijft).",
     latencyResponseTime: "Responstijd ({{label}})",

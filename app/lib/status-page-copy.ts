@@ -48,6 +48,13 @@ export type StatusPageCopy = {
   timelineAriaSummary: string;
   timelineTooltipUp: string;
   timelineTooltipDown: string;
+  timelineTooltipNotice: string;
+  timelineTooltipMaintenance: string;
+  timelineIssueListIntro: string;
+  timelineIssueLabelDown: string;
+  timelineIssueLabelNotice: string;
+  timelineIssueLabelMaintenance: string;
+  timelineIssueMore: string;
   latencyNeedsTwoRuns: string;
   latencyResponseTime: string;
   latencyAriaTrend: string;
@@ -175,6 +182,13 @@ export function getStatusPageCopy(locale: Locale): StatusPageCopy {
     timelineAriaSummary: tp("status.timelineAriaSummary"),
     timelineTooltipUp: tp("status.timelineTooltipUp"),
     timelineTooltipDown: tp("status.timelineTooltipDown"),
+    timelineTooltipNotice: tp("status.timelineTooltipNotice"),
+    timelineTooltipMaintenance: tp("status.timelineTooltipMaintenance"),
+    timelineIssueListIntro: tp("status.timelineIssueListIntro"),
+    timelineIssueLabelDown: tp("status.timelineIssueLabelDown"),
+    timelineIssueLabelNotice: tp("status.timelineIssueLabelNotice"),
+    timelineIssueLabelMaintenance: tp("status.timelineIssueLabelMaintenance"),
+    timelineIssueMore: tp("status.timelineIssueMore"),
     latencyNeedsTwoRuns: tp("status.latencyNeedsTwoRuns"),
     latencyResponseTime: tp("status.latencyResponseTime"),
     latencyAriaTrend: tp("status.latencyAriaTrend"),
@@ -269,7 +283,8 @@ export function resolveStatusPageCopy(
     typeof fromLoader.trustHeading === "string" &&
     typeof fromLoader.manualNoticesHeading === "string" &&
     typeof fromLoader.subscribeRss === "string" &&
-    typeof fromLoader.subscribeSectionHeading === "string"
+    typeof fromLoader.subscribeSectionHeading === "string" &&
+    typeof fromLoader.timelineIssueListIntro === "string"
   ) {
     return fromLoader;
   }

@@ -365,9 +365,17 @@ export const da: MessageTree = {
     timelineCurrentCheckDev: "Kun aktuelt tjek (dev)",
     timelineRecentChecks:
       "Seneste tjek — seneste {{hours}} timer ({{count}} prøver)",
-    timelineAriaSummary: "{{n}} tjek: {{ups}} oppe, {{fails}} nede",
+    timelineAriaSummary:
+      "{{n}} tjek: {{clear}} helt grønne, {{flagged}} med nedetid, besked eller vedligehold",
     timelineTooltipUp: "{{time}} — Oppe",
     timelineTooltipDown: "{{time}} — Nede",
+    timelineTooltipNotice: "{{time}} — Operatørbesked",
+    timelineTooltipMaintenance: "{{time}} — Planlagt vedligehold",
+    timelineIssueListIntro: "Ikke helt grøn (UTC)",
+    timelineIssueLabelDown: "Tjek fejlede",
+    timelineIssueLabelNotice: "Operatørbesked",
+    timelineIssueLabelMaintenance: "Planlagt vedligehold",
+    timelineIssueMore: "+ {{n}} flere…",
     latencyNeedsTwoRuns:
       "Svartidstrend kræver mindst to gemte kørsler med latens (efter næste cron skriver latencyMs).",
     latencyResponseTime: "Svartid ({{label}})",

@@ -367,9 +367,17 @@ export const ptBr: MessageTree = {
     timelineCurrentCheckDev: "Apenas verificação atual (dev)",
     timelineRecentChecks:
       "Verificações recentes — últimas {{hours}} horas ({{count}} amostras)",
-    timelineAriaSummary: "{{n}} verificações: {{ups}} OK, {{fails}} com falha",
+    timelineAriaSummary:
+      "{{n}} verificações: {{clear}} totalmente OK, {{flagged}} com indisponibilidade, aviso ou manutenção",
     timelineTooltipUp: "{{time}} — OK",
     timelineTooltipDown: "{{time}} — Falha",
+    timelineTooltipNotice: "{{time}} — Aviso da operação",
+    timelineTooltipMaintenance: "{{time}} — Manutenção programada",
+    timelineIssueListIntro: "Não totalmente OK (UTC)",
+    timelineIssueLabelDown: "Verificação com falha",
+    timelineIssueLabelNotice: "Aviso da operação",
+    timelineIssueLabelMaintenance: "Manutenção programada",
+    timelineIssueMore: "+ {{n}} a mais…",
     latencyNeedsTwoRuns:
       "A tendência de tempo de resposta precisa de pelo menos duas execuções armazenadas com latência (após o próximo cron gravar latencyMs).",
     latencyResponseTime: "Tempo de resposta ({{label}})",

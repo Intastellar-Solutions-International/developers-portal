@@ -366,9 +366,17 @@ export const fr: MessageTree = {
     timelineCurrentCheckDev: "Vérification actuelle uniquement (dev)",
     timelineRecentChecks:
       "Vérifications récentes — {{hours}} dernières heures ({{count}} échantillons)",
-    timelineAriaSummary: "{{n}} vérifications : {{ups}} OK, {{fails}} en échec",
+    timelineAriaSummary:
+      "{{n}} vérifications : {{clear}} entièrement OK, {{flagged}} avec panne, avis opérateur ou maintenance",
     timelineTooltipUp: "{{time}} — OK",
     timelineTooltipDown: "{{time}} — Échec",
+    timelineTooltipNotice: "{{time}} — Avis opérateur",
+    timelineTooltipMaintenance: "{{time}} — Maintenance planifiée",
+    timelineIssueListIntro: "Pas entièrement OK (UTC)",
+    timelineIssueLabelDown: "Vérification en échec",
+    timelineIssueLabelNotice: "Avis opérateur",
+    timelineIssueLabelMaintenance: "Maintenance planifiée",
+    timelineIssueMore: "+ {{n}} de plus…",
     latencyNeedsTwoRuns:
       "La tendance des temps de réponse nécessite au moins deux exécutions stockées avec latence (après que le prochain cron ait écrit latencyMs).",
     latencyResponseTime: "Temps de réponse ({{label}})",
