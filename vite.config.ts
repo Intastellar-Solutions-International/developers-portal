@@ -2,8 +2,14 @@ import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
+import { fullReloadOnRouteModules } from "./vite-plugin-full-reload-routes";
+
 export default defineConfig({
-  plugins: [tailwindcss(), reactRouter()],
+  plugins: [
+    fullReloadOnRouteModules(),
+    tailwindcss(),
+    reactRouter(),
+  ],
   resolve: {
     tsconfigPaths: true,
     dedupe: ["react", "react-dom"],

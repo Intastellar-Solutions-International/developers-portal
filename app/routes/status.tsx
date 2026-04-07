@@ -41,6 +41,10 @@ import { getPublicMaintenanceWindows } from "~/lib/status-maintenance.server";
 import { listManualIncidentsPublic } from "~/lib/status-manual-incidents.server";
 import { isStatusEmailConfigured } from "~/lib/status-notify-email.server";
 import { absoluteUrl } from "~/lib/site";
+import {
+  uptimePercentHeadlineClass,
+  uptimePercentTier,
+} from "~/lib/status-uptime-tier";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
 const NOTIFY_FLASH = new Set([
@@ -229,8 +233,10 @@ export default function StatusPage() {
                 ? copy.notifyFlashUnsubInvalid
                 : null;
 
+  const hasManualNotices = manualIncidents.length > 0;
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-3xl px-4 py-10 lg:max-w-6xl">
       <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
         {copy.heading}
       </h1>
@@ -258,125 +264,124 @@ export default function StatusPage() {
         </p>
       ) : null}
 
-      <StatusTrustSection copy={copy} />
+      <div className="mt-8 grid gap-6 lg:grid-cols-2 lg:gap-8 *:min-w-0 [&>section]:mt-0">
+        <StatusTrustSection copy={copy} />
+        <StatusSubscribeSection
+          copy={copy}
+          feedUrl={feedUrl}
+          subscribeEmailAvailable={subscribeEmailAvailable}
+        />
+        <StatusMaintenanceSection copy={copy} windows={maintenance} />
+        <StatusDeploySection copy={copy} deploy={deploy} />
+      </div>
 
-      <StatusSubscribeSection
-        copy={copy}
-        feedUrl={feedUrl}
-        subscribeEmailAvailable={subscribeEmailAvailable}
-      />
-      <StatusMaintenanceSection copy={copy} windows={maintenance} />
-      <StatusDeploySection copy={copy} deploy={deploy} />
-
-      {uptime?.variant === "stored" ? (
-        <div
-          className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50/90 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-900/50"
-          aria-label={copy.ariaUptimeStored}
-        >
-          <p
-            className={`text-4xl font-semibold tabular-nums tracking-tight ${
-              uptime.percent >= 99.9
-                ? "text-emerald-600 dark:text-emerald-400"
-                : uptime.percent >= 99
-                  ? "text-amber-600 dark:text-amber-400"
-                  : "text-red-600 dark:text-red-400"
-            }`}
-          >
-            {uptime.percent % 1 === 0
-              ? `${uptime.percent.toFixed(0)}%`
-              : `${uptime.percent.toFixed(1)}%`}{" "}
-            <span className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
-              {copy.uptimeWord}
-            </span>
-          </p>
-          <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-            {copy.uptimeStoredRunsBefore}{" "}
-            <strong className="font-medium text-zinc-700 dark:text-zinc-300">
-              {uptime.totalRuns}
-            </strong>{" "}
-            {copy.uptimeStoredRunsMid}{" "}
-            <strong className="font-medium text-zinc-700 dark:text-zinc-300">
-              {uptime.passedRuns}
-            </strong>{" "}
-            {copy.uptimeStoredRunsAfter}
-          </p>
-          <div className="mt-4">
-            <button
-              type="button"
-              onClick={() => setEmbedModalOpen(true)}
-              className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+      <div className="mt-8 grid gap-6 lg:grid-cols-2 lg:items-start lg:gap-8">
+        <div className="min-w-0 space-y-4">
+          {uptime?.variant === "stored" ? (
+            <div
+              className="rounded-xl border border-zinc-200 bg-zinc-50/90 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-900/50"
+              aria-label={copy.ariaUptimeStored}
             >
-              {copy.embedBadgeButton}
-            </button>
-          </div>
+              <p
+                className={`text-4xl font-semibold tabular-nums tracking-tight ${uptimePercentHeadlineClass[uptimePercentTier(uptime.percent)]}`}
+              >
+                {uptime.percent % 1 === 0
+                  ? `${uptime.percent.toFixed(0)}%`
+                  : `${uptime.percent.toFixed(1)}%`}{" "}
+                <span className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
+                  {copy.uptimeWord}
+                </span>
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                {copy.uptimeStoredRunsBefore}{" "}
+                <strong className="font-medium text-zinc-700 dark:text-zinc-300">
+                  {uptime.totalRuns}
+                </strong>{" "}
+                {copy.uptimeStoredRunsMid}{" "}
+                <strong className="font-medium text-zinc-700 dark:text-zinc-300">
+                  {uptime.passedRuns}
+                </strong>{" "}
+                {copy.uptimeStoredRunsAfter}
+              </p>
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => setEmbedModalOpen(true)}
+                  className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                >
+                  {copy.embedBadgeButton}
+                </button>
+              </div>
+            </div>
+          ) : uptime?.variant === "dev" ? (
+            <div
+              className="rounded-xl border border-amber-200/80 bg-amber-50/60 px-5 py-4 dark:border-amber-900/40 dark:bg-amber-950/30"
+              aria-label={copy.ariaUptimeDev}
+            >
+              <p
+                className={`text-3xl font-semibold tabular-nums tracking-tight ${uptimePercentHeadlineClass[uptimePercentTier(uptime.percent)]}`}
+              >
+                {uptime.percent}%{" "}
+                <span className="text-base font-medium text-amber-900/80 dark:text-amber-200/80">
+                  {copy.onThisPageLoad}
+                </span>
+              </p>
+              <p className="mt-2 text-xs text-amber-900/90 dark:text-amber-100/70">
+                {copy.devUptimeNote}
+              </p>
+            </div>
+          ) : snapshot && source === "mongodb" ? (
+            <p className="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-400">
+              {copy.uptimePending}
+            </p>
+          ) : null}
         </div>
-      ) : uptime?.variant === "dev" ? (
-        <div
-          className="mt-6 rounded-xl border border-amber-200/80 bg-amber-50/60 px-5 py-4 dark:border-amber-900/40 dark:bg-amber-950/30"
-          aria-label={copy.ariaUptimeDev}
-        >
-          <p
-            className={`text-3xl font-semibold tabular-nums tracking-tight ${
-              uptime.percent >= 100
-                ? "text-emerald-700 dark:text-emerald-400"
-                : "text-red-600 dark:text-red-400"
-            }`}
-          >
-            {uptime.percent}%{" "}
-            <span className="text-base font-medium text-amber-900/80 dark:text-amber-200/80">
-              {copy.onThisPageLoad}
-            </span>
-          </p>
-          <p className="mt-2 text-xs text-amber-900/90 dark:text-amber-100/70">
-            {copy.devUptimeNote}
-          </p>
+
+        <div className="min-w-0 space-y-4">
+          {source === "live" ? (
+            <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
+              {copy.devLiveProbeBefore}{" "}
+              <strong>{copy.devLiveProbeStrong}</strong>{" "}
+              {copy.devLiveProbeAfter}
+            </p>
+          ) : null}
+
+          {!snapshot && source === "none" ? (
+            <p className="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900/50 dark:text-zinc-300">
+              {mongoConfigured ? copy.noSnapshotCron : copy.noSnapshotMongo}
+            </p>
+          ) : null}
+
+          {snapshot ? (
+            <div className="flex flex-wrap items-center gap-3 lg:pt-1">
+              <span
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
+                  snapshot.overallOk
+                    ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200"
+                    : "bg-red-100 text-red-900 dark:bg-red-950/60 dark:text-red-200"
+                }`}
+              >
+                <span
+                  className={`size-2 rounded-full ${
+                    snapshot.overallOk ? "bg-emerald-500" : "bg-red-500"
+                  }`}
+                  aria-hidden
+                />
+                {snapshot.overallOk
+                  ? copy.allChecksPassing
+                  : copy.someChecksFailing}
+              </span>
+              <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                {copy.updated} {checkedAtLabel}
+                {source === "mongodb" ? copy.storedUtc : copy.utcOnly}
+              </span>
+            </div>
+          ) : null}
         </div>
-      ) : snapshot && source === "mongodb" ? (
-        <p className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-400">
-          {copy.uptimePending}
-        </p>
-      ) : null}
-
-      {source === "live" ? (
-        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
-          {copy.devLiveProbeBefore}{" "}
-          <strong>{copy.devLiveProbeStrong}</strong>{" "}
-          {copy.devLiveProbeAfter}
-        </p>
-      ) : null}
-
-      {!snapshot && source === "none" ? (
-        <p className="mt-8 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900/50 dark:text-zinc-300">
-          {mongoConfigured ? copy.noSnapshotCron : copy.noSnapshotMongo}
-        </p>
-      ) : null}
+      </div>
 
       {snapshot ? (
         <>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <span
-              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
-                snapshot.overallOk
-                  ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200"
-                  : "bg-red-100 text-red-900 dark:bg-red-950/60 dark:text-red-200"
-              }`}
-            >
-              <span
-                className={`size-2 rounded-full ${
-                  snapshot.overallOk ? "bg-emerald-500" : "bg-red-500"
-                }`}
-                aria-hidden
-              />
-              {snapshot.overallOk
-                ? copy.allChecksPassing
-                : copy.someChecksFailing}
-            </span>
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">
-              {copy.updated} {checkedAtLabel}
-              {source === "mongodb" ? copy.storedUtc : copy.utcOnly}
-            </span>
-          </div>
-
           <ul className="mt-8 divide-y divide-zinc-200 dark:divide-zinc-700">
             {snapshot.results.map((r) => (
               <li key={r.id} className="py-4">
@@ -427,13 +432,22 @@ export default function StatusPage() {
             ))}
           </ul>
 
-          <StatusManualIncidents incidents={manualIncidents} copy={copy} />
-
-          <StatusIncidentLog
-            incidents={incidents}
-            targetNames={targetNames}
-            copy={copy}
-          />
+          <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-start *:min-w-0">
+            {hasManualNotices ? (
+              <div className="[&>section]:mt-0">
+                <StatusManualIncidents incidents={manualIncidents} copy={copy} />
+              </div>
+            ) : null}
+            <div
+              className={`[&>section]:mt-0${!hasManualNotices ? " lg:col-span-2" : ""}`}
+            >
+              <StatusIncidentLog
+                incidents={incidents}
+                targetNames={targetNames}
+                copy={copy}
+              />
+            </div>
+          </div>
         </>
       ) : (
         <StatusManualIncidents incidents={manualIncidents} copy={copy} />

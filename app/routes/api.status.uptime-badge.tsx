@@ -9,6 +9,7 @@ import {
   getStatusHistoryWindowHours,
   getStoredOverallUptime,
 } from "~/lib/status-history.server";
+import { uptimePercentTier } from "~/lib/status-uptime-tier";
 
 function escapeHtml(s: string): string {
   return s
@@ -76,12 +77,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   let subLine: string;
 
   if (stored) {
-    pctClass =
-      stored.percent >= 99.9
-        ? "good"
-        : stored.percent >= 99
-          ? "warn"
-          : "bad";
+    pctClass = uptimePercentTier(stored.percent);
     const pctText =
       stored.percent % 1 === 0
         ? `${stored.percent.toFixed(0)}%`
