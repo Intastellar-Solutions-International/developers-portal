@@ -110,12 +110,6 @@ function LanguageFlagMenu({ className = "" }: { className?: string }) {
                 <span className="text-lg leading-none" aria-hidden>
                   {LOCALE_FLAG_EMOJI[l]}
                 </span>
-                <span
-                  className="w-11 shrink-0 text-xs font-semibold tabular-nums tracking-wide text-zinc-500 dark:text-zinc-400"
-                  aria-hidden
-                >
-                  {localeToShortLabel(l)}
-                </span>
                 <span className="min-w-0">{t(`lang.${l}`)}</span>
               </button>
             </li>
