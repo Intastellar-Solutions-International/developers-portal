@@ -206,7 +206,7 @@ export type StatusPageCopy = {
   notifyFlashUnsubInvalid: string;
 };
 
-function buildStatusPageCopyTemplates(locale: Locale): StatusPageCopy {
+export function buildStatusPageCopyTemplates(locale: Locale): StatusPageCopy {
   const tp = (path: string) => translatePath(locale, path);
   return {
     heading: tp("status.heading"),
@@ -348,15 +348,20 @@ export function finalizeStatusPageCopy(
   hours: number,
   maxRows: number,
   locale: Locale,
+  options?: { uptimeNarrativeHours?: number },
 ): StatusPageCopy {
-  const window = formatWindowLabel(locale, hours);
+  const uptimeHours = options?.uptimeNarrativeHours ?? hours;
+  const windowForUptime = formatWindowLabel(locale, uptimeHours);
   return {
     ...base,
     statusHistoryWindowHours: hours,
     statusHistoryMaxRowsCap: maxRows,
     trustBulletHistory: interpolate(base.trustBulletHistory, { hours, maxRows }),
     footnoteP2d: interpolate(base.footnoteP2d, { hours, maxRows }),
-    uptimeStoredRunsBefore: interpolate(base.uptimeStoredRunsBefore, { hours, window }),
+    uptimeStoredRunsBefore: interpolate(base.uptimeStoredRunsBefore, {
+      hours: uptimeHours,
+      window: windowForUptime,
+    }),
   };
 }
 

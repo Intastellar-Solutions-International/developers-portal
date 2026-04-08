@@ -102,7 +102,28 @@ export type StoredOverallUptime = {
   percent: number;
   passedRuns: number;
   totalRuns: number;
+  /**
+   * Use in “last N days/hours” copy: min(configured rolling window, wall span from oldest to
+   * newest stored run in that window). Never larger than the configured window.
+   */
+  displayWindowHours: number;
 };
+
+const MS_PER_HOUR = 60 * 60 * 1000;
+
+/**
+ * Hours to show in human-facing uptime copy (badge, widget, intro line). Capped by the
+ * configured history window, and derived from actual stored samples when that span is shorter.
+ */
+export function getEffectiveHistoryWindowHoursForDisplay(
+  configuredWindowHours: number,
+  oldestCheckedAt: Date,
+  newestCheckedAt: Date,
+): number {
+  const spanMs = Math.max(0, newestCheckedAt.getTime() - oldestCheckedAt.getTime());
+  const spanHours = Math.max(1, Math.ceil(spanMs / MS_PER_HOUR));
+  return Math.min(configuredWindowHours, spanHours);
+}
 
 function instantInMaintenanceWindow(
   w: StatusMaintenanceWindow,
@@ -265,7 +286,13 @@ export async function getStoredOverallUptime(): Promise<StoredOverallUptime | nu
   const totalRuns = rows.length;
   const percent =
     Math.round((passedRuns / totalRuns) * 1000) / 10;
-  return { percent, passedRuns, totalRuns };
+  const configuredWindow = historyWindowHours();
+  const displayWindowHours = getEffectiveHistoryWindowHoursForDisplay(
+    configuredWindow,
+    rangeStart,
+    rangeEnd,
+  );
+  return { percent, passedRuns, totalRuns, displayWindowHours };
 }
 
 /**

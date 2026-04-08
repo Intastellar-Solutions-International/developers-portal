@@ -16,7 +16,8 @@ import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
 import {
-  getStatusPageCopyForLoader,
+  buildStatusPageCopyTemplates,
+  finalizeStatusPageCopy,
   resolveStatusPageCopy,
 } from "~/lib/status-page-copy";
 import { isMongoConfigured } from "~/lib/mongodb.server";
@@ -92,11 +93,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   let checkedAtLabel: string | null = null;
   const historyWindowHours = getStatusHistoryWindowHours();
   const historyMaxRowsCap = getStatusHistoryMaxRowsCap();
-  const copy = getStatusPageCopyForLoader(
-    locale,
-    historyWindowHours,
-    historyMaxRowsCap,
-  );
   const mongoConfigured = isMongoConfigured();
   const subscribeEmailAvailable =
     mongoConfigured && isStatusEmailConfigured();
@@ -119,6 +115,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       }
     | { variant: "dev"; percent: number };
   let uptime: UptimePayload | null = null;
+  let uptimeNarrativeHours = historyWindowHours;
 
   if (snapshot) {
     checkedAtLabel = formatDateTimeMediumUtc(snapshot.checkedAt);
@@ -128,6 +125,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       incidents = await getRecentStatusIncidents(25);
       const u = await getStoredOverallUptime();
       if (u) {
+        uptimeNarrativeHours = u.displayWindowHours;
         uptime = {
           variant: "stored",
           percent: u.percent,
@@ -155,6 +153,14 @@ export async function loader({ request }: Route.LoaderArgs) {
       };
     }
   }
+
+  const copy = finalizeStatusPageCopy(
+    buildStatusPageCopyTemplates(locale),
+    historyWindowHours,
+    historyMaxRowsCap,
+    locale,
+    { uptimeNarrativeHours },
+  );
 
   return {
     locale,

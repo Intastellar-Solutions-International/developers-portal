@@ -5,10 +5,7 @@ import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
 import { resolveLocaleForApiRequest } from "~/lib/i18n/resolve-locale.server";
 import { formatWindowLabel } from "~/lib/status-page-copy";
-import {
-  getStatusHistoryWindowHours,
-  getStoredOverallUptime,
-} from "~/lib/status-history.server";
+import { getStoredOverallUptime } from "~/lib/status-history.server";
 import { uptimePercentTier } from "~/lib/status-uptime-tier";
 
 function escapeHtml(s: string): string {
@@ -68,8 +65,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   const theme = parseBadgeTheme(request);
   const statusPath = withLocalePrefix("/status", locale);
   const statusPageUrl = escapeHtml(new URL(statusPath, request.url).href);
-  const windowHours = getStatusHistoryWindowHours();
-  const windowHuman = formatWindowLabel(locale, windowHours);
   const stored = await getStoredOverallUptime();
 
   let pctClass: "good" | "warn" | "bad" | "muted";
@@ -85,7 +80,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     mainLine = escapeHtml(
       interpolate(translatePath(locale, "status.badgeMainUptime"), {
         percent: pctText,
-        window: windowHuman,
+        window: formatWindowLabel(locale, stored.displayWindowHours),
       }),
     );
     subLine = escapeHtml(translatePath(locale, "status.badgeSubMonitored"));

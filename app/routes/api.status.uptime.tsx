@@ -15,16 +15,16 @@ import {
  * operator-notice and maintenance adjustments — see `getStoredOverallUptime`).
  *
  * Language for `widgetTitle`, `widgetDescription`, and URL fields: `?locale=de|da|fr|nl|pt-br|en` (or `pt` → Brazilian)
- * or `Accept-Language`; defaults to English. `badgeEmbedUrl` includes `?locale=` so iframe
- * badges stay aligned with the JSON locale. Add `&theme=light` or `&theme=dark` on the badge
- * URL to pin styling; omit for `prefers-color-scheme` (auto).
+ * or `Accept-Language`; defaults to English. `windowHours` is the configured rolling cap;
+ * `displayWindowHours` is the smaller of that cap and the span of stored samples (for honest copy).
+ * `badgeEmbedUrl` includes `?locale=` so iframe badges stay aligned with the JSON locale.
+ * Add `&theme=light` or `&theme=dark` on the badge URL to pin styling; omit for `prefers-color-scheme` (auto).
  */
 export async function loader({ request }: Route.LoaderArgs) {
   const locale = resolveLocaleForApiRequest(request);
   const computedAt = new Date().toISOString();
   const windowHours = getStatusHistoryWindowHours();
   const windowMaxRuns = getStatusHistoryMaxRowsCap();
-  const windowHuman = formatWindowLabel(locale, windowHours);
   const stored = await getStoredOverallUptime();
   const statusPageUrl = new URL(
     withLocalePrefix("/status", locale),
@@ -49,6 +49,8 @@ export async function loader({ request }: Route.LoaderArgs) {
         passedRuns: stored.passedRuns,
         totalRuns: stored.totalRuns,
         windowHours,
+        /** Same rolling-window cap as `windowHours`; copy uses the smaller of this and stored span. */
+        displayWindowHours: stored.displayWindowHours,
         windowMaxRuns,
         statusPageUrl,
         badgeEmbedUrl,
@@ -58,13 +60,13 @@ export async function loader({ request }: Route.LoaderArgs) {
             stored.percent % 1 === 0
               ? `${stored.percent.toFixed(0)}%`
               : `${stored.percent.toFixed(1)}%`,
-          window: windowHuman,
+          window: formatWindowLabel(locale, stored.displayWindowHours),
         }),
         /** Plain-language line for subtitle / tooltip */
         widgetDescription: interpolate(
           translatePath(locale, "status.uptimeJsonWidgetDescription"),
           {
-            hours: windowHours,
+            hours: stored.displayWindowHours,
             totalRuns: stored.totalRuns,
             passedRuns: stored.passedRuns,
           },
