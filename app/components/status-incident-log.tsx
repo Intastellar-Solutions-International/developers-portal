@@ -1,6 +1,10 @@
+import { useSyncExternalStore } from "react";
+
 import { groupConsecutiveStatusIncidents } from "~/lib/status-incident-grouping";
 import type { StatusPageCopy } from "~/lib/status-page-copy";
 import type { StatusIncident } from "~/lib/status-history.server";
+import { getStatusPageCopy } from "~/lib/status-page-copy";
+
 
 type Props = {
   /**
@@ -15,6 +19,13 @@ type Props = {
   copy: StatusPageCopy;
 };
 
+const noopSubscribe = () => () => {};
+
+/** SSR + hydration use `false`; after hydration, `true`. Safer than useEffect for matching server HTML. */
+function useHydrated(): boolean {
+  return useSyncExternalStore(noopSubscribe, () => true, () => false);
+}
+
 export function StatusIncidentLog({
   incidentLogHasEntries,
   incidentsByTarget,
@@ -22,6 +33,8 @@ export function StatusIncidentLog({
   targetNames,
   copy,
 }: Props) {
+  const hydrated = useHydrated();
+
   const byTarget = incidentsByTarget ?? {};
   const order =
     monitorOrder != null && monitorOrder.length > 0
@@ -33,6 +46,27 @@ export function StatusIncidentLog({
     typeof incidentLogHasEntries === "boolean"
       ? incidentLogHasEntries
       : derivedHasEntries;
+
+  if (!hydrated) {
+    return (
+      <section
+        className="mt-10"
+        aria-labelledby="status-incidents-heading"
+        aria-busy="true"
+      >
+        <h2
+          id="status-incidents-heading"
+          className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
+        >
+          {copy.incidentHeading}
+        </h2>
+        <div
+          className="mt-2 h-16 max-w-2xl rounded-md bg-zinc-100 dark:bg-zinc-800/80"
+          aria-hidden
+        />
+      </section>
+    );
+  }
 
   if (!showList) {
     return (
