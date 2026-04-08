@@ -117,7 +117,7 @@ export function StatusMonitorTimeline({
             })}
       </p>
       <div
-        className="flex h-5 w-full max-w-md overflow-hidden rounded-md bg-emerald-500 shadow-inner dark:bg-emerald-600"
+        className="flex h-5 w-full overflow-hidden rounded-md bg-emerald-500 shadow-inner dark:bg-emerald-600"
         role="img"
         aria-label={interpolate(copy.timelineAriaSummary, {
           n: points.length,
@@ -138,7 +138,7 @@ export function StatusMonitorTimeline({
         ))}
       </div>
       {!liveSingleCheck && issueShow.length > 0 ? (
-        <div className="mt-2 max-w-md">
+        <div className="mt-2 w-full">
           <p className="text-[0.65rem] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
             {copy.timelineIssueListIntro}
           </p>

@@ -58,8 +58,8 @@ export type StatusIncident = {
 /** Rolling window for timelines, uptime, and incident log (UTC clock on `checkedAt`). */
 function historyWindowHours(): number {
   const n = Number(process.env.STATUS_HISTORY_WINDOW_HOURS);
-  if (Number.isFinite(n) && n >= 1 && n <= 168) return Math.floor(n);
-  return 48;
+  if (Number.isFinite(n) && n >= 1 && n <= 24 * 365) return Math.floor(n);
+  return 24 * 90;
 }
 
 /** Safety cap on how many history rows we load per request (cron may run more often than once per minute). */

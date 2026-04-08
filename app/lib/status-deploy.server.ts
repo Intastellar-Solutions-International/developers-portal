@@ -8,7 +8,7 @@ export type StatusDeployPublic = {
 
 /** Default: [intastellar-cookie-solutions](https://github.com/felixaschultz/intastellar-cookie-solutions) `development` tip. */
 const DEFAULT_GITHUB_REPO = "felixaschultz/intastellar-cookie-solutions";
-const DEFAULT_GITHUB_REF = "development";
+const DEFAULT_GITHUB_REF = "production";
 
 const CACHE_TTL_OK_MS = 5 * 60 * 1000;
 const CACHE_TTL_ERR_MS = 60 * 1000;

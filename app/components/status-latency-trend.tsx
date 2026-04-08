@@ -29,7 +29,7 @@ export function StatusLatencyTrend({ points, label, copy }: Props) {
   const min = Math.min(...values);
   const max = Math.max(...values);
   const span = Math.max(max - min, 1);
-  const w = 320;
+  const w = 720;
   const h = 44;
   const pad = 4;
   const innerW = w - pad * 2;
@@ -48,9 +48,9 @@ export function StatusLatencyTrend({ points, label, copy }: Props) {
       <p className="mb-1 text-[0.65rem] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
         {interpolate(copy.latencyResponseTime, { label })}
       </p>
-      <div className="flex max-w-md flex-wrap items-end gap-3">
+      <div className="flex w-full flex-wrap items-end gap-3">
         <svg
-          className="text-brand dark:text-brand"
+          className="h-11 w-full flex-1 text-brand dark:text-brand"
           width={w}
           height={h}
           viewBox={`0 0 ${w} ${h}`}
