@@ -325,10 +325,10 @@ export const en = {
     ariaUptimeStored: "Uptime from stored scheduled checks",
     uptimeWord: "uptime",
     uptimeStoredRunsBefore:
-      "We run these checks automatically on a schedule. Over the last {{hours}} hours (UTC), we stored",
-    uptimeStoredRunsMid: "runs ·",
+      "We run these checks automatically on a schedule. Over the last {{window}} (UTC), we stored",
+    uptimeStoredRunsMid: "runs, and",
     uptimeStoredRunsAfter:
-      "count as fully up: every service responded normally in that run, with no active operator notice or scheduled maintenance applying to that moment.",
+      "were fully up: every service responded normally in that run, with no active operator notice or scheduled maintenance applying at that moment.",
     devLiveProbeBefore: "Development mode: showing a",
     devLiveProbeStrong: "live",
     devLiveProbeAfter:
@@ -394,12 +394,13 @@ export const en = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Latest",
-    badgeMainUptime: "{{percent}} uptime",
-    badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} up · {{hours}}h window · cap {{windowMaxRuns}} samples",
-    badgePlaceholder: "Uptime",
+    badgeMainUptime:
+      "Service reliability: {{percent}} uptime (last {{window}})",
+    badgeSubMonitored:
+      "Continuously monitored across global endpoints",
+    badgePlaceholder: "Service reliability",
     badgeCollecting: "Collecting scheduled checks…",
-    badgeLink: "System status →",
+    badgeLink: "View live status →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Powered by inta.dev",
     uptimeJsonWidgetDescription:

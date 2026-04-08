@@ -389,12 +389,13 @@ export const de: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Zuletzt",
-    badgeMainUptime: "{{percent}} Verfügbarkeit",
-    badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} OK · {{hours}}h-Fenster · max. {{windowMaxRuns}} Messungen",
-    badgePlaceholder: "Verfügbarkeit",
+    badgeMainUptime:
+      "Servicezuverlässigkeit: {{percent}} Verfügbarkeit (letzte {{window}})",
+    badgeSubMonitored:
+      "Kontinuierlich über globale Endpunkte überwacht",
+    badgePlaceholder: "Servicezuverlässigkeit",
     badgeCollecting: "Geplante Prüfungen werden erfasst…",
-    badgeLink: "Systemstatus →",
+    badgeLink: "Live-Status ansehen →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Bereitgestellt von inta.dev",
     uptimeJsonWidgetDescription:

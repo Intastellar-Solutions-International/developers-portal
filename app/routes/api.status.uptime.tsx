@@ -2,6 +2,7 @@ import type { Route } from "./+types/api.status.uptime";
 import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
 import { resolveLocaleForApiRequest } from "~/lib/i18n/resolve-locale.server";
+import { formatWindowLabel } from "~/lib/status-page-copy";
 import {
   getStatusHistoryMaxRowsCap,
   getStatusHistoryWindowHours,
@@ -23,6 +24,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const computedAt = new Date().toISOString();
   const windowHours = getStatusHistoryWindowHours();
   const windowMaxRuns = getStatusHistoryMaxRowsCap();
+  const windowHuman = formatWindowLabel(locale, windowHours);
   const stored = await getStoredOverallUptime();
   const statusPageUrl = new URL(
     withLocalePrefix("/status", locale),
@@ -50,12 +52,13 @@ export async function loader({ request }: Route.LoaderArgs) {
         windowMaxRuns,
         statusPageUrl,
         badgeEmbedUrl,
-        /** Ready-made short line for a widget title, e.g. "100% uptime" */
+        /** Ready-made headline for a widget, e.g. service reliability + percent + window */
         widgetTitle: interpolate(translatePath(locale, "status.badgeMainUptime"), {
           percent:
             stored.percent % 1 === 0
               ? `${stored.percent.toFixed(0)}%`
               : `${stored.percent.toFixed(1)}%`,
+          window: windowHuman,
         }),
         /** Plain-language line for subtitle / tooltip */
         widgetDescription: interpolate(

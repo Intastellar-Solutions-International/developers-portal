@@ -4,8 +4,8 @@ import { localeToHtmlLang } from "~/lib/i18n/locale";
 import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
 import { resolveLocaleForApiRequest } from "~/lib/i18n/resolve-locale.server";
+import { formatWindowLabel } from "~/lib/status-page-copy";
 import {
-  getStatusHistoryMaxRowsCap,
   getStatusHistoryWindowHours,
   getStoredOverallUptime,
 } from "~/lib/status-history.server";
@@ -69,7 +69,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const statusPath = withLocalePrefix("/status", locale);
   const statusPageUrl = escapeHtml(new URL(statusPath, request.url).href);
   const windowHours = getStatusHistoryWindowHours();
-  const windowMaxRuns = getStatusHistoryMaxRowsCap();
+  const windowHuman = formatWindowLabel(locale, windowHours);
   const stored = await getStoredOverallUptime();
 
   let pctClass: "good" | "warn" | "bad" | "muted";
@@ -85,16 +85,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     mainLine = escapeHtml(
       interpolate(translatePath(locale, "status.badgeMainUptime"), {
         percent: pctText,
+        window: windowHuman,
       }),
     );
-    subLine = escapeHtml(
-      interpolate(translatePath(locale, "status.badgeSubOk"), {
-        passedRuns: stored.passedRuns,
-        totalRuns: stored.totalRuns,
-        hours: windowHours,
-        windowMaxRuns,
-      }),
-    );
+    subLine = escapeHtml(translatePath(locale, "status.badgeSubMonitored"));
   } else {
     pctClass = "muted";
     mainLine = escapeHtml(translatePath(locale, "status.badgePlaceholder"));
@@ -180,8 +174,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   a.badge.bad { border-color: #fecaca; background: #fef2f2; }
   a.badge.bad:hover { border-color: #fca5a5; background: #fee2e2; }
   a.badge.muted { border-color: #e4e4e7; background: #fafafa; }
-  .main { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
-  .sub { font-size: 11px; font-weight: 500; color: #71717a; line-height: 1.35; max-width: 220px; }
+  .main { font-size: 14px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
+  .sub { font-size: 11px; font-weight: 500; color: #71717a; line-height: 1.4; max-width: min(100%, 300px); }
   .link { font-size: 11px; font-weight: 600; color: #3f3f46; margin-top: 4px; }
   a.badge.good .main { color: #065f46; }
   a.badge.warn .main { color: #92400e; }

@@ -75,8 +75,8 @@ export function StatusUptimeBadgeModal({
       ? `<iframe
   src="${badgeUrl}"
   title="${iframeTitleEscaped}"
-  width="280"
-  height="168"
+  width="320"
+  height="200"
   style="border:0;border-radius:10px;max-width:100%"
   loading="lazy"
 ></iframe>`

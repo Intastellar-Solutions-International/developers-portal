@@ -1,5 +1,73 @@
 import type { Locale } from "~/lib/i18n/locale";
+import { SUPPORTED_LOCALES } from "~/lib/i18n/locale";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
+
+/** Singular/plural unit labels for rolling-window copy (badge, trust line, etc.). */
+type WindowUnits = {
+  day: [string, string];
+  hour: [string, string];
+  minute: [string, string];
+};
+
+const WINDOW_UNITS: Record<Locale, WindowUnits> = {
+  en: {
+    day: ["day", "days"],
+    hour: ["hour", "hours"],
+    minute: ["minute", "minutes"],
+  },
+  de: {
+    day: ["Tag", "Tage"],
+    hour: ["Stunde", "Stunden"],
+    minute: ["Minute", "Minuten"],
+  },
+  da: {
+    day: ["dag", "dage"],
+    hour: ["time", "timer"],
+    minute: ["minut", "minutter"],
+  },
+  fr: {
+    day: ["jour", "jours"],
+    hour: ["heure", "heures"],
+    minute: ["minute", "minutes"],
+  },
+  nl: {
+    day: ["dag", "dagen"],
+    hour: ["uur", "uur"],
+    minute: ["minuut", "minuten"],
+  },
+  "pt-br": {
+    day: ["dia", "dias"],
+    hour: ["hora", "horas"],
+    minute: ["minuto", "minutos"],
+  },
+};
+
+function pluralUnit(n: number, [one, many]: [string, string]): string {
+  return `${n} ${n === 1 ? one : many}`;
+}
+
+/**
+ * Human-readable duration for the configured history window (e.g. "90 days", "48 hours").
+ * Used in status copy and the public uptime badge.
+ */
+export function formatWindowLabel(locale: Locale, hours: number): string {
+  const units = WINDOW_UNITS[locale] ?? WINDOW_UNITS.en;
+  const totalMinutes = Math.max(1, Math.round(hours * 60));
+  if (totalMinutes >= 24 * 60) {
+    const days = Math.floor(totalMinutes / (24 * 60));
+    return pluralUnit(days, units.day);
+  }
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  if (h > 0 && m > 0) {
+    return `${pluralUnit(h, units.hour)} ${pluralUnit(m, units.minute)}`;
+  }
+  if (h > 0) return pluralUnit(h, units.hour);
+  return pluralUnit(m, units.minute);
+}
+
+// Compile-time guard: every locale must define window units.
+void (SUPPORTED_LOCALES satisfies readonly (keyof typeof WINDOW_UNITS)[]);
 
 /** Pre-resolved status UI strings for SSR + hydration (same pattern as `account.profile`). */
 export type StatusPageCopy = {
@@ -279,14 +347,16 @@ export function finalizeStatusPageCopy(
   base: StatusPageCopy,
   hours: number,
   maxRows: number,
+  locale: Locale,
 ): StatusPageCopy {
+  const window = formatWindowLabel(locale, hours);
   return {
     ...base,
     statusHistoryWindowHours: hours,
     statusHistoryMaxRowsCap: maxRows,
     trustBulletHistory: interpolate(base.trustBulletHistory, { hours, maxRows }),
     footnoteP2d: interpolate(base.footnoteP2d, { hours, maxRows }),
-    uptimeStoredRunsBefore: interpolate(base.uptimeStoredRunsBefore, { hours }),
+    uptimeStoredRunsBefore: interpolate(base.uptimeStoredRunsBefore, { hours, window }),
   };
 }
 
@@ -295,7 +365,7 @@ export function getStatusPageCopyForLoader(
   hours: number,
   maxRows: number,
 ): StatusPageCopy {
-  return finalizeStatusPageCopy(buildStatusPageCopyTemplates(locale), hours, maxRows);
+  return finalizeStatusPageCopy(buildStatusPageCopyTemplates(locale), hours, maxRows, locale);
 }
 
 export function getStatusPageCopy(locale: Locale): StatusPageCopy {

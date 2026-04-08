@@ -384,12 +384,13 @@ export const da: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Maks",
     latencyLatest: "Seneste",
-    badgeMainUptime: "{{percent}} oppetid",
-    badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} oppe · {{hours}}t-vindue · max {{windowMaxRuns}} prøver",
-    badgePlaceholder: "Oppetid",
+    badgeMainUptime:
+      "Servicetilgængelighed: {{percent}} oppetid (seneste {{window}})",
+    badgeSubMonitored:
+      "Løbende overvågning på globale slutpunkter",
+    badgePlaceholder: "Servicetilgængelighed",
     badgeCollecting: "Indsamler planlagte tjek…",
-    badgeLink: "Systemstatus →",
+    badgeLink: "Se live status →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Leveret af inta.dev",
     uptimeJsonWidgetDescription:

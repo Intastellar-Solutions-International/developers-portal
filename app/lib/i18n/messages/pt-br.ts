@@ -386,12 +386,13 @@ export const ptBr: MessageTree = {
     latencyMin: "Mín",
     latencyMax: "Máx",
     latencyLatest: "Última",
-    badgeMainUptime: "{{percent}} de disponibilidade",
-    badgeSubOk:
-      "{{passedRuns}}/{{totalRuns}} OK · janela {{hours}}h · teto {{windowMaxRuns}} amostras",
-    badgePlaceholder: "Disponibilidade",
+    badgeMainUptime:
+      "Confiabilidade do serviço: {{percent}} de disponibilidade (últimos {{window}})",
+    badgeSubMonitored:
+      "Monitoramento contínuo em endpoints globais",
+    badgePlaceholder: "Confiabilidade do serviço",
     badgeCollecting: "Coletando verificações agendadas…",
-    badgeLink: "Status do sistema →",
+    badgeLink: "Ver status ao vivo →",
     badgeLogoAlt: "Intastellar Consents",
     badgePoweredBy: "Oferecido por inta.dev",
     uptimeJsonWidgetDescription:
