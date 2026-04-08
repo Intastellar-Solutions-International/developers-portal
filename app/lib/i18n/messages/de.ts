@@ -363,13 +363,13 @@ export const de: MessageTree = {
     incidentEmptyBody:
       "Ein Incident ist ein gespeicherter Cron-Lauf, in dem mindestens ein Ziel ausgefallen ist (HTTP 5xx, Timeout oder keine Antwort — dieselben Regeln wie bei Live-Prüfungen). Wenn die jüngste Historie überall bestanden hat, bleibt diese Liste leer.",
     incidentListIntro:
-      "Aufeinanderfolgende fehlgeschlagene Läufe mit denselben Zielen und Prüfmeldungen werden zu einer Zeile mit UTC-Zeitfenster zusammengefasst (neueste Gruppen zuerst), im selben rollierenden Fenster wie Zeitlinien und Verfügbarkeit. Meldungen stammen von der Prüfung wenn vorhanden; ältere Historienzeilen können nur einen generischen Grund zeigen.",
+      "Gruppiert nach Ziel/Monitor. Pro Ziel werden aufeinanderfolgende fehlgeschlagene Läufe mit derselben Prüfmeldung zu einer Zeile mit UTC-Zeitfenster zusammengefasst (neueste Gruppen zuerst), im selben rollierenden Fenster wie Zeitlinien und Verfügbarkeit. Meldungen stammen von der Prüfung wenn vorhanden; ältere Historienzeilen können nur einen generischen Grund zeigen.",
     degraded: "Beeinträchtigt",
     timelineNoHistory:
       "Noch keine Historie. Sobald MongoDB und Cron Läufe speichern, erscheinen die letzten Prüfungen hier.",
     timelineCurrentCheckDev: "Nur aktuelle Prüfung (Dev)",
     timelineRecentChecks:
-      "Letzte Prüfungen — letzte {{hours}} Stunden ({{count}} Messungen)",
+      "Letzte Prüfungen — letzte {{window}} ({{count}} Messungen)",
     timelineAriaSummary:
       "{{n}} Prüfungen: {{clear}} vollständig OK, {{flagged}} mit Ausfall, Hinweis oder Wartung",
     timelineTooltipUp: "{{time}} — OK",

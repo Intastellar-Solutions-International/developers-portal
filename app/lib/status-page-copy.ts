@@ -352,6 +352,7 @@ export function finalizeStatusPageCopy(
 ): StatusPageCopy {
   const uptimeHours = options?.uptimeNarrativeHours ?? hours;
   const windowForUptime = formatWindowLabel(locale, uptimeHours);
+  const timelineWindow = formatWindowLabel(locale, hours);
   return {
     ...base,
     statusHistoryWindowHours: hours,
@@ -361,6 +362,9 @@ export function finalizeStatusPageCopy(
     uptimeStoredRunsBefore: interpolate(base.uptimeStoredRunsBefore, {
       hours: uptimeHours,
       window: windowForUptime,
+    }),
+    timelineRecentChecks: interpolate(base.timelineRecentChecks, {
+      window: timelineWindow,
     }),
   };
 }
@@ -385,9 +389,12 @@ export function resolveStatusPageCopy(
   locale: Locale,
   fromLoader: StatusPageCopy | undefined | null,
 ): StatusPageCopy {
+  const timelineHdr = fromLoader?.timelineRecentChecks;
   if (
     fromLoader != null &&
-    typeof fromLoader.timelineRecentChecks === "string" &&
+    typeof timelineHdr === "string" &&
+    timelineHdr.includes("{{count}}") &&
+    !timelineHdr.includes("{{window}}") &&
     typeof fromLoader.embedPreviewHeading === "string" &&
     typeof fromLoader.trustHeading === "string" &&
     typeof fromLoader.manualNoticesHeading === "string" &&

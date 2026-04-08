@@ -368,13 +368,13 @@ export const en = {
     incidentEmptyBody:
       "An incident is a stored cron run where at least one target was down (HTTP 5xx, timeout, or no response — same rules as the live checks). If everything in recent history passed, this list stays empty.",
     incidentListIntro:
-      "Consecutive failed runs with the same targets and probe messages are grouped into one row with a UTC time window (newest groups first), within the same rolling window as timelines and uptime. Messages come from the probe when available; older history rows may only show a generic reason.",
+      "Grouped by monitor. For each target, consecutive failed runs with the same probe message are merged into one row with a UTC time window (newest groups first), within the same rolling window as timelines and uptime. Messages come from the probe when available; older history rows may only show a generic reason.",
     degraded: "Degraded",
     timelineNoHistory:
       "No history yet. After MongoDB and cron store runs, recent checks appear here.",
     timelineCurrentCheckDev: "Current check only (dev)",
     timelineRecentChecks:
-      "Recent checks — last {{hours}} hours ({{count}} samples)",
+      "Recent checks — last {{window}} ({{count}} samples)",
     timelineAriaSummary:
       "{{n}} checks: {{clear}} all clear, {{flagged}} with downtime, notice, or maintenance",
     timelineTooltipUp: "{{time}} — Up",

@@ -391,28 +391,37 @@ function incidentFailureSummary(r: {
 }
 
 /**
- * Recent runs where at least one target failed (newest first), within the same history window as
- * timelines and uptime.
+ * Recent failed runs per monitor (newest first within each list), within the same history window
+ * as timelines. Each entry is a single target so consecutive grouping matches that monitor only.
  */
-export async function getRecentStatusIncidents(
-  limit = 25,
-): Promise<StatusIncident[]> {
+export async function getRecentStatusIncidentsByTarget(
+  targetIds: string[],
+  limitPerTarget = 25,
+): Promise<Record<string, StatusIncident[]>> {
   const rowsNewestFirst = await loadHistoryRowsNewestFirst();
+  const want = new Set(targetIds);
+  const per: Record<string, StatusIncident[]> = Object.fromEntries(
+    targetIds.map((id) => [id, [] as StatusIncident[]]),
+  );
 
-  const out: StatusIncident[] = [];
   for (const row of rowsNewestFirst) {
     const failed = row.results.filter((r) => !r.ok);
-    if (failed.length === 0) continue;
-    const iso = row.checkedAt.toISOString();
-    out.push({
-      checkedAt: iso,
-      checkedAtLabel: formatDateTimeMediumUtc(iso),
-      failures: failed.map((f) => ({
-        id: f.id,
-        summary: incidentFailureSummary(f),
-      })),
-    });
-    if (out.length >= limit) break;
+    for (const f of failed) {
+      if (!want.has(f.id)) continue;
+      const list = per[f.id];
+      if (list.length >= limitPerTarget) continue;
+      const iso = row.checkedAt.toISOString();
+      list.push({
+        checkedAt: iso,
+        checkedAtLabel: formatDateTimeMediumUtc(iso),
+        failures: [
+          {
+            id: f.id,
+            summary: incidentFailureSummary(f),
+          },
+        ],
+      });
+    }
   }
-  return out;
+  return per;
 }

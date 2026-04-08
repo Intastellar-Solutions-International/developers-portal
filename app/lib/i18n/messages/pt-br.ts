@@ -360,13 +360,13 @@ export const ptBr: MessageTree = {
     incidentEmptyBody:
       "Um incidente é uma execução cron armazenada em que pelo menos um alvo estava fora (HTTP 5xx, timeout ou sem resposta — mesmas regras das verificações ao vivo). Se todo o histórico recente passou, esta lista fica vazia.",
     incidentListIntro:
-      "Execuções com falha consecutivas com os mesmos alvos e mensagens do probe são agrupadas em uma linha com intervalo em UTC (grupos mais recentes primeiro), na mesma janela deslizante das linhas do tempo e da disponibilidade. As mensagens vêm do probe quando disponíveis; histórico antigo pode mostrar apenas um motivo genérico.",
+      "Agrupadas por monitor. Para cada alvo, execuções com falha consecutivas com a mesma mensagem do probe são unidas em uma linha com intervalo em UTC (grupos mais recentes primeiro), na mesma janela deslizante das linhas do tempo e da disponibilidade. As mensagens vêm do probe quando disponíveis; histórico antigo pode mostrar apenas um motivo genérico.",
     degraded: "Degradado",
     timelineNoHistory:
       "Ainda não há histórico. Depois que MongoDB e o cron armazenarem execuções, as verificações recentes aparecem aqui.",
     timelineCurrentCheckDev: "Apenas verificação atual (dev)",
     timelineRecentChecks:
-      "Verificações recentes — últimas {{hours}} horas ({{count}} amostras)",
+      "Verificações recentes — últimos {{window}} ({{count}} amostras)",
     timelineAriaSummary:
       "{{n}} verificações: {{clear}} totalmente OK, {{flagged}} com indisponibilidade, aviso ou manutenção",
     timelineTooltipUp: "{{time}} — OK",

@@ -26,7 +26,7 @@ import {
   formatDateTimeShortUtc,
 } from "~/lib/format-datetime";
 import {
-  getRecentStatusIncidents,
+  getRecentStatusIncidentsByTarget,
   getStatusHistoryMaxRowsCap,
   getStatusHistoryWindowHours,
   getStatusTimelines,
@@ -89,7 +89,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   const timelines: Record<string, StatusTimelinePoint[]> = {};
-  let incidents: StatusIncident[] = [];
+  let incidentsByTarget: Record<string, StatusIncident[]> = {};
+  let monitorOrder: string[] = [];
   let checkedAtLabel: string | null = null;
   const historyWindowHours = getStatusHistoryWindowHours();
   const historyMaxRowsCap = getStatusHistoryMaxRowsCap();
@@ -119,10 +120,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   if (snapshot) {
     checkedAtLabel = formatDateTimeMediumUtc(snapshot.checkedAt);
-    const ids = snapshot.results.map((r) => r.id);
+    monitorOrder = snapshot.results.map((r) => r.id);
+    const ids = monitorOrder;
     if (source === "mongodb") {
       Object.assign(timelines, await getStatusTimelines(ids));
-      incidents = await getRecentStatusIncidents(25);
+      incidentsByTarget = await getRecentStatusIncidentsByTarget(ids, 25);
       const u = await getStoredOverallUptime();
       if (u) {
         uptimeNarrativeHours = u.displayWindowHours;
@@ -162,6 +164,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     { uptimeNarrativeHours },
   );
 
+  const incidentLogHasEntries = Object.values(incidentsByTarget).some(
+    (rows) => rows.length > 0,
+  );
+
   return {
     locale,
     copy,
@@ -170,7 +176,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     mongoConfigured,
     timelines,
     checkedAtLabel,
-    incidents,
+    incidentsByTarget,
+    monitorOrder,
+    incidentLogHasEntries,
     targetNames,
     uptime,
     maintenance,
@@ -212,7 +220,9 @@ export default function StatusPage() {
     mongoConfigured,
     timelines,
     checkedAtLabel,
-    incidents,
+    incidentsByTarget,
+    monitorOrder,
+    incidentLogHasEntries,
     targetNames,
     uptime,
     maintenance,
@@ -448,7 +458,9 @@ export default function StatusPage() {
               className={`[&>section]:mt-0${!hasManualNotices ? " lg:col-span-2" : ""}`}
             >
               <StatusIncidentLog
-                incidents={incidents}
+                incidentLogHasEntries={incidentLogHasEntries}
+                incidentsByTarget={incidentsByTarget}
+                monitorOrder={monitorOrder}
                 targetNames={targetNames}
                 copy={copy}
               />

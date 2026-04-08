@@ -359,13 +359,13 @@ export const nl: MessageTree = {
     incidentEmptyBody:
       "Een incident is een opgeslagen cron-run waarin minstens één doel uitviel (HTTP 5xx, time-out of geen antwoord — dezelfde regels als live controles). Als recente geschiedenis overal slaagde, blijft deze lijst leeg.",
     incidentListIntro:
-      "Opeenvolgende mislukte runs met dezelfde doelen en probeberichten worden samengevoegd tot één rij met een UTC-tijdsvenster (nieuwste groepen eerst), binnen hetzelfde rollende venster als tijdlijnen en uptime. Berichten komen van de probe indien beschikbaar; oudere geschiedenis kan alleen een generieke reden tonen.",
+      "Gegroepeerd per monitor. Per doel worden opeenvolgende mislukte runs met hetzelfde probebericht samengevoegd tot één rij met een UTC-tijdsvenster (nieuwste groepen eerst), binnen hetzelfde rollende venster als tijdlijnen en uptime. Berichten komen van de probe indien beschikbaar; oudere geschiedenis kan alleen een generieke reden tonen.",
     degraded: "Verstoord",
     timelineNoHistory:
       "Nog geen geschiedenis. Zodra MongoDB en cron runs opslaan, verschijnen recente controles hier.",
     timelineCurrentCheckDev: "Alleen huidige controle (dev)",
     timelineRecentChecks:
-      "Recente controles — laatste {{hours}} uur ({{count}} metingen)",
+      "Recente controles — afgelopen {{window}} ({{count}} metingen)",
     timelineAriaSummary:
       "{{n}} controles: {{clear}} volledig OK, {{flagged}} met storing, melding of onderhoud",
     timelineTooltipUp: "{{time}} — OK",

@@ -113,7 +113,6 @@ export function StatusMonitorTimeline({
           ? copy.timelineCurrentCheckDev
           : interpolate(copy.timelineRecentChecks, {
               count: points.length,
-              hours: copy.statusHistoryWindowHours,
             })}
       </p>
       <div

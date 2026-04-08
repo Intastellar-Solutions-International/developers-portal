@@ -358,13 +358,13 @@ export const da: MessageTree = {
     incidentEmptyBody:
       "Et incident er en gemt cron-kørsel hvor mindst ét mål var nede (HTTP 5xx, timeout eller intet svar — samme regler som live-tjek). Hvis al nyere historik bestod, forbliver listen tom.",
     incidentListIntro:
-      "På hinanden følgende fejlede kørsler med samme mål og probe-beskeder grupperes til én række med UTC-tidsvindue (nyeste grupper først), i samme rullende vindue som tidslinjer og oppetid. Beskeder kommer fra prober når tilgængeligt; ældre historik kan kun vise en generisk årsag.",
+      "Grupperet efter monitor. For hvert mål flettes på hinanden følgende fejlede kørsler med samme probe-besked til én række med UTC-tidsvindue (nyeste grupper først), i samme rullende vindue som tidslinjer og oppetid. Beskeder kommer fra prober når tilgængeligt; ældre historik kan kun vise en generisk årsag.",
     degraded: "Forringet",
     timelineNoHistory:
       "Ingen historik endnu. Når MongoDB og cron gemmer kørsler, vises seneste tjek her.",
     timelineCurrentCheckDev: "Kun aktuelt tjek (dev)",
     timelineRecentChecks:
-      "Seneste tjek — seneste {{hours}} timer ({{count}} prøver)",
+      "Seneste tjek — seneste {{window}} ({{count}} prøver)",
     timelineAriaSummary:
       "{{n}} tjek: {{clear}} helt grønne, {{flagged}} med nedetid, besked eller vedligehold",
     timelineTooltipUp: "{{time}} — Oppe",
