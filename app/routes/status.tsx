@@ -20,6 +20,7 @@ import {
   buildStatusPageCopyTemplates,
   finalizeStatusPageCopy,
   resolveStatusPageCopy,
+  type StatusPageCopy,
 } from "~/lib/status-page-copy";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import {
@@ -35,7 +36,11 @@ import {
   type StatusIncident,
   type StatusTimelinePoint,
 } from "~/lib/status-history.server";
-import { overallOk, runStatusProbes } from "~/lib/status-probe.server";
+import {
+  overallOk,
+  runStatusProbes,
+  type StatusProbeResult,
+} from "~/lib/status-probe.server";
 import { getLatestStatusSnapshot } from "~/lib/status-snapshot.server";
 import { getStatusDeployPublic } from "~/lib/status-deploy.server";
 import { listFutureMaintenanceWindowsFromMongo } from "~/lib/status-maintenance-db.server";
@@ -61,6 +66,90 @@ const NOTIFY_FLASH = new Set([
   "unsub_missing",
   "unsub_invalid",
 ]);
+
+/** Lives in this route module so SSR and the client share one HMR graph (avoids stale `status-monitor-*` chunks). */
+function StatusMonitorRow({
+  r,
+  points,
+  source,
+  copy,
+  probeEnvRegionId,
+  probeRegionLabels,
+}: {
+  r: StatusProbeResult;
+  points: StatusTimelinePoint[];
+  source: "mongodb" | "live" | "none";
+  copy: StatusPageCopy;
+  probeEnvRegionId: string | null;
+  probeRegionLabels: Record<string, string>;
+}) {
+  const regionalMap =
+    r.regions && Object.keys(r.regions).length > 0
+      ? r.regions
+      : {
+          [probeEnvRegionId ?? "primary"]: {
+            ok: r.ok,
+            latencyMs: r.latencyMs,
+            statusCode: r.statusCode,
+            error: r.error,
+          },
+        };
+  const rowRegionLabels = {
+    ...probeRegionLabels,
+    ...((!r.regions || Object.keys(r.regions).length === 0) && !probeEnvRegionId
+      ? { primary: copy.latencyDefaultRegionLabel }
+      : {}),
+  };
+
+  return (
+    <li className="py-4">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-zinc-900 dark:text-zinc-100">
+            {r.name}
+          </p>
+          <p className="mt-0.5 break-all text-xs text-zinc-500 dark:text-zinc-400">
+            {r.url}
+          </p>
+          {r.error ? (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {r.error}
+            </p>
+          ) : null}
+          <StatusMonitorTimeline
+            points={points}
+            liveSingleCheck={source === "live"}
+            copy={copy}
+          />
+          <StatusLatencyTrend points={points} label={r.name} copy={copy} />
+        </div>
+        <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end sm:pt-0.5">
+          <span
+            className={
+              r.ok
+                ? "text-sm font-medium text-emerald-600 dark:text-emerald-400"
+                : "text-sm font-medium text-red-600 dark:text-red-400"
+            }
+          >
+            {r.statusCode != null
+              ? interpolate(copy.httpStatus, { code: r.statusCode })
+              : copy.noResponse}
+          </span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            {r.latencyMs} ms
+          </span>
+          <StatusRegionalLatency
+            regions={regionalMap}
+            regionLabels={rowRegionLabels}
+            copy={copy}
+            className="w-full shrink-0 basis-full sm:max-w-xs"
+            alignEnd
+          />
+        </div>
+      </div>
+    </li>
+  );
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
   const locale = resolveLocaleFromRequest(request);
@@ -411,82 +500,17 @@ export default function StatusPage() {
       {snapshot ? (
         <>
           <ul className="mt-8 divide-y divide-zinc-200 dark:divide-zinc-700">
-            {snapshot.results.map((r) => {
-              const regionalMap =
-                r.regions && Object.keys(r.regions).length > 0
-                  ? r.regions
-                  : {
-                      [probeEnvRegionId ?? "primary"]: {
-                        ok: r.ok,
-                        latencyMs: r.latencyMs,
-                        statusCode: r.statusCode,
-                        error: r.error,
-                      },
-                    };
-              const rowRegionLabels = {
-                ...probeRegionLabels,
-                ...((!r.regions || Object.keys(r.regions).length === 0) &&
-                !probeEnvRegionId
-                  ? { primary: copy.latencyDefaultRegionLabel }
-                  : {}),
-              };
-              return (
-                <li key={r.id} className="py-4">
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0 flex-1">
-                      <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                        {r.name}
-                      </p>
-                      <p className="mt-0.5 break-all text-xs text-zinc-500 dark:text-zinc-400">
-                        {r.url}
-                      </p>
-                      {r.error ? (
-                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                          {r.error}
-                        </p>
-                      ) : null}
-                      <StatusMonitorTimeline
-                        points={timelines[r.id] ?? []}
-                        liveSingleCheck={source === "live"}
-                        copy={copy}
-                      />
-                      <StatusLatencyTrend
-                        points={timelines[r.id] ?? []}
-                        label={r.name}
-                        copy={copy}
-                      />
-                    </div>
-                    <div className="flex w-full shrink-0 flex-col gap-0 sm:w-auto sm:items-end sm:pt-0.5">
-                      <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                        <span
-                          className={
-                            r.ok
-                              ? "text-sm font-medium text-emerald-600 dark:text-emerald-400"
-                              : "text-sm font-medium text-red-600 dark:text-red-400"
-                          }
-                        >
-                          {r.statusCode != null
-                            ? interpolate(copy.httpStatus, {
-                                code: r.statusCode,
-                              })
-                            : copy.noResponse}
-                        </span>
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                          {r.latencyMs} ms
-                        </span>
-                      </div>
-                      <StatusRegionalLatency
-                        regions={regionalMap}
-                        regionLabels={rowRegionLabels}
-                        copy={copy}
-                        className="sm:max-w-xs"
-                        alignEnd
-                      />
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
+            {snapshot.results.map((r) => (
+              <StatusMonitorRow
+                key={r.id}
+                r={r}
+                points={timelines[r.id] ?? []}
+                source={source}
+                copy={copy}
+                probeEnvRegionId={probeEnvRegionId}
+                probeRegionLabels={probeRegionLabels}
+              />
+            ))}
           </ul>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-start *:min-w-0">

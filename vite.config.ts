@@ -10,6 +10,11 @@ export default defineConfig({
     tailwindcss(),
     reactRouter(),
   ],
+  server: {
+    headers: {
+      "Cache-Control": "no-store",
+    },
+  },
   resolve: {
     tsconfigPaths: true,
     dedupe: ["react", "react-dom"],

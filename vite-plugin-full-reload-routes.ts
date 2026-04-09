@@ -34,7 +34,9 @@ export function fullReloadOnRouteModules(): Plugin {
         path: "*",
         triggeredBy: ctx.file,
       });
-      return [];
+      // Do not `return []` — that skips Vite’s normal HMR. If the full-reload message
+      // is missed (WS race, tab in background), the client would keep stale route JS
+      // while SSR already serves the new tree → hydration mismatch.
     },
   };
 }
