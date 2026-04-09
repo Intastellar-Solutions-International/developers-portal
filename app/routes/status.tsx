@@ -37,12 +37,11 @@ import {
 } from "~/lib/status-history.server";
 import { defaultProbeRegionDisplayName } from "~/lib/status-probe-region-display";
 import {
-  overallOk,
   resolveRegionalSlices,
-  runStatusProbes,
   type StatusProbeResult,
   type StatusRegionalSlice,
-} from "~/lib/status-probe.server";
+} from "~/lib/status-probe-result";
+import { overallOk, runStatusProbes } from "~/lib/status-probe.server";
 import { getLatestStatusSnapshot } from "~/lib/status-snapshot.server";
 import { getStatusDeployPublic } from "~/lib/status-deploy.server";
 import { listFutureMaintenanceWindowsFromMongo } from "~/lib/status-maintenance-db.server";

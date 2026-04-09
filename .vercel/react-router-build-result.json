@@ -12,8 +12,13 @@
     "routeIdToServerBundleId": {
       "routes/robots-txt": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/sitemap-xml": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/internal.status-ops": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.status.cron": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.status.json": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.feed": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.subscribe": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.notify.verify": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.status.notify.unsubscribe": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.status.uptime": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.status.uptime-badge": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -105,7 +110,25 @@
       "routes/account.login__nl": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/account.profile__nl": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/account.api-keys__nl": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/$__nl": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+      "routes/$__nl": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/home__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/search__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.logout__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.session__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/changelog__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/status__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/consents.changelog__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal._index__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal.privacy__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/legal.terms__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs._index__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs.$product._index__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/docs.$product.$__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account._index__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.login__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.profile__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/account.api-keys__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/$__pt-br": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
       "root": {
@@ -132,6 +155,15 @@
           "runtime": "nodejs"
         }
       },
+      "routes/internal.status-ops": {
+        "id": "routes/internal.status-ops",
+        "parentId": "root",
+        "file": "app/routes/internal.status-ops.tsx",
+        "path": "internal/status-ops",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
       "routes/api.status.cron": {
         "id": "routes/api.status.cron",
         "parentId": "root",
@@ -146,6 +178,42 @@
         "parentId": "root",
         "file": "app/routes/api.status.json.tsx",
         "path": "api/status.json",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.feed": {
+        "id": "routes/api.status.feed",
+        "parentId": "root",
+        "file": "app/routes/api.status.feed.tsx",
+        "path": "api/status/feed.xml",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.subscribe": {
+        "id": "routes/api.status.subscribe",
+        "parentId": "root",
+        "file": "app/routes/api.status.subscribe.tsx",
+        "path": "api/status/subscribe",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.notify.verify": {
+        "id": "routes/api.status.notify.verify",
+        "parentId": "root",
+        "file": "app/routes/api.status.notify.verify.tsx",
+        "path": "api/status/notify/verify",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.status.notify.unsubscribe": {
+        "id": "routes/api.status.notify.unsubscribe",
+        "parentId": "root",
+        "file": "app/routes/api.status.notify.unsubscribe.tsx",
+        "path": "api/status/notify/unsubscribe",
         "config": {
           "runtime": "nodejs"
         }
@@ -1121,6 +1189,197 @@
         "config": {
           "runtime": "nodejs"
         }
+      },
+      "routes/home__pt-br": {
+        "id": "routes/home__pt-br",
+        "parentId": "root",
+        "file": "app/routes/home.tsx",
+        "path": "pt-br",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/search__pt-br": {
+        "id": "routes/search__pt-br",
+        "parentId": "root",
+        "file": "app/routes/search.tsx",
+        "path": "pt-br/search",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.logout__pt-br": {
+        "id": "routes/auth.logout__pt-br",
+        "parentId": "root",
+        "file": "app/routes/auth.logout.tsx",
+        "path": "pt-br/auth/logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.session__pt-br": {
+        "id": "routes/auth.session__pt-br",
+        "parentId": "root",
+        "file": "app/routes/auth.session.tsx",
+        "path": "pt-br/auth/session",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/changelog__pt-br": {
+        "id": "routes/changelog__pt-br",
+        "parentId": "root",
+        "file": "app/routes/changelog.tsx",
+        "path": "pt-br/changelog",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/status__pt-br": {
+        "id": "routes/status__pt-br",
+        "parentId": "root",
+        "file": "app/routes/status.tsx",
+        "path": "pt-br/status",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/consents.changelog__pt-br": {
+        "id": "routes/consents.changelog__pt-br",
+        "parentId": "root",
+        "file": "app/routes/consents.changelog.tsx",
+        "path": "pt-br/consents/changelog",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal__pt-br": {
+        "id": "routes/legal__pt-br",
+        "parentId": "root",
+        "file": "app/routes/legal.tsx",
+        "path": "pt-br/legal",
+        "config": {}
+      },
+      "routes/legal._index__pt-br": {
+        "id": "routes/legal._index__pt-br",
+        "parentId": "routes/legal__pt-br",
+        "file": "app/routes/legal._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal.privacy__pt-br": {
+        "id": "routes/legal.privacy__pt-br",
+        "parentId": "routes/legal__pt-br",
+        "file": "app/routes/legal.privacy.tsx",
+        "path": "privacy",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/legal.terms__pt-br": {
+        "id": "routes/legal.terms__pt-br",
+        "parentId": "routes/legal__pt-br",
+        "file": "app/routes/legal.terms.tsx",
+        "path": "terms",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.layout__pt-br": {
+        "id": "routes/docs.layout__pt-br",
+        "parentId": "root",
+        "file": "app/routes/docs.layout.tsx",
+        "config": {}
+      },
+      "routes/docs._index__pt-br": {
+        "id": "routes/docs._index__pt-br",
+        "parentId": "routes/docs.layout__pt-br",
+        "file": "app/routes/docs._index.tsx",
+        "path": "pt-br/docs",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.$product__pt-br": {
+        "id": "routes/docs.$product__pt-br",
+        "parentId": "routes/docs.layout__pt-br",
+        "file": "app/routes/docs.$product.tsx",
+        "path": "pt-br/docs/:product",
+        "config": {}
+      },
+      "routes/docs.$product._index__pt-br": {
+        "id": "routes/docs.$product._index__pt-br",
+        "parentId": "routes/docs.$product__pt-br",
+        "file": "app/routes/docs.$product._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/docs.$product.$__pt-br": {
+        "id": "routes/docs.$product.$__pt-br",
+        "parentId": "routes/docs.$product__pt-br",
+        "file": "app/routes/docs.$product.$.tsx",
+        "path": "*",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account__pt-br": {
+        "id": "routes/account__pt-br",
+        "parentId": "root",
+        "file": "app/routes/account.tsx",
+        "path": "pt-br/account",
+        "config": {}
+      },
+      "routes/account._index__pt-br": {
+        "id": "routes/account._index__pt-br",
+        "parentId": "routes/account__pt-br",
+        "file": "app/routes/account._index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.login__pt-br": {
+        "id": "routes/account.login__pt-br",
+        "parentId": "routes/account__pt-br",
+        "file": "app/routes/account.login.tsx",
+        "path": "login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.profile__pt-br": {
+        "id": "routes/account.profile__pt-br",
+        "parentId": "routes/account__pt-br",
+        "file": "app/routes/account.profile.tsx",
+        "path": "profile",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/account.api-keys__pt-br": {
+        "id": "routes/account.api-keys__pt-br",
+        "parentId": "routes/account__pt-br",
+        "file": "app/routes/account.api-keys.tsx",
+        "path": "api-keys",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/$__pt-br": {
+        "id": "routes/$__pt-br",
+        "parentId": "root",
+        "file": "app/routes/$.tsx",
+        "path": "pt-br/*",
+        "config": {
+          "runtime": "nodejs"
+        }
       }
     }
   },
@@ -1156,6 +1415,12 @@
         "file": "routes/sitemap-xml.tsx",
         "path": "sitemap.xml"
       },
+      "routes/internal.status-ops": {
+        "id": "routes/internal.status-ops",
+        "parentId": "root",
+        "file": "routes/internal.status-ops.tsx",
+        "path": "internal/status-ops"
+      },
       "routes/api.status.cron": {
         "id": "routes/api.status.cron",
         "parentId": "root",
@@ -1167,6 +1432,30 @@
         "parentId": "root",
         "file": "routes/api.status.json.tsx",
         "path": "api/status.json"
+      },
+      "routes/api.status.feed": {
+        "id": "routes/api.status.feed",
+        "parentId": "root",
+        "file": "routes/api.status.feed.tsx",
+        "path": "api/status/feed.xml"
+      },
+      "routes/api.status.subscribe": {
+        "id": "routes/api.status.subscribe",
+        "parentId": "root",
+        "file": "routes/api.status.subscribe.tsx",
+        "path": "api/status/subscribe"
+      },
+      "routes/api.status.notify.verify": {
+        "id": "routes/api.status.notify.verify",
+        "parentId": "root",
+        "file": "routes/api.status.notify.verify.tsx",
+        "path": "api/status/notify/verify"
+      },
+      "routes/api.status.notify.unsubscribe": {
+        "id": "routes/api.status.notify.unsubscribe",
+        "parentId": "root",
+        "file": "routes/api.status.notify.unsubscribe.tsx",
+        "path": "api/status/notify/unsubscribe"
       },
       "routes/api.status.uptime": {
         "id": "routes/api.status.uptime",
@@ -1843,6 +2132,139 @@
         "parentId": "root",
         "file": "routes/$.tsx",
         "path": "nl/*"
+      },
+      "routes/home__pt-br": {
+        "id": "routes/home__pt-br",
+        "parentId": "root",
+        "file": "routes/home.tsx",
+        "path": "pt-br",
+        "index": true
+      },
+      "routes/search__pt-br": {
+        "id": "routes/search__pt-br",
+        "parentId": "root",
+        "file": "routes/search.tsx",
+        "path": "pt-br/search"
+      },
+      "routes/auth.logout__pt-br": {
+        "id": "routes/auth.logout__pt-br",
+        "parentId": "root",
+        "file": "routes/auth.logout.tsx",
+        "path": "pt-br/auth/logout"
+      },
+      "routes/auth.session__pt-br": {
+        "id": "routes/auth.session__pt-br",
+        "parentId": "root",
+        "file": "routes/auth.session.tsx",
+        "path": "pt-br/auth/session"
+      },
+      "routes/changelog__pt-br": {
+        "id": "routes/changelog__pt-br",
+        "parentId": "root",
+        "file": "routes/changelog.tsx",
+        "path": "pt-br/changelog"
+      },
+      "routes/status__pt-br": {
+        "id": "routes/status__pt-br",
+        "parentId": "root",
+        "file": "routes/status.tsx",
+        "path": "pt-br/status"
+      },
+      "routes/consents.changelog__pt-br": {
+        "id": "routes/consents.changelog__pt-br",
+        "parentId": "root",
+        "file": "routes/consents.changelog.tsx",
+        "path": "pt-br/consents/changelog"
+      },
+      "routes/legal__pt-br": {
+        "id": "routes/legal__pt-br",
+        "parentId": "root",
+        "file": "routes/legal.tsx",
+        "path": "pt-br/legal"
+      },
+      "routes/legal._index__pt-br": {
+        "id": "routes/legal._index__pt-br",
+        "parentId": "routes/legal__pt-br",
+        "file": "routes/legal._index.tsx",
+        "index": true
+      },
+      "routes/legal.privacy__pt-br": {
+        "id": "routes/legal.privacy__pt-br",
+        "parentId": "routes/legal__pt-br",
+        "file": "routes/legal.privacy.tsx",
+        "path": "privacy"
+      },
+      "routes/legal.terms__pt-br": {
+        "id": "routes/legal.terms__pt-br",
+        "parentId": "routes/legal__pt-br",
+        "file": "routes/legal.terms.tsx",
+        "path": "terms"
+      },
+      "routes/docs.layout__pt-br": {
+        "id": "routes/docs.layout__pt-br",
+        "parentId": "root",
+        "file": "routes/docs.layout.tsx"
+      },
+      "routes/docs._index__pt-br": {
+        "id": "routes/docs._index__pt-br",
+        "parentId": "routes/docs.layout__pt-br",
+        "file": "routes/docs._index.tsx",
+        "path": "pt-br/docs",
+        "index": true
+      },
+      "routes/docs.$product__pt-br": {
+        "id": "routes/docs.$product__pt-br",
+        "parentId": "routes/docs.layout__pt-br",
+        "file": "routes/docs.$product.tsx",
+        "path": "pt-br/docs/:product"
+      },
+      "routes/docs.$product._index__pt-br": {
+        "id": "routes/docs.$product._index__pt-br",
+        "parentId": "routes/docs.$product__pt-br",
+        "file": "routes/docs.$product._index.tsx",
+        "index": true
+      },
+      "routes/docs.$product.$__pt-br": {
+        "id": "routes/docs.$product.$__pt-br",
+        "parentId": "routes/docs.$product__pt-br",
+        "file": "routes/docs.$product.$.tsx",
+        "path": "*"
+      },
+      "routes/account__pt-br": {
+        "id": "routes/account__pt-br",
+        "parentId": "root",
+        "file": "routes/account.tsx",
+        "path": "pt-br/account"
+      },
+      "routes/account._index__pt-br": {
+        "id": "routes/account._index__pt-br",
+        "parentId": "routes/account__pt-br",
+        "file": "routes/account._index.tsx",
+        "index": true
+      },
+      "routes/account.login__pt-br": {
+        "id": "routes/account.login__pt-br",
+        "parentId": "routes/account__pt-br",
+        "file": "routes/account.login.tsx",
+        "path": "login"
+      },
+      "routes/account.profile__pt-br": {
+        "id": "routes/account.profile__pt-br",
+        "parentId": "routes/account__pt-br",
+        "file": "routes/account.profile.tsx",
+        "path": "profile"
+      },
+      "routes/account.api-keys__pt-br": {
+        "id": "routes/account.api-keys__pt-br",
+        "parentId": "routes/account__pt-br",
+        "file": "routes/account.api-keys.tsx",
+        "path": "api-keys"
+      },
+      "routes/$__pt-br": {
+        "id": "routes/$__pt-br",
+        "parentId": "root",
+        "file": "routes/$.tsx",
+        "path": "pt-br/*"
       }
     },
     "routeDiscovery": {
@@ -1868,12 +2290,32 @@
             "path": "sitemap.xml"
           },
           {
+            "file": "routes/internal.status-ops.tsx",
+            "path": "internal/status-ops"
+          },
+          {
             "file": "routes/api.status.cron.tsx",
             "path": "api/status/cron"
           },
           {
             "file": "routes/api.status.json.tsx",
             "path": "api/status.json"
+          },
+          {
+            "file": "routes/api.status.feed.tsx",
+            "path": "api/status/feed.xml"
+          },
+          {
+            "file": "routes/api.status.subscribe.tsx",
+            "path": "api/status/subscribe"
+          },
+          {
+            "file": "routes/api.status.notify.verify.tsx",
+            "path": "api/status/notify/verify"
+          },
+          {
+            "file": "routes/api.status.notify.unsubscribe.tsx",
+            "path": "api/status/notify/unsubscribe"
           },
           {
             "file": "routes/api.status.uptime.tsx",
@@ -2454,6 +2896,125 @@
             "file": "routes/$.tsx",
             "path": "nl/*",
             "id": "routes/$__nl"
+          },
+          {
+            "file": "routes/home.tsx",
+            "index": true,
+            "id": "routes/home__pt-br",
+            "path": "pt-br"
+          },
+          {
+            "file": "routes/search.tsx",
+            "path": "pt-br/search",
+            "id": "routes/search__pt-br"
+          },
+          {
+            "file": "routes/auth.logout.tsx",
+            "path": "pt-br/auth/logout",
+            "id": "routes/auth.logout__pt-br"
+          },
+          {
+            "file": "routes/auth.session.tsx",
+            "path": "pt-br/auth/session",
+            "id": "routes/auth.session__pt-br"
+          },
+          {
+            "file": "routes/changelog.tsx",
+            "path": "pt-br/changelog",
+            "id": "routes/changelog__pt-br"
+          },
+          {
+            "file": "routes/status.tsx",
+            "path": "pt-br/status",
+            "id": "routes/status__pt-br"
+          },
+          {
+            "file": "routes/consents.changelog.tsx",
+            "path": "pt-br/consents/changelog",
+            "id": "routes/consents.changelog__pt-br"
+          },
+          {
+            "file": "routes/legal.tsx",
+            "children": [
+              {
+                "file": "routes/legal._index.tsx",
+                "index": true,
+                "id": "routes/legal._index__pt-br"
+              },
+              {
+                "file": "routes/legal.privacy.tsx",
+                "path": "privacy",
+                "id": "routes/legal.privacy__pt-br"
+              },
+              {
+                "file": "routes/legal.terms.tsx",
+                "path": "terms",
+                "id": "routes/legal.terms__pt-br"
+              }
+            ],
+            "path": "pt-br/legal",
+            "id": "routes/legal__pt-br"
+          },
+          {
+            "file": "routes/docs.layout.tsx",
+            "children": [
+              {
+                "file": "routes/docs._index.tsx",
+                "index": true,
+                "path": "pt-br/docs",
+                "id": "routes/docs._index__pt-br"
+              },
+              {
+                "file": "routes/docs.$product.tsx",
+                "children": [
+                  {
+                    "file": "routes/docs.$product._index.tsx",
+                    "index": true,
+                    "id": "routes/docs.$product._index__pt-br"
+                  },
+                  {
+                    "file": "routes/docs.$product.$.tsx",
+                    "path": "*",
+                    "id": "routes/docs.$product.$__pt-br"
+                  }
+                ],
+                "path": "pt-br/docs/:product",
+                "id": "routes/docs.$product__pt-br"
+              }
+            ],
+            "id": "routes/docs.layout__pt-br"
+          },
+          {
+            "file": "routes/account.tsx",
+            "children": [
+              {
+                "file": "routes/account._index.tsx",
+                "index": true,
+                "id": "routes/account._index__pt-br"
+              },
+              {
+                "file": "routes/account.login.tsx",
+                "path": "login",
+                "id": "routes/account.login__pt-br"
+              },
+              {
+                "file": "routes/account.profile.tsx",
+                "path": "profile",
+                "id": "routes/account.profile__pt-br"
+              },
+              {
+                "file": "routes/account.api-keys.tsx",
+                "path": "api-keys",
+                "id": "routes/account.api-keys__pt-br"
+              }
+            ],
+            "path": "pt-br/account",
+            "id": "routes/account__pt-br"
+          },
+          {
+            "file": "routes/$.tsx",
+            "path": "pt-br/*",
+            "id": "routes/$__pt-br"
           }
         ]
       }
