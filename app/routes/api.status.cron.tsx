@@ -9,6 +9,7 @@ import {
   newlyFailingProbeResultsForRegion,
 } from "~/lib/status-probe-new-failures.server";
 import {
+  normalizeRegionId,
   parseProbeRegionFromRequest,
   probeRegionFromEnv,
 } from "~/lib/status-probe-regions.server";
@@ -47,7 +48,7 @@ function cronAuthorized(request: Request): boolean {
  *
  * **Multi-region:** Run the same URL from Stockholm, Frankfurt, Washington, etc. Identify each worker with
  * `?region=eu-stockholm` or header `X-Status-Probe-Region: eu-stockholm` (or `STATUS_PROBE_REGION` on the host).
- * Snapshots merge `results[].regions[regionId]` so /status shows latency per location. Set
+ * With no region set, snapshots still merge under `primary` so Mongo keeps `results[].regions`. Set
  * `STATUS_CANONICAL_PROBE_REGION` to the same id on every deployment so timelines + uptime use one row per
  * tick (otherwise counts are multiplied by the number of regions). Optional `STATUS_PROBE_REGION_LABELS` JSON
  * object maps ids to display names, e.g. `{"eu-stockholm":"Stockholm","us-east-1":"Washington, DC"}`.
@@ -74,6 +75,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const ok = overallOk(results);
   const probeRegion =
     parseProbeRegionFromRequest(request) ?? probeRegionFromEnv();
+  /** Mongo merge key for `results[].regions` (defaults to `primary` when unset — see `saveStatusSnapshot`). */
+  const snapshotRegionsMergeKey = probeRegion?.trim()
+    ? normalizeRegionId(probeRegion)
+    : "primary";
   let persisted = false;
   if (isMongoConfigured()) {
     persisted = await saveStatusSnapshot(results, ok, { probeRegion });
@@ -98,6 +103,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     overallOk: ok,
     persisted,
     probeRegion: probeRegion ?? null,
+    snapshotRegionsMergeKey,
     checkedAt: new Date().toISOString(),
     results,
   });

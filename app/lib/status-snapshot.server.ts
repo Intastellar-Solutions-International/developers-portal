@@ -4,6 +4,7 @@ import type {
 } from "./status-probe.server";
 import {
   canonicalProbeRegionForHistory,
+  normalizeRegionId,
 } from "./status-probe-regions.server";
 import { getCollection } from "./mongodb.server";
 import { STATUS_SNAPSHOT_COLLECTION } from "./mongodb-schema.server";
@@ -29,11 +30,6 @@ function toPublic(row: StatusSnapshotRow): StatusSnapshotPublic {
     overallOk: row.overallOk,
     results: row.results,
   };
-}
-
-function stripRegions(r: StatusProbeResult): StatusProbeResult {
-  const { regions: _r, ...rest } = r;
-  return { ...rest };
 }
 
 function mergeOneTarget(
@@ -88,7 +84,10 @@ function mergeOneTarget(
 }
 
 export type SaveStatusSnapshotOptions = {
-  /** When set, merge this run into `results[].regions[region]` instead of replacing the snapshot. */
+  /**
+   * Merge this run into `results[].regions[regionId]`. When omitted, uses `primary` so a plain
+   * Vercel Cron hit (no `?region=` / env) still persists per-region latency instead of stripping it.
+   */
   probeRegion?: string | null;
 };
 
@@ -100,18 +99,8 @@ export async function saveStatusSnapshot(
   const col = await getCollection<StatusSnapshotRow>(STATUS_SNAPSHOT_COLLECTION);
   if (!col) return false;
 
-  const probeRegion = options?.probeRegion?.trim() || null;
-
-  if (!probeRegion) {
-    const doc: StatusSnapshotRow = {
-      _id: SNAPSHOT_ID,
-      checkedAt: new Date(),
-      overallOk,
-      results: results.map(stripRegions),
-    };
-    await col.replaceOne({ _id: SNAPSHOT_ID }, doc, { upsert: true });
-    return true;
-  }
+  const raw = options?.probeRegion?.trim();
+  const regionKey = raw ? normalizeRegionId(raw) : "primary";
 
   const prevRow = await col.findOne({ _id: SNAPSHOT_ID });
   const prevById = new Map(
@@ -120,7 +109,7 @@ export async function saveStatusSnapshot(
 
   const merged = results.map((incoming) => {
     const prevR = prevById.get(incoming.id);
-    return mergeOneTarget(prevR, incoming, probeRegion);
+    return mergeOneTarget(prevR, incoming, regionKey);
   });
 
   const mergedOk = merged.every((r) => r.ok);
