@@ -384,6 +384,8 @@ export const da: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Maks",
     latencyLatest: "Seneste",
+    latencyByRegionCaption: "Svartid pr. prøvested",
+    latencyDefaultRegionLabel: "Denne prøve",
     badgeMainUptime:
       "Servicetilgængelighed: {{percent}} oppetid (seneste {{window}})",
     badgeSubMonitored:

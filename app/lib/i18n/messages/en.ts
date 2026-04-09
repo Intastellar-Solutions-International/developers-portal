@@ -394,6 +394,8 @@ export const en = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Latest",
+    latencyByRegionCaption: "Response time by probe location",
+    latencyDefaultRegionLabel: "This probe",
     badgeMainUptime:
       "Service reliability: {{percent}} uptime (last {{window}})",
     badgeSubMonitored:

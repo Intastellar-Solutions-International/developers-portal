@@ -389,6 +389,8 @@ export const de: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Zuletzt",
+    latencyByRegionCaption: "Antwortzeit je Prüfstandort",
+    latencyDefaultRegionLabel: "Diese Prüfung",
     badgeMainUptime:
       "Servicezuverlässigkeit: {{percent}} Verfügbarkeit (letzte {{window}})",
     badgeSubMonitored:

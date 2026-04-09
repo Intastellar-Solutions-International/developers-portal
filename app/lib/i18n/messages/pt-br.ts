@@ -386,6 +386,8 @@ export const ptBr: MessageTree = {
     latencyMin: "Mín",
     latencyMax: "Máx",
     latencyLatest: "Última",
+    latencyByRegionCaption: "Tempo de resposta por local da sonda",
+    latencyDefaultRegionLabel: "Esta sonda",
     badgeMainUptime:
       "Confiabilidade do serviço: {{percent}} de disponibilidade (últimos {{window}})",
     badgeSubMonitored:

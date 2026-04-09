@@ -129,6 +129,9 @@ export type StatusPageCopy = {
   latencyMin: string;
   latencyMax: string;
   latencyLatest: string;
+  latencyByRegionCaption: string;
+  /** Label for the synthetic `primary` region when only one cron runs and `STATUS_PROBE_REGION` is unset. */
+  latencyDefaultRegionLabel: string;
   embedModalTitle: string;
   embedModalClose: string;
   embedModalIntro: string;
@@ -267,6 +270,8 @@ export function buildStatusPageCopyTemplates(locale: Locale): StatusPageCopy {
     latencyMin: tp("status.latencyMin"),
     latencyMax: tp("status.latencyMax"),
     latencyLatest: tp("status.latencyLatest"),
+    latencyByRegionCaption: tp("status.latencyByRegionCaption"),
+    latencyDefaultRegionLabel: tp("status.latencyDefaultRegionLabel"),
     embedModalTitle: tp("status.embedModalTitle"),
     embedModalClose: tp("status.embedModalClose"),
     embedModalIntro: tp("status.embedModalIntro"),
@@ -401,6 +406,8 @@ export function resolveStatusPageCopy(
     typeof fromLoader.subscribeRss === "string" &&
     typeof fromLoader.subscribeSectionHeading === "string" &&
     typeof fromLoader.timelineIssueListIntro === "string" &&
+    typeof fromLoader.latencyByRegionCaption === "string" &&
+    typeof fromLoader.latencyDefaultRegionLabel === "string" &&
     typeof fromLoader.statusHistoryWindowHours === "number" &&
     typeof fromLoader.statusHistoryMaxRowsCap === "number"
   ) {

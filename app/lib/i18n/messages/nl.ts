@@ -385,6 +385,8 @@ export const nl: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Laatste",
+    latencyByRegionCaption: "Responstijd per probelocatie",
+    latencyDefaultRegionLabel: "Deze probe",
     badgeMainUptime:
       "Servicebetrouwbaarheid: {{percent}} beschikbaarheid (afgelopen {{window}})",
     badgeSubMonitored:

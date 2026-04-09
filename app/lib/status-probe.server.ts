@@ -1,5 +1,13 @@
 import type { StatusTarget } from "./status-targets.server";
 
+/** One regional probe outcome merged into the public snapshot (`results[].regions`). */
+export type StatusRegionalSlice = {
+  ok: boolean;
+  latencyMs: number;
+  statusCode: number | null;
+  error: string | null;
+};
+
 export type StatusProbeResult = {
   id: string;
   name: string;
@@ -8,6 +16,8 @@ export type StatusProbeResult = {
   statusCode: number | null;
   latencyMs: number;
   error: string | null;
+  /** Set when multiple workers merge checks (see `saveStatusSnapshot` + regional cron). */
+  regions?: Record<string, StatusRegionalSlice>;
 };
 
 const TIMEOUT_MS = 12_000;

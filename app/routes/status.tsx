@@ -13,6 +13,7 @@ import { StatusSubscribeSection } from "~/components/status-subscribe-section";
 import { StatusUptimeBadgeModal } from "~/components/status-uptime-badge-modal";
 import { StatusLatencyTrend } from "~/components/status-latency-trend";
 import { StatusMonitorTimeline } from "~/components/status-monitor-timeline";
+import { StatusRegionalLatency } from "~/components/status-regional-latency";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { interpolate, translatePath } from "~/lib/i18n/messages";
 import {
@@ -46,6 +47,10 @@ import {
   uptimePercentHeadlineClass,
   uptimePercentTier,
 } from "~/lib/status-uptime-tier";
+import {
+  getConfiguredProbeRegionLabels,
+  probeRegionFromEnv,
+} from "~/lib/status-probe-regions.server";
 import { getStatusTargets } from "~/lib/status-targets.server";
 
 const NOTIFY_FLASH = new Set([
@@ -168,6 +173,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     (rows) => rows.length > 0,
   );
 
+  const probeRegionLabels = getConfiguredProbeRegionLabels();
+  const probeEnvRegionId = probeRegionFromEnv();
+
   return {
     locale,
     copy,
@@ -187,6 +195,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     feedUrl: absoluteUrl("/api/status/feed.xml"),
     notifyFlash,
     subscribeEmailAvailable,
+    probeRegionLabels,
+    probeEnvRegionId,
   };
 }
 
@@ -231,6 +241,8 @@ export default function StatusPage() {
     feedUrl,
     notifyFlash,
     subscribeEmailAvailable,
+    probeRegionLabels,
+    probeEnvRegionId = null,
   } = useLoaderData<typeof loader>();
   const copy = resolveStatusPageCopy(locale, copyFromLoader);
 
@@ -399,53 +411,82 @@ export default function StatusPage() {
       {snapshot ? (
         <>
           <ul className="mt-8 divide-y divide-zinc-200 dark:divide-zinc-700">
-            {snapshot.results.map((r) => (
-              <li key={r.id} className="py-4">
-                <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                      {r.name}
-                    </p>
-                    <p className="mt-0.5 break-all text-xs text-zinc-500 dark:text-zinc-400">
-                      {r.url}
-                    </p>
-                    {r.error ? (
-                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                        {r.error}
+            {snapshot.results.map((r) => {
+              const regionalMap =
+                r.regions && Object.keys(r.regions).length > 0
+                  ? r.regions
+                  : {
+                      [probeEnvRegionId ?? "primary"]: {
+                        ok: r.ok,
+                        latencyMs: r.latencyMs,
+                        statusCode: r.statusCode,
+                        error: r.error,
+                      },
+                    };
+              const rowRegionLabels = {
+                ...probeRegionLabels,
+                ...((!r.regions || Object.keys(r.regions).length === 0) &&
+                !probeEnvRegionId
+                  ? { primary: copy.latencyDefaultRegionLabel }
+                  : {}),
+              };
+              return (
+                <li key={r.id} className="py-4">
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                        {r.name}
                       </p>
-                    ) : null}
-                    <StatusMonitorTimeline
-                      points={timelines[r.id] ?? []}
-                      liveSingleCheck={source === "live"}
-                      copy={copy}
-                    />
-                    <StatusLatencyTrend
-                      points={timelines[r.id] ?? []}
-                      label={r.name}
-                      copy={copy}
-                    />
+                      <p className="mt-0.5 break-all text-xs text-zinc-500 dark:text-zinc-400">
+                        {r.url}
+                      </p>
+                      {r.error ? (
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                          {r.error}
+                        </p>
+                      ) : null}
+                      <StatusMonitorTimeline
+                        points={timelines[r.id] ?? []}
+                        liveSingleCheck={source === "live"}
+                        copy={copy}
+                      />
+                      <StatusLatencyTrend
+                        points={timelines[r.id] ?? []}
+                        label={r.name}
+                        copy={copy}
+                      />
+                    </div>
+                    <div className="flex w-full shrink-0 flex-col gap-0 sm:w-auto sm:items-end sm:pt-0.5">
+                      <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                        <span
+                          className={
+                            r.ok
+                              ? "text-sm font-medium text-emerald-600 dark:text-emerald-400"
+                              : "text-sm font-medium text-red-600 dark:text-red-400"
+                          }
+                        >
+                          {r.statusCode != null
+                            ? interpolate(copy.httpStatus, {
+                                code: r.statusCode,
+                              })
+                            : copy.noResponse}
+                        </span>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                          {r.latencyMs} ms
+                        </span>
+                      </div>
+                      <StatusRegionalLatency
+                        regions={regionalMap}
+                        regionLabels={rowRegionLabels}
+                        copy={copy}
+                        className="sm:max-w-xs"
+                        alignEnd
+                      />
+                    </div>
                   </div>
-                  <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end sm:pt-0.5">
-                    <span
-                      className={
-                        r.ok
-                          ? "text-sm font-medium text-emerald-600 dark:text-emerald-400"
-                          : "text-sm font-medium text-red-600 dark:text-red-400"
-                      }
-                    >
-                      {r.statusCode != null
-                        ? interpolate(copy.httpStatus, {
-                            code: r.statusCode,
-                          })
-                        : copy.noResponse}
-                    </span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {r.latencyMs} ms
-                    </span>
-                  </div>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-start *:min-w-0">

@@ -13,9 +13,12 @@ import {
   mergeMaintenanceById,
   type StatusMaintenanceWindow,
 } from "./status-maintenance.server";
+import { canonicalProbeRegionForHistory } from "./status-probe-regions.server";
 
 export type StatusHistoryRow = {
   checkedAt: Date;
+  /** Which worker wrote this row (multi-region crons). Omitted / null = legacy single-region. */
+  probeRegion?: string | null;
   overallOk: boolean;
   results: Array<{
     id: string;
@@ -85,16 +88,24 @@ export function getStatusHistoryMaxPoints(): number {
   return historyMaxRowsCap();
 }
 
+function historyRowMatchesCanonicalFilter(row: StatusHistoryRow): boolean {
+  const c = canonicalProbeRegionForHistory();
+  if (!c) return true;
+  const pr = row.probeRegion ?? null;
+  return pr === null || pr === c;
+}
+
 async function loadHistoryRowsNewestFirst(): Promise<StatusHistoryRow[]> {
   const col = await getCollection<StatusHistoryRow>(STATUS_HISTORY_COLLECTION);
   if (!col) return [];
   const sinceMs = Date.now() - historyWindowHours() * 60 * 60 * 1000;
   const since = new Date(sinceMs);
-  return col
+  const rows = await col
     .find({ checkedAt: { $gte: since } })
     .sort({ checkedAt: -1 })
     .limit(historyMaxRowsCap())
     .toArray();
+  return rows.filter(historyRowMatchesCanonicalFilter);
 }
 
 export type StoredOverallUptime = {
@@ -298,13 +309,19 @@ export async function getStoredOverallUptime(): Promise<StoredOverallUptime | nu
 /**
  * Record one cron run (minimal fields) for timelines. TTL on collection drops old rows.
  */
+export type AppendStatusHistoryOptions = {
+  probeRegion?: string | null;
+};
+
 export async function appendStatusHistoryRun(
   results: StatusProbeResult[],
   overallOk: boolean,
+  options?: AppendStatusHistoryOptions,
 ): Promise<boolean> {
   const col = await getCollection<StatusHistoryRow>(STATUS_HISTORY_COLLECTION);
   if (!col) return false;
-  await col.insertOne({
+  const probeRegion = options?.probeRegion?.trim() || null;
+  const doc: StatusHistoryRow = {
     checkedAt: new Date(),
     overallOk,
     results: results.map((r) => ({
@@ -314,7 +331,9 @@ export async function appendStatusHistoryRun(
       error: r.error,
       statusCode: r.statusCode,
     })),
-  });
+  };
+  if (probeRegion) doc.probeRegion = probeRegion;
+  await col.insertOne(doc);
   return true;
 }
 

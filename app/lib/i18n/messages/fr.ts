@@ -385,6 +385,8 @@ export const fr: MessageTree = {
     latencyMin: "Min",
     latencyMax: "Max",
     latencyLatest: "Dernier",
+    latencyByRegionCaption: "Temps de réponse par lieu de sonde",
+    latencyDefaultRegionLabel: "Cette sonde",
     badgeMainUptime:
       "Fiabilité du service : {{percent}} de disponibilité ({{window}})",
     badgeSubMonitored:
