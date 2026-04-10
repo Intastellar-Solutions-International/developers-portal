@@ -1,0 +1,46 @@
+---
+title: Meta Pixel
+description: Meta (Facebook) Pixel com Intastellar Consents—ordem de carregamento, consentimento e verificações práticas.
+order: 55
+lastUpdated: "2026-04-08"
+related:
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
+  - title: Visão geral das integrações
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Meta Pixel
+
+Caminho recomendado: **CMP primeiro**, pixel **depois** de conhecido o estado de consentimento, idealmente via **GTM**.
+
+## Pré-requisitos
+
+- [Início rápido](/docs/cookie-banner/quickstart) ou equivalente GTM para que `uc.js` carregue **cedo**.
+- Uso das opções de **consentimento** ou **limited data use** da Meta de acordo com sua política (a documentação da Meta define os parâmetros exatos).
+
+## Google Tag Manager
+
+1. Dispare a tag **Meta Pixel** apenas em gatilhos que correspondam a consentimento de **marketing/publicidade** aceito (ou às verificações de consentimento do seu contêiner).
+2. **Não** coloque o pixel em HTML personalizado em **All Pages** antes do consentimento, salvo configuração deliberada da API da Meta para esse caso.
+
+## Pixel inline
+
+Se o pixel está fixo no código:
+
+- Evite injetar o script base **acima** da CMP no `<head>`.
+- Prefira carregar de um **callback pós-consentimento** ou gerenciador de tags — pixels fixos são os mais difíceis de alinhar a escolhas granulares.
+
+## Verificar
+
+- **Rede**: solicitações `facebook.net` / `fbevents` não devem se comportar como marketing completo **antes** de aceitar (salvo se sua base jurídica permitir explicitamente).
+- Após aceitar, você deve ver o tráfego esperado do pixel.
+
+## Veja também
+
+- [Solução de problemas](/docs/cookie-banner/debugging)
+- [Como funciona](/docs/cookie-banner/how-it-works)
+
+[← Início da documentação](/docs/cookie-banner)

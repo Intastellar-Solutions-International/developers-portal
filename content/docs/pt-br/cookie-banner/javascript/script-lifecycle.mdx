@@ -5,6 +5,8 @@ sidebar_label: Ciclo de vida do script
 order: 18
 lastUpdated: "2026-04-08"
 related:
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
   - title: Primeiros passos (JavaScript)
     href: /docs/cookie-banner/javascript/getting-started
   - title: Google Tag Manager
@@ -13,24 +15,26 @@ related:
 
 # Ciclo de vida do script (JavaScript)
 
+Para instalação mínima, siga primeiro o [Início rápido](/docs/cookie-banner/quickstart).
+
 ## Ordem de carregamento
 
 1. Defina **`window.INTA`** em um `<script>` inline no `<head>`.
-2. Carregue **`https://consents.cdn.intastellarsolutions.com/uc.js`** logo em seguida (veja [Primeiros passos](/docs/cookie-banner/javascript/getting-started)).
+2. Carregue **`https://consents.cdn.intastellarsolutions.com/uc.js`** logo em seguida (veja [Início rápido](/docs/cookie-banner/quickstart) ou [Primeiros passos](/docs/cookie-banner/javascript/getting-started)).
 
-Colocar ambos **cedo no `<head>`** reduz a chance de tags de analytics ou marketing rodarem antes da inicialização da CMP.
+Colocar ambos **cedo no `<head>`** reduz a chance de tags de analytics ou marketing rodarem antes da CMP inicializar.
 
 ## Bloqueio e consentimento
 
-Rastreadores não essenciais ficam **bloqueados até o visitante escolher** (aceitar / recusar / granular, conforme o produto). Após a aplicação:
+Rastreadores não essenciais ficam **bloqueados até o visitante decidir** (aceitar / recusar / granular, conforme o produto). Após a aplicação:
 
-- **Métricas de analytics e anúncios podem cair** em relação a um setup sem restrições. Isso é **esperado** quando o consentimento é aplicado de forma séria.
-- Tags que respeitam o Consent Mode (ou seus gatilhos do GTM) ainda devem receber **sinais de consentimento corretos** após a escolha para relatórios em conformidade.
+- **Métricas de analytics e anúncios podem cair** em relação a uma configuração sem restrições. Isso é **esperado** quando o consentimento é aplicado de forma séria.
+- Tags que respeitam o Consent Mode (ou seus gatilhos GTM) ainda devem receber **sinais de consentimento corretos** após a escolha para manter relatórios em conformidade.
 
-## Armazenamento de consentimento e prova
+## Armazenamento de consentimento e comprovação
 
-Em níveis **pagos / plataforma**, as decisões de consentimento podem ser **registradas** para auditoria e relatórios — veja [planos e preços](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) no site público. O banner gratuito ainda aplica UI e bloqueio; retenção e exportação dependem do plano.
+Em níveis **pagos / plataforma**, decisões de consentimento podem ser **registradas** para auditoria e relatórios — veja [planos e preços](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) no site público. O banner gratuito ainda aplica UI e bloqueio; retenção e exportação dependem do seu plano.
 
 ## API JavaScript pública
 
-Se precisar de **eventos nomeados, callbacks ou API programática** (ex.: detalhes de `dataLayer`), consulte a referência **JavaScript API** atual do seu deployment. Este portal documenta **configuração** (`window.INTA`) e **padrões de integração**; nomes de eventos de baixo nível podem estar em referência separada para desenvolvedores.
+Se precisar de **eventos nomeados, callbacks ou API programática** (por exemplo detalhes de integração `dataLayer`), confirme a referência **JavaScript API** mais recente do seu deployment. Este portal documenta **configuração** (`window.INTA`) e **padrões de integração**; nomes de eventos de baixo nível podem estar em referência separada para desenvolvedores.

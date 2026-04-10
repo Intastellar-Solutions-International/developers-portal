@@ -1,0 +1,103 @@
+---
+title: Início rápido
+description: Instale o Intastellar Consents em minutos—snippet mínimo, verificação no navegador e depois GTM ou tags Google.
+sidebar_label: Início rápido
+order: 1
+lastUpdated: "2026-04-08"
+related:
+  - title: Como funciona
+    href: /docs/cookie-banner/how-it-works
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Solução de problemas
+    href: /docs/cookie-banner/debugging
+---
+
+# Início rápido
+
+**Meta:** menos de 5 minutos.  
+**Resultado:** a interface de consentimento aparece, tags não essenciais permanecem bloqueadas até o visitante escolher, e as tags Google podem receber atualizações do Consent Mode quando você as configurar.
+
+## Antes de começar
+
+- Você pode editar o `<head>` do HTML ou o layout raiz (tema WordPress, `theme.liquid` da Shopify, etc.).
+- É necessária uma **URL de política de privacidade válida** (HTTPS, sem 404). URLs ausentes ou inválidas são o motivo mais comum de o banner não aparecer.
+
+## Etapa 1 — Duas tags no `<head>` (a ordem importa)
+
+Cole **logo após** a tag de abertura `<head>` (o mais cedo possível):
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://YOURDOMAIN.com/privacy-policy",
+    settings: {
+      rootDomain: "YOURDOMAIN.com",
+      company: "Nome da sua empresa",
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+**Regras**
+
+1. `window.INTA` deve rodar **antes** de `uc.js`.
+2. **Não** carregue scripts de analytics ou marketing **acima** deste bloco, salvo intenção explícita (padrão: não faça).
+
+Substitua:
+
+- `policy_link` — sua política de privacidade real.
+- `settings.rootDomain` — o domínio registrável do site (sem `https://`).
+- `settings.company` — nome exibido na interface.
+
+## Etapa 2 — Somente Google Analytics / Ads: adicione `gtagId`
+
+Se você usa **GA4 ou Google Ads** e quer que a Intastellar coordene o **Google Consent Mode** com seu ID de medição, estenda `settings`:
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://YOURDOMAIN.com/privacy-policy",
+    settings: {
+      rootDomain: "YOURDOMAIN.com",
+      company: "Nome da sua empresa",
+      gtagId: "G-XXXXXXXXXX",
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+Se você **ainda não** usa tags Google, omita `gtagId` até adicioná-las.
+
+Lista completa de campos: [`window.INTA` (esquema JSON)](/docs/cookie-banner/javascript/inta-schema).
+
+## Etapa 3 — Verificar no navegador
+
+1. Abra o site em uma **janela privada**.
+2. Você deve **ver a interface de consentimento** (banner ou sobreposição, conforme a configuração).
+3. DevTools → **Rede**:
+   - `uc.js` carrega **cedo** no documento.
+   - Antes de aceitar marketing/analytics, solicitações não essenciais não devem se comportar como se houvesse consentimento total — o comportamento exato depende das suas tags; veja [Como funciona](/docs/cookie-banner/how-it-works).
+
+## Etapa 4 — Recusar, depois aceitar
+
+1. Escolha **Recusar** (ou consentimento mínimo) e recarregue uma vez.
+2. Sua escolha deve **persistir** (sujeito a regras de cookies/armazenamento). Se reiniciar sempre, verifique blocos **duplicados** de `window.INTA` / `uc.js` ou `rootDomain` incorreto.
+
+## Quando está „pronto“
+
+- Banner visível para novos visitantes.
+- Tags que precisam de consentimento **não** rodam como totalmente consentidas **antes** de uma escolha.
+- Após **Aceitar**, a medição pode voltar ao normal ou usar comportamento **consciente de consentimento** (Google: Consent Mode; Meta: pixel + configuração de consentimento).
+
+## Próximos passos
+
+- **GTM:** [Google Tag Manager](/docs/cookie-banner/google-tag-manager)
+- **GA4:** [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
+- **Meta:** [Meta Pixel](/docs/cookie-banner/meta-pixel)
+- **Snippet completo e estilo:** [Primeiros passos (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- **Travado:** [Solução de problemas](/docs/cookie-banner/debugging)
+
+[← Início da documentação](/docs/cookie-banner)

@@ -5,6 +5,8 @@ sidebar_label: Scriptlevenscyclus
 order: 18
 lastUpdated: "2026-04-08"
 related:
+  - title: Snelstart
+    href: /docs/cookie-banner/quickstart
   - title: Aan de slag (JavaScript)
     href: /docs/cookie-banner/javascript/getting-started
   - title: Google Tag Manager
@@ -13,24 +15,26 @@ related:
 
 # Scriptlevenscyclus (JavaScript)
 
+Voor een minimale installatie volgt u eerst [Snelstart](/docs/cookie-banner/quickstart).
+
 ## Laadvolgorde
 
 1. Definieer **`window.INTA`** in een inline-`<script>` in `<head>`.
-2. Laad **`https://consents.cdn.intastellarsolutions.com/uc.js`** direct daarna (zie [Aan de slag](/docs/cookie-banner/javascript/getting-started)).
+2. Laad **`https://consents.cdn.intastellarsolutions.com/uc.js`** direct daarna (zie [Snelstart](/docs/cookie-banner/quickstart) of [Aan de slag](/docs/cookie-banner/javascript/getting-started)).
 
 Beide **vroeg in `<head>`** plaatsen verkleint de kans dat analytics- of marketing-tags vóór CMP-initialisatie draaien.
 
-## Blokkeren en toestemming
+## Blokkering en toestemming
 
-Niet-noodzakelijke trackers zijn **geblokkeerd tot de bezoeker kiest** (accepteren / weigeren / granulair, afhankelijk van het product). Na handhaving:
+Niet-essentiële trackers zijn **geblokkeerd tot de bezoeker kiest** (accepteren / weigeren / granulair, afhankelijk van productgedrag). Na handhaving:
 
-- **Analytics- en advertentiemetrics kunnen dalen** vergeleken met een onbeperkte setup. Dat is **verwacht** als toestemming eerlijk wordt afgedwongen.
-- Tags die Consent Mode respecteren (of uw GTM-triggers) moeten na de keuze nog steeds **juiste toestemmingssignalen** ontvangen voor compliant rapportage.
+- **Analytics- en advertentie-KPI’s kunnen dalen** vergeleken met een onbeperkte setup. Dat is **verwacht** wanneer toestemming eerlijk wordt toegepast.
+- Tags die Consent Mode respecteren (of uw GTM-triggers) moeten na de keuze nog steeds **juiste toestemmingssignalen** ontvangen zodat rapportage compliant blijft.
 
 ## Toestemmingsopslag en bewijs
 
-Op **betaalde / platform**-niveaus kunnen toestemmingsbeslissingen worden **gelogd** voor audit en rapportage — zie [plannen en prijzen](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) op de openbare site. De gratis banner handhaaft UI en blokkering; retentie en export hangen van het plan af.
+Op **betaalde / platform**-niveaus kunnen toestemmingsbeslissingen worden **gelogd** voor audit en rapportage — zie [plannen en prijzen](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) op de openbare site. De gratis banner handhaaft UI en blokkering; bewaring en export hangen van uw plan af.
 
 ## Openbare JavaScript-API
 
-Heeft u **benoemde events, callbacks of een programmatische API** nodig (bijv. `dataLayer`), raadpleeg de actuele **JavaScript API**-referentie voor uw deployment. Dit portaal documenteert **configuratie** (`window.INTA`) en **integratiepatronen**; low-level eventnamen kunnen in een aparte ontwikkelaarsreferentie staan.
+Heeft u **benoemde events, callbacks of een programmatische API** nodig (bijv. `dataLayer`-integratiedetails), bevestig dan de actuele **JavaScript API**-referentie voor uw deployment. Deze portal documenteert **configuratie** (`window.INTA`) en **integratiepatronen**; low-level eventnamen kunnen in een aparte ontwikkelaarsreferentie staan.

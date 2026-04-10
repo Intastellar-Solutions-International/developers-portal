@@ -1,0 +1,45 @@
+---
+title: SPAs e SSR (Next.js, etc.)
+description: Mantenha o Intastellar Consents no cabeçalho do documento com React, Next.js ou outros frameworks SPA.
+sidebar_label: SPAs e SSR
+order: 11
+lastUpdated: "2026-04-08"
+related:
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
+  - title: Ciclo de vida do script
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Solução de problemas
+    href: /docs/cookie-banner/debugging
+---
+
+# SPAs e SSR (Next.js, etc.)
+
+Frameworks que hidratam a interface podem carregar a CMP **tarde demais** ou **duas vezes**. A regra permanece: **`window.INTA` e depois `uc.js`, o mais cedo possível no documento HTML real.**
+
+## Next.js (App Router)
+
+- Prefira **`app/layout.tsx`** (ou layout raiz) com componente **servidor** ou **cliente** que emita o snippet no `<head>`.
+- Com **`next/script`**, garanta que a CMP rode **antes** dos scripts de analytics na **ordem do documento** — `strategy="beforeInteractive"` pode servir para o carregador da CMP; evite GA com ordem efetiva mais cedo.
+- Não monte a CMP só dentro de uma rota cliente profunda (ex.: um único componente de página), a menos que cada rota de entrada a inclua.
+
+## React (SPA)
+
+- Adicione as duas tags script em **`public/index.html`** ou no **modelo HTML** do framework, não só dentro de um componente montado tarde.
+- Busque `uc.js` duplicado no bundle ao adicionar scripts de terceiros via plugins.
+
+## Vue / Nuxt / SvelteKit
+
+- Use o **layout raiz** ou **`app.html`** / hooks de head para que a CMP esteja na **resposta HTML inicial** da primeira pintura.
+
+## Verificar
+
+1. **Exibir código-fonte da página** (não só Elementos): `uc.js` deve aparecer no HTML bruto.
+2. Banner ausente ou consentimento reiniciado na navegação: [Solução de problemas](/docs/cookie-banner/debugging).
+
+## Veja também
+
+- [Primeiros passos (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- [Como funciona](/docs/cookie-banner/how-it-works)
+
+[← Início da documentação](/docs/cookie-banner)

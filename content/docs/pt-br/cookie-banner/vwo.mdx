@@ -1,0 +1,44 @@
+---
+title: VWO
+description: Testes A/B VWO (Visual Website Optimizer) com Intastellar Consents—consentimento antes dos experimentos.
+order: 49
+lastUpdated: "2026-04-08"
+related:
+  - title: Visão geral das integrações
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
+---
+
+# VWO
+
+O VWO executa código de **experimentação e personalização** que usa cookies e frequentemente é não essencial. Carregue o VWO **depois** do Intastellar Consents e só quando o consentimento permitir a finalidade relevante.
+
+## Pré-requisitos
+
+- [Início rápido](/docs/cookie-banner/quickstart).
+- Mapeie o VWO de forma consistente para **marketing**, **estatísticas** ou categoria personalizada do seu banner.
+
+## Google Tag Manager
+
+1. Instale o snippet VWO via **HTML personalizado** do GTM (ou instruções VWO).
+2. Use um gatilho que dispare **depois** do consentimento para essa finalidade — por exemplo evento personalizado ao aceitar, ou verificações de consentimento do GTM com VWO.
+3. Mantenha a tag CMP em **Consent Initialization** — [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+
+## Código async inteligente
+
+Se o VWO fornecer carregador async, ele ainda não deve executar **acima** da CMP no documento. A ordem no **HTML inicial** importa mais que „async“ sozinho para corridas na primeira pintura.
+
+## Verificar
+
+- Cookies / armazenamento local do VWO não devem estar ativos para usuários restritos **antes** de aceitar.
+- Após aceitar, experimentos e heatmaps se comportam como o VWO espera.
+
+## Veja também
+
+- [Solução de problemas](/docs/cookie-banner/debugging)
+- [Diretório de integrações de marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Visão geral das integrações](/docs/cookie-banner/integrations-overview)

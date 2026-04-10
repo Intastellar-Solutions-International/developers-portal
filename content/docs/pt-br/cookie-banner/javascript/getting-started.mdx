@@ -1,18 +1,30 @@
 ---
 title: Primeiros passos
-description: Integre o Intastellar Consents no seu site via JavaScript.
+description: Instalação JavaScript completa—snippet com opções comuns, URL de privacidade e links para início rápido e esquema.
 order: 10
-lastUpdated: "2026-04-05"
+lastUpdated: "2026-04-08"
 related:
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
   - title: Esquema JSON window.INTA
     href: /docs/cookie-banner/javascript/inta-schema
+  - title: SPAs e SSR
+    href: /docs/cookie-banner/javascript/spa-and-ssr
+  - title: Ciclo de vida do script
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Visão geral das integrações
+    href: /docs/cookie-banner/integrations-overview
   - title: Personalizar aparência e comportamento
     href: /docs/cookie-banner/javascript/customize
 ---
 
 # Primeiros passos (JavaScript)
 
-Cole o trecho **logo após** a tag de abertura `<head>` em cada página (ou uma vez no layout raiz). O mesmo formato de configuração aparece na visão geral pública [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents) — substitua por seus domínios, IDs e marca reais. [Planos e preços](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) estão na página do produto.
+Para uma **primeira instalação mínima** (~5 minutos), use o **[Início rápido](/docs/cookie-banner/quickstart)** — snippet pequeno, passos de verificação claros.
+
+Esta página é a referência de instalação **completa**: campos `settings` comuns, `gtagId` opcional e placeholders de marca. A mesma forma de configuração aparece na visão geral pública [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents). [Planos e preços](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) estão na página do produto.
+
+**Frameworks:** [SPAs e SSR (Next.js, etc.)](/docs/cookie-banner/javascript/spa-and-ssr)
 
 ```html
 <script>
@@ -34,15 +46,20 @@ Cole o trecho **logo após** a tag de abertura `<head>` em cada página (ou uma 
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
-Substitua os placeholders pelo seu domínio, nome da empresa, cores, URL do logo e IDs de medição.
+Substitua os placeholders por domínio, nome da empresa, cores, URL do logo e IDs de medição. Omita `gtagId` até usar tags Google; veja [Início rápido](/docs/cookie-banner/quickstart) etapa 2.
 
 ## URL da política de privacidade
 
-Defina uma URL de política de privacidade acessível. Use `policy_link` e/ou `settings.privacy_policy` em `window.INTA`. URLs ausentes ou inválidas são um motivo comum do banner permanecer oculto — veja as [perguntas frequentes](/docs/cookie-banner#perguntas-frequentes) na página inicial da documentação.
+Defina uma URL de política acessível. Use `policy_link` e/ou `settings.privacy_policy` em `window.INTA`. URLs ausentes ou inválidas são motivo frequente de banner oculto — veja [FAQ](/docs/cookie-banner#faq) na página inicial da documentação.
 
-## Relacionados
+## Veja também
 
+- [Início rápido](/docs/cookie-banner/quickstart)
 - [Referência `window.INTA` (esquema JSON)](/docs/cookie-banner/javascript/inta-schema)
+- [Ciclo de vida do script](/docs/cookie-banner/javascript/script-lifecycle)
+- [Eventos e API](/docs/cookie-banner/javascript/events-and-api)
+- [Visão geral das integrações](/docs/cookie-banner/integrations-overview)
+- [Google Consent Mode](/docs/cookie-banner/google-consent-mode)
 - [Personalizar](/docs/cookie-banner/javascript/customize)
 - [iFrames](/docs/cookie-banner/javascript/iframes)
 - [Adicionar logo](/docs/cookie-banner/javascript/logo)

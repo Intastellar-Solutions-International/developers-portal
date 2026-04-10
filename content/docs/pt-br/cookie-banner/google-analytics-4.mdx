@@ -1,0 +1,50 @@
+---
+title: Google Analytics 4
+description: Configuração recomendada de GA4 com Intastellar Consents e Google Consent Mode v2.
+order: 54
+lastUpdated: "2026-04-08"
+related:
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Google Analytics 4
+
+Caminho recomendado: **GA4 + Consent Mode v2**, CMP primeiro, tags bloqueadas no GTM ou equivalente.
+
+## Pré-requisitos
+
+- [Início rápido](/docs/cookie-banner/quickstart) concluído (ou a mesma ordem `window.INTA` + `uc.js` no GTM).
+- `settings.gtagId` definido como seu **ID de medição GA4** (`G-XXXXXXXX`) quando a CMP coordena o Google automaticamente.
+- Leia [Google Consent Mode](/docs/cookie-banner/google-consent-mode) uma vez — os padrões importam.
+
+## Recomendado: GA4 via Google Tag Manager
+
+1. Implemente a CMP como em [Google Tag Manager](/docs/cookie-banner/google-tag-manager) em **Consent Initialization**.
+2. Adicione uma tag **Google** ou **Configuração GA4** que respeite o **consentimento** nas configurações da tag (alinhe aos seus padrões jurídicos por tipo).
+3. **Não** dispare GA4 com um gatilho „All Pages“ simples se isso implicar cookies de analytics completos antes da CMP — use configuração consciente de consentimento.
+
+## `gtag` inline (sem GTM)
+
+Se você carrega `gtag.js` diretamente:
+
+- Ainda coloque **`window.INTA` + `uc.js` primeiro** no `<head>`.
+- Carregue o GA **depois** do snippet da CMP, ou garanta que o Consent Mode esteja definido antes dos hits relevantes.
+
+Carregadores duplicados de GA (GTM + `gtag` fixo) costumam causar hits duplicados e estado de consentimento errado — escolha **um** caminho principal.
+
+## Verificar
+
+1. **Pré-visualização GTM** ou **DebugView** do GA: antes de aceitar, o analytics não deve se comportar como **totalmente consentido**, salvo configuração deliberada dos defaults.
+2. Após **Aceitar**, a coleta normal deve ocorrer (sujeito a bloqueadores, etc.).
+
+## Veja também
+
+- [Solução de problemas](/docs/cookie-banner/debugging)
+- [Visão geral das integrações](/docs/cookie-banner/integrations-overview)
+
+[← Início da documentação](/docs/cookie-banner)

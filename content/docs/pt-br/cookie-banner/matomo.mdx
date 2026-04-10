@@ -1,0 +1,44 @@
+---
+title: Matomo
+description: Matomo (self-hosted ou nuvem) com Intastellar Consents e carregamento consciente de consentimento.
+order: 47
+lastUpdated: "2026-04-08"
+related:
+  - title: Visão geral das integrações
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
+---
+
+# Matomo
+
+O Matomo costuma ser tratado como **analytics/estatísticas**. Com o Intastellar Consents, o snippet de rastreamento **não** deve rodar como totalmente ativo até o visitante aceitar a finalidade correspondente.
+
+## Pré-requisitos
+
+- [Início rápido](/docs/cookie-banner/quickstart) para que a CMP inicialize primeiro.
+- Leia a documentação do **Consent Manager** ou **opt-out** do Matomo em paralelo — a Intastellar fornece a UI de consentimento em todo o site; o Matomo ainda pode precisar saber quando o rastreamento é permitido.
+
+## Google Tag Manager
+
+1. Implante o Matomo via **HTML personalizado** ou modelo oficial, se usar.
+2. Dispare em gatilho vinculado ao **consentimento de analytics** (ou equivalente do contêiner), **não** em „All Pages“ cru antes da CMP.
+3. Mantenha a CMP em **Consent Initialization** — veja [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+
+## API de consentimento Matomo
+
+Se você usa a API JavaScript do Matomo para sinalizadores de consentimento, defina-os quando a Intastellar aplicar a escolha do usuário (geralmente via eventos personalizados do GTM ou camada da aplicação). Os nomes exatos dos eventos dependem da configuração; valide em **staging**.
+
+## Verificar
+
+- Antes de aceitar: sem hits Matomo que assumam cookies de analytics completos, conforme sua configuração.
+- Após aceitar: rastreamento e painéis mostram o tráfego esperado.
+
+## Veja também
+
+- [Solução de problemas](/docs/cookie-banner/debugging)
+- [Diretório de integrações de marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Visão geral das integrações](/docs/cookie-banner/integrations-overview)

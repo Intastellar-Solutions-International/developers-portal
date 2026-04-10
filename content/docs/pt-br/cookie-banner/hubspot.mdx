@@ -1,0 +1,44 @@
+---
+title: HubSpot
+description: Rastreamento e formulários HubSpot com Intastellar Consents—CMP primeiro, disparo consciente de consentimento.
+order: 46
+lastUpdated: "2026-04-08"
+related:
+  - title: Visão geral das integrações
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
+---
+
+# HubSpot
+
+O Intastellar Consents integra-se ao **HubSpot** para que marketing e rastreamento respeitem o consentimento. Conecte o HubSpot como qualquer outra pilha não essencial: **CMP antes dos scripts HubSpot**, depois dispare apenas quando as escolhas do visitante permitirem.
+
+## Pré-requisitos
+
+- [Início rápido](/docs/cookie-banner/quickstart) (ou equivalente) para que `window.INTA` + `uc.js` carreguem **cedo** no `<head>`.
+- Clareza sobre quais recursos HubSpot você usa (código de rastreamento, formulários, chat) e a quais finalidades de consentimento correspondem.
+
+## Recomendado: Google Tag Manager
+
+1. Implante a CMP em **Consent Initialization** — veja [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+2. Adicione tags **HubSpot** (ou HTML personalizado) com gatilhos que correspondam a consentimento de **marketing/analytics** aceito, conforme sua política.
+3. Evite carregar o embed HubSpot globalmente em **All Pages** antes do consentimento, salvo revisão jurídica em contrário.
+
+## API de cookies HubSpot / comportamento da CMP
+
+A documentação da HubSpot descreve como as tags interagem com cookies e ferramentas de consentimento. Siga a orientação **HubSpot + CMP** junto com a ordem de carregamento da Intastellar: a CMP fornece o estado; seu GTM ou site **não** deve tratar o rastreamento como concedido antes da escolha.
+
+## Verificar
+
+- **Rede / Aplicativo**: solicitações e cookies relacionados ao HubSpot não devem estar totalmente ativos **antes** de aceitar (para as finalidades restritas).
+- Após aceitar, formulários e rastreamento funcionam como configurado.
+
+## Veja também
+
+- [Solução de problemas](/docs/cookie-banner/debugging)
+- [Diretório de integrações de marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Visão geral das integrações](/docs/cookie-banner/integrations-overview)

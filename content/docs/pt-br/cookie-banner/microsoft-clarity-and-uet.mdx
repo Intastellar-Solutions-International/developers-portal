@@ -1,0 +1,48 @@
+---
+title: Microsoft Clarity e UET
+description: Microsoft Clarity (replay de sessão/heatmaps) e Universal Event Tracking (UET) com Intastellar Consents.
+sidebar_label: Clarity e UET
+order: 53
+lastUpdated: "2026-04-08"
+related:
+  - title: Visão geral das integrações
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
+---
+
+# Microsoft Clarity e UET
+
+**Clarity** (análise comportamental, gravações, heatmaps) e **UET** (conversão / remarketing do Microsoft Advertising) são produtos distintos, mas a mesma regra vale: carregue-os **depois** da CMP e só quando o consentimento cobrir a finalidade.
+
+## Pré-requisitos
+
+- [Início rápido](/docs/cookie-banner/quickstart) para que a Intastellar rode primeiro.
+- Mapeie Clarity para **analytics/estatísticas** (ou equivalente) e UET para **marketing/publicidade** no seu modelo de consentimento.
+
+## Google Tag Manager
+
+1. **Clarity:** adicione a tag Clarity com gatilho que dispare só quando **analytics** (ou a finalidade escolhida) for permitida.
+2. **UET:** adicione a tag UET com gatilho que dispare só quando o consentimento de **publicidade/marketing** for permitido.
+3. Não use um único gatilho genérico „All Pages“ para ambos se o banner trata essas finalidades de forma diferente.
+
+## Scripts inline
+
+Se Clarity ou UET estiver fixo no código:
+
+- Coloque os snippets **abaixo** de `window.INTA` + `uc.js` no `<head>`, ou injete só após o consentimento via app ou GTM.
+- Evite carregadores duplicados (GTM + código fixo).
+
+## Verificar
+
+- Antes de aceitar: a atividade de rede Clarity/UET deve corresponder ao seu padrão **restrito**.
+- Após aceitar: as tags devem carregar e registrar como esperado.
+
+## Veja também
+
+- [Solução de problemas](/docs/cookie-banner/debugging)
+- [Diretório de integrações de marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Visão geral das integrações](/docs/cookie-banner/integrations-overview)

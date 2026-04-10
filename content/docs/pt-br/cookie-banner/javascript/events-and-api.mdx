@@ -1,10 +1,12 @@
 ---
 title: Eventos e API
-description: Callbacks, eventos e API de consentimento programática.
+description: O que este portal documenta sobre consentimento programático—configuração versus superfície de API em tempo de execução.
 sidebar_label: Eventos & API
 order: 22
 lastUpdated: "2026-04-08"
 related:
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
   - title: Ciclo de vida do script
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: Referência window.INTA
@@ -13,25 +15,31 @@ related:
 
 # Eventos e API
 
-## Superfície de configuração
+## O que este portal de desenvolvedores documenta
 
-Esta documentação foca em:
+| Superfície | Finalidade |
+| --- | --- |
+| **`window.INTA`** | Objeto de bootstrap **antes** de `uc.js` rodar—URL da política, domínio, empresa, `gtagId` opcional, opções de UI ([esquema JSON](/docs/cookie-banner/javascript/inta-schema)). |
+| **Padrões de integração** | Ordem de disparo GTM, GA4, Meta, Google Consent Mode ([visão geral das integrações](/docs/cookie-banner/integrations-overview)). |
 
-- **`window.INTA`** — objeto bootstrap consumido antes de `uc.js` ([referência](/docs/cookie-banner/javascript/inta-schema))
-- **Padrões de integração** — GTM, Google Consent Mode, CMS ([Visão geral das integrações](/docs/cookie-banner/integrations-overview))
+Esses são os contratos de integração **suportados** para construir em inta.dev.
 
-## Eventos e callbacks
+## API JavaScript programática (runtime)
 
-O site de marketing e o deployment podem expor **APIs JavaScript** adicionais (eventos customizados, hooks globais ou contratos `dataLayer`) que não são duplicadas aqui por completo.
+**Não há uma „API JavaScript CMP“ pública separada documentada neste portal** (nenhum global garantido como `window.IntastellarConsents.*` para uso em produção). Quem implementa deve:
 
-**Checklist para quem implementa:**
+- Conduzir o comportamento via **`window.INTA`** e **`uc.js`** conforme documentado.
+- Usar **Google Tag Manager** (ou sua camada de tags) para eventos, gatilhos e tags de fornecedores.
+- Confiar nos **mecanismos de consentimento dos fornecedores** (por exemplo Google Consent Mode, parâmetros Meta) quando aplicável.
 
-1. Valide atualizações de consentimento contra **gatilhos de tag** no GTM ou no seu bundler.  
-2. Use as **ferramentas de desenvolvedor** do navegador (Aplicativo → Cookies / armazenamento, Rede) para confirmar que os tags só disparam após o estado esperado.  
-3. Consulte **documentação JS versionada** da sua conta ou build de CDN se a equipe mantiver referência de API separada.
+Se sua organização publicar uma **API runtime versionada** para um build CDN ou nível enterprise específico, adicione a URL canônica ao frontmatter desta página ou à [página inicial da documentação](/docs/cookie-banner) quando estiver estável.
 
-Se houver URL canônica para a API JS completa, adicione-a ao frontmatter desta página ou à [página inicial da documentação](/docs/cookie-banner) quando disponível.
+## Lista de verificação prática
+
+1. Valide o comportamento orientado a consentimento com **Pré-visualização GTM** ou a ordem de carregamento do seu bundler.
+2. Use DevTools (**Aplicativo** → cookies / armazenamento, **Rede**) para confirmar alinhamento das tags **antes** e **depois** das escolhas.
+3. Se algo só pode rodar após aceitar, expresse isso em **gatilhos GTM** ou código da aplicação carregado **depois** da CMP — não via globais não documentados.
 
 ## Sinais de consentimento para terceiros
 
-O Intastellar Consents foi feito para repassar **sinais de consentimento** automaticamente às stacks suportadas, sem cabear cada fornecedor manualmente. Parâmetros específicos de plataforma ainda seguem **Google**, **Meta**, **Microsoft** etc. — veja [Visão geral das integrações](/docs/cookie-banner/integrations-overview).
+O Intastellar Consents repassa **sinais de consentimento** para pilhas suportadas quando configurado, para que você não precise cabear cada fornecedor manualmente. Parâmetros específicos de plataforma ainda seguem **Google**, **Meta**, **Microsoft**, etc. — veja [visão geral das integrações](/docs/cookie-banner/integrations-overview).

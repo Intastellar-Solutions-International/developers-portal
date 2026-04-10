@@ -1,0 +1,46 @@
+---
+title: Segment
+description: CDP Segment e pipeline de analytics com Intastellar Consents—fontes após o consentimento.
+order: 51
+lastUpdated: "2026-04-08"
+related:
+  - title: Visão geral das integrações
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
+---
+
+# Segment
+
+O **Segment** coleta eventos e encaminha para destinos. O snippet **Analytics.js** (ou similar) não é essencial até o consentimento permitir — trate o Segment como qualquer carregador de analytics/marketing: **CMP primeiro**, depois Segment quando permitido.
+
+## Pré-requisitos
+
+- [Início rápido](/docs/cookie-banner/quickstart).
+- Lista de quais **destinos** do Segment mapeiam para quais finalidades de consentimento (analytics vs anúncios, etc.).
+
+## Google Tag Manager
+
+Muitas equipes carregam o Segment via GTM:
+
+1. Adicione o snippet Segment em uma tag que dispare só quando **analytics** (ou a finalidade combinada) for aceita.
+2. Ou carregue o Segment no código da aplicação **depois** de ler o estado do consentimento — a leitura deve ocorrer **depois** da CMP inicializar.
+
+## Destinos
+
+Cada destino (GA4, pixels de anúncios, etc.) pode precisar de regras próprias de consentimento. O Segment não elimina a necessidade de **bloquear** tags downstream; a Intastellar fornece consentimento em todo o site — alinhe o carregamento do Segment e os **comutadores de destino**.
+
+## Verificar
+
+- Chamadas a `cdn.segment.com` / analytics não devem rodar como totalmente consentidas **antes** do que sua política permite.
+- Após aceitar, os eventos fluem aos destinos conforme configurado.
+
+## Veja também
+
+- [Solução de problemas](/docs/cookie-banner/debugging)
+- [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
+- [Diretório de integrações de marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Visão geral das integrações](/docs/cookie-banner/integrations-overview)

@@ -1,0 +1,64 @@
+---
+title: Solução de problemas
+description: Depuração orientada a sintomas—banner ausente, tags cedo demais, corridas no GTM, consentimento que não persiste.
+sidebar_label: Solução de problemas
+order: 3
+lastUpdated: "2026-04-08"
+related:
+  - title: Início rápido
+    href: /docs/cookie-banner/quickstart
+  - title: Como funciona
+    href: /docs/cookie-banner/how-it-works
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Solução de problemas
+
+Verifique em passos pequenos antes de alterar configurações não relacionadas.
+
+## O banner não aparece
+
+| Causa provável | Como verificar | Correção |
+| --- | --- | --- |
+| `policy_link` inválida | Abrir a URL em nova aba; HTTPS e código de status | Usar página de política ativa; corrigir redirecionamentos / 404 |
+| Snippet muito abaixo ou só no body | Ver código-fonte; buscar `uc.js` | Mover o bloco para o início do `<head>` |
+| SPA / framework monta tarde | Comparar HTML do servidor vs DOM renderizado | Carregar a CMP do **layout raiz** ou shell que envolve cada rota |
+| `window.INTA` duplicado ou conflitante | Buscar `window.INTA` no repositório / HTML | Manter **uma** definição antes de `uc.js` |
+
+## Rastreamento „não dispara“ após o consentimento
+
+| Causa provável | Como verificar | Correção |
+| --- | --- | --- |
+| Tag sem gatilho pós-consentimento | Pré-visualização GTM: tag não dispara após aceitar | Adicionar gatilhos conscientes de consentimento ou ajustes do Consent Mode |
+| `gtagId` ausente para GA4 | Comparar com [Início rápido](/docs/cookie-banner/quickstart) | Definir `gtagId` ou conectar o GA conforme seu padrão |
+| Defaults do Consent Mode muito restritivos | GA / Tag Assistant | Ajustar defaults **deliberadamente** e documentar |
+
+## Tags disparam antes do consentimento (grave)
+
+| Causa provável | Como verificar | Correção |
+| --- | --- | --- |
+| GA/Ads em „All Pages“ antes da CMP | Linha do tempo da pré-visualização GTM | Disparar CMP em **Consent Initialization**; bloquear tags dependentes |
+| `gtag.js` fixo no HTML | Buscar `googletagmanager.com/gtag` | Remover carregadores duplicados ou colocar **depois** da CMP |
+| Incorporação de terceiros no `<head>` | Aba Rede | Adiar até o propósito correspondente ser permitido |
+
+## Gatilhos GTM „não funcionam“
+
+| Causa provável | Como verificar | Correção |
+| --- | --- | --- |
+| CMP não no Consent Init | Tipo de gatilho no GTM | Usar **Consent Initialization – All pages** (ou equivalente) |
+| Corrida com Page View | Ordem dos eventos na Pré-visualização | Garantir que a CMP dispare **antes** das tags de analytics |
+| Contêiner errado | ID do contêiner no site | Apontar para o contêiner GTM desejado |
+
+## A escolha de consentimento não persiste
+
+| Causa provável | Como verificar | Correção |
+| --- | --- | --- |
+| `rootDomain` incorreto | Comparar `settings.rootDomain` com o hostname | Alinhar ao modelo de domínio de cookies |
+| Duas cópias de `uc.js` | Buscar `uc.js` na fonte | Uma instalação canônica |
+
+## Ainda travado
+
+Registre: navegador, URL da página (staging ok), trecho do **código-fonte** em torno de `uc.js`, e com GTM uma **captura da Pré-visualização** ou exportação. Depois use o canal de suporte ou [FAQ](/docs/cookie-banner#faq) na página inicial da documentação.
+
+[← Início da documentação](/docs/cookie-banner)
