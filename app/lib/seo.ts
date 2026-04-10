@@ -6,9 +6,71 @@ import {
   interpolate,
   translatePath,
 } from "~/lib/i18n/messages";
-import { absoluteUrl } from "~/lib/site";
+import { absoluteUrl, siteOrigin } from "~/lib/site";
 
 const SITE_NAME = "inta.dev";
+
+const INTASTELLAR_ORG_LOGO =
+  "https://www.intastellarsolutions.com/assets/logos/intastellar-new-planet.svg";
+
+/**
+ * Site-wide JSON-LD: all stable `@id` values live on inta.dev so crawlers resolve the graph here.
+ * Intastellar Solutions is the parent company; inta.dev is an organizational unit (portal);
+ * Intastellar Consents is a software product of the company.
+ */
+export function buildGlobalSeoJsonLdMeta(): MetaDescriptor[] {
+  const origin = siteOrigin();
+  const companyId = `${origin}/#intastellar-solutions`;
+  const portalOrgId = `${origin}/#inta-dev-portal`;
+  const websiteId = `${origin}/#website`;
+  const consentsSoftwareId = `${origin}/#software-intastellar-consents`;
+
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": companyId,
+        name: "Intastellar Solutions",
+        url: "https://www.intastellarsolutions.com/",
+        logo: INTASTELLAR_ORG_LOGO,
+        sameAs: ["https://www.intastellarsolutions.com/"],
+        subOrganization: { "@id": portalOrgId },
+      },
+      {
+        "@type": "Organization",
+        "@id": portalOrgId,
+        name: "inta.dev",
+        url: `${origin}/`,
+        parentOrganization: { "@id": companyId },
+        description:
+          "Developer documentation, API keys, and integration guides — the Intastellar Solutions developer portal.",
+      },
+      {
+        "@type": "WebSite",
+        "@id": websiteId,
+        name: SITE_NAME,
+        url: `${origin}/`,
+        publisher: { "@id": companyId },
+        copyrightHolder: { "@id": companyId },
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": consentsSoftwareId,
+        name: "Intastellar Consents",
+        url: absoluteUrl("/docs/cookie-banner"),
+        applicationCategory: "Consent Management Platform",
+        provider: {
+          "@type": "Organization",
+          "@id": companyId,
+          name: "Intastellar Solutions",
+        },
+      },
+    ],
+  };
+
+  return [{ "script:ld+json": graph }];
+}
 
 type MetaMatch =
   | { id?: string; data?: unknown; loaderData?: unknown }

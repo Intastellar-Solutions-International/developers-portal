@@ -22,6 +22,8 @@ import {
   type ShouldRevalidateFunctionArgs,
 } from "react-router";
 
+import { buildGlobalSeoJsonLdMeta } from "~/lib/seo";
+
 import type { Route } from "./+types/root";
 import { LegacyDevelopersBanner } from "./components/legacy-developers-banner";
 import { NotFoundPage } from "./components/not-found-page";
@@ -85,6 +87,11 @@ function useRootHtmlIsDark(): boolean {
 type SearchLoaderData = { documents: SearchDocument[] };
 
 /** Same rule as `getIntastellarClientConfig()` — embedded in SSR payload so SSO UI never disagrees with the server. */
+/** Global JSON-LD on every page (merged with route-level meta). */
+export function meta(_args: Route.MetaArgs) {
+  return buildGlobalSeoJsonLdMeta();
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
   const ssoConfigured = Boolean(
     String(import.meta.env.VITE_INTASTELLAR_CLIENT_ID ?? "").trim(),
