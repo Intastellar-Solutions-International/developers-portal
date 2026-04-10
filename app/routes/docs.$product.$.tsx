@@ -4,6 +4,7 @@ import type { Route } from "./+types/docs.$product.$";
 import { DocMeta } from "~/components/doc-meta";
 import { DocPrevNext } from "~/components/doc-prev-next";
 import { DocsBreadcrumbs } from "~/components/docs-breadcrumbs";
+import { IntaConsentTryout } from "~/components/inta-consent-tryout";
 import { MdxContent } from "~/components/mdx-content";
 import { RelatedLinks } from "~/components/related-links";
 import {
@@ -47,7 +48,24 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     doc.title,
     locale,
   );
-  return { ...doc, prev, next, breadcrumbs, version, locale };
+  const intaTryout =
+    product === "cookie-banner" && docPath === "javascript/try-out";
+  const url = new URL(request.url);
+  return {
+    ...doc,
+    prev,
+    next,
+    breadcrumbs,
+    version,
+    locale,
+    intaTryout,
+    ...(intaTryout
+      ? {
+          previewOrigin: url.origin,
+          previewHostname: url.hostname,
+        }
+      : {}),
+  };
 }
 
 export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
@@ -74,7 +92,20 @@ export default function ProductDocPage() {
   return (
     <article className="docs-prose prose prose-zinc max-w-none dark:prose-invert prose-pre:bg-transparent prose-pre:p-0">
       <DocsBreadcrumbs items={doc.breadcrumbs} />
-      <MdxContent code={doc.code} />
+      {doc.intaTryout && doc.previewOrigin && doc.previewHostname ? (
+        <>
+          <h1>{doc.title}</h1>
+          {doc.description ? (
+            <p className="lead text-zinc-600 dark:text-zinc-400">{doc.description}</p>
+          ) : null}
+          <IntaConsentTryout
+            previewOrigin={doc.previewOrigin}
+            previewHostname={doc.previewHostname}
+          />
+        </>
+      ) : (
+        <MdxContent code={doc.code} />
+      )}
       <RelatedLinks items={doc.related} />
       <DocPrevNext prev={doc.prev} next={doc.next} />
       <DocMeta
