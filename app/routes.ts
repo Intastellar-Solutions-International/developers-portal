@@ -43,6 +43,10 @@ const systemRoutes: RouteConfigEntry[] = [
   route("api/status/uptime", "routes/api.status.uptime.tsx"),
   route("api/status/uptime/badge", "routes/api.status.uptime-badge.tsx"),
   route("api/indexnow/publish", "routes/api.indexnow.publish.tsx"),
+  route(
+    ".well-known/indexnow/:indexnowWellKey",
+    "routes/indexnow-well-known.tsx",
+  ),
   /** Must stay last in system routes: single dynamic segment (only matches e.g. `/your-key.txt`). */
   route(":indexnowKey", "routes/indexnow-key.tsx"),
 ];

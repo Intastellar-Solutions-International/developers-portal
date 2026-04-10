@@ -6,8 +6,31 @@ const MAX_URLS_PER_REQUEST = 10_000;
 /** IndexNow key: 8–128 chars, `a-z` `A-Z` `0-9` `-` only. */
 const INDEXNOW_KEY_RE = /^[a-zA-Z0-9-]{8,128}$/;
 
+/** Filename segment `{key}.txt` for key file routes (root or `/.well-known/indexnow/`). */
+const INDEXNOW_KEY_FILENAME_RE = /^[a-zA-Z0-9-]{8,128}\.txt$/;
+
 export function isValidIndexNowKey(key: string | undefined): boolean {
   return Boolean(key?.trim() && INDEXNOW_KEY_RE.test(key.trim()));
+}
+
+/**
+ * Plain-text key file body if `segment` is exactly `{INDEXNOW_KEY}.txt`; otherwise `null`.
+ * Used for `/{key}.txt` and `/.well-known/indexnow/{key}.txt` (mirror for crawlers/tools).
+ */
+export function tryIndexNowKeyPlainTextResponse(
+  filenameSegment: string,
+): Response | null {
+  const expected = process.env.INDEXNOW_KEY?.trim();
+  if (!isValidIndexNowKey(expected)) return null;
+  if (!INDEXNOW_KEY_FILENAME_RE.test(filenameSegment)) return null;
+  const keyFromPath = filenameSegment.slice(0, -4);
+  if (keyFromPath !== expected) return null;
+  return new Response(expected, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, max-age=86400",
+    },
+  });
 }
 
 function chunk<T>(arr: readonly T[], size: number): T[][] {

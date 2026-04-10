@@ -18,6 +18,7 @@ const SKIP_ROUTE_FILES = new Set([
   "routes/api.status.uptime-badge.tsx",
   "routes/api.indexnow.publish.tsx",
   "routes/indexnow-key.tsx",
+  "routes/indexnow-well-known.tsx",
   "routes/$.tsx",
 ]);
 
