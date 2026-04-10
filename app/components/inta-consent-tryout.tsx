@@ -170,8 +170,8 @@ export function IntaConsentTryout({
         Replace policy URLs with your own before going live.
       </p>
 
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-        <div className="flex min-w-0 flex-col gap-3">
+      <div className="flex flex-col gap-6 lg:gap-8">
+        <div className="order-1 flex min-w-0 flex-col gap-3 lg:order-2">
           <div className="flex flex-wrap items-center gap-2">
             <label
               className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400"
@@ -237,20 +237,25 @@ export function IntaConsentTryout({
           </p>
         </div>
 
-        <div className="flex min-w-0 flex-col gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            Banner preview
-          </span>
-          <div className="overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-900">
+        <div className="order-2 flex min-w-0 flex-col gap-2 lg:order-1">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              Banner preview
+            </span>
+            <span className="hidden text-[11px] text-zinc-500 lg:inline dark:text-zinc-400">
+              Wide desktop frame (1280px) — scroll horizontally if the panel is narrower.
+            </span>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-zinc-300 bg-zinc-200/80 shadow-md dark:border-zinc-600 dark:bg-zinc-950/80">
             {showPreview && iframeSrcDoc ? (
               <iframe
                 title="Intastellar Consents banner preview"
-                className="h-[min(520px,70vh)] w-full border-0 bg-zinc-100 dark:bg-zinc-950"
+                className="block h-[min(560px,72vh)] w-full border-0 bg-zinc-100 dark:bg-zinc-950 lg:min-w-[1280px]"
                 sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin"
                 srcDoc={iframeSrcDoc}
               />
             ) : (
-              <div className="flex h-[min(520px,70vh)] items-center justify-center bg-zinc-100 px-4 text-center text-sm text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
+              <div className="flex h-[min(560px,72vh)] w-full items-center justify-center bg-zinc-100 px-4 text-center text-sm text-zinc-500 lg:min-w-[1280px] dark:bg-zinc-950 dark:text-zinc-400">
                 {parseError || deferredError
                   ? "Fix the JSON to load the preview."
                   : "Loading preview…"}
