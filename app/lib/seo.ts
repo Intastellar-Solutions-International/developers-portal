@@ -16,6 +16,7 @@ const INTASTELLAR_ORG_LOGO =
 /** JSON-LD publisher for inta.dev site graph and doc articles (Intastellar Solutions International). */
 const INTASTELLAR_PUBLISHER_ORG = {
   "@type": "Organization",
+  "@id": "https://www.intastellarsolutions.com/#organization",
   name: "Intastellar Solutions International",
   url: "https://www.intastellarsolutions.com/",
 } as const;
