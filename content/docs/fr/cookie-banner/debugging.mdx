@@ -1,64 +1,82 @@
 ---
 title: Dépannage
-description: Dépannage par symptômes—bandeau absent, balises trop tôt, courses GTM, consentement qui ne persiste pas.
+description: Dépannage orienté symptômes—bannière absente, balises trop tôt, courses GTM, consentement qui ne persiste pas.
 sidebar_label: Dépannage
-order: 3
-lastUpdated: "2026-04-08"
+order: 4
+lastUpdated: "2026-04-09"
 related:
   - title: Démarrage rapide
     href: /docs/cookie-banner/quickstart
   - title: Fonctionnement
     href: /docs/cookie-banner/how-it-works
+  - title: Concepts clés
+    href: /docs/cookie-banner/core-concepts
   - title: Google Tag Manager
     href: /docs/cookie-banner/google-tag-manager
 ---
 
 # Dépannage
 
-Vérifiez par petites étapes avant de modifier des réglages sans lien.
+Travaillez **symptôme → vérifier → corriger**. Gardez GTM Preview et les DevTools ouverts ; une modification à la fois.
 
-## Le bandeau n’apparaît pas
+## Vérifications rapides (tout problème)
 
-| Cause probable | Comment vérifier | Correctif |
+1. **Code source de la page** (pas seulement l’inspecteur) : `uc.js` **une fois**, près du début de `<head>`.
+2. **GTM Preview** (si GTM) : la balise CMP se déclenche sur **Consent Initialization** avant les balises dépendantes.
+3. **Application** : après un choix de consentement, stockage / cookies cohérents avec `rootDomain`.
+
+## La bannière n’apparaît pas
+
+| Cause probable | Comment vérifier | Correction |
 | --- | --- | --- |
-| Mauvaise `policy_link` | Ouvrir l’URL dans un nouvel onglet ; HTTPS et code HTTP | Page de politique en ligne ; corriger redirections / 404 |
-| Extrait trop bas ou seulement dans le body | Code source ; chercher `uc.js` | Déplacer le bloc au début de `<head>` |
-| SPA / framework monte tard | Comparer HTML serveur vs DOM rendu | Charger la CMP depuis la **mise en page racine** ou le shell qui enveloppe chaque route |
-| `window.INTA` dupliqué ou conflictuel | Chercher `window.INTA` dans le dépôt / HTML | **Une** définition avant `uc.js` |
+| `policy_link` invalide | URL dans un nouvel onglet ; HTTPS et code de statut | Page de politique en ligne ; corriger redirections / 404 |
+| Extrait trop bas ou seulement dans le body | Source ; chercher `uc.js` | Déplacer le bloc en tête de `<head>` |
+| SPA / framework charge tard | HTML serveur vs DOM | CMP depuis le **layout racine** ou la coque |
+| `window.INTA` en double ou contradictoire | Recherche dans le dépôt / HTML | **Une** définition avant `uc.js` |
 
 ## Le suivi « ne se déclenche pas » après consentement
 
-| Cause probable | Comment vérifier | Correctif |
+| Cause probable | Comment vérifier | Correction |
 | --- | --- | --- |
-| Pas de déclencheur post-consentement | Aperçu GTM : la balise ne se déclenche pas après acceptation | Ajouter des déclencheurs sensibles au consentement ou réglages du mode consentement |
-| `gtagId` manquant pour GA4 | Comparer avec [Démarrage rapide](/docs/cookie-banner/quickstart) | Définir `gtagId` ou câbler GA selon votre schéma |
-| Defaults du mode consentement trop stricts | GA / Tag Assistant | Ajuster les defaults **volontairement** et documenter le choix |
+| La balise n’a pas de déclencheur après consentement | GTM Preview : après acceptation, pas de balise sur la timeline | Déclencheur **Custom Event** sur **`cookie_consent_update`** ([Événements et API](/docs/cookie-banner/javascript/events-and-api)) et/ou paramètres de consentement des balises |
+| Balise bloquée par le « consent » GTM | Config balise → consentement ; Preview affiche « blocked » | Ajuster le consentement de la balise sur la valeur juridique par défaut ou ne déclencher que si le type est autorisé |
+| `gtagId` manquant pour GA4 + chemin CMP | Comparer au [Démarrage rapide](/docs/cookie-banner/quickstart) | Définir `settings.gtagId` **ou** câbler GA autrement comme documenté |
+| Valeurs par défaut Consent Mode trop strictes | GA DebugView / Tag Assistant | Ajuster les defaults **volontairement** ; voir [Google Consent Mode](/docs/cookie-banner/google-consent-mode) |
+| Bloqueur de pub / confidentialité navigateur | Profil propre ou extensions désactivées | Distinguer problème produit et blocage client |
 
 ## Les balises se déclenchent avant le consentement (grave)
 
-| Cause probable | Comment vérifier | Correctif |
+| Cause probable | Comment vérifier | Correction |
 | --- | --- | --- |
-| GA/Ads sur « All Pages » avant la CMP | Chronologie Aperçu GTM | Déclencher la CMP sur **Consent Initialization** ; bloquer les balises dépendantes |
-| `gtag.js` codé en dur dans le HTML | Chercher `googletagmanager.com/gtag` | Supprimer les chargeurs dupliqués ou placer **après** la CMP |
-| Intégration tierce dans `<head>` | Onglet Réseau | Reporter jusqu’à ce que l’objectif correspondant soit autorisé |
+| GA/Ads sur « All Pages » avant la CMP | Timeline GTM Preview | CMP sur **Consent Initialization** ; verrouiller les balises dépendantes |
+| `gtag.js` codé en dur dans le HTML | Chercher `googletagmanager.com/gtag` | Supprimer les doubles chargeurs ou placer **après** la CMP |
+| Intégration tierce dans `<head>` | Onglet Réseau | Déplacer vers le bon usage |
 
 ## Les déclencheurs GTM « ne fonctionnent pas »
 
-| Cause probable | Comment vérifier | Correctif |
+| Cause probable | Comment vérifier | Correction |
 | --- | --- | --- |
-| CMP pas sur Consent Init | Type de déclencheur dans GTM | Utiliser **Consent Initialization – All pages** (ou équivalent) |
-| Course avec Page View | Ordre des événements dans l’Aperçu | S’assurer que la CMP se déclenche **avant** les balises analytics |
-| Mauvais conteneur | ID de conteneur sur le site | Pointer vers le conteneur GTM voulu |
+| CMP pas sur Consent Init | Type de déclencheur dans GTM | **Consent Initialization – All pages** (ou équivalent) |
+| Course avec Page View | Ordre dans Preview | CMP **avant** les balises d’analyse |
+| Mauvais conteneur | ID conteneur sur le site | Utiliser le bon conteneur GTM |
 
 ## Le choix de consentement ne persiste pas
 
-| Cause probable | Comment vérifier | Correctif |
+| Cause probable | Comment vérifier | Correction |
 | --- | --- | --- |
-| Mauvais `rootDomain` | Comparer `settings.rootDomain` et le nom d’hôte | Aligner sur votre modèle de domaine cookies |
+| Mauvais `rootDomain` | `settings.rootDomain` vs nom d’hôte | Adapter au modèle de domaine des cookies |
 | Deux copies de `uc.js` | Chercher `uc.js` dans la source | Une installation canonique |
+
+## Le consentement ne se met pas à jour dans les balises / état « obsolète »
+
+| Cause probable | Comment vérifier | Correction |
+| --- | --- | --- |
+| Balises mises en cache avant le choix | Rechargement complet après effacement des données du site | Retester en navigation privée |
+| Conteneur non publié | Espace de travail GTM vs live | Publier la version avec CMP + changements de déclencheurs |
+| Mauvais environnement (conteneur staging) | ID GTM dans la source | Pointer le site vers le bon conteneur |
 
 ## Toujours bloqué
 
-Notez : navigateur, URL de la page (staging OK), extrait **afficher le code source** autour de `uc.js`, et avec GTM une **capture d’Aperçu** ou export. Puis contact support ou [FAQ](/docs/cookie-banner#faq) sur l’accueil de la doc.
+Collectez : navigateur, URL de la page (staging OK), **code source** autour de `uc.js`, capture ou export **Preview** GTM. Puis support ou [FAQ](/docs/cookie-banner#faq) sur la page d’accueil des docs.
 
 [← Accueil documentation](/docs/cookie-banner)

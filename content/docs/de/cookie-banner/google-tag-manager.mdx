@@ -1,11 +1,15 @@
 ---
 title: Google Tag Manager
-description: Bewusstes GTM-Setup—Consent Initialization, CMP-Tag, dann einwilligungsbewusste Analytics und Ads.
+description: GTM Schritt für Schritt—Consent Initialization, Intastellar-CMP-Tag, GA4/Meta mit belastbaren Konfigurationsmustern.
 order: 60
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Schnellstart
     href: /docs/cookie-banner/quickstart
+  - title: So funktioniert es
+    href: /docs/cookie-banner/how-it-works
+  - title: Kernkonzepte
+    href: /docs/cookie-banner/core-concepts
   - title: Google Consent Mode
     href: /docs/cookie-banner/google-consent-mode
   - title: Google Analytics 4
@@ -16,55 +20,98 @@ related:
 
 # Google Tag Manager
 
-Nutzen Sie GTM, um dasselbe `window.INTA` + `uc.js`-Paar wie im [Schnellstart](/docs/cookie-banner/quickstart) zu injizieren. Der Unterschied ist nur **wo** es in der Tag-Sequenz läuft.
+Diese Anleitung ist **klar auf einen Pfad zugeschnitten**, der für die meisten Sites funktioniert. Sie injizieren dasselbe `window.INTA` + `uc.js`-Paar wie im [Schnellstart](/docs/cookie-banner/quickstart); GTM steuert nur **wann** es relativ zu anderen Tags läuft.
 
 ## Voraussetzungen
 
-- GTM-Container auf der Site und Recht zum **Veröffentlichen** von Versionen.
-- Werte für `policy_link`, `rootDomain`, `company` und optional `gtagId` festgelegt.
+- GTM-Container auf der Site (`GTM-XXXX`).
+- Werte für `policy_link`, `rootDomain`, `company` und optional `gtagId` (bei Google-Tags mit CMP-unterstütztem Consent Mode).
+- Berechtigung zum **Veröffentlichen** einer Container-Version.
 
-## 1. CMP-Tag anlegen
+## Schritt 1 — Intastellar-CMP-Tag anlegen
 
-1. **Tags → Neu → Tag-Typ: Benutzerdefiniertes HTML**
-2. Vollständiges Snippet aus dem [Schnellstart](/docs/cookie-banner/quickstart) einfügen (beide `<script>`-Blöcke: inline `window.INTA` und `uc.js`).
-3. **document.write unterstützen**: in der Regel **aus**, außer Ihre Site braucht es ausdrücklich.
+1. In GTM: **Tags → Neu**.
+2. Tag-Typ: **Benutzerdefiniertes HTML**.
+3. **Beide** Teile aus dem [Schnellstart](/docs/cookie-banner/quickstart) einfügen:
 
-## 2. Feuerpriorität (kritisch)
+   - Inline-`<script>`, das `window.INTA` setzt (bei GA4/Ads mit diesem Muster `gtagId` in `settings` einfügen).
+   - `<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>`.
 
-**Trigger:** **Consent Initialization – All pages** (oder das erste Consent-Event Ihres Containers).
+4. **Erweiterte Einstellungen → document.write unterstützen:** **aus**, außer Ihre Site braucht es ausdrücklich.
+5. Tag klar benennen, z. B. `Intastellar Consents - CMP`.
 
-**Warum:** Dieser Trigger existiert, damit eine CMP **vor** Tags läuft, die Einwilligung voraussetzen. Feuert die CMP erst bei normalem Page View **nach** GA4, entstehen „Geister“-Probleme (Treffer oder Cookies vor der Wahl).
+## Schritt 2 — Trigger: Consent Initialization (erforderlich)
 
-## 3. Abhängige Tags (GA4, Ads, Meta usw.)
+1. **Trigger → Neu**.
+2. Trigger-Typ: **Consent Initialization – All pages** (in manchen Workspaces: **Consent Initialization** mit **All pages**).
 
-- **GA4-Konfiguration**, **Google Ads**, **Meta Pixel** und ähnliche Tags mit **Einwilligungseinstellungen** und Triggern konfigurieren, die zu Ihrer Policy passen.
-- **Faustregel:** Alles, was nicht notwendige Cookies setzt oder personenbezogene Daten für Ads/Analytics sendet, soll sich **nicht** wie voll eingewilligt verhalten, **bevor** die CMP gelaufen ist.
+Diesen Trigger **nur** dem CMP-Tag aus Schritt 1 zuweisen.
 
-Konkrete Rezepte:
+**Warum das wichtig ist:** Consent Initialization wurde eingeführt, damit eine CMP **vor** Tags laufen kann, die sich verhalten, als läge bereits Einwilligung vor. Feuert Ihr CMP-Tag nur mit einem normalen **Page-View**-Trigger **nach** GA4 in der Sequenz, sehen Sie Treffer oder Cookies vor der Einwilligung—siehe [Debugging](/docs/cookie-banner/debugging).
 
-- [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
-- [Meta Pixel](/docs/cookie-banner/meta-pixel)
-- [Google Consent Mode](/docs/cookie-banner/google-consent-mode)
+## Schritt 3 — Google-Tags: Consent Mode + Tag-Einstellungen
 
-## 4. Google Consent Mode
+Wenn Sie **GA4**, **Google Ads** oder andere Google-Tags nutzen:
 
-Bei Google-Tags `settings.gtagId` in `window.INTA` setzen und die **Einwilligung**-Konfiguration der GTM-Tags an Ihre Defaults anpassen (im Consent-Mode-Guide dokumentiert).
+1. `settings.gtagId` in `window.INTA` innerhalb des CMP-Tags setzen (Ihre `G-XXXXXXXX` oder Ads-Äquivalent wie im [Schnellstart](/docs/cookie-banner/quickstart) dokumentiert).
+2. In der GTM-Konfiguration jedes Google-Tags **Einwilligungseinstellungen** (oder das Äquivalent Ihrer GTM-Version) öffnen.
+3. **Default**- und **Update**-Einwilligung mit Ihrer rechtlichen Position abstimmen—nicht pauschal „alles gewähren“, außer der Rat das bestätigt. Details: [Google Consent Mode](/docs/cookie-banner/google-consent-mode).
 
-## 5. Vorschau-Checkliste
+## Schritt 4 — GA4-Konfigurationstag (Beispielmuster)
 
-1. **GTM-Vorschau** auf Staging öffnen.
-2. **CMP**-Tag beim Event **Consent Initialization** (früh) bestätigen.
-3. **Vor** Akzeptieren von Marketing/Analytics: GA/Ads sollten sich **nicht** wie voll eingewilligt verhalten (Vorschau + Netzwerk).
-4. **Nach** Akzeptieren: erwartete Treffer oder Pings sollten erscheinen oder den Modus passend wechseln.
+Genaue UI-Bezeichnungen wechseln zwischen GTM-Versionen; gemeint ist:
 
-## 6. Veröffentlichen
+1. **GA4-Konfiguration** (oder **Google tag**)-Tag mit Ihrer Mess-ID.
+2. **Trigger:** kein nacktes „All pages“ beim ersten Paint **wenn** das volle Analytics-Cookies vor der CMP bedeutet—besser:
 
-Versionsnotiz z. B.: `CMP: Intastellar via Consent Init; GA4/Meta gesperrt`.
+   - ein Trigger, der **nach** Einwilligung feuert (z. B. **Benutzerdefiniertes Ereignis**, wenn Ihre Policy Analytics erlaubt), oder  
+   - die eingebauten **Einwilligungs**-Prüfungen am Tag, damit der Tag abgelehnte Analytics respektiert, bis ein Update kommt.
+
+3. **Einwilligungseinstellungen** am Tag: die passenden Einwilligungstypen für Analytics-/Werbespeicher gemäß Googles Modell verlangen.
+
+Konkrete GA4-Seite: [Google Analytics 4](/docs/cookie-banner/google-analytics-4).
+
+## Schritt 5 — `cookie_consent_update` (bei Einwilligungsänderung)
+
+Das Banner sendet ein **`dataLayer`**-Ereignis namens **`cookie_consent_update`**, sobald der Besucher die Einwilligung **ändert** (nicht nur beim ersten Seitenaufruf).
+
+1. **Trigger → Neu → Benutzerdefiniertes Ereignis**
+2. **Ereignisname:** `cookie_consent_update`
+3. Diesen Trigger für Tags nutzen, die **in diesem Moment** laufen müssen (z. B. Push in ein anderes System, Tag, das allein mit Consent Initialization nicht reicht).
+
+Kombinieren Sie mit **Tag-Einwilligungseinstellungen** und Anbieter-Doku wo nötig. Ereignis und Payload in der **GTM-Vorschau** prüfen, nachdem Sie im Banner akzeptieren/ablehnen—siehe [Ereignisse und API](/docs/cookie-banner/javascript/events-and-api).
+
+## Schritt 6 — Meta Pixel (Beispielmuster)
+
+1. **Meta-Pixel**-Tag (oder Benutzerdefiniertes HTML von Meta).
+2. **Trigger:** feuert nur, wenn in **Ihrem** Modell **Marketing-/Werbe**-Einwilligung vorliegt—oft Benutzerdefiniertes Ereignis oder einwilligungsbewusste Bedingung—nicht **All pages** beim Laden vor der CMP.
+3. Siehe [Meta Pixel](/docs/cookie-banner/meta-pixel).
+
+## Schritt 7 — Vorschau-Checkliste (auf Staging)
+
+1. Container in der **Vorschau** öffnen; Site laden.
+2. In der **Tag-Assistant**-Zeitleiste prüfen: **Intastellar**-CMP-Tag feuert bei **Consent Initialization** **vor** GA4/Meta (wenn diese so konfiguriert sind, dass sie warten).
+3. **Vor** Klick auf Akzeptieren im Banner: GA/Ads sollten sich **nicht** wie **voll eingewilligt** verhalten, außer Sie haben Defaults bewusst so gesetzt (in Vorschau + **Netzwerk** prüfen).
+4. **Nach** Akzeptieren: erwartete Requests oder Moduswechsel sichtbar.
+5. Mit **Ablehnen** / minimaler Einwilligung wiederholen und eingeschränktes Verhalten bestätigen.
+
+## Schritt 8 — Veröffentlichen
+
+Version mit Notiz anlegen, z. B.:
+
+`CMP: Intastellar auf Consent Init; GA4/Meta durch Einwilligung begrenzt`
+
+## Häufige Fehler
+
+| Fehler | Symptom | Lösung |
+| --- | --- | --- |
+| CMP nur bei Page View | GA4 vor CMP in der Zeitleiste | CMP auf **Consent Initialization** verschieben |
+| GA4 + hardcodiertes `gtag.js` | Doppelte Treffer / falsche Einwilligung | **Einen** primären GA-Pfad nutzen |
+| „All pages“ am Pixel | Meta feuert vor der Wahl | Marketing-Trigger erst nach Einwilligung |
 
 ## Verwandtes
 
 - [Integrationsübersicht](/docs/cookie-banner/integrations-overview)
 - [Skript-Lebenszyklus](/docs/cookie-banner/javascript/script-lifecycle)
-- [So funktioniert es](/docs/cookie-banner/how-it-works)
 
 [← Dokumentations-Start](/docs/cookie-banner)

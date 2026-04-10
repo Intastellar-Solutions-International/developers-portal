@@ -3,7 +3,7 @@ title: Skript-Lebenszyklus
 description: Ladereihenfolge, Blockierverhalten und Messerwartungen für uc.js.
 sidebar_label: Skript-Lebenszyklus
 order: 18
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Schnellstart
     href: /docs/cookie-banner/quickstart
@@ -37,4 +37,4 @@ In **kostenpflichtigen / Plattform**-Tarifen können Einwilligungsentscheidungen
 
 ## Öffentliche JavaScript-API
 
-Benötigen Sie **benannte Events, Callbacks oder eine programmatische API** (z. B. `dataLayer`-Integrationsdetails), bestätigen Sie die aktuelle **JavaScript-API**-Referenz Ihres Deployments. Dieses Portal dokumentiert **Konfiguration** (`window.INTA`) und **Integrationsmuster**; Low-Level-Eventnamen können in einer separaten Entwicklerreferenz stehen.
+Für **GTM** pusht das Banner bei Einwilligungsänderung **`cookie_consent_update`** in **`dataLayer`** — siehe [Ereignisse und API](/docs/cookie-banner/javascript/events-and-api). Für andere benannte Hooks oder eine vollständige programmatische API-Oberfläche bestätigen Sie die aktuelle Referenz Ihres Deployments. Diese Seite dokumentiert **Konfiguration** (`window.INTA`) und **Ladereihenfolge**; hier gibt es kein dokumentiertes globales `window.IntastellarConsents.*`.

@@ -1,12 +1,14 @@
 ---
 title: Início rápido
-description: Instale o Intastellar Consents em minutos—snippet mínimo, verificação no navegador e depois GTM ou tags Google.
+description: Instalação por copiar e colar em menos de cinco minutos—posição exata no head, verificações e comportamento esperado antes e depois do consentimento.
 sidebar_label: Início rápido
 order: 1
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Como funciona
     href: /docs/cookie-banner/how-it-works
+  - title: Conceitos fundamentais
+    href: /docs/cookie-banner/core-concepts
   - title: Google Tag Manager
     href: /docs/cookie-banner/google-tag-manager
   - title: Solução de problemas
@@ -15,17 +17,19 @@ related:
 
 # Início rápido
 
-**Meta:** menos de 5 minutos.  
-**Resultado:** a interface de consentimento aparece, tags não essenciais permanecem bloqueadas até o visitante escolher, e as tags Google podem receber atualizações do Consent Mode quando você as configurar.
+**Duração:** cerca de 5 minutos.  
+**Você vai:** inserir dois blocos no `<head>`, recarregar e verificar banner, bloqueio e (com tags Google) o Consent Mode.
 
-## Antes de começar
+Não é necessário conhecimento prévio de CMPs. Em caso de problemas: [Solução de problemas](/docs/cookie-banner/debugging).
 
-- Você pode editar o `<head>` do HTML ou o layout raiz (tema WordPress, `theme.liquid` da Shopify, etc.).
-- É necessária uma **URL de política de privacidade válida** (HTTPS, sem 404). URLs ausentes ou inválidas são o motivo mais comum de o banner não aparecer.
+## Pré-requisitos
 
-## Etapa 1 — Duas tags no `<head>` (a ordem importa)
+- Acesso ao `<head>` HTML do site (ou layout raiz: tema WordPress, `theme.liquid` da Shopify, layout Next.js, etc.).
+- Uma **URL de política de privacidade publicada** via **HTTPS** (200 OK, sem placeholder). Com URL incorreta, o banner muitas vezes **não aparece**—isso é intencional.
 
-Cole **logo após** a tag de abertura `<head>` (o mais cedo possível):
+## Etapa 1 — Colar no topo do `<head>`
+
+Cole **logo após** `<head>` (antes de folhas de estilo, GA, snippet do contêiner GTM, pixels ou outros scripts de terceiros):
 
 ```html
 <script>
@@ -40,20 +44,20 @@ Cole **logo após** a tag de abertura `<head>` (o mais cedo possível):
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
+| Campo | Valor |
+| --- | --- |
+| `policy_link` | URL HTTPS completa da sua política de privacidade |
+| `settings.rootDomain` | Domínio registrável do site, **sem** `https://` ou caminho |
+| `settings.company` | Nome na UI de consentimento |
+
 **Regras**
 
-1. `window.INTA` deve rodar **antes** de `uc.js`.
-2. **Não** carregue scripts de analytics ou marketing **acima** deste bloco, salvo intenção explícita (padrão: não faça).
+1. O script inline `window.INTA` deve rodar **antes** da tag script `uc.js`.
+2. Pixels de análise, anúncios ou redes sociais **não acima** deste bloco, a menos que seja deliberado (padrão: **não**).
 
-Substitua:
+## Etapa 2 — Opcional: Google Analytics / Ads (`gtagId`)
 
-- `policy_link` — sua política de privacidade real.
-- `settings.rootDomain` — o domínio registrável do site (sem `https://`).
-- `settings.company` — nome exibido na interface.
-
-## Etapa 2 — Somente Google Analytics / Ads: adicione `gtagId`
-
-Se você usa **GA4 ou Google Ads** e quer que a Intastellar coordene o **Google Consent Mode** com seu ID de medição, estenda `settings`:
+Se você usa **GA4 ou Google Ads** e quer que a CMP alinhe o **Google Consent Mode v2** ao seu ID de medição, adicione `gtagId`:
 
 ```html
 <script>
@@ -69,35 +73,33 @@ Se você usa **GA4 ou Google Ads** e quer que a Intastellar coordene o **Google 
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
-Se você **ainda não** usa tags Google, omita `gtagId` até adicioná-las.
+Omita `gtagId` até existirem tags Google. Configuração completa: [`window.INTA` (JSON Schema)](/docs/cookie-banner/javascript/inta-schema).
 
-Lista completa de campos: [`window.INTA` (esquema JSON)](/docs/cookie-banner/javascript/inta-schema).
+## Etapa 3 — Verificar (2 minutos)
 
-## Etapa 3 — Verificar no navegador
+Use uma **janela privada / anônima** para que cookies antigos de consentimento não interfiram.
 
-1. Abra o site em uma **janela privada**.
-2. Você deve **ver a interface de consentimento** (banner ou sobreposição, conforme a configuração).
-3. DevTools → **Rede**:
-   - `uc.js` carrega **cedo** no documento.
-   - Antes de aceitar marketing/analytics, solicitações não essenciais não devem se comportar como se houvesse consentimento total — o comportamento exato depende das suas tags; veja [Como funciona](/docs/cookie-banner/how-it-works).
+| Ponto de verificação | Esperado |
+| --- | --- |
+| **Banner** | A UI de consentimento aparece (banner ou sobreposição, conforme o produto). |
+| **Rede** | `uc.js` carrega **cedo** de `consents.cdn.intastellarsolutions.com`. |
+| **Antes de aceitar** | Tags não essenciais (GA4, Meta, etc.) **não** devem se comportar como **plenamente consentidas**—o padrão exato depende de GTM/`gtag` ([Como funciona](/docs/cookie-banner/how-it-works)). |
+| **Depois de aceitar** | Tags dependentes de consentimento podem disparar ou mudar para modos normais / conscientes de consentimento (ex.: Google Consent Mode). |
 
-## Etapa 4 — Recusar, depois aceitar
+**Recuse** (ou consentimento mínimo), recarregue uma vez: a escolha deve **persistir**. Se reiniciar sempre, veja [Solução de problemas](/docs/cookie-banner/debugging) (snippet duplicado / `rootDomain` incorreto).
 
-1. Escolha **Recusar** (ou consentimento mínimo) e recarregue uma vez.
-2. Sua escolha deve **persistir** (sujeito a regras de cookies/armazenamento). Se reiniciar sempre, verifique blocos **duplicados** de `window.INTA` / `uc.js` ou `rootDomain` incorreto.
+## Etapa 4 — Próximos passos (produção)
 
-## Quando está „pronto“
+| Se você usa… | Em seguida |
+| --- | --- |
+| **GTM** | [Google Tag Manager](/docs/cookie-banner/google-tag-manager)—CMP em **Consent Initialization**, depois tags conscientes de consentimento. |
+| **GA4** | [Google Analytics 4](/docs/cookie-banner/google-analytics-4) + [Google Consent Mode](/docs/cookie-banner/google-consent-mode). |
+| **Meta** | [Meta Pixel](/docs/cookie-banner/meta-pixel). |
+| **Snippet completo / branding** | [Primeiros passos (JavaScript)](/docs/cookie-banner/javascript/getting-started). |
+| **React / Next / SPA** | [SPAs e SSR](/docs/cookie-banner/javascript/spa-and-ssr). |
 
-- Banner visível para novos visitantes.
-- Tags que precisam de consentimento **não** rodam como totalmente consentidas **antes** de uma escolha.
-- Após **Aceitar**, a medição pode voltar ao normal ou usar comportamento **consciente de consentimento** (Google: Consent Mode; Meta: pixel + configuração de consentimento).
+## Pronto para produção (leia uma vez)
 
-## Próximos passos
-
-- **GTM:** [Google Tag Manager](/docs/cookie-banner/google-tag-manager)
-- **GA4:** [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
-- **Meta:** [Meta Pixel](/docs/cookie-banner/meta-pixel)
-- **Snippet completo e estilo:** [Primeiros passos (JavaScript)](/docs/cookie-banner/javascript/getting-started)
-- **Travado:** [Solução de problemas](/docs/cookie-banner/debugging)
+A CMP **implementa os mecanismos de consentimento documentados** (UI + integração descrita) quando você mantém a ordem de carregamento e os padrões de tags. **Você** continua responsável por: textos de política, menções a fornecedores, base legal e cada trigger de tag. Não prometemos „conformidade total automática“—documentamos comportamento **previsível** para que você possa verificar em DevTools e GTM Preview.
 
 [← Início da documentação](/docs/cookie-banner)

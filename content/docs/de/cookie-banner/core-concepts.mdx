@@ -1,0 +1,82 @@
+---
+title: Kernkonzepte
+description: Einwilligungskategorien, Zustände, Blockierung und wie die CMP mit GTM und Anbieter-Tags zusammenspielt.
+sidebar_label: Kernkonzepte
+order: 3
+lastUpdated: "2026-04-09"
+related:
+  - title: So funktioniert es
+    href: /docs/cookie-banner/how-it-works
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
+  - title: Ereignisse und API
+    href: /docs/cookie-banner/javascript/events-and-api
+  - title: window.INTA-Referenz
+    href: /docs/cookie-banner/javascript/inta-schema
+---
+
+# Kernkonzepte
+
+Nutzen Sie diese Seite nach [Schnellstart](/docs/cookie-banner/quickstart) und [So funktioniert es](/docs/cookie-banner/how-it-works). Sie fasst die Begriffe zusammen, die Sie brauchen, um GTM, GA4 und Meta ohne Rätselraten anzubinden.
+
+## Einwilligungskategorien (Zwecke)
+
+Vorschriften (z. B. DSGVO) fragen **warum** Sie Daten verarbeiten. CMPs bündeln Entscheidungen in **Zwecke** oder **Kategorien**—oft als **notwendig**, **Analytics**, **Marketing** bezeichnet (Formulierung je nach Ihrer Policy).
+
+| Begriff | Rolle |
+| --- | --- |
+| **Notwendig / essenziell** | Erforderlich für den Betrieb der Website (z. B. Sicherheit, Lastverteilung, Speicherung der Einwilligungswahl). Meist nicht über Marketing-Einwilligung gesperrt. |
+| **Analytics / Statistik** | Messung, die für den Dienst nicht zwingend nötig ist (oft Cookies oder Speicher für Analytics). |
+| **Marketing / Werbung** | Ads, Remarketing, Social-Pixel—typisch die strengsten Einwilligungsanforderungen. |
+
+**Ihre Aufgabe:** Ordnen Sie jedes Drittanbieter-Skript oder jeden GTM-Tag **einer oder mehreren** Kategorien zu und lassen Sie es nur laufen, wenn die Nutzerwahl das erlaubt. Die CMP liefert die Wahl; **Sie** (oder Ihre GTM-Trigger) müssen Tags mit diesen Kategorien abstimmen.
+
+## Einwilligungszustände
+
+Grob befindet sich ein Besucher in einer dieser Lagen:
+
+1. **Noch keine Wahl** — Erstbesuch oder Speicher geleert. Nicht notwendiges Tracking soll sich nicht verhalten, als läge volle Einwilligung vor.
+2. **Akzeptiert** (voll oder für gewählte Kategorien) — Tags für diese Kategorien dürfen gemäß Ihrer Konfiguration laufen.
+3. **Abgelehnt / minimal** — Analytics und Marketing bleiben eingeschränkt oder aus, je nach Defaults und Anbieterverhalten (z. B. Google Consent Mode kann weiter begrenzte Pings senden—siehe [Google Consent Mode](/docs/cookie-banner/google-consent-mode)).
+
+**Teilweise / granulare** Wahlen bedeuten: manche Kategorien an, andere aus. Ihre GTM-Trigger müssen das abbilden, nicht nur „alles oder nichts“.
+
+## Wie Blockierung funktioniert (Mechanismus)
+
+Intastellar Consents ist so gebaut, dass **nicht notwendige Skripte nicht als voll eingewilligt laufen, bevor eine Wahl getroffen wurde**.
+
+Mechanisch ist das eine **Kombination** aus:
+
+- **Ladereihenfolge** — `window.INTA` und `uc.js` **früh im `<head>`**, vor Tags, die Einwilligung voraussetzen ([Skript-Lebenszyklus](/docs/cookie-banner/javascript/script-lifecycle)).
+- **CMP-Verhalten** — UI erzwingen und gespeicherte Präferenz anwenden.
+- **Ihr Stack** — GTM-Trigger, Inline-Skripte und die **Consent-API** jedes Anbieters (Consent Mode, Meta-Parameter usw.).
+
+Die CMP **schreibt nicht automatisch** beliebige fest eingebundene `<script src="…">`-Tags in Ihrem HTML um. Steht ein Tag über der CMP oder feuert er auf „All Pages“ ohne Consent-Prüfung, müssen **Sie** ihn verschieben oder sperren.
+
+## Ereignisse und die Tag-Schicht
+
+**Google Tag Manager:** Intastellar Consents pusht bei **jeder Aktualisierung der Einwilligung** (Akzeptieren, Ablehnen, granulare Änderung) das Ereignis **`cookie_consent_update`** in **`dataLayer`**. Legen Sie in GTM einen **Benutzerdefiniertes Ereignis**-Trigger mit dem Ereignisnamen **`cookie_consent_update`** an und hängen Sie ihn an Tags, die auf diesen Moment reagieren sollen—oft **zusammen mit** **Einwilligung**-Einstellungen am Tag und Anbieter-APIs ([Ereignisse und API](/docs/cookie-banner/javascript/events-and-api)).
+
+Es gibt keine dokumentierte globale **`window.IntastellarConsents.*`** für den Produktionseinsatz. Prüfen Sie **Payload**-Felder neben dem Ereignis in **GTM-Vorschau** → Data Layer für Ihre Site; nehmen Sie keine undokumentierten Properties an.
+
+**Ladereihenfolge:** Das **GTM-Container-Snippet** (das `dataLayer` anlegt) muss **vor** `uc.js` stehen, wenn Sie darauf vertrauen, dass **`cookie_consent_update`** von GTM ankommt—typisch bleibt die CMP **früh im `<head>`**; platzieren Sie GTM nach Googles Installationshinweisen, sodass `dataLayer` existiert, wenn das Banner feuert.
+
+## Signale an Google, Meta und andere
+
+Bei Konfiguration (z. B. `gtagId` für Google) hilft die CMP, **Google Consent Mode** mit der Nutzerwahl abzugleichen. Meta und andere erwarten **ihre** Consent-Parameter und **Ihre** Trigger-Zeitpunkte—siehe [Integrationsübersicht](/docs/cookie-banner/integrations-overview) sowie [GTM](/docs/cookie-banner/google-tag-manager), [GA4](/docs/cookie-banner/google-analytics-4) und [Meta Pixel](/docs/cookie-banner/meta-pixel).
+
+## Verantwortung (Vertrauen, keine leeren Versprechen)
+
+| Ebene | Verantwortung |
+| --- | --- |
+| **Intastellar Consents** | Einwilligungs-UI, Anwendung der Nutzerwahl und hier dokumentierte Integrationspunkte (z. B. Consent-Mode-Abgleich bei Konfiguration). |
+| **Sie / Ihre Organisation** | Korrekte Tag-Platzierung, GTM-Trigger, Datenschutzerklärung, Anbieterliste, Rechtsgrundlage und eigene Codepfade. |
+
+Wir behaupten **nicht** „vollständig DSGVO-konform out of the box“—Konformität hängt davon ab, **wie** Sie Tags ausrollen und was Sie Nutzern mitteilen. Wir dokumentieren Verhalten, damit Sie **vorhersehbar** implementieren und in DevTools sowie GTM-Vorschau prüfen können.
+
+## Verwandtes
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Google Tag Manager](/docs/cookie-banner/google-tag-manager)
+
+[← Dokumentations-Start](/docs/cookie-banner)

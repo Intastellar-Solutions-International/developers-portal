@@ -4,12 +4,14 @@ description: Quickstart, GTM, GA4 og Consent Mode-dokumentation til Intastellar 
 hub_order: 10
 hub_tagline: Cookiebanner & CMP — JS, WordPress, GTM, Shopify.
 order: 0
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 ---
 
 # Dokumentation
 
-Intastellar Consents er et let CMP til små sites og udviklere: **ikke-nødvendige scripts forbliver begrænsede, til besøgende vælger**, **Google Consent Mode v2** kan kobles korrekt på, og dit setup forbliver **forudsigeligt**, når du følger indlæsningsmønstrene i dokumentationen.
+Intastellar Consents er et **script-først CMP** til små sites og teams, der udruller eget HTML eller GTM: **ikke-væsentlig sporing kører ikke som fuldt samtykket, før besøgenden vælger**, **Google Consent Mode v2** kan matche jeres målings-ID, når I sætter `gtagId` og tag-indstillinger, og **analyse eller annoncer kan fortsætte i samtykkebevidste tilstande** efter accept—uden at love vag „fuld overholdelse“ (det afhænger altid af **jeres** policy-tekst, leverandørliste og hver tags triggers).
+
+**Tillidsmodel:** Produktet anvender de **samtykkemekanismer**, der er dokumenteret her. **I** er ansvarlige for korrekt placering, GTM-konfiguration og juridisk placering. Følger I [Hurtigstart](/docs/cookie-banner/quickstart) → [Sådan virker det](/docs/cookie-banner/how-it-works) → [Kernebegreber](/docs/cookie-banner/core-concepts), kan I **verificere adfærd i DevTools og GTM Preview** før produktion.
 
 <div className="not-prose my-8 rounded-xl border border-emerald-300/70 bg-gradient-to-br from-emerald-50 via-white to-teal-50/90 p-5 shadow-md shadow-emerald-900/5 ring-1 ring-emerald-500/10 dark:border-emerald-800/60 dark:from-emerald-950/50 dark:via-zinc-950 dark:to-emerald-950/30 dark:shadow-black/20 dark:ring-emerald-400/10 md:p-6">
   <div className="m-0 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-emerald-900 dark:text-emerald-400">
@@ -35,12 +37,23 @@ Intastellar Consents er et let CMP til små sites og udviklere: **ikke-nødvendi
       →
     </span>
     <a
+      href="/docs/cookie-banner/core-concepts"
+      className="font-semibold text-emerald-800 underline decoration-emerald-600/35 underline-offset-[3px] transition-colors hover:text-emerald-900 hover:decoration-emerald-700 dark:text-emerald-300 dark:decoration-emerald-400/35 dark:hover:text-emerald-200"
+    >
+      Kernebegreber
+    </a>
+    <span className="mx-2 font-normal text-zinc-400 dark:text-zinc-500" aria-hidden="true">
+      →
+    </span>
+    <a
       href="/docs/cookie-banner/debugging"
       className="font-semibold text-emerald-800 underline decoration-emerald-600/35 underline-offset-[3px] transition-colors hover:text-emerald-900 hover:decoration-emerald-700 dark:text-emerald-300 dark:decoration-emerald-400/35 dark:hover:text-emerald-200"
     >
       Fejlfinding
     </a>
-    <span className="mt-2 block text-sm font-normal text-zinc-600 dark:text-zinc-400">~5 minutter i alt</span>
+    <span className="mt-2 block text-sm font-normal text-zinc-600 dark:text-zinc-400">
+      ~5 min. installation · derefter læs igennem til produktion
+    </span>
   </div>
 </div>
 
@@ -48,9 +61,10 @@ Intastellar Consents er et let CMP til små sites og udviklere: **ikke-nødvendi
 
 | Emne | Vejledning |
 | --- | --- |
-| **Quickstart (~5 min.)** | [Quickstart](/docs/cookie-banner/quickstart) — minimalt `window.INTA` + `uc.js`, tjek i browseren |
-| **Arkitektur** | [How it works](/docs/cookie-banner/how-it-works) — blokering, signaler, CMP-grænser |
-| **Fejlfinding** | [Debugging](/docs/cookie-banner/debugging) |
+| **Hurtigstart (~5 min.)** | [Hurtigstart](/docs/cookie-banner/quickstart) — copy-paste `window.INTA` + `uc.js`, præcis `<head>`-placering, forventning før/efter samtykke |
+| **Arkitektur** | [Sådan virker det](/docs/cookie-banner/how-it-works) — sideindlæsningsrækkefølge, blokering, GTM/GA/Meta-signaler |
+| **Kernebegreber** | [Kernebegreber](/docs/cookie-banner/core-concepts) — formål, samtykketilstande, blokering vs. jeres tags, ansvarsfordeling |
+| **Fejlfinding** | [Fejlfinding](/docs/cookie-banner/debugging) — manglende banner, tags for tidligt, samtykke holder ikke, GTM-triggers |
 | **Fuld JS-snippet** | [Kom i gang (JavaScript)](/docs/cookie-banner/javascript/getting-started) — almindelige valg + branding |
 | **SPA’er / Next.js** | [SPAs and SSR](/docs/cookie-banner/javascript/spa-and-ssr) |
 | **`window.INTA`-felter** | [`window.INTA` (JSON Schema)](/docs/cookie-banner/javascript/inta-schema) |

@@ -1,13 +1,15 @@
 ---
 title: Fonctionnement
-description: Ordre de chargement, modèle de blocage, signaux de consentement et pourquoi la mesure peut rester exploitable après les choix.
+description: Séquence de chargement de page, blocage et signaux de consentement avec GTM, GA4 et Meta—sans langage marketing.
 sidebar_label: Fonctionnement
 order: 2
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Démarrage rapide
     href: /docs/cookie-banner/quickstart
-  - title: Cycle de vie du script
+  - title: Concepts clés
+    href: /docs/cookie-banner/core-concepts
+  - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: Google Consent Mode
     href: /docs/cookie-banner/google-consent-mode
@@ -15,55 +17,75 @@ related:
 
 # Fonctionnement
 
-Cette page est le **modèle mental** pour les intégrateurs. Pour une installation copier-coller, utilisez le [Démarrage rapide](/docs/cookie-banner/quickstart).
+Lisez ceci une fois l’extrait du [Démarrage rapide](/docs/cookie-banner/quickstart) en place. Cela explique **ce qui se passe dans le navigateur** pour rendre GTM et les balises fournisseurs compréhensibles.
 
-## Ce qui s’exécute en premier
+## 1. Ce qui s’exécute à l’affichage de la page (ordre)
 
-1. **`window.INTA`** — objet de configuration (URL de politique, domaine, entreprise, `gtagId` optionnel, style, etc.).
-2. **`uc.js`** — chargeur CMP depuis `consents.cdn.intastellarsolutions.com`.
+Chaque visite suit grosso modo cette séquence :
 
-Les deux doivent être **tôt dans `<head>`**, avant analytics, pubs, pixels ou autres tiers non essentiels. Si ces balises passent en premier, vous pouvez avoir des **hits pré-consentement** ou des cookies difficiles à justifier sous des règles type RGPD.
+1. **Le HTML est parsé.** Le contenu précoce de `<head>` s’exécute dans l’ordre.
+2. **`window.INTA` s’exécute**—configuration uniquement (URL de politique, domaine, entreprise, `gtagId` facultatif, options UI). Ne charge pas de traceurs tiers.
+3. **`uc.js` se charge**—bootstrap CMP depuis `consents.cdn.intastellarsolutions.com`. Doit s’exécuter **avant** l’analyse, les annonces ou les pixels qui supposent le consentement.
+4. **Reste de `<head>` et du body**—GTM, `gtag`, Meta, intégrations, etc.
 
-Voir [Cycle de vie du script](/docs/cookie-banner/javascript/script-lifecycle) pour l’ordre pratique.
+Si l’étape 3 arrive **après** GA4 ou un pixel, des cookies ou des hits peuvent apparaître **avant** le choix de l’utilisateur—difficile à justifier sous des règles type RGPD et source de confusion dans les rapports. D’où l’exigence du [Démarrage rapide](/docs/cookie-banner/quickstart) de placer le snippet **en tête de `<head>`**.
 
-## Modèle de blocage (langage simple)
+## 2. Comment le « blocage » fonctionne vraiment
 
-Intastellar Consents est conçu pour que **le suivi non essentiel ne se comporte pas comme si le consentement était accordé** avant que le visiteur choisisse.
+Ici, « blocage » signifie : **le suivi non essentiel ne doit pas se comporter comme si le visiteur avait déjà pleinement consenti** avant d’interagir avec la bannière.
 
-- **Avant le choix :** les balises marketing/analytics doivent rester **restreintes** ou **ne pas** se déclencher comme en cas de consentement complet — selon votre câblage GTM, `gtag`, Meta, etc.
-- **Après le choix :** la CMP applique la décision du visiteur. Les balises qui exposent des **APIs de consentement** (ex. Google **Consent Mode v2**) peuvent recevoir des **signaux mis à jour** pour refléter **accepter**, **refuser** ou des choix **granulaires**.
+Cela résulte d’une **combinaison** de :
 
-Le comportement exact est toujours une **combinaison** de :
+| Partie | Rôle |
+| --- | --- |
+| **CMP** | Affiche l’UI, enregistre le choix, applique les signaux documentés sur les stacks pris en charge. |
+| **Ordre de chargement** | Trop tard ou mauvais ordre rend la CMP inefficace—voir [Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle). |
+| **Déclencheurs GTM et consentement des balises** | Les balises ne doivent pas se déclencher nues sur « All Pages » avant le consentement, sauf si votre modèle juridique l’autorise explicitement. |
+| **API fournisseurs** | Google **Consent Mode v2**, paramètres Meta, etc.—chaque fournisseur définit le comportement. |
 
-- la CMP,
-- votre **gestionnaire de balises / déclencheurs** et
-- l’**intégration consentement** de chaque éditeur.
+Les balises `<script src="https://…">` **codées en dur** dans le HTML ne sont **pas** réécrites automatiquement. Vous devez les placer **sous** la CMP ou les **verrouiller** (GTM, chargement dynamique après consentement).
 
-La doc propose des **schémas recommandés** (ex. GTM sur **Consent Initialization**) pour aligner les trois.
+## 3. Avant que le visiteur ne choisisse
 
-## Google Consent Mode
+Tant qu’un choix n’est pas enregistré (ou que les valeurs par défaut de votre configuration ne s’appliquent pas) :
 
-Lorsque vous définissez `settings.gtagId` et utilisez les balises Google, Intastellar peut s’aligner sur le **mode consentement v2** (y compris Advanced Mode le cas échéant). Les balises Google peuvent alors adapter la collecte ou les **pings** au consentement au lieu d’agir silencieusement comme pleinement accordées.
+- Les balises marketing / analytiques doivent rester **restreintes** ou ne **pas** se comporter comme avec des cookies analytics / pub complets—**selon GTM et la configuration fournisseur**.
+- Les balises Google peuvent, avec Consent Mode, `gtagId` et des valeurs par défaut adaptées, fonctionner en mode **sensible au consentement** (y compris pings limités en Advanced Mode—voir [Google Consent Mode](/docs/cookie-banner/google-consent-mode)).
 
-Détails : [Google Consent Mode](/docs/cookie-banner/google-consent-mode).
+## 4. Après le choix du visiteur
 
-## Pourquoi la mesure ne doit pas « casser »
+Lorsque le visiteur accepte, refuse ou choisit de façon granulaire :
 
-Après un consentement **refusé** ou limité, des plateformes comme Google peuvent encore proposer des indicateurs **agrégés ou modélisés** (selon leurs politiques) — les tableaux de bord ne tombent pas nécessairement à zéro. Ce n’**est pas** la même chose qu’un suivi personnel complet.
+1. La CMP **enregistre** la décision (sous réserve des règles cookies / stockage).
+2. Les **fournisseurs intégrés** reçoivent des **signaux de consentement mis à jour** lorsque c’est configuré (ex. Google Consent Mode avec `gtagId` et balises correctement câblées).
+3. **GTM** ne doit déclencher les balises dépendantes que lorsque les déclencheurs correspondent au nouvel état (événements personnalisés, vérifications de consentement, etc.).
 
-Après **accepter**, les balises peuvent repasser en modes de mesure **normaux**, tant que votre conteneur les déclenche **après** connaissance de l’état du consentement.
+**GTM / `dataLayer` :** lors d’une **modification** du consentement, la bannière pousse **`cookie_consent_update`** dans `dataLayer`. Dans GTM, utilisez un déclencheur **Custom Event** avec ce nom pour que les balises réagissent à l’acceptation / refus / granularité—voir [Événements et API](/docs/cookie-banner/javascript/events-and-api). Il n’existe toujours pas de global documenté `window.IntastellarConsents.*` ; consultez l’onglet **Data Layer** de GTM Preview pour la forme actuelle du payload.
 
-Nous n’affirmons pas que « le suivi ne casse jamais » : nous documentons **ordre de chargement + mode consentement + déclencheurs** pour rendre le comportement **prévisible**.
+## 5. Comment GTM et GA reçoivent les signaux
 
-## Ce que la CMP ne fait pas
+- **GTM :** modèle recommandé : balise **Custom HTML** avec le même extrait `window.INTA` + `uc.js`, déclenchée sur **Consent Initialization – All pages**, **avant** les balises dépendantes du consentement. Voir [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+- **GA4 / Google Ads :** avec `settings.gtagId` et des paramètres de balise sensibles au Consent Mode, les balises Google s’alignent sur le consentement au lieu d’être silencieusement « tout activé ».
+- **Meta Pixel :** consentement via les options **Meta** et le **timing de vos déclencheurs**—voir [Meta Pixel](/docs/cookie-banner/meta-pixel).
 
-- Elle ne remplace pas votre **politique de confidentialité**, vos **mentions éditeurs** ni votre **évaluation juridique**.
-- Elle ne corrige pas automatiquement les scripts tiers **codés en dur** qui ignorent le consentement — vous devez toujours les **bloquer** dans le code ou GTM.
+## 6. Pourquoi la mesure ne doit pas « casser »
+
+Après un **refus** ou un consentement limité, des plateformes comme Google peuvent toujours afficher des indicateurs **agrégés ou modélisés** (selon **leurs** politiques). Ce n’est **pas** la même chose qu’un suivi personnel illimité.
+
+Après **acceptation**, la mesure complète peut reprendre **si** votre conteneur déclenche les balises **après** un consentement connu.
+
+Nous ne promettons pas « zéro impact sur l’analytique »—nous documentons **ordre + Consent Mode + déclencheurs** pour que les résultats soient **explicables** et **vérifiables**.
+
+## 7. Ce que la CMP ne fait pas
+
+- Ne remplace pas la **politique de confidentialité**, la **liste des fournisseurs** ni l’**aval juridique**.
+- Ne corrige pas les balises placées **au-dessus** de la CMP ou qui ignorent les API de consentement.
+- Ne garantit pas la conformité sans **votre** configuration correcte.
 
 ## Voir aussi
 
-- [Démarrage rapide](/docs/cookie-banner/quickstart)
-- [Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)
+- [Concepts clés](/docs/cookie-banner/core-concepts)—catégories, états, responsabilités.
 - [Dépannage](/docs/cookie-banner/debugging)
+- [Integrations overview](/docs/cookie-banner/integrations-overview)
 
 [← Accueil documentation](/docs/cookie-banner)

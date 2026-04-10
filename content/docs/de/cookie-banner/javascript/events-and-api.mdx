@@ -1,10 +1,12 @@
 ---
 title: Ereignisse und API
-description: Was dieses Portal zur programmatischen Einwilligung dokumentiert—Konfiguration vs. Laufzeit-API.
+description: dataLayer-Ereignis cookie_consent_update für GTM, window.INTA und was dieses Portal nicht als globale API dokumentiert.
 sidebar_label: Ereignisse & API
 order: 22
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
+  - title: Kernkonzepte
+    href: /docs/cookie-banner/core-concepts
   - title: Schnellstart
     href: /docs/cookie-banner/quickstart
   - title: Skript-Lebenszyklus
@@ -15,31 +17,52 @@ related:
 
 # Ereignisse und API
 
+Zu **Kategorien, Zuständen und Verantwortung** im Stack siehe [Kernkonzepte](/docs/cookie-banner/core-concepts).
+
 ## Was dieses Entwicklerportal dokumentiert
 
 | Oberfläche | Zweck |
 | --- | --- |
-| **`window.INTA`** | Bootstrap-Objekt **vor** `uc.js` — Policy-URL, Domain, Firma, optionales `gtagId`, UI-Optionen ([JSON Schema](/docs/cookie-banner/javascript/inta-schema)). |
+| **`window.INTA`** | Bootstrap-Objekt **vor** `uc.js`—Policy-URL, Domain, Firma, optionales `gtagId`, UI-Optionen ([JSON Schema](/docs/cookie-banner/javascript/inta-schema)). |
 | **Integrationsmuster** | GTM-Feuerreihenfolge, GA4, Meta, Google Consent Mode ([Integrationsübersicht](/docs/cookie-banner/integrations-overview)). |
 
 Das sind die **unterstützten** Integrationsverträge für den Aufbau auf inta.dev.
 
+## `cookie_consent_update` (Google Tag Manager / `dataLayer`)
+
+Wenn der Besucher die Einwilligung **ändert** (Akzeptieren, Ablehnen, granulare Änderung usw.), pusht das Banner einen Eintrag in das Google-**`dataLayer`**-Array (dasselbe Objekt, das GTM nutzt, wenn `dataLayer` vor dem GTM-Laden initialisiert wird).
+
+| Detail | Wert |
+| --- | --- |
+| **Ereignisname** | `cookie_consent_update` |
+| **Wo sichtbar** | `dataLayer` — in der **GTM-Vorschau** (Tab „Data Layer“) und im Browser nach Interaktion mit dem Banner |
+
+**In GTM nutzen**
+
+1. **Trigger → Neu → Benutzerdefiniertes Ereignis**
+2. **Ereignisname:** `cookie_consent_update` (exakte Übereinstimmung, außer Sie nutzen absichtlich Regex-Trigger)
+3. Diesen Trigger an Tags hängen, die **bei Einwilligungsänderung** laufen sollen (z. B. nach Akzeptieren von Statistik oder Marketing), zusätzlich zu **Einwilligungs**-Einstellungen an diesen Tags.
+
+Der Push enthält ein **Datenobjekt** neben dem Ereignis (einwilligungsbezogene Felder). **Keine harten Annahmen** über jede Property—**GTM-Vorschau** öffnen, eine Einwilligungsaktion ausführen und den aktuellen **Data-Layer**-Zustand Ihres Deployments lesen.
+
+Ist GTM nicht auf der Seite, stellen Sie sicher, dass `window.dataLayer = window.dataLayer || []` **vor** `uc.js` existiert, wenn Sie dieses Ereignis für andere Consumer nutzen.
+
 ## Programmatische JavaScript-API (Laufzeit)
 
-**Es gibt auf diesem Portal keine separate öffentliche „CMP-JavaScript-API“ dokumentiert** (kein garantiertes globales Objekt wie `window.IntastellarConsents.*` für den Produktionseinsatz). Implementierer sollten:
+**Es gibt auf diesem Portal keine separate öffentliche „CMP-JavaScript-API“ dokumentiert** (kein garantiertes globales Objekt wie `window.IntastellarConsents.*` für den Produktionseinsatz). Für **GTM** nutzen Sie das **`cookie_consent_update`**-**`dataLayer`**-Ereignis oben. Sonst:
 
 - Verhalten über **`window.INTA`** und **`uc.js`** wie dokumentiert steuern.
-- **Google Tag Manager** (oder Ihre Tag-Schicht) für Events, Trigger und Anbieter-Tags nutzen.
-- Wo zutreffend auf **Anbieter-Einwilligungsmechanismen** setzen (z. B. Google Consent Mode, Meta-Consent-Parameter).
+- **Google Tag Manager** (oder die Tag-Schicht Ihres Stacks) für Trigger und Anbieter-Tags nutzen.
+- Auf **Anbieter-Einwilligungsmechanismen** setzen (z. B. Google Consent Mode, Meta-Consent-Parameter), wo zutreffend.
 
-Wenn Ihre Organisation eine **versionierte Laufzeit-API** für einen bestimmten CDN-Build oder Enterprise-Tier veröffentlicht, ergänzen Sie die kanonische URL im Frontmatter dieser Seite oder auf der [Dokumentations-Startseite](/docs/cookie-banner), sobald sie stabil ist.
+Veröffentlicht Ihre Organisation eine **versionierte Laufzeit-API** für einen bestimmten CDN-Build oder Enterprise-Tier, ergänzen Sie die kanonische URL im Frontmatter dieser Seite oder auf der [Dokumentations-Startseite](/docs/cookie-banner), sobald sie stabil ist.
 
 ## Praktische Checkliste
 
 1. Einwilligungsgesteuertes Verhalten mit **GTM-Vorschau** oder der Ladereihenfolge Ihres Bundlers prüfen.
-2. DevTools (**Anwendung** → Cookies / Speicher, **Netzwerk**) nutzen, um Tags vor und nach Wahlen mit der Einwilligung abzugleichen.
-3. Wenn etwas erst nach Akzeptieren laufen soll, das in **GTM-Triggern** oder Anwendungscode ausdrücken, der **nach** der CMP lädt — nicht über undokumentierte Globals.
+2. DevTools (**Anwendung** → Cookies / Speicher, **Netzwerk**) nutzen, um Tags **vor** und **nach** Wahlen mit der Einwilligung abzugleichen.
+3. Muss etwas laufen, wenn sich die Einwilligung **ändert**, einen **Benutzerdefiniertes Ereignis**-Trigger auf **`cookie_consent_update`** nutzen (siehe oben) oder Anwendungscode, der **nach** der CMP läuft—nicht undokumentierte Globals.
 
 ## Einwilligungssignale an Dritte
 
-Intastellar Consents übergibt **Einwilligungssignale** an unterstützte Stacks, wenn so konfiguriert, damit Sie nicht jeden Anbieter manuell verdrahten müssen. Plattformspezifische Parameter folgen weiterhin **Google**, **Meta**, **Microsoft** usw. — siehe [Integrationsübersicht](/docs/cookie-banner/integrations-overview).
+Intastellar Consents übergibt **Einwilligungssignale** an unterstützte Stacks, wenn so konfiguriert, damit Sie nicht jeden Anbieter manuell verdrahten müssen. Plattformspezifische Parameter folgen weiterhin **Google**, **Meta**, **Microsoft** usw.—siehe [Integrationsübersicht](/docs/cookie-banner/integrations-overview).

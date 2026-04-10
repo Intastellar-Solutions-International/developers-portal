@@ -1,45 +1,68 @@
 ---
-title: Events en API
-description: Wat deze portal documenteert over programmatische toestemming—configuratie versus runtime-API.
-sidebar_label: Events & API
+title: Gebeurtenissen en API
+description: dataLayer-gebeurtenis cookie_consent_update voor GTM, window.INTA en wat dit portaal niet als globale API documenteert.
+sidebar_label: Gebeurtenissen & API
 order: 22
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
+  - title: Kernconcepten
+    href: /docs/cookie-banner/core-concepts
   - title: Snelstart
     href: /docs/cookie-banner/quickstart
-  - title: Scriptlevenscyclus
+  - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: window.INTA-referentie
     href: /docs/cookie-banner/javascript/inta-schema
 ---
 
-# Events en API
+# Gebeurtenissen en API
 
-## Wat deze ontwikkelaarsportal documenteert
+Voor **categorieën, statussen en verantwoordelijkheid** in een stack, zie [Kernconcepten](/docs/cookie-banner/core-concepts).
+
+## Wat dit ontwikkelaarsportaal documenteert
 
 | Oppervlak | Doel |
 | --- | --- |
 | **`window.INTA`** | Bootstrap-object **vóór** `uc.js` draait—policy-URL, domein, bedrijf, optioneel `gtagId`, UI-opties ([JSON-schema](/docs/cookie-banner/javascript/inta-schema)). |
-| **Integratiepatronen** | GTM-afvuurvolgorde, GA4, Meta, Google Consent Mode ([Integraties overzicht](/docs/cookie-banner/integrations-overview)). |
+| **Integratiepatronen** | GTM-vuurvolgorde, GA4, Meta, Google Consent Mode ([Integrations overview](/docs/cookie-banner/integrations-overview)). |
 
 Dat zijn de **ondersteunde** integratiecontracten om op inta.dev te bouwen.
 
+## `cookie_consent_update` (Google Tag Manager / `dataLayer`)
+
+Wanneer de bezoeker de toestemming **wijzigt** (accepteren, weigeren, granulaire update, enz.), pusht de banner een item naar het Google-**`dataLayer`**-array (hetzelfde object dat GTM gebruikt wanneer `dataLayer` vóór GTM-load wordt geïnitialiseerd).
+
+| Detail | Waarde |
+| --- | --- |
+| **Gebeurtenisnaam** | `cookie_consent_update` |
+| **Waar zichtbaar** | `dataLayer`—zichtbaar in **GTM Preview** (tab Data Layer) en in de browser na interactie met de banner |
+
+**Gebruik in GTM**
+
+1. **Triggers → New → Custom Event**
+2. **Event name:** `cookie_consent_update` (exacte match, tenzij u bewust een regex-trigger gebruikt)
+3. Koppel deze trigger aan tags die moeten draaien **wanneer toestemming verandert** (bijv. na accepteren van statistiek of marketing), naast **Consent**-instellingen op die tags.
+
+De push bevat een **data-object** naast de gebeurtenis (toestemmingsgerelateerde velden). **Hardcode geen** aannames over elke property—open **GTM Preview**, voer een toestemmingsactie uit en lees de actuele **Data Layer**-status voor uw deployment.
+
+Is GTM niet op de pagina, zorg dan dat `window.dataLayer = window.dataLayer || []` **vóór** `uc.js` bestaat als u op deze gebeurtenis vertrouwt voor andere consumenten.
+
 ## Programmatische JavaScript-API (runtime)
 
-**Er is geen aparte openbare „CMP JavaScript API“ op deze portal gedocumenteerd** (geen gegarandeerd globaal object zoals `window.IntastellarConsents.*` voor productie). Implementateurs moeten:
+**Er is geen aparte openbare „CMP JavaScript API“ op dit portaal gedocumenteerd** (geen gegarandeerd globaal object zoals `window.IntastellarConsents.*` voor productie). Voor **GTM** gebruikt u de **`cookie_consent_update`**-**`dataLayer`**-gebeurtenis hierboven. Anders:
 
-- Gedrag sturen via **`window.INTA`** en **`uc.js`** zoals gedocumenteerd.
-- **Google Tag Manager** (of uw taglaag) gebruiken voor events, triggers en leverancier-tags.
-- **Leveranciers-toestemmingsmechanismen** gebruiken (bijv. Google Consent Mode, Meta-consentparameters) waar van toepassing.
+- Stuur gedrag aan via **`window.INTA`** en **`uc.js`** zoals gedocumenteerd.
+- Gebruik **Google Tag Manager** (of de taglaag van uw stack) voor triggers en leverancierstags.
+- Vertrouw op **leverancierstoestemmingsmechanismen** (bijv. Google Consent Mode, Meta-toestemmingsparameters) waar van toepassing.
 
-Als uw organisatie een **geversioneerde runtime-API** publiceert voor een specifieke CDN-build of enterprise-tier, voeg de canonieke URL toe aan het frontmatter van deze pagina of aan de [documentatie-start](/docs/cookie-banner) zodra die stabiel is.
+Publiceert uw organisatie een **geversioneerde runtime-API** voor een specifieke CDN-build of enterprise-tier, voeg de canonieke URL toe aan het frontmatter van deze pagina of de [documentatiehome](/docs/cookie-banner) zodra die stabiel is.
 
 ## Praktische checklist
 
-1. Valideer toestemmingsgestuurd gedrag met **GTM-voorbeeld** of de laadvolgorde van uw bundler.
-2. Gebruik DevTools (**Application** → cookies / opslag, **Netwerk**) om te bevestigen dat tags vóór en na keuzes met toestemming overeenkomen.
-3. Als iets pas na accepteren mag draaien, leg dat vast in **GTM-triggers** of applicatiecode die **na** de CMP laadt—niet via ongedocumenteerde globals.
+1. Valideer toestemmingsgestuurd gedrag met **GTM Preview** of de laadvolgorde van uw bundler.
+2. Gebruik DevTools (**Application** → cookies / opslag, **Network**) om te bevestigen dat tags aansluiten op toestemming **vóór** en **na** keuzes.
+3. Moet iets draaien wanneer toestemming **verandert**, gebruik dan een **Custom Event**-trigger op **`cookie_consent_update`** (zie hierboven) of applicatiecode die **na** de CMP draait—geen ongedocumenteerde globals.
 
 ## Toestemmingssignalen naar derden
 
-Intastellar Consents geeft **toestemmingssignalen** door aan ondersteunde stacks wanneer zo geconfigureerd, zodat u niet elke leverancier handmatig hoeft aan te sluiten. Platformspecifieke parameters volgen nog steeds **Google**, **Meta**, **Microsoft**, enz. — zie [Integraties overzicht](/docs/cookie-banner/integrations-overview).
+Intastellar Consents geeft **toestemmingssignalen** door aan ondersteunde stacks wanneer zo geconfigureerd, zodat u niet elke leverancier handmatig hoeft aan te sluiten. Platforms-specifieke parameters volgen nog steeds **Google**, **Meta**, **Microsoft**, enz.—zie [Integrations overview](/docs/cookie-banner/integrations-overview).

@@ -1,12 +1,14 @@
 ---
 title: Snelstart
-description: Installeer Intastellar Consents in enkele minuten—minimale snippet, controle in de browser, daarna GTM of Google-tags.
+description: Installatie met kopiëren-plakken in minder dan vijf minuten—exacte plaats in de head, controles en verwacht gedrag vóór en na toestemming.
 sidebar_label: Snelstart
 order: 1
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Hoe het werkt
     href: /docs/cookie-banner/how-it-works
+  - title: Kernconcepten
+    href: /docs/cookie-banner/core-concepts
   - title: Google Tag Manager
     href: /docs/cookie-banner/google-tag-manager
   - title: Probleemoplossing
@@ -15,17 +17,19 @@ related:
 
 # Snelstart
 
-**Doel:** binnen 5 minuten.  
-**Resultaat:** de toestemmings-UI verschijnt, niet-essentiële tags blijven geblokkeerd tot de bezoeker kiest, en Google-tags kunnen Consent Mode-updates ontvangen als u ze zo instelt.
+**Duur:** ongeveer 5 minuten.  
+**U gaat:** twee blokken in `<head>` plakken, vernieuwen en banner, blokkering en (bij Google-tags) Consent Mode controleren.
 
-## Voordat u begint
+Geen voorkennis van CMP’s nodig. Bij problemen: [Probleemoplossing](/docs/cookie-banner/debugging).
 
-- U kunt de HTML `<head>` of de root-layout bewerken (WordPress-thema, Shopify `theme.liquid`, enz.).
-- U hebt een **werkende privacybeleid-URL** nodig (HTTPS, geen 404). Ontbrekende of ongeldige URL’s zijn de meest voorkomende reden dat de banner niet verschijnt.
+## Vereisten
 
-## Stap 1 — Twee tags in `<head>` (volgorde telt)
+- Toegang tot de HTML-`<head>` van de site (of rootlayout: WordPress-thema, Shopify `theme.liquid`, Next.js-layout, enz.).
+- Een **live privacybeleid-URL** via **HTTPS** (200 OK, geen placeholder). Bij een verkeerde URL verschijnt de banner vaak **niet**—dat is bedoeld.
 
-Plak **direct na** de openende `<head>`-tag (zo vroeg mogelijk):
+## Stap 1 — Bovenaan in `<head>` plakken
+
+Plak **direct na** `<head>` (vóór stylesheets, GA, GTM-containerfragment, pixels of andere scripts van derden):
 
 ```html
 <script>
@@ -40,20 +44,20 @@ Plak **direct na** de openende `<head>`-tag (zo vroeg mogelijk):
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
+| Veld | Waarde |
+| --- | --- |
+| `policy_link` | Volledige HTTPS-URL van uw privacybeleid |
+| `settings.rootDomain` | Registreerbare domeinnaam van de site, **zonder** `https://` of pad |
+| `settings.company` | Naam in de toestemmings-UI |
+
 **Regels**
 
-1. `window.INTA` moet **vóór** `uc.js` draaien.
-2. Laad **geen** analytics- of marketing-scripts **boven** dit blok, tenzij u dat bewust wilt (standaard: niet doen).
+1. Het inline-script `window.INTA` moet **vóór** het `uc.js`-script-tag draaien.
+2. Analyse-, advertentie- of social-pixels **niet boven** dit blok, tenzij u dat bewust wilt (standaard: **niet**).
 
-Vervang:
+## Stap 2 — Optioneel: Google Analytics / Ads (`gtagId`)
 
-- `policy_link` — uw echte privacybeleid.
-- `settings.rootDomain` — het registreerbare domein van de site (zonder `https://`).
-- `settings.company` — naam in de UI.
-
-## Stap 2 — Alleen Google Analytics / Ads: voeg `gtagId` toe
-
-Als u **GA4 of Google Ads** gebruikt en wilt dat Intastellar **Google Consent Mode** met uw meet-ID afstemt, breid `settings` uit:
+Als u **GA4 of Google Ads** gebruikt en wilt dat de CMP **Google Consent Mode v2** afstemt op uw meet-ID, voeg `gtagId` toe:
 
 ```html
 <script>
@@ -69,35 +73,33 @@ Als u **GA4 of Google Ads** gebruikt en wilt dat Intastellar **Google Consent Mo
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
-Als u **nog geen** Google-tags gebruikt, laat `gtagId` weg tot u ze toevoegt.
+Laat `gtagId` weg totdat Google-tags bestaan. Volledige configuratie: [`window.INTA` (JSON-schema)](/docs/cookie-banner/javascript/inta-schema).
 
-Volledige veldenlijst: [`window.INTA` (JSON-schema)](/docs/cookie-banner/javascript/inta-schema).
+## Stap 3 — Controleren (2 minuten)
 
-## Stap 3 — Controleren in de browser
+Gebruik een **privé/incognitovenster** zodat oude toestemmingscookies niet storen.
 
-1. Open de site in een **privévenster**.
-2. U zou de **toestemmings-UI** moeten zien (banner of overlay, afhankelijk van de configuratie).
-3. DevTools → **Netwerk**:
-   - `uc.js` laadt **vroeg** in het document.
-   - Vóór acceptatie van marketing/analytics mogen niet-essentiële requests zich niet gedragen alsof er volledig is ingestemd—exact gedrag hangt van uw tags af; zie [Hoe het werkt](/docs/cookie-banner/how-it-works).
+| Controlepunt | Verwachting |
+| --- | --- |
+| **Banner** | Toestemmings-UI verschijnt (banner of overlay, afhankelijk van product). |
+| **Netwerk** | `uc.js` laadt **vroeg** vanaf `consents.cdn.intastellarsolutions.com`. |
+| **Vóór accepteren** | Niet-noodzakelijke tags (GA4, Meta, enz.) mogen zich **niet** gedragen als **volledig toegestaan**—exact patroon hangt af van GTM/`gtag` ([Hoe het werkt](/docs/cookie-banner/how-it-works)). |
+| **Na accepteren** | Aan toestemming gekoppelde tags mogen vuren of naar normale / toestemmingsbewuste modi schakelen (bijv. Google Consent Mode). |
 
-## Stap 4 — Weigeren, daarna accepteren
+**Weiger** (of minimale toestemming), een keer vernieuwen: de keuze moet **blijven bestaan**. Wordt die elke keer gereset, zie [Probleemoplossing](/docs/cookie-banner/debugging) (dubbel fragment / verkeerde `rootDomain`).
 
-1. Kies **Weigeren** (of minimale toestemming), laad daarna één keer opnieuw.
-2. Uw keuze zou **moeten blijven bestaan** (onder voorbehoud van cookie-/opslagregels). Reset het elke keer, controleer op **dubbele** `window.INTA` / `uc.js`-blokken of een verkeerde `rootDomain`.
+## Stap 4 — Volgende stappen (productie)
 
-## Wanneer u „klaar“ bent
+| Als u gebruikt… | Daarna |
+| --- | --- |
+| **GTM** | [Google Tag Manager](/docs/cookie-banner/google-tag-manager)—CMP op **Consent Initialization**, daarna toestemmingsbewuste tags. |
+| **GA4** | [Google Analytics 4](/docs/cookie-banner/google-analytics-4) + [Google Consent Mode](/docs/cookie-banner/google-consent-mode). |
+| **Meta** | [Meta Pixel](/docs/cookie-banner/meta-pixel). |
+| **Volledige snippet / branding** | [Aan de slag (JavaScript)](/docs/cookie-banner/javascript/getting-started). |
+| **React / Next / SPA** | [SPA’s en SSR](/docs/cookie-banner/javascript/spa-and-ssr). |
 
-- Banner zichtbaar voor nieuwe bezoekers.
-- Tags die toestemming nodig hebben draaien **niet** als volledig ingestemd **vóór** een keuze.
-- Na **Accepteren** kan meting weer normaal of **toestemmingsbewust** werken (Google: Consent Mode; Meta: pixel + toestemmingsconfiguratie).
+## Productierijp (een keer lezen)
 
-## Volgende stappen
+De CMP **zet de gedocumenteerde toestemmingsmechanismen** om (UI + beschreven integratie) als u laadvolgorde en tagpatronen aanhoudt. **U** blijft verantwoordelijk voor: beleidsteksten, leveranciersinformatie, rechtsgrondslag en elke tag-trigger. We beloven geen automatische „volledige AVG-naleving“—we documenteren **voorspelbaar** gedrag zodat u kunt verifiëren in DevTools en GTM Preview.
 
-- **GTM:** [Google Tag Manager](/docs/cookie-banner/google-tag-manager)
-- **GA4:** [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
-- **Meta:** [Meta Pixel](/docs/cookie-banner/meta-pixel)
-- **Volledige snippet en styling:** [Aan de slag (JavaScript)](/docs/cookie-banner/javascript/getting-started)
-- **Vastgelopen:** [Probleemoplossing](/docs/cookie-banner/debugging)
-
-[← Documentatie-start](/docs/cookie-banner)
+[← Documentatiehome](/docs/cookie-banner)

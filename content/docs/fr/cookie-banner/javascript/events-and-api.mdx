@@ -1,13 +1,15 @@
 ---
 title: Événements et API
-description: Ce que ce portail documente sur le consentement programmatique—configuration vs surface d’API runtime.
+description: Événement dataLayer cookie_consent_update pour GTM, window.INTA et ce que ce portail ne documente pas comme API globale.
 sidebar_label: Événements & API
 order: 22
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
+  - title: Concepts clés
+    href: /docs/cookie-banner/core-concepts
   - title: Démarrage rapide
     href: /docs/cookie-banner/quickstart
-  - title: Cycle de vie du script
+  - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: Référence window.INTA
     href: /docs/cookie-banner/javascript/inta-schema
@@ -15,31 +17,52 @@ related:
 
 # Événements et API
 
-## Ce que ce portail développeur documente
+Pour les **catégories, états et responsabilités** dans une stack, voir [Concepts clés](/docs/cookie-banner/core-concepts).
+
+## Ce que documente ce portail développeur
 
 | Surface | Rôle |
 | --- | --- |
-| **`window.INTA`** | Objet d’amorçage **avant** l’exécution de `uc.js` — URL de politique, domaine, entreprise, `gtagId` optionnel, options UI ([schéma JSON](/docs/cookie-banner/javascript/inta-schema)). |
-| **Schémas d’intégration** | Ordre de déclenchement GTM, GA4, Meta, Google Consent Mode ([vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)). |
+| **`window.INTA`** | Objet bootstrap **avant** l’exécution de `uc.js`—URL de politique, domaine, entreprise, `gtagId` facultatif, options UI ([schéma JSON](/docs/cookie-banner/javascript/inta-schema)). |
+| **Modèles d’intégration** | Ordre de déclenchement GTM, GA4, Meta, Google Consent Mode ([Integrations overview](/docs/cookie-banner/integrations-overview)). |
 
 Ce sont les contrats d’intégration **pris en charge** pour construire sur inta.dev.
 
+## `cookie_consent_update` (Google Tag Manager / `dataLayer`)
+
+Lorsque le visiteur **modifie son consentement** (accepter, refuser, mise à jour granulaire, etc.), la bannière pousse une entrée dans le tableau Google **`dataLayer`** (le même objet que GTM utilise lorsque `dataLayer` est initialisé avant le chargement de GTM).
+
+| Détail | Valeur |
+| --- | --- |
+| **Nom d’événement** | `cookie_consent_update` |
+| **Où il apparaît** | `dataLayer`—visible dans **GTM Preview** (onglet Data Layer) et dans le navigateur après interaction avec la bannière |
+
+**Utilisation dans GTM**
+
+1. **Triggers → New → Custom Event**
+2. **Event name :** `cookie_consent_update` (correspondance exacte sauf si vous utilisez volontairement un déclencheur regex)
+3. Attachez ce déclencheur aux balises qui doivent s’exécuter **lorsque le consentement change** (ex. après acceptation des statistiques ou du marketing), en plus des paramètres **Consent** sur ces balises.
+
+Le push inclut un **objet de données** à côté de l’événement (champs liés au consentement). **Ne codez pas en dur** d’hypothèses sur chaque propriété—ouvrez **GTM Preview**, effectuez une action de consentement et lisez l’état actuel du **Data Layer** pour votre déploiement.
+
+Si GTM n’est pas sur la page, assurez-vous que `window.dataLayer = window.dataLayer || []` existe **avant** `uc.js` lorsque vous comptez sur cet événement pour d’autres consommateurs.
+
 ## API JavaScript programmatique (runtime)
 
-**Il n’existe pas d’« API JavaScript CMP » publique séparée documentée sur ce portail** (pas de global garanti tel que `window.IntastellarConsents.*` pour la production). Les intégrateurs doivent :
+**Il n’existe pas d’« API JavaScript CMP » publique séparée documentée sur ce portail** (pas de global garanti tel que `window.IntastellarConsents.*` pour la production). Pour **GTM**, utilisez l’événement **`dataLayer`** **`cookie_consent_update`** ci-dessus. Sinon :
 
-- Piloter le comportement via **`window.INTA`** et **`uc.js`** comme documenté.
-- Utiliser **Google Tag Manager** (ou votre couche de balises) pour les événements, déclencheurs et balises éditeurs.
-- S’appuyer sur les **mécanismes de consentement des éditeurs** (ex. Google Consent Mode, paramètres Meta) le cas échéant.
+- Pilotez le comportement via **`window.INTA`** et **`uc.js`** comme documenté.
+- Utilisez **Google Tag Manager** (ou la couche de balises de votre stack) pour les déclencheurs et les balises fournisseurs.
+- Appuyez-vous sur les **mécanismes de consentement des fournisseurs** (ex. Google Consent Mode, paramètres Meta) le cas échéant.
 
-Si votre organisation publie une **API runtime versionnée** pour un build CDN ou un niveau entreprise spécifique, ajoutez son URL canonique dans le frontmatter de cette page ou sur l’[accueil documentation](/docs/cookie-banner) lorsqu’elle est stable.
+Si votre organisation publie une **API runtime versionnée** pour un build CDN ou un niveau enterprise spécifique, ajoutez son URL canonique au frontmatter de cette page ou à l’[accueil documentation](/docs/cookie-banner) lorsqu’elle est stable.
 
 ## Liste de contrôle pratique
 
-1. Validez le comportement piloté par le consentement avec **Aperçu GTM** ou l’ordre de chargement de votre bundler.
-2. Utilisez les DevTools (**Application** → cookies / stockage, **Réseau**) pour confirmer l’alignement des balises **avant** et **après** les choix.
-3. Si quelque chose doit s’exécuter seulement après acceptation, exprimez-le dans les **déclencheurs GTM** ou le code applicatif chargé **après** la CMP — pas via des globaux non documentés.
+1. Validez le comportement piloté par le consentement avec **GTM Preview** ou l’ordre de chargement de votre bundler.
+2. Utilisez les DevTools (**Application** → cookies / stockage, **Network**) pour confirmer que les balises s’alignent sur le consentement **avant** et **après** les choix.
+3. Si quelque chose doit s’exécuter lorsque le consentement **change**, utilisez un déclencheur **Custom Event** sur **`cookie_consent_update`** (voir ci-dessus) ou du code applicatif qui s’exécute **après** la CMP—pas de globals non documentés.
 
 ## Signaux de consentement vers les tiers
 
-Intastellar Consents transmet des **signaux de consentement** aux piles prises en charge lorsque c’est configuré, pour éviter de câbler chaque éditeur à la main. Les paramètres spécifiques à chaque plateforme suivent toujours **Google**, **Meta**, **Microsoft**, etc. — voir [vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview).
+Intastellar Consents transmet des **signaux de consentement** vers les stacks pris en charge lorsque c’est configuré, pour que vous n’ayez pas à câbler chaque fournisseur à la main. Les paramètres spécifiques à chaque plateforme suivent toujours **Google**, **Meta**, **Microsoft**, etc.—voir [Integrations overview](/docs/cookie-banner/integrations-overview).

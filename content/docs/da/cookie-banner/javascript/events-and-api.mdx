@@ -1,13 +1,15 @@
 ---
 title: Begivenheder og API
-description: Hvad denne portal dokumenterer om programmatisk samtykke—konfiguration vs. runtime-API.
+description: dataLayer-begivenheden cookie_consent_update til GTM, window.INTA og hvad denne portal ikke dokumenterer som global API.
 sidebar_label: Begivenheder & API
 order: 22
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
+  - title: Kernebegreber
+    href: /docs/cookie-banner/core-concepts
   - title: Hurtigstart
     href: /docs/cookie-banner/quickstart
-  - title: Script-livscyklus
+  - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: window.INTA-reference
     href: /docs/cookie-banner/javascript/inta-schema
@@ -15,31 +17,52 @@ related:
 
 # Begivenheder og API
 
+For **kategorier, tilstande og ansvar** i en stack, se [Kernebegreber](/docs/cookie-banner/core-concepts).
+
 ## Hvad denne udviklerportal dokumenterer
 
 | Overflade | Formål |
 | --- | --- |
-| **`window.INTA`** | Bootstrap-objekt **før** `uc.js` kører—policy-URL, domæne, firma, valgfrit `gtagId`, UI-muligheder ([JSON Schema](/docs/cookie-banner/javascript/inta-schema)). |
-| **Integrationsmønstre** | GTM-affyringsrækkefølge, GA4, Meta, Google Consent Mode ([Integrationsoversigt](/docs/cookie-banner/integrations-overview)). |
+| **`window.INTA`** | Bootstrap-objekt **før** `uc.js` kører—policy-URL, domæne, firma, valgfrit `gtagId`, UI-indstillinger ([JSON Schema](/docs/cookie-banner/javascript/inta-schema)). |
+| **Integrationsmønstre** | GTM-affyringsrækkefølge, GA4, Meta, Google Consent Mode ([Integrations overview](/docs/cookie-banner/integrations-overview)). |
 
 Det er de **understøttede** integrationskontrakter til at bygge på inta.dev.
 
+## `cookie_consent_update` (Google Tag Manager / `dataLayer`)
+
+Når besøgenden **ændrer samtykke** (accept, afvisning, granulær opdatering osv.), pusher banneret en post til Google-**`dataLayer`**-arrayet (samme objekt som GTM bruger, når `dataLayer` initialiseres før GTM indlæses).
+
+| Detalje | Værdi |
+| --- | --- |
+| **Begivenhedsnavn** | `cookie_consent_update` |
+| **Hvor det vises** | `dataLayer`—synligt i **GTM Preview** (Data Layer-fanen) og i browseren efter interaktion med banneret |
+
+**Brug i GTM**
+
+1. **Triggers → New → Custom Event**
+2. **Event name:** `cookie_consent_update` (eksakt match, medmindre I bevidst bruger regex-trigger)
+3. Knyt denne trigger til tags, der skal køre **når samtykke ændres** (fx efter accept af statistik eller marketing), ud over **Consent**-indstillinger på disse tags.
+
+Push’et indeholder et **dataobjekt** ved siden af begivenheden (samtykkerelaterede felter). **Hardkod ikke** antagelser om hver egenskab—åbn **GTM Preview**, udfør en samtykkehandling og læs den aktuelle **Data Layer**-tilstand for jeres deployment.
+
+Er GTM ikke på siden, sørg for at `window.dataLayer = window.dataLayer || []` findes **før** `uc.js`, når I er afhængige af denne begivenhed for andre forbrugere.
+
 ## Programmatisk JavaScript-API (runtime)
 
-**Der dokumenteres ingen separat offentlig „CMP JavaScript API“ på denne portal** (ingen garanteret global som `window.IntastellarConsents.*` til produktion). Implementører bør:
+**Der findes ingen separat offentlig „CMP JavaScript API“ dokumenteret på denne portal** (ingen garanteret global som `window.IntastellarConsents.*` til produktion). Til **GTM** bruger I **`cookie_consent_update`**-**`dataLayer`**-begivenheden ovenfor. Ellers:
 
-- Styre adfærd via **`window.INTA`** og **`uc.js`** som dokumenteret.
-- Bruge **Google Tag Manager** (eller jeres tag-lag) til events, triggers og leverandør-tags.
-- Stole på **leverandør-samtykkemekanismer** (f.eks. Google Consent Mode, Meta-samtykkeparametre) hvor relevant.
+- Styr adfærd via **`window.INTA`** og **`uc.js`** som dokumenteret.
+- Brug **Google Tag Manager** (eller jeres stacks tag-lag) til triggers og leverandørtags.
+- Stol på **leverandørsamtykkemekanismer** (fx Google Consent Mode, Meta-samtykkeparametre), hvor det gælder.
 
-Hvis jeres organisation udgiver en **versioneret runtime-API** til et bestemt CDN-build eller enterprise-niveau, tilføj dens kanoniske URL i frontmatter på denne side eller på [dokumentationsforsiden](/docs/cookie-banner), når den er stabil.
+Hvis jeres organisation udgiver en **versioneret runtime-API** til et bestemt CDN-build eller enterprise-niveau, tilføj den kanoniske URL til denne sides frontmatter eller [dokumentationsstart](/docs/cookie-banner), når den er stabil.
 
 ## Praktisk tjekliste
 
 1. Valider samtykkestyret adfærd med **GTM Preview** eller jeres bundlers indlæsningsrækkefølge.
-2. Brug DevTools (**Application** → cookies / storage, **Network**) for at bekræfte tags stemmer overens med samtykke **før** og **efter** valg.
-3. Hvis noget kun må køre efter accept, udtryk det i **GTM-triggers** eller applikationskode der indlæses **efter** CMP—not via udokumenterede globals.
+2. Brug DevTools (**Application** → cookies / storage, **Network**) til at bekræfte, at tags matcher samtykke **før** og **efter** valg.
+3. Skal noget køre, når samtykke **ændres**, brug en **Custom Event**-trigger på **`cookie_consent_update`** (se ovenfor) eller applikationskode, der kører **efter** CMP—not udokumenterede globals.
 
 ## Samtykkesignaler til tredjeparter
 
-Intastellar Consents sender **samtykkesignaler** til understøttede stacks når konfigureret, så I ikke skal koble hver leverandør manuelt. Platformsspecifikke parametre følger stadig **Google**, **Meta**, **Microsoft** m.fl. — se [Integrationsoversigt](/docs/cookie-banner/integrations-overview).
+Intastellar Consents sender **samtykkesignaler** til understøttede stacks, når det er konfigureret, så I ikke skal håndkoble hver leverandør. Platforms-specifikke parametre følger stadig **Google**, **Meta**, **Microsoft** osv.—se [Integrations overview](/docs/cookie-banner/integrations-overview).

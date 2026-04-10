@@ -1,13 +1,15 @@
 ---
 title: Sådan virker det
-description: Indlæsningsrækkefølge, blokkeringsmodel, samtykkesignaler og hvorfor måling kan forblive brugbar efter samtykkevalg.
+description: Sideindlæsningssekvens, blokering og samtykkesignaler med GTM, GA4 og Meta—uden marketingfloskler.
 sidebar_label: Sådan virker det
 order: 2
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Hurtigstart
     href: /docs/cookie-banner/quickstart
-  - title: Script-livscyklus
+  - title: Kernebegreber
+    href: /docs/cookie-banner/core-concepts
+  - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: Google Consent Mode
     href: /docs/cookie-banner/google-consent-mode
@@ -15,55 +17,75 @@ related:
 
 # Sådan virker det
 
-Denne side er **mentalmodellen** for implementører. Til copy-paste-installation brug [Hurtigstart](/docs/cookie-banner/quickstart).
+Læs dette, når snippet’et fra [Hurtigstart](/docs/cookie-banner/quickstart) er på plads. Det forklarer **hvad der sker i browseren**, så GTM og leverandørtags bliver gennemskuelige.
 
-## Hvad kører først
+## 1. Hvad der kører ved sidevisning (rækkefølge)
 
-1. **`window.INTA`** — konfigurationsobjekt (policy-URL, domæne, firma, valgfrit `gtagId`, styling osv.).
-2. **`uc.js`** — CMP-loader fra `consents.cdn.intastellarsolutions.com`.
+Hvert besøg følger grovt denne sekvens:
 
-Begge bør ligge **tidligt i `<head>`**, før analytics, annoncer, pixels eller andre ikke-væsentlige tredjeparter. Kører disse tags først, kan du få **præ-samtykke-hits** eller cookies, der er svære at retfærdiggøre under GDPR-lignende regler.
+1. **HTML parses.** Tidligt `<head>`-indhold kører i rækkefølge.
+2. **`window.INTA` kører**—kun konfiguration (policy-URL, domæne, firma, valgfrit `gtagId`, UI-indstillinger). Indlæser ingen tredjepartssporing.
+3. **`uc.js` indlæses**—CMP-bootstrap fra `consents.cdn.intastellarsolutions.com`. Bør køre **før** analyse, annoncer eller pixels, der kræver samtykke.
+4. **Resten af `<head>` og body**—GTM, `gtag`, Meta, embeds osv.
 
-Se [Script-livscyklus](/docs/cookie-banner/javascript/script-lifecycle) for praktisk rækkefølge.
+Kører trin 3 **efter** GA4 eller en pixel, kan cookies eller hits opstå **før** brugerens valg—svært at retfærdiggøre under GDPR-lignende regler og forvirrende i rapporter. Derfor kræver [Hurtigstart](/docs/cookie-banner/quickstart) **toppen af `<head>`**.
 
-## Blokkeringsmodel (simpelt sprog)
+## 2. Sådan fungerer „blokering“ i praksis
 
-Intastellar Consents er bygget så **ikke-væsentlig sporing ikke opfører sig som ved fuldt samtykke**, før besøgende vælger.
+„Blokering“ betyder her: **Ikke-nødvendig sporing må ikke opføre sig, som om besøgenden allerede har givet fuldt samtykke**, før de har interageret med banneret.
 
-- **Før valg:** marketing-/analytics-tags bør forblive **begrænsede** eller **ikke** affyre som ved fuldt samtykke—afhængigt af hvordan du har koblet GTM, `gtag`, Meta osv.
-- **Efter valg:** CMP’en anvender besøgendes beslutning. Tags med **samtykke-API’er** (f.eks. Google **Consent Mode v2**) kan modtage **opdaterede signaler**, så adfærden matcher **accept**, **afvisning** eller **granulære** valg.
+Det opstår **sammen** gennem:
 
-Præcis adfærd er altid en **kombination** af:
+| Del | Rolle |
+| --- | --- |
+| **CMP** | Viser UI, gemmer valg, anvender dokumenterede signaler på understøttede stacks. |
+| **Indlæsningsrækkefølge** | For sent eller forkert rækkefølge gør CMP’en virkningsløs—se [Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle). |
+| **GTM-triggers og tag-samtykke** | Tags må ikke nøgent affyre på „All Pages“ før samtykke, medmindre jeres retsmodel udtrykkeligt tillader det. |
+| **Leverandør-API’er** | Google **Consent Mode v2**, Meta-samtykkeparametre osv.—hver leverandør definerer adfærden. |
 
-- CMP’en,
-- din **tag manager / triggers** og
-- hver **leverandørs** samtykkeintegration.
+**Hardkodede** `<script src="https://…">`-tags i HTML bliver **ikke** automatisk omskrevet. I skal flytte dem **under** CMP eller **låse** dem (GTM, dynamisk efter samtykke).
 
-Dokumentationen giver **meningsfulde mønstre** (f.eks. GTM på **Consent Initialization**), så de tre stemmer overens.
+## 3. Før besøgenden vælger
 
-## Google Consent Mode
+Indtil et valg er gemt (eller jeres setups defaults gælder):
 
-Når du sætter `settings.gtagId` og bruger Google-tags, kan Intastellar stemme overens med **Consent Mode v2** (herunder Advanced Mode hvor relevant). Det lader Google-tags justere indsamling eller **ping** efter samtykke i stedet for stille at opføre sig fuldt accepteret.
+- Marketing-/analyse-tags bør forblive **begrænset** eller **ikke** affyre som ved fulde annonce-/analyse-cookies—**afhængigt af GTM og leverandørkonfiguration**.
+- Google-tags kan med Consent Mode, `gtagId` og passende defaults arbejde **samtykkebevidst** (inkl. begrænsede pings i Advanced Mode—se [Google Consent Mode](/docs/cookie-banner/google-consent-mode)).
 
-Detaljer: [Google Consent Mode](/docs/cookie-banner/google-consent-mode).
+## 4. Efter besøgendes valg
 
-## Hvorfor måling ikke behøver at „gå i stykker“
+Når besøgenden accepterer, afviser eller vælger granulært:
 
-Efter **afvist** eller begrænset samtykke understøtter platforme som Google stadig **aggregerede eller modellerede** indsigter (efter deres politikker)—så dashboards går ikke nødvendigvis til nul. Det er **ikke** det samme som fuld personlig sporing.
+1. CMP’en **gemmer** beslutningen (med forbehold for cookie-/lagerregler).
+2. **Integrerede leverandører** modtager **opdaterede samtykkesignaler**, hvor konfigureret (fx Google Consent Mode med sat `gtagId` og korrekt wired tags).
+3. **GTM** bør kun affyre afhængige tags, når triggers matcher den nye tilstand (brugerdefinerede begivenheder, samtykkechecks osv.).
 
-Efter **accept** kan tags køre i **normale** målingstilstande igen, så længe din container affyrer dem **efter** at samtykketilstand er kendt.
+**GTM / `dataLayer`:** Ved **ændring** af samtykke pusher banneret **`cookie_consent_update`** til `dataLayer`. I GTM bruger I en **Custom Event**-trigger med dette navn, så tags reagerer ved accept/afvisning/granulært—se [Begivenheder og API](/docs/cookie-banner/javascript/events-and-api). Der findes fortsat ingen dokumenteret global `window.IntastellarConsents.*`; tjek **Data Layer**-visningen i GTM Preview for den aktuelle payload-form.
 
-Vi påstår ikke „sporing går aldrig i stykker“: vi dokumenterer **indlæsningsrækkefølge + Consent Mode + triggers**, så adfærden bliver **forudsigelig**.
+## 5. Sådan modtager GTM og GA signaler
 
-## Hvad CMP’en ikke gør
+- **GTM:** Anbefalet mønster: **Custom HTML**-tag med samme `window.INTA` + `uc.js`-snippet, udløst ved **Consent Initialization – All pages**, **før** samtykkeafhængige tags. Se [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+- **GA4 / Google Ads:** Med `settings.gtagId` og Consent Mode-bevidste tag-indstillinger tilpasser Google-tags sig samtykket i stedet for stille at være „fuldt til“.
+- **Meta Pixel:** Samtykke via **Metas** muligheder og **jeres** trigger-timing—se [Meta Pixel](/docs/cookie-banner/meta-pixel).
 
-- Den erstatter ikke din **privatlivspolitik**, **leverandøroplysninger** eller **juridisk** vurdering.
-- Den retter ikke automatisk **hardkodede** tredjepartsscripts, der ignorerer samtykke—du skal stadig **spærre** dem i kode eller GTM.
+## 6. Hvorfor måling ikke behøver at „gå i stykker“
+
+Efter **afvisning** eller begrænset samtykke kan platforme som Google stadig vise **aggregerede eller modellerede** nøgletal (efter **deres** retningslinjer). Det er **ikke** det samme som ubegrænset personhenførbar sporing.
+
+Efter **accept** kan fuld måling køre igen, **hvis** jeres container affyrer tags **efter** kendt samtykke.
+
+Vi lover ikke „nul effekt på analytics“—vi dokumenterer **rækkefølge + Consent Mode + triggers**, så resultater bliver **forklarlige** og **verificerbare**.
+
+## 7. Hvad CMP’en ikke gør
+
+- Erstatter ikke **privatlivspolitik**, **leverandørliste** eller **juridisk** godkendelse.
+- Retter ikke tags, der står **over** CMP’en eller ignorerer samtykke-API’er.
+- Garanterer ikke overholdelse uden **jeres** korrekte konfiguration.
 
 ## Relateret
 
-- [Hurtigstart](/docs/cookie-banner/quickstart)
-- [Integrationsoversigt](/docs/cookie-banner/integrations-overview)
+- [Kernebegreber](/docs/cookie-banner/core-concepts)—kategorier, tilstande, ansvar.
 - [Fejlfinding](/docs/cookie-banner/debugging)
+- [Integrations overview](/docs/cookie-banner/integrations-overview)
 
-[← Dokumentationsforside](/docs/cookie-banner)
+[← Dokumentationsstart](/docs/cookie-banner)

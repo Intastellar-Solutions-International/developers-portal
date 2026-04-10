@@ -1,13 +1,15 @@
 ---
 title: Hoe het werkt
-description: Laadvolgorde, blokkeringsmodel, toestemmingssignalen en waarom meting na keuzes bruikbaar kan blijven.
+description: Paginalaadvolgorde, blokkering en toestemmingssignalen met GTM, GA4 en Meta—zonder marketingtaal.
 sidebar_label: Hoe het werkt
 order: 2
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Snelstart
     href: /docs/cookie-banner/quickstart
-  - title: Scriptlevenscyclus
+  - title: Kernconcepten
+    href: /docs/cookie-banner/core-concepts
+  - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: Google Consent Mode
     href: /docs/cookie-banner/google-consent-mode
@@ -15,55 +17,75 @@ related:
 
 # Hoe het werkt
 
-Deze pagina is het **denkmodel** voor implementateurs. Voor copy-paste-installatie gebruikt u [Snelstart](/docs/cookie-banner/quickstart).
+Lees dit als het fragment uit [Snelstart](/docs/cookie-banner/quickstart) staat. Het legt uit **wat er in de browser gebeurt**, zodat GTM en leverancierstags begrijpelijk zijn.
 
-## Wat eerst draait
+## 1. Wat er bij een paginaweergave draait (volgorde)
 
-1. **`window.INTA`** — configuratieobject (policy-URL, domein, bedrijf, optioneel `gtagId`, styling, enz.).
-2. **`uc.js`** — CMP-loader van `consents.cdn.intastellarsolutions.com`.
+Elk bezoek volgt grofweg deze volgorde:
 
-Beide horen **vroeg in `<head>`**, vóór analytics, ads, pixels of andere niet-essentiële derden. Draaien die tags eerst, kunt u **pre-consent hits** of cookies krijgen die onder GDPR-achtige regels moeilijk te verantwoorden zijn.
+1. **HTML wordt geparsed.** Vroege `<head>`-inhoud draait in volgorde.
+2. **`window.INTA` draait**—alleen configuratie (policy-URL, domein, bedrijf, optioneel `gtagId`, UI-opties). Laadt geen tracking van derden.
+3. **`uc.js` laadt**—CMP-bootstrap vanaf `consents.cdn.intastellarsolutions.com`. Moet **vóór** analyse, ads of pixels draaien die toestemming veronderstellen.
+4. **Rest van `<head>` en body**—GTM, `gtag`, Meta, embeds, enz.
 
-Zie [Scriptlevenscyclus](/docs/cookie-banner/javascript/script-lifecycle) voor praktische volgorde.
+Als stap 3 **na** GA4 of een pixel komt, kunnen cookies of hits **vóór** de keuze van de gebruiker ontstaan—moeilijk te verantwoorden onder AVG-achtige regels en verwarrend in rapportages. Daarom eist [Snelstart](/docs/cookie-banner/quickstart) de **bovenkant van `<head>`**.
 
-## Blokkeringsmodel (eenvoudig)
+## 2. Hoe „blokkering“ echt werkt
 
-Intastellar Consents is zo gebouwd dat **niet-essentiële tracking zich niet gedraagt alsof er is ingestemd** voordat de bezoeker kiest.
+„Blokkering“ betekent hier: **niet-essentiële tracking mag zich niet gedragen alsof de bezoeker al volledig heeft toegestemd** voordat hij met de banner interacteert.
 
-- **Vóór de keuze:** marketing-/analytics-tags moeten **beperkt** blijven of **niet** afvuren alsof er volledig is ingestemd—afhankelijk van hoe u GTM, `gtag`, Meta, enz. hebt aangesloten.
-- **Na de keuze:** past de CMP de beslissing van de bezoeker toe. Tags met **toestemmings-API’s** (bijv. Google **Consent Mode v2**) kunnen **bijgewerkte signalen** krijgen zodat gedrag past bij **accepteren**, **weigeren** of **granulaire** keuzes.
+Dat ontstaat **samen** door:
 
-Exact gedrag is altijd een **combinatie** van:
+| Onderdeel | Rol |
+| --- | --- |
+| **CMP** | Toont UI, slaat keuze op, past gedocumenteerde signalen toe op ondersteunde stacks. |
+| **Laadvolgorde** | Te laat of verkeerde volgorde maakt de CMP ineffectief—zie [Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle). |
+| **GTM-triggers en tag-toestemming** | Tags mogen niet naakt op „All Pages“ vuren vóór toestemming, tenzij uw juridische model dat expliciet toestaat. |
+| **Leveranciers-API’s** | Google **Consent Mode v2**, Meta-toestemmingsparameters, enz.—elke leverancier definieert het gedrag. |
 
-- de CMP,
-- uw **tagmanager / triggers** en
-- de **toestemmingsintegratie** van elke leverancier.
+**Hardcoded** `<script src="https://…">`-tags in HTML worden **niet** automatisch herschreven. U moet ze **onder** de CMP plaatsen of **vergrendelen** (GTM, dynamisch na toestemming).
 
-De documentatie geeft **duidelijke patronen** (bijv. GTM op **Consent Initialization**) zodat de drie op elkaar aansluiten.
+## 3. Voordat de bezoeker kiest
 
-## Google Consent Mode
+Tot een keuze is opgeslagen (of de defaults van uw setup gelden):
 
-Als u `settings.gtagId` zet en Google-tags gebruikt, kan Intastellar aansluiten op **Consent Mode v2** (inclusief Advanced Mode waar van toepassing). Google-tags kunnen dan dataverzameling of **pings** aanpassen aan toestemming in plaats van stil volledig „open“ te draaien.
+- Marketing-/analysetags moeten **beperkt** blijven of zich **niet** gedragen alsof er volledige analytics-/adcookies zijn—**afhankelijk van GTM en leveranciersconfiguratie**.
+- Google-tags kunnen met Consent Mode, `gtagId` en passende defaults **toestemmingsbewust** werken (inclusief beperkte pings in Advanced Mode—zie [Google Consent Mode](/docs/cookie-banner/google-consent-mode)).
 
-Details: [Google Consent Mode](/docs/cookie-banner/google-consent-mode).
+## 4. Na de keuze van de bezoeker
 
-## Waarom meting niet „kapot“ hoeft te gaan
+Wanneer de bezoeker accepteert, weigert of granulaire keuzes maakt:
 
-Na **geweigerde** of beperkte toestemming ondersteunen platforms zoals Google nog steeds **geaggregeerde of gemodelleerde** inzichten (volgens hun beleid)—dashboards hoeven dus niet per se naar nul te gaan. Dat is **niet** hetzelfde als volledige persoonsgebonden tracking.
+1. De CMP **slaat** de beslissing op (voorbehouden voor cookie-/opslagregels).
+2. **Geïntegreerde leveranciers** ontvangen **bijgewerkte toestemmingssignalen** waar geconfigureerd (bijv. Google Consent Mode met `gtagId` en correct aangesloten tags).
+3. **GTM** mag afhankelijke tags alleen vuren als triggers bij de nieuwe status passen (aangepaste gebeurtenissen, toestemmingschecks, enz.).
 
-Na **accepteren** kunnen tags weer in **normale** meetmodi draaien, zolang uw container ze **na** bekende toestemmingsstatus afvuurt.
+**GTM / `dataLayer`:** Bij **wijziging** van toestemming pusht de banner **`cookie_consent_update`** naar `dataLayer`. Gebruik in GTM een **Custom Event**-trigger met deze naam zodat tags reageren bij accepteren/weigeren/granulair—zie [Gebeurtenissen en API](/docs/cookie-banner/javascript/events-and-api). Er is nog steeds geen gedocumenteerde globale `window.IntastellarConsents.*`; bekijk **Data Layer** in GTM Preview voor de actuele payload.
 
-We beweren niet dat „tracking nooit breekt“: we documenteren **laadvolgorde + Consent Mode + triggers** zodat gedrag **voorspelbaar** wordt.
+## 5. Hoe GTM en GA signalen krijgen
 
-## Wat de CMP niet doet
+- **GTM:** Aanbevolen patroon: **Custom HTML**-tag met hetzelfde `window.INTA` + `uc.js`-fragment, getriggerd op **Consent Initialization – All pages**, **vóór** toestemmingsafhankelijke tags. Zie [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+- **GA4 / Google Ads:** Met `settings.gtagId` en Consent Mode-bewuste taginstellingen stemmen Google-tags af op toestemming in plaats van stil „volledig aan“ te zijn.
+- **Meta Pixel:** Toestemming via **Meta’s** opties en **uw** trigger-timing—zie [Meta Pixel](/docs/cookie-banner/meta-pixel).
 
-- Ze vervangt uw **privacybeleid**, **leveranciersvermeldingen** of **juridische** beoordeling niet.
-- Ze lost niet automatisch **hardcoded** scripts van derden op die toestemming negeren—die moet u nog steeds in code of GTM **blokkeren**.
+## 6. Waarom meting niet „kapot“ hoeft te gaan
+
+Na **weigering** of beperkte toestemming kunnen platforms zoals Google nog steeds **geaggregeerde of gemodelleerde** cijfers tonen (volgens **hun** richtlijnen). Dat is **niet** hetzelfde als onbeperkte persoonsgebonden tracking.
+
+Na **acceptatie** kan volledige meting weer draaien **als** uw container tags **na** bekende toestemming vuurt.
+
+We beloven geen „nul effect op analytics“—we documenteren **volgorde + Consent Mode + triggers** zodat resultaten **uitlegbaar** en **controleerbaar** zijn.
+
+## 7. Wat de CMP niet doet
+
+- Vervangt geen **privacybeleid**, **leverancierslijst** of **juridische** goedkeuring.
+- Herstelt geen tags die **boven** de CMP staan of toestemmings-API’s negeren.
+- Garandeert geen naleving zonder **uw** juiste configuratie.
 
 ## Zie ook
 
-- [Snelstart](/docs/cookie-banner/quickstart)
-- [Integraties overzicht](/docs/cookie-banner/integrations-overview)
+- [Kernconcepten](/docs/cookie-banner/core-concepts)—categorieën, statussen, verantwoordelijkheid.
 - [Probleemoplossing](/docs/cookie-banner/debugging)
+- [Integrations overview](/docs/cookie-banner/integrations-overview)
 
-[← Documentatie-start](/docs/cookie-banner)
+[← Documentatiehome](/docs/cookie-banner)

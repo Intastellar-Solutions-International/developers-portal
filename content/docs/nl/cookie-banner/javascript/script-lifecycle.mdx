@@ -1,9 +1,9 @@
 ---
-title: Scriptlevenscyclus
+title: Script lifecycle
 description: Laadvolgorde, blokkering en meetverwachtingen voor uc.js.
-sidebar_label: Scriptlevenscyclus
+sidebar_label: Script lifecycle
 order: 18
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Snelstart
     href: /docs/cookie-banner/quickstart
@@ -13,28 +13,28 @@ related:
     href: /docs/cookie-banner/google-tag-manager
 ---
 
-# Scriptlevenscyclus (JavaScript)
+# Script lifecycle (JavaScript)
 
-Voor een minimale installatie volgt u eerst [Snelstart](/docs/cookie-banner/quickstart).
+Volg eerst [Snelstart](/docs/cookie-banner/quickstart) voor een minimale installatie.
 
 ## Laadvolgorde
 
-1. Definieer **`window.INTA`** in een inline-`<script>` in `<head>`.
+1. Definieer **`window.INTA`** in een inline `<script>` in `<head>`.
 2. Laad **`https://consents.cdn.intastellarsolutions.com/uc.js`** direct daarna (zie [Snelstart](/docs/cookie-banner/quickstart) of [Aan de slag](/docs/cookie-banner/javascript/getting-started)).
 
-Beide **vroeg in `<head>`** plaatsen verkleint de kans dat analytics- of marketing-tags vóór CMP-initialisatie draaien.
+Beide **vroeg in `<head>`** plaatsen verkleint de kans dat analyse- of marketingtags vóór CMP-initialisatie draaien.
 
 ## Blokkering en toestemming
 
-Niet-essentiële trackers zijn **geblokkeerd tot de bezoeker kiest** (accepteren / weigeren / granulair, afhankelijk van productgedrag). Na handhaving:
+Niet-essentiële trackers zijn **geblokkeerd tot de bezoeker een keuze maakt** (accepteren / weigeren / granulair, afhankelijk van het product). Na handhaving:
 
-- **Analytics- en advertentie-KPI’s kunnen dalen** vergeleken met een onbeperkte setup. Dat is **verwacht** wanneer toestemming eerlijk wordt toegepast.
-- Tags die Consent Mode respecteren (of uw GTM-triggers) moeten na de keuze nog steeds **juiste toestemmingssignalen** ontvangen zodat rapportage compliant blijft.
+- **Analyse- en advertentiemetrics kunnen dalen** vergeleken met een onbeperkte setup. Dat is **verwacht** wanneer toestemming eerlijk wordt toegepast.
+- Tags die Consent Mode respecteren (of uw GTM-triggers) moeten na de keuze nog steeds **juiste toestemmingssignalen** ontvangen zodat rapportage conform blijft.
 
 ## Toestemmingsopslag en bewijs
 
-Op **betaalde / platform**-niveaus kunnen toestemmingsbeslissingen worden **gelogd** voor audit en rapportage — zie [plannen en prijzen](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) op de openbare site. De gratis banner handhaaft UI en blokkering; bewaring en export hangen van uw plan af.
+Op **betaalde / platform**-niveaus kunnen toestemmingsbeslissingen worden **gelogd** voor audit en rapportage—zie [plannen en prijzen](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) op de openbare site. De gratis banner handhaaft nog steeds UI en blokkering; retentie en export hangen van uw plan af.
 
 ## Openbare JavaScript-API
 
-Heeft u **benoemde events, callbacks of een programmatische API** nodig (bijv. `dataLayer`-integratiedetails), bevestig dan de actuele **JavaScript API**-referentie voor uw deployment. Deze portal documenteert **configuratie** (`window.INTA`) en **integratiepatronen**; low-level eventnamen kunnen in een aparte ontwikkelaarsreferentie staan.
+Voor **GTM** pusht de banner bij wijziging van toestemming **`cookie_consent_update`** naar **`dataLayer`**—zie [Gebeurtenissen en API](/docs/cookie-banner/javascript/events-and-api). Voor andere benoemde hooks of een volledig programmatisch API-oppervlak: bevestig de nieuwste referentie voor uw deployment. Deze pagina documenteert **configuratie** (`window.INTA`) en **laadvolgorde**; er is hier geen gedocumenteerde globale `window.IntastellarConsents.*`.

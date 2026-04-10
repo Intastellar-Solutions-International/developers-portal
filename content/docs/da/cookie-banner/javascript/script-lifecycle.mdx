@@ -1,9 +1,9 @@
 ---
-title: Script-livscyklus
-description: Indlæsningsrækkefølge, blokkeringsadfærd og målingsforventninger for uc.js.
-sidebar_label: Script-livscyklus
+title: Script lifecycle
+description: Indlæsningsrækkefølge, blokering og målingsforventninger for uc.js.
+sidebar_label: Script lifecycle
 order: 18
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Hurtigstart
     href: /docs/cookie-banner/quickstart
@@ -13,28 +13,28 @@ related:
     href: /docs/cookie-banner/google-tag-manager
 ---
 
-# Script-livscyklus (JavaScript)
+# Script lifecycle (JavaScript)
 
-Til minimal installation følg først [Hurtigstart](/docs/cookie-banner/quickstart).
+Følg [Hurtigstart](/docs/cookie-banner/quickstart) først til en minimal installation.
 
 ## Indlæsningsrækkefølge
 
-1. Definér **`window.INTA`** i et inline-`<script>` i `<head>`.
-2. Indlæs **`https://consents.cdn.intastellarsolutions.com/uc.js`** straks efter (se [Hurtigstart](/docs/cookie-banner/quickstart) eller [Kom i gang](/docs/cookie-banner/javascript/getting-started)).
+1. Definér **`window.INTA`** i et inline `<script>` i `<head>`.
+2. Indlæs **`https://consents.cdn.intastellarsolutions.com/uc.js`** umiddelbart efter (se [Hurtigstart](/docs/cookie-banner/quickstart) eller [Kom i gang](/docs/cookie-banner/javascript/getting-started)).
 
-At placere begge **tidligt i `<head>`** reducerer risikoen for at analytics- eller marketing-tags kører før CMP initialiseres.
+At placere begge **tidligt i `<head>`** mindsker risikoen for, at analyse- eller marketing-tags kører før CMP initialiseres.
 
 ## Blokering og samtykke
 
-Ikke-væsentlige trackere er **spærret indtil besøgende træffer valg** (accept / afvisning / granulært, efter produktadfærd). Efter håndhævelse:
+Ikke-væsentlige trackere er **blokeret, indtil besøgenden træffer et valg** (accept / afvisning / granulært, efter produktadfærd). Efter håndhævelse:
 
-- **Analytics- og annonce-KPI’er kan falde** sammenlignet med et ubegrænset setup. Det er **forventet**, når samtykke anvendes ærligt.
-- Tags der respekterer Consent Mode (eller jeres GTM-triggers) bør stadig modtage **korrekte samtykkesignaler** efter valg, så rapportering forbliver compliant.
+- **Analyse- og annoncemetrics kan falde** sammenlignet med et ubegrænset setup. Det er **forventet**, når samtykke anvendes ærligt.
+- Tags, der respekterer Consent Mode (eller jeres GTM-triggers), bør stadig modtage **korrekte samtykkesignaler** efter valg, så rapportering forbliver i overensstemmelse.
 
-## Samtykkelagring og dokumentation
+## Samtykkelagring og bevis
 
-På **betalte / platform**-niveauer kan samtykkebeslutninger **logges** til audit og rapportering — se [planer og priser](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) på den offentlige side. Det gratis banner håndhæver UI og blokering; opbevaring og eksport afhænger af jeres plan.
+På **betalte / platform**-niveauer kan samtykkebeslutninger **logges** til revision og rapportering—se [planer og priser](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) på den offentlige side. Det gratis banner håndhæver stadig UI og blokering; opbevaring og eksport afhænger af jeres plan.
 
 ## Offentlig JavaScript-API
 
-Har I brug for **navngivne events, callbacks eller en programmatisk API** (f.eks. `dataLayer`-integrationsdetaljer), bekræft den nyeste **JavaScript API**-reference for jeres deployment. Denne portal dokumenterer **konfiguration** (`window.INTA`) og **integrationsmønstre**; lavniveau-eventnavne kan ligge i en separat udviklerreference.
+Til **GTM** pusher banneret **`cookie_consent_update`** til **`dataLayer`**, når samtykke ændres—se [Begivenheder og API](/docs/cookie-banner/javascript/events-and-api). Til andre navngivne hooks eller en fuld programmatisk API-overflade: bekræft den nyeste reference for jeres deployment. Denne side dokumenterer **konfiguration** (`window.INTA`) og **indlæsningsrækkefølge**; der er ingen dokumenteret global `window.IntastellarConsents.*` her.

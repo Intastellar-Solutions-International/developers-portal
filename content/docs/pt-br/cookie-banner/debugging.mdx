@@ -1,64 +1,82 @@
 ---
 title: Solução de problemas
-description: Depuração orientada a sintomas—banner ausente, tags cedo demais, corridas no GTM, consentimento que não persiste.
+description: Depuração orientada a sintomas—banner ausente, tags cedo demais, condições de corrida no GTM, consentimento que não persiste.
 sidebar_label: Solução de problemas
-order: 3
-lastUpdated: "2026-04-08"
+order: 4
+lastUpdated: "2026-04-09"
 related:
   - title: Início rápido
     href: /docs/cookie-banner/quickstart
   - title: Como funciona
     href: /docs/cookie-banner/how-it-works
+  - title: Conceitos fundamentais
+    href: /docs/cookie-banner/core-concepts
   - title: Google Tag Manager
     href: /docs/cookie-banner/google-tag-manager
 ---
 
 # Solução de problemas
 
-Verifique em passos pequenos antes de alterar configurações não relacionadas.
+Trabalhe **sintoma → verificar → corrigir**. Mantenha GTM Preview e DevTools abertos; uma alteração por vez.
+
+## Verificações rápidas (qualquer problema)
+
+1. **Código-fonte da página** (não só o inspetor): `uc.js` **uma vez**, perto do início de `<head>`.
+2. **GTM Preview** (se usar GTM): tag CMP dispara em **Consent Initialization** antes das tags dependentes.
+3. **Aplicação**: após escolha de consentimento, armazenamento / cookies plausíveis para `rootDomain`.
 
 ## O banner não aparece
 
 | Causa provável | Como verificar | Correção |
 | --- | --- | --- |
-| `policy_link` inválida | Abrir a URL em nova aba; HTTPS e código de status | Usar página de política ativa; corrigir redirecionamentos / 404 |
-| Snippet muito abaixo ou só no body | Ver código-fonte; buscar `uc.js` | Mover o bloco para o início do `<head>` |
-| SPA / framework monta tarde | Comparar HTML do servidor vs DOM renderizado | Carregar a CMP do **layout raiz** ou shell que envolve cada rota |
-| `window.INTA` duplicado ou conflitante | Buscar `window.INTA` no repositório / HTML | Manter **uma** definição antes de `uc.js` |
+| `policy_link` inválido | URL em nova aba; HTTPS e código de status | Página de política publicada; corrigir redirecionamentos / 404 |
+| Snippet muito abaixo ou só no body | Fonte; buscar `uc.js` | Mover bloco para o início de `<head>` |
+| SPA / framework carrega tarde | HTML do servidor vs. DOM | CMP a partir do **layout raiz** ou shell |
+| `window.INTA` duplicado ou contraditório | Busca no repositório / HTML | **Uma** definição antes de `uc.js` |
 
-## Rastreamento „não dispara“ após o consentimento
+## O rastreamento „não dispara“ após consentimento
 
 | Causa provável | Como verificar | Correção |
 | --- | --- | --- |
-| Tag sem gatilho pós-consentimento | Pré-visualização GTM: tag não dispara após aceitar | Adicionar gatilhos conscientes de consentimento ou ajustes do Consent Mode |
-| `gtagId` ausente para GA4 | Comparar com [Início rápido](/docs/cookie-banner/quickstart) | Definir `gtagId` ou conectar o GA conforme seu padrão |
-| Defaults do Consent Mode muito restritivos | GA / Tag Assistant | Ajustar defaults **deliberadamente** e documentar |
+| Tag sem trigger após consentimento | GTM Preview: após aceitar, nenhuma tag na linha do tempo | Trigger **Custom Event** em **`cookie_consent_update`** ([Eventos e API](/docs/cookie-banner/javascript/events-and-api)) e/ou configurações conscientes de consentimento nas tags |
+| Tag bloqueada pelo „consent“ do GTM | Config da tag → consentimento; Preview mostra „blocked“ | Ajustar consentimento da tag ao padrão jurídico ou disparar só com finalidade permitida |
+| Falta `gtagId` para GA4 + caminho CMP | Comparar com [Início rápido](/docs/cookie-banner/quickstart) | Definir `settings.gtagId` **ou** ligar GA de outra forma conforme documentado |
+| Defaults do Consent Mode muito restritivos | GA DebugView / Tag Assistant | Ajustar defaults **deliberadamente**; veja [Google Consent Mode](/docs/cookie-banner/google-consent-mode) |
+| Bloqueador de anúncios / privacidade do navegador | Perfil limpo ou extensões desativadas | Distinguir problema de produto e bloqueio no cliente |
 
 ## Tags disparam antes do consentimento (grave)
 
 | Causa provável | Como verificar | Correção |
 | --- | --- | --- |
-| GA/Ads em „All Pages“ antes da CMP | Linha do tempo da pré-visualização GTM | Disparar CMP em **Consent Initialization**; bloquear tags dependentes |
-| `gtag.js` fixo no HTML | Buscar `googletagmanager.com/gtag` | Remover carregadores duplicados ou colocar **depois** da CMP |
-| Incorporação de terceiros no `<head>` | Aba Rede | Adiar até o propósito correspondente ser permitido |
+| GA/Ads em „All Pages“ antes da CMP | Linha do tempo do GTM Preview | CMP em **Consent Initialization**; bloquear tags dependentes |
+| `gtag.js` hardcoded no HTML | Buscar `googletagmanager.com/gtag` | Remover loaders duplicados ou colocar **depois** da CMP |
+| Embed de terceiros no `<head>` | Aba Rede | Mover para o uso adequado |
 
-## Gatilhos GTM „não funcionam“
+## Triggers GTM „não funcionam“
 
 | Causa provável | Como verificar | Correção |
 | --- | --- | --- |
-| CMP não no Consent Init | Tipo de gatilho no GTM | Usar **Consent Initialization – All pages** (ou equivalente) |
-| Corrida com Page View | Ordem dos eventos na Pré-visualização | Garantir que a CMP dispare **antes** das tags de analytics |
-| Contêiner errado | ID do contêiner no site | Apontar para o contêiner GTM desejado |
+| CMP não em Consent Init | Tipo de trigger no GTM | **Consent Initialization – All pages** (ou equivalente) |
+| Corrida com Page View | Ordem no Preview | CMP **antes** das tags de análise |
+| Contêiner errado | ID do contêiner no site | Usar o contêiner GTM correto |
 
 ## A escolha de consentimento não persiste
 
 | Causa provável | Como verificar | Correção |
 | --- | --- | --- |
-| `rootDomain` incorreto | Comparar `settings.rootDomain` com o hostname | Alinhar ao modelo de domínio de cookies |
+| `rootDomain` incorreto | `settings.rootDomain` vs. hostname | Ajustar ao modelo de domínio de cookies |
 | Duas cópias de `uc.js` | Buscar `uc.js` na fonte | Uma instalação canônica |
+
+## Consentimento não atualiza nas tags / estado „desatualizado“
+
+| Causa provável | Como verificar | Correção |
+| --- | --- | --- |
+| Tags em cache antes da escolha | Recarga completa após limpar dados do site | Testar novamente em janela privada |
+| Contêiner não publicado | Workspace GTM vs. live | Publicar versão com CMP + mudanças de triggers |
+| Ambiente errado (contêiner de staging) | ID GTM na fonte | Apontar o site para o contêiner correto |
 
 ## Ainda travado
 
-Registre: navegador, URL da página (staging ok), trecho do **código-fonte** em torno de `uc.js`, e com GTM uma **captura da Pré-visualização** ou exportação. Depois use o canal de suporte ou [FAQ](/docs/cookie-banner#faq) na página inicial da documentação.
+Reúna: navegador, URL da página (staging ok), **fonte da página** em torno de `uc.js`, captura ou export do **Preview** do GTM. Depois suporte ou [FAQ](/docs/cookie-banner#faq) na página inicial da documentação.
 
 [← Início da documentação](/docs/cookie-banner)

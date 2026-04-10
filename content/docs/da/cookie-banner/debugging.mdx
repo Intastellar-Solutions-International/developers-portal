@@ -1,64 +1,82 @@
 ---
 title: Fejlfinding
-description: Symptomførst fejlsøgning—manglende banner, tidlige tags, GTM-kapløb, samtykke der ikke holder.
+description: Symptomorienteret fejlsøgning—manglende banner, tags for tidligt, GTM-kapløb, samtykke der ikke holder.
 sidebar_label: Fejlfinding
-order: 3
-lastUpdated: "2026-04-08"
+order: 4
+lastUpdated: "2026-04-09"
 related:
   - title: Hurtigstart
     href: /docs/cookie-banner/quickstart
   - title: Sådan virker det
     href: /docs/cookie-banner/how-it-works
+  - title: Kernebegreber
+    href: /docs/cookie-banner/core-concepts
   - title: Google Tag Manager
     href: /docs/cookie-banner/google-tag-manager
 ---
 
 # Fejlfinding
 
-Verificer i små trin før du ændrer urelaterede indstillinger.
+Arbejd **symptom → tjek → ret**. Hold GTM Preview og DevTools åbne; én ændring ad gangen.
+
+## Hurtigtjek (alle problemer)
+
+1. **Sidekilde** (ikke kun elementer): `uc.js` **én gang**, tæt på starten af `<head>`.
+2. **GTM Preview** (hvis GTM): CMP-tag affyrer ved **Consent Initialization** før afhængige tags.
+3. **Applikation**: Efter samtykkevalg virker lager/cookies plausibelt for `rootDomain`.
 
 ## Banner vises ikke
 
-| Sandsynlig årsag | Sådan verificerer du | Løsning |
+| Sandsynlig årsag | Sådan tjekker I | Løsning |
 | --- | --- | --- |
-| Dårlig `policy_link` | Åbn URL i ny fane; tjek HTTPS og statuskode | Brug en live politiks side; ret omdirigeringer / 404 |
-| Snippet for lavt eller kun i body | Vis sidekilde; søg efter `uc.js` | Flyt blokken til starten af `<head>` |
-| SPA / framework monterer sent | Sammenlign server-HTML vs. renderet DOM | Indlæs CMP fra **rodlayout** eller shell der omslutter alle ruter |
-| Dobbelte eller modstridende `window.INTA` | Søg i repo / HTML efter `window.INTA` | Behold **én** definition før `uc.js` |
+| Ugyldig `policy_link` | URL i ny fane; HTTPS og statuskode | Live policy-side; ret omdirigeringer / 404 |
+| Snippet for langt nede eller kun i body | Kilde; søg efter `uc.js` | Flyt blok til starten af `<head>` |
+| SPA / framework indlæser sent | Server-HTML vs. DOM | CMP fra **rodlayout** eller shell |
+| Dobbelt eller modstridende `window.INTA` | Søg i repo / HTML | **Én** definition før `uc.js` |
 
 ## Sporing „affyrer ikke“ efter samtykke
 
-| Sandsynlig årsag | Sådan verificerer du | Løsning |
+| Sandsynlig årsag | Sådan tjekker I | Løsning |
 | --- | --- | --- |
-| Tag har ingen post-samtykke-trigger | GTM Preview: tag affyrer ikke efter accept | Tilføj samtykkebevidste triggers eller Consent Mode-indstillinger |
-| `gtagId` mangler til GA4 | Sammenlign med [Hurtigstart](/docs/cookie-banner/quickstart) | Sæt `gtagId` eller kobl GA efter dit mønster |
-| Consent Mode-defaults for strenge | GA / Tag Assistant | Juster defaults **bevidst** og dokumenter valget |
+| Tag har ingen trigger efter samtykke | GTM Preview: efter accept intet tag på tidslinjen | **Custom Event**-trigger på **`cookie_consent_update`** ([Begivenheder og API](/docs/cookie-banner/javascript/events-and-api)) og/eller samtykkebevidste tag-indstillinger |
+| Tag blokeret af GTM „consent“ | Tag-konfiguration → consent; Preview viser „blocked“ | Juster tag-consent til juridisk default eller affyr kun ved tilladt formål |
+| `gtagId` mangler til GA4 + CMP-sti | Sammenlign med [Hurtigstart](/docs/cookie-banner/quickstart) | Sæt `settings.gtagId` **eller** alternativ GA-kabling |
+| Consent Mode-defaults for strenge | GA DebugView / Tag Assistant | Juster defaults **bevidst**; se [Google Consent Mode](/docs/cookie-banner/google-consent-mode) |
+| Adblocker / browser-privacy | Rent profil eller udvidelser fra | Skeln mellem produktproblem og klientblokering |
 
 ## Tags affyrer før samtykke (alvorligt)
 
-| Sandsynlig årsag | Sådan verificerer du | Løsning |
+| Sandsynlig årsag | Sådan tjekker I | Løsning |
 | --- | --- | --- |
-| GA/Ads på „All Pages“ før CMP | GTM Preview-tidslinje | Affyr CMP på **Consent Initialization**; spær afhængige tags |
+| GA/Ads på „All Pages“ før CMP | GTM Preview-tidslinje | CMP på **Consent Initialization**; lås afhængige tags |
 | Hardkodet `gtag.js` i HTML | Søg efter `googletagmanager.com/gtag` | Fjern dobbelte loaders eller placer **efter** CMP |
-| Tredjeparts-embed i `<head>` | Network-fanen | Udskyd til det matchende formål er tilladt |
+| Tredjepartsembed i `<head>` | Netværk-fanen | Flyt til passende formål |
 
 ## GTM-triggers „virker ikke“
 
-| Sandsynlig årsag | Sådan verificerer du | Løsning |
+| Sandsynlig årsag | Sådan tjekker I | Løsning |
 | --- | --- | --- |
-| CMP ikke på Consent Init | Triggertype i GTM | Brug **Consent Initialization – All pages** (eller tilsvarende) |
-| Kapløb med Page View | Rækkefølge i Preview | Sikr CMP affyrer **før** analytics-tags |
-| Forkert container | Container-ID på sitet | Peg på den tilsigtede GTM-container |
+| CMP ikke på Consent Init | Triggertype i GTM | **Consent Initialization – All pages** (eller tilsvarende) |
+| Kapløb med Page View | Rækkefølge i Preview | CMP **før** analyse-tags |
+| Forkert container | Container-ID på sitet | Brug den rigtige GTM-container |
 
 ## Samtykkevalg holder ikke
 
-| Sandsynlig årsag | Sådan verificerer du | Løsning |
+| Sandsynlig årsag | Sådan tjekker I | Løsning |
 | --- | --- | --- |
-| Forkert `rootDomain` | Sammenlign `settings.rootDomain` med værtsnavn | Tilpas til jeres cookie-domænemodel |
+| Forkert `rootDomain` | `settings.rootDomain` mod værtsnavn | Tilpas til cookie-domænemodel |
 | To kopier af `uc.js` | Søg efter `uc.js` i kilden | Én kanonisk installation |
+
+## Samtykke opdateres ikke i tags / „forældet“ tilstand
+
+| Sandsynlig årsag | Sådan tjekker I | Løsning |
+| --- | --- | --- |
+| Tags cachet før valg | Fuld reload efter ryddet site-data | Test igen i privat vindue |
+| Container ikke udgivet | GTM-arbejdsområde vs. live | Udgiv version med CMP + trigger-ændringer |
+| Forkert miljø (staging-container) | GTM-ID i kilden | Peg site på korrekt container |
 
 ## Stadig fast
 
-Indfang: browser, side-URL (staging er fint), **vis kilde**-uddrag omkring `uc.js`, og ved GTM et **Preview**-screenshot eller eksport. Brug derefter jeres supportkanal eller [FAQ-ressourcer](/docs/cookie-banner#faq) på dokumentationsforsiden.
+Indsaml: browser, side-URL (staging er fint), **sidekilde** omkring `uc.js`, ved GTM **Preview**-screenshot eller eksport. Derefter support eller [FAQ](/docs/cookie-banner#faq) på docs-starten.
 
-[← Dokumentationsforside](/docs/cookie-banner)
+[← Dokumentationsstart](/docs/cookie-banner)

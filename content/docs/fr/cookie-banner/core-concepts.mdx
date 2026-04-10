@@ -1,0 +1,82 @@
+---
+title: Concepts clés
+description: Catégories de consentement, états, blocage et alignement de la CMP avec GTM et les balises fournisseurs.
+sidebar_label: Concepts clés
+order: 3
+lastUpdated: "2026-04-09"
+related:
+  - title: Fonctionnement
+    href: /docs/cookie-banner/how-it-works
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+  - title: Événements et API
+    href: /docs/cookie-banner/javascript/events-and-api
+  - title: Référence window.INTA
+    href: /docs/cookie-banner/javascript/inta-schema
+---
+
+# Concepts clés
+
+Utilisez cette page après le [Démarrage rapide](/docs/cookie-banner/quickstart) et [Fonctionnement](/docs/cookie-banner/how-it-works). Elle nomme les idées nécessaires pour brancher GTM, GA4 et Meta sans deviner.
+
+## Catégories de consentement (finalités)
+
+Les réglementations (ex. RGPD) portent sur **pourquoi** vous traitez des données. En pratique, les CMP regroupent les choix en **finalités** ou **catégories**—souvent libellées **nécessaire**, **analyse**, **marketing** (la formulation dépend de votre politique).
+
+| Idée | Rôle |
+| --- | --- |
+| **Nécessaire / essentiel** | Indispensable au fonctionnement du site (ex. sécurité, répartition de charge, stockage du choix de consentement). Généralement non soumis au consentement marketing. |
+| **Analyse / statistiques** | Mesure non strictement requise pour le service (souvent cookies ou stockage pour l’analyse). |
+| **Marketing / publicité** | Annonces, remarketing, pixels sociaux—souvent les exigences de consentement les plus strictes. |
+
+**Votre travail :** associer chaque script tiers ou balise GTM à **une ou plusieurs** catégories et ne les laisser s’exécuter que lorsque le choix du visiteur le permet. La CMP expose le choix ; **vous** (ou vos déclencheurs GTM) devez aligner les balises sur ces catégories.
+
+## États du consentement
+
+Grosso modo, un visiteur se trouve dans l’une de ces situations :
+
+1. **Pas encore de choix**—première visite ou stockage effacé. Le suivi non essentiel ne doit pas se comporter comme si le consentement était accordé.
+2. **Accepté** (entièrement ou pour des catégories sélectionnées)—les balises pour ces catégories peuvent s’exécuter selon votre configuration.
+3. **Refusé / minimal**—analyse et marketing restent restreints ou désactivés, selon les valeurs par défaut et le comportement du fournisseur (ex. Google Consent Mode peut encore envoyer des pings limités—voir [Google Consent Mode](/docs/cookie-banner/google-consent-mode)).
+
+Les choix **partiels / granulaires** signifient que certaines catégories sont activées et d’autres non. Vos déclencheurs GTM doivent le respecter, pas seulement « tout ou rien ».
+
+## Comment fonctionne le blocage (mécanisme)
+
+Intastellar Consents est conçu pour que **les scripts non essentiels ne s’exécutent pas comme pleinement consentis avant un choix**.
+
+Mécaniquement, c’est une **combinaison** de :
+
+- **Ordre de chargement**—`window.INTA` et `uc.js` **tôt dans `<head>`**, avant les balises qui supposent le consentement ([Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle)).
+- **Comportement de la CMP**—application de l’UI et de la préférence stockée du visiteur.
+- **Votre stack**—déclencheurs GTM, scripts inline et **API de consentement** de chaque fournisseur (Consent Mode, paramètres Meta, etc.).
+
+La CMP ne **réécrit pas magiquement** des balises `<script src="…">` arbitraires codées en dur dans votre HTML. Si une balise est collée au-dessus de la CMP ou se déclenche sur « All Pages » sans vérification de consentement, **vous** devez la déplacer ou la verrouiller.
+
+## Événements et couche de balises
+
+**Google Tag Manager :** Intastellar Consents pousse **`cookie_consent_update`** vers **`dataLayer`** lorsque le visiteur **met à jour son consentement** (accepter, refuser, changement granulaire). Dans GTM, ajoutez un déclencheur **Custom Event** avec le nom d’événement **`cookie_consent_update`** et attachez-le aux balises qui doivent réagir à ce moment—souvent **avec** les paramètres **Consent** des balises et les API fournisseurs ([Événements et API](/docs/cookie-banner/javascript/events-and-api)).
+
+Il n’existe pas de global documenté **`window.IntastellarConsents.*`** pour la production. Vérifiez les champs **payload** à côté de l’événement dans **GTM Preview** → Data Layer pour votre site ; n’assumez pas de propriétés non documentées.
+
+**Ordre de chargement :** assurez-vous que l’extrait **du conteneur GTM** (qui crée `dataLayer`) est présent **avant** `uc.js` si vous comptez sur la réception de `cookie_consent_update` par GTM—en général l’extrait CMP reste **tôt dans `<head>`** ; placez GTM selon les instructions d’installation de Google pour que `dataLayer` existe lorsque la bannière se déclenche.
+
+## Signaux vers Google, Meta, etc.
+
+Une fois configuré (ex. `gtagId` pour Google), la CMP aide à aligner **Google Consent Mode** avec le choix du visiteur. Meta et d’autres attendent **leurs** paramètres de consentement et le **timing de vos déclencheurs**—voir [Integrations overview](/docs/cookie-banner/integrations-overview) et les guides [GTM](/docs/cookie-banner/google-tag-manager), [GA4](/docs/cookie-banner/google-analytics-4) et [Meta Pixel](/docs/cookie-banner/meta-pixel).
+
+## Répartition des responsabilités (confiance, pas de promesses vides)
+
+| Couche | Responsabilité |
+| --- | --- |
+| **Intastellar Consents** | UI de consentement, application du choix utilisateur et crochets d’intégration documentés ici (ex. alignement Consent Mode si configuré). |
+| **Vous / votre organisation** | Placement correct des balises, déclencheurs GTM, politique de confidentialité, liste des fournisseurs, base juridique et chemins de code personnalisés. |
+
+Nous ne prétendons pas une « conformité RGPD complète dès l’installation »—la conformité dépend de **la façon** dont vous déployez les balises et de ce que vous dites aux utilisateurs. Nous documentons le comportement pour que vous puissiez implémenter de manière **prévisible** et auditer dans DevTools et GTM Preview.
+
+## Voir aussi
+
+- [Dépannage](/docs/cookie-banner/debugging)
+- [Google Tag Manager](/docs/cookie-banner/google-tag-manager)
+
+[← Accueil documentation](/docs/cookie-banner)

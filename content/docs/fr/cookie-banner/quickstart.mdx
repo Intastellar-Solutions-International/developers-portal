@@ -1,12 +1,14 @@
 ---
 title: Démarrage rapide
-description: Installez Intastellar Consents en quelques minutes—extrait minimal, vérification dans le navigateur, puis GTM ou balises Google.
+description: Installation par copier-coller en moins de cinq minutes—emplacement exact dans le head, vérifications et comportement attendu avant et après consentement.
 sidebar_label: Démarrage rapide
 order: 1
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
   - title: Fonctionnement
     href: /docs/cookie-banner/how-it-works
+  - title: Concepts clés
+    href: /docs/cookie-banner/core-concepts
   - title: Google Tag Manager
     href: /docs/cookie-banner/google-tag-manager
   - title: Dépannage
@@ -15,17 +17,19 @@ related:
 
 # Démarrage rapide
 
-**Objectif :** moins de 5 minutes.  
-**Résultat :** l’interface de consentement s’affiche, les balises non essentielles restent bloquées jusqu’au choix du visiteur, et les balises Google peuvent recevoir les mises à jour du mode consentement si vous les configurez.
+**Durée :** environ 5 minutes.  
+**Vous allez :** insérer deux blocs dans `<head>`, recharger et vérifier la bannière, le blocage et (avec les balises Google) le Consent Mode.
 
-## Avant de commencer
+Aucune connaissance préalable des CMP requise. En cas de problème : [Dépannage](/docs/cookie-banner/debugging).
 
-- Vous pouvez modifier le `<head>` HTML ou la mise en page racine (thème WordPress, `theme.liquid` Shopify, etc.).
-- Vous avez besoin d’une **URL de politique de confidentialité valide** (HTTPS, pas de 404). Les URL manquantes ou invalides sont la cause la plus fréquente d’absence de bandeau.
+## Prérequis
 
-## Étape 1 — Deux balises dans `<head>` (l’ordre compte)
+- Accès au `<head>` HTML du site (ou layout racine : thème WordPress, `theme.liquid` Shopify, layout Next.js, etc.).
+- Une **URL de politique de confidentialité en ligne** en **HTTPS** (200 OK, pas de placeholder). Avec une URL incorrecte, la bannière **n’apparaît souvent pas**—c’est voulu.
 
-Collez **juste après** la balise d’ouverture `<head>` (le plus tôt possible) :
+## Étape 1 — Insérer en haut de `<head>`
+
+Collez **juste après** `<head>` (avant les feuilles de style, GA, l’extrait du conteneur GTM, pixels ou autres scripts tiers) :
 
 ```html
 <script>
@@ -40,20 +44,20 @@ Collez **juste après** la balise d’ouverture `<head>` (le plus tôt possible)
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
+| Champ | Valeur |
+| --- | --- |
+| `policy_link` | URL HTTPS complète de votre politique de confidentialité |
+| `settings.rootDomain` | Domaine enregistrable du site, **sans** `https://` ni chemin |
+| `settings.company` | Nom affiché dans l’UI de consentement |
+
 **Règles**
 
-1. `window.INTA` doit s’exécuter **avant** `uc.js`.
-2. Ne chargez **pas** les scripts analytics ou marketing **au-dessus** de ce bloc sauf intention explicite (par défaut : ne pas le faire).
+1. Le script inline `window.INTA` doit s’exécuter **avant** la balise script `uc.js`.
+2. Ne placez pas les pixels d’analyse, publicité ou réseaux sociaux **au-dessus** de ce bloc, sauf intention délibérée (par défaut : **non**).
 
-Remplacez :
+## Étape 2 — Facultatif : Google Analytics / Ads (`gtagId`)
 
-- `policy_link` — votre vraie politique de confidentialité.
-- `settings.rootDomain` — le domaine enregistrable du site (sans `https://`).
-- `settings.company` — nom affiché dans l’interface.
-
-## Étape 2 — Google Analytics / Ads uniquement : ajoutez `gtagId`
-
-Si vous utilisez **GA4 ou Google Ads** et souhaitez qu’Intastellar coordonne le **mode consentement Google** avec votre ID de mesure, étendez `settings` :
+Si vous utilisez **GA4 ou Google Ads** et souhaitez que la CMP aligne **Google Consent Mode v2** sur votre ID de mesure, ajoutez `gtagId` :
 
 ```html
 <script>
@@ -69,35 +73,33 @@ Si vous utilisez **GA4 ou Google Ads** et souhaitez qu’Intastellar coordonne l
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
-Si vous **n’utilisez pas encore** les balises Google, omettez `gtagId` jusqu’à ce que vous les ajoutiez.
+Omettez `gtagId` tant qu’il n’y a pas de balises Google. Configuration complète : [`window.INTA` (schéma JSON)](/docs/cookie-banner/javascript/inta-schema).
 
-Liste complète des champs : [`window.INTA` (schéma JSON)](/docs/cookie-banner/javascript/inta-schema).
+## Étape 3 — Vérifier (2 minutes)
 
-## Étape 3 — Vérifier dans le navigateur
+Utilisez une **fenêtre privée / navigation privée** pour éviter les anciens cookies de consentement.
 
-1. Ouvrez le site dans une **fenêtre privée**.
-2. Vous devez **voir l’interface de consentement** (bandeau ou overlay selon la configuration).
-3. DevTools → **Réseau** :
-   - `uc.js` se charge **tôt** dans le document.
-   - Avant d’accepter marketing/analytics, les requêtes non essentielles ne doivent pas se comporter comme si le consentement complet était accordé — le comportement exact dépend de vos balises ; voir [Fonctionnement](/docs/cookie-banner/how-it-works).
+| Point à vérifier | Attendu |
+| --- | --- |
+| **Bannière** | L’UI de consentement s’affiche (bannière ou overlay selon le produit). |
+| **Réseau** | `uc.js` se charge **tôt** depuis `consents.cdn.intastellarsolutions.com`. |
+| **Avant acceptation** | Les balises non nécessaires (GA4, Meta, etc.) ne doivent **pas** se comporter comme **pleinement consenties**—le détail dépend de GTM / `gtag` ([Fonctionnement](/docs/cookie-banner/how-it-works)). |
+| **Après acceptation** | Les balises liées au consentement peuvent se déclencher ou passer en modes normaux / sensibles au consentement (ex. Google Consent Mode). |
 
-## Étape 4 — Refuser, puis accepter
+**Refusez** (ou consentement minimal), rechargez une fois : le choix doit **persister**. S’il se réinitialise à chaque fois, voir [Dépannage](/docs/cookie-banner/debugging) (double extrait / mauvais `rootDomain`).
 
-1. Choisissez **Refuser** (ou consentement minimal), puis rechargez une fois.
-2. Votre choix doit **persister** (sous réserve des règles cookies/stockage). S’il se réinitialise à chaque fois, vérifiez les blocs **dupliqués** `window.INTA` / `uc.js` ou un `rootDomain` incorrect.
+## Étape 4 — Étapes suivantes (production)
 
-## À quoi ressemble « terminé »
+| Si vous utilisez… | Ensuite |
+| --- | --- |
+| **GTM** | [Google Tag Manager](/docs/cookie-banner/google-tag-manager)—CMP sur **Consent Initialization**, puis balises sensibles au consentement. |
+| **GA4** | [Google Analytics 4](/docs/cookie-banner/google-analytics-4) + [Google Consent Mode](/docs/cookie-banner/google-consent-mode). |
+| **Meta** | [Meta Pixel](/docs/cookie-banner/meta-pixel). |
+| **Snippet complet / branding** | [Premiers pas (JavaScript)](/docs/cookie-banner/javascript/getting-started). |
+| **React / Next / SPA** | [SPA et SSR](/docs/cookie-banner/javascript/spa-and-ssr). |
 
-- Bandeau visible pour les nouveaux visiteurs.
-- Les balises nécessitant le consentement ne s’exécutent **pas** comme pleinement consenties **avant** un choix.
-- Après **Accepter**, la mesure peut reprendre ou adopter un comportement **sensible au consentement** (Google : mode consentement ; Meta : pixel + configuration du consentement).
+## Prêt pour la production (à lire une fois)
 
-## Suite
-
-- **GTM :** [Google Tag Manager](/docs/cookie-banner/google-tag-manager)
-- **GA4 :** [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
-- **Meta :** [Meta Pixel](/docs/cookie-banner/meta-pixel)
-- **Snippet complet et style :** [Premiers pas (JavaScript)](/docs/cookie-banner/javascript/getting-started)
-- **Blocage :** [Dépannage](/docs/cookie-banner/debugging)
+La CMP **met en œuvre les mécanismes de consentement documentés** (UI + intégration décrite) lorsque vous respectez l’ordre de chargement et les modèles de balises. **Vous** restez responsables des : textes de politique, mentions fournisseurs, base juridique et chaque déclencheur de balise. Nous ne promettons pas une « conformité RGPD automatique »—nous documentons un comportement **prévisible** pour que vous puissiez vérifier dans DevTools et GTM Preview.
 
 [← Accueil documentation](/docs/cookie-banner)

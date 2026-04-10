@@ -1,0 +1,82 @@
+---
+title: Kernconcepten
+description: Toestemmingscategorieën, statussen, blokkering en hoe de CMP aansluit op GTM en leverancierstags.
+sidebar_label: Kernconcepten
+order: 3
+lastUpdated: "2026-04-09"
+related:
+  - title: Hoe het werkt
+    href: /docs/cookie-banner/how-it-works
+  - title: Snelstart
+    href: /docs/cookie-banner/quickstart
+  - title: Gebeurtenissen en API
+    href: /docs/cookie-banner/javascript/events-and-api
+  - title: window.INTA-referentie
+    href: /docs/cookie-banner/javascript/inta-schema
+---
+
+# Kernconcepten
+
+Gebruik deze pagina na [Snelstart](/docs/cookie-banner/quickstart) en [Hoe het werkt](/docs/cookie-banner/how-it-works). Hier staan de begrippen die u nodig hebt om GTM, GA4 en Meta zonder giswerk aan te sluiten.
+
+## Toestemmingscategorieën (doeleinden)
+
+Regelgeving (bijv. AVG) gaat over **waarom** u gegevens verwerkt. In de praktijk groeperen CMP’s keuzes in **doeleinden** of **categorieën**—vaak gelabeld als **noodzakelijk**, **analyse**, **marketing** (de bewoording hangt af van uw beleidstekst).
+
+| Idee | Rol |
+| --- | --- |
+| **Noodzakelijk / essentieel** | Nodig om de site te laten werken (bijv. beveiliging, load balancing, opslag van een toestemmingskeuze). Meestal niet afhankelijk van marketingtoestemming. |
+| **Analyse / statistiek** | Meting die strikt genomen niet vereist is voor de dienst (vaak cookies of opslag voor analytics). |
+| **Marketing / advertenties** | Ads, remarketing, social pixels—meestal de strengste toestemmingsvereisten. |
+
+**Uw taak:** Koppel elk script van derden of elke GTM-tag aan **één of meer** categorieën en laat het alleen draaien wanneer de keuze van de bezoeker dat toelaat. De CMP levert de keuze; **u** (of uw GTM-triggers) moet tags op die categorieën afstemmen.
+
+## Toestemmingsstatussen
+
+Grofweg bevindt een bezoeker zich in één van deze situaties:
+
+1. **Nog geen keuze**—eerste bezoek of opslag gewist. Niet-essentiële tracking mag zich niet gedragen alsof er toestemming is.
+2. **Geaccepteerd** (volledig of voor geselecteerde categorieën)—tags voor die categorieën mogen volgens uw configuratie draaien.
+3. **Afgewezen / minimaal**—analyse en marketing blijven beperkt of uit, afhankelijk van defaults en leveranciersgedrag (bijv. Google Consent Mode kan nog beperkte pings sturen—zie [Google Consent Mode](/docs/cookie-banner/google-consent-mode)).
+
+**Gedeeltelijke / granulaire** keuzes betekenen dat sommige categorieën aan zijn en andere uit. Uw GTM-triggers moeten dat respecteren, niet alleen „alles of niets“.
+
+## Hoe blokkering werkt (mechanisme)
+
+Intastellar Consents is ontworpen zodat **niet-essentiële scripts niet als volledig toegestaan draaien vóór een keuze**.
+
+Mechanisch is dat een **combinatie** van:
+
+- **Laadvolgorde**—`window.INTA` en `uc.js` **vroeg in `<head>`**, vóór tags die toestemming aannemen ([Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle)).
+- **CMP-gedrag**—handhaaft de UI en past de opgeslagen voorkeur van de bezoeker toe.
+- **Uw stack**—GTM-triggers, inline scripts en de **toestemmings-API** van elke leverancier (Consent Mode, Meta-parameters, enz.).
+
+De CMP **herschrijft niet magisch** willekeurige hardcoded `<script src="…">`-tags in uw HTML. Als een tag boven de CMP staat of op „All Pages“ vuurt zonder toestemmingscheck, moet **u** het verplaatsen of vergrendelen.
+
+## Gebeurtenissen en de taglaag
+
+**Google Tag Manager:** Intastellar Consents pusht **`cookie_consent_update`** naar **`dataLayer`** wanneer de bezoeker **toestemming bijwerkt** (accepteren, afwijzen, granulaire wijziging). Voeg in GTM een **Custom Event**-trigger toe met de gebeurtenisnaam **`cookie_consent_update`** en koppel die aan tags die op dat moment moeten reageren—vaak **samen met** tag-**Consent**-instellingen en leveranciers-API’s ([Gebeurtenissen en API](/docs/cookie-banner/javascript/events-and-api)).
+
+Er is geen gedocumenteerde **`window.IntastellarConsents.*`** voor productie. Controleer **payload**-velden naast de gebeurtenis in **GTM Preview** → Data Layer voor uw site; neem geen ongedocumenteerde properties aan.
+
+**Laadvolgorde:** Zorg dat het **GTM-containerfragment** (dat `dataLayer` aanmaakt) aanwezig is **vóór** `uc.js` als u erop rekent dat GTM `cookie_consent_update` ontvangt—meestal blijft het CMP-fragment **vroeg in `<head>`**; plaats GTM volgens de installatiehandleiding van Google zodat `dataLayer` bestaat wanneer de banner vuurt.
+
+## Signalen naar Google, Meta en anderen
+
+Wanneer geconfigureerd (bijv. `gtagId` voor Google), helpt de CMP **Google Consent Mode** af te stemmen op de keuze van de bezoeker. Meta en anderen verwachten **hun** toestemmingsparameters en uw **trigger-timing**—zie [Integrations overview](/docs/cookie-banner/integrations-overview) en de gidsen voor [GTM](/docs/cookie-banner/google-tag-manager), [GA4](/docs/cookie-banner/google-analytics-4) en [Meta Pixel](/docs/cookie-banner/meta-pixel).
+
+## Verantwoordelijkheidsverdeling (vertrouwen, geen loze beloften)
+
+| Laag | Verantwoordelijkheid |
+| --- | --- |
+| **Intastellar Consents** | Toestemmings-UI, toepassing van de keuze van de gebruiker en integratiehooks die hier staan (bijv. Consent Mode-afstemming indien geconfigureerd). |
+| **U / uw organisatie** | Juiste tag-plaatsing, GTM-triggers, privacybeleid, leverancierslijst, rechtsgrondslag en aangepaste codepaden. |
+
+We beweren **niet** „volledig AVG-conform uit de doos“—naleving hangt af van **hoe** u tags uitrolt en wat u gebruikers vertelt. We documenteren gedrag zodat u **voorspelbaar** kunt implementeren en kunt auditen in DevTools en GTM Preview.
+
+## Zie ook
+
+- [Probleemoplossing](/docs/cookie-banner/debugging)
+- [Google Tag Manager](/docs/cookie-banner/google-tag-manager)
+
+[← Documentatiehome](/docs/cookie-banner)

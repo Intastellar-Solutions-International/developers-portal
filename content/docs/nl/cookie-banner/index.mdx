@@ -4,12 +4,14 @@ description: Quickstart, GTM, GA4 en Consent Mode-documentatie voor Intastellar 
 hub_order: 10
 hub_tagline: Cookiebanner en CMP — JS, WordPress, GTM, Shopify.
 order: 0
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 ---
 
 # Documentatie
 
-Intastellar Consents is een lichtgewicht CMP voor kleine sites en ontwikkelaars: **niet-noodzakelijke scripts blijven begrensd tot de bezoeker kiest**, **Google Consent Mode v2** kan correct worden aangesloten, en uw setup blijft **voorspelbaar** als u de laadpatronen uit deze documentatie volgt.
+Intastellar Consents is een **script-eerst CMP** voor kleine sites en teams die eigen HTML of GTM uitrollen: **niet-essentiële tracking draait niet als volledig toegestaan vóór de keuze van de bezoeker**, **Google Consent Mode v2** kan afstemmen op uw meet-ID wanneer u `gtagId` en taginstellingen configureert, en **analyse of advertenties kunnen na acceptatie in toestemmingsbewuste modi** blijven werken—zonder vage „volledige naleving“ te beloven (dat hangt altijd af van **uw** beleidsteksten, leverancierslijst en elke tag-trigger).
+
+**Vertrouwensmodel:** het product past de hier gedocumenteerde **toestemmingsmechanismen** toe. **U** bent verantwoordelijk voor juiste plaatsing, GTM-configuratie en juridische positionering. Volgt u [Snelstart](/docs/cookie-banner/quickstart) → [Hoe het werkt](/docs/cookie-banner/how-it-works) → [Kernconcepten](/docs/cookie-banner/core-concepts), dan kunt u het gedrag **verifiëren in DevTools en GTM Preview** vóór productie.
 
 <div className="not-prose my-8 rounded-xl border border-emerald-300/70 bg-gradient-to-br from-emerald-50 via-white to-teal-50/90 p-5 shadow-md shadow-emerald-900/5 ring-1 ring-emerald-500/10 dark:border-emerald-800/60 dark:from-emerald-950/50 dark:via-zinc-950 dark:to-emerald-950/30 dark:shadow-black/20 dark:ring-emerald-400/10 md:p-6">
   <div className="m-0 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-emerald-900 dark:text-emerald-400">
@@ -35,12 +37,23 @@ Intastellar Consents is een lichtgewicht CMP voor kleine sites en ontwikkelaars:
       →
     </span>
     <a
+      href="/docs/cookie-banner/core-concepts"
+      className="font-semibold text-emerald-800 underline decoration-emerald-600/35 underline-offset-[3px] transition-colors hover:text-emerald-900 hover:decoration-emerald-700 dark:text-emerald-300 dark:decoration-emerald-400/35 dark:hover:text-emerald-200"
+    >
+      Kernconcepten
+    </a>
+    <span className="mx-2 font-normal text-zinc-400 dark:text-zinc-500" aria-hidden="true">
+      →
+    </span>
+    <a
       href="/docs/cookie-banner/debugging"
       className="font-semibold text-emerald-800 underline decoration-emerald-600/35 underline-offset-[3px] transition-colors hover:text-emerald-900 hover:decoration-emerald-700 dark:text-emerald-300 dark:decoration-emerald-400/35 dark:hover:text-emerald-200"
     >
       Probleemoplossing
     </a>
-    <span className="mt-2 block text-sm font-normal text-zinc-600 dark:text-zinc-400">~5 minuten totaal</span>
+    <span className="mt-2 block text-sm font-normal text-zinc-600 dark:text-zinc-400">
+      ~5 min. installatie · daarna doorlezen voor productie
+    </span>
   </div>
 </div>
 
@@ -48,9 +61,10 @@ Intastellar Consents is een lichtgewicht CMP voor kleine sites en ontwikkelaars:
 
 | Onderwerp | Gids |
 | --- | --- |
-| **Quickstart (~5 min)** | [Quickstart](/docs/cookie-banner/quickstart) — minimaal `window.INTA` + `uc.js`, controle in de browser |
-| **Architectuur** | [How it works](/docs/cookie-banner/how-it-works) — blokkering, signalen, CMP-grenzen |
-| **Foutopsporing** | [Debugging](/docs/cookie-banner/debugging) |
+| **Snelstart (~5 min)** | [Snelstart](/docs/cookie-banner/quickstart) — kopiëren-plakken `window.INTA` + `uc.js`, exacte `<head>`-plaatsing, verwachting vóór/na toestemming |
+| **Architectuur** | [Hoe het werkt](/docs/cookie-banner/how-it-works) — paginalaadvolgorde, blokkering, GTM/GA/Meta-signalen |
+| **Kernconcepten** | [Kernconcepten](/docs/cookie-banner/core-concepts) — doeleinden, toestemmingsstatussen, blokkering vs. uw tags, verantwoordelijkheid |
+| **Foutopsporing** | [Probleemoplossing](/docs/cookie-banner/debugging) — ontbrekende banner, tags te vroeg, toestemming houdt niet, GTM-triggers |
 | **Volledige JS-snippet** | [Aan de slag (JavaScript)](/docs/cookie-banner/javascript/getting-started) — veelgebruikte opties + branding |
 | **SPA’s / Next.js** | [SPAs and SSR](/docs/cookie-banner/javascript/spa-and-ssr) |
 | **`window.INTA`-velden** | [`window.INTA` (JSON Schema)](/docs/cookie-banner/javascript/inta-schema) |
