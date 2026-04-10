@@ -181,6 +181,22 @@ function resolveLastUpdated(
   };
 }
 
+/**
+ * Sitemap `lastmod`: max(frontmatter `lastUpdated`, file mtime) so edits always surface
+ * even when frontmatter dates are stale or wrong.
+ */
+function sitemapLastmodForDocFile(
+  fm: DocFrontmatter,
+  fileMtime: Date,
+): string {
+  const { lastUpdated } = resolveLastUpdated(fm, fileMtime);
+  const fromMeta = Date.parse(lastUpdated);
+  const fromDisk = fileMtime.getTime();
+  return new Date(
+    Math.max(Number.isFinite(fromMeta) ? fromMeta : 0, fromDisk),
+  ).toISOString();
+}
+
 function coerceRelatedLinks(raw: unknown): RelatedLink[] {
   if (!Array.isArray(raw)) return [];
   const out: RelatedLink[] = [];
@@ -496,7 +512,7 @@ function mdxFileToPathname(product: string, filePath: string): string {
 
 export type DocSitemapEntry = { pathname: string; lastmod: string };
 
-/** Public doc URLs (default version only) with `lastmod` from frontmatter or file mtime. */
+/** Public doc URLs (default version only) with `lastmod` = max(frontmatter `lastUpdated`, file mtime). */
 export async function getDocSitemapEntries(): Promise<DocSitemapEntry[]> {
   const isProd = process.env.NODE_ENV === "production";
   const entries = await fs.readdir(DOCS_ROOT, { withFileTypes: true }).catch(
@@ -529,18 +545,15 @@ export async function getDocSitemapEntries(): Promise<DocSitemapEntry[]> {
       const fm = data as Partial<DocFrontmatter>;
       if (isProd && fm.draft === true) return;
       const pathname = mdxFileToPathname(product, filePath);
-      const { lastUpdated } = resolveLastUpdated(
-        fm as DocFrontmatter,
-        stat.mtime,
-      );
+      const lastmod = sitemapLastmodForDocFile(fm as DocFrontmatter, stat.mtime);
       const prev = byPath.get(pathname);
       if (prev == null) {
-        byPath.set(pathname, lastUpdated);
+        byPath.set(pathname, lastmod);
       } else {
         const pt = Date.parse(prev);
-        const nt = Date.parse(lastUpdated);
+        const nt = Date.parse(lastmod);
         if (Number.isFinite(nt) && (!Number.isFinite(pt) || nt >= pt)) {
-          byPath.set(pathname, lastUpdated);
+          byPath.set(pathname, lastmod);
         }
       }
     });

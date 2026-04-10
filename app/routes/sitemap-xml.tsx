@@ -10,11 +10,13 @@ import { absoluteUrl } from "~/lib/site";
 
 type SitemapUrlRow = { pathname: string; lastmod: string; priority: string };
 
-/** Coarse “site shell” touch time for routes without per-file MDX content. */
-async function getStaticRoutesLastmod(): Promise<string> {
+/** App shell + lockfile mtimes (routes, root, dependency lock). */
+async function getStaticShellLastmodMs(): Promise<number> {
   const candidates = [
     path.join(process.cwd(), "app", "routes.ts"),
     path.join(process.cwd(), "app", "root.tsx"),
+    path.join(process.cwd(), "package-lock.json"),
+    path.join(process.cwd(), "pnpm-lock.yaml"),
   ];
   let maxMs = 0;
   for (const f of candidates) {
@@ -25,7 +27,18 @@ async function getStaticRoutesLastmod(): Promise<string> {
       /* missing in some deploy contexts */
     }
   }
-  return new Date(maxMs > 0 ? maxMs : Date.now()).toISOString();
+  return maxMs;
+}
+
+function maxLastmodMsFromDocEntries(
+  entries: readonly { lastmod: string }[],
+): number {
+  let maxMs = 0;
+  for (const e of entries) {
+    const t = Date.parse(e.lastmod);
+    if (Number.isFinite(t)) maxMs = Math.max(maxMs, t);
+  }
+  return maxMs;
 }
 
 function priorityForPathname(pathname: string): string {
@@ -64,11 +77,15 @@ function escapeXml(s: string): string {
 }
 
 export async function loader(_args: Route.LoaderArgs) {
-  const staticLastmod = await getStaticRoutesLastmod();
-  const [staticPathnames, docEntries] = await Promise.all([
+  const [staticPathnames, docEntries, shellMs] = await Promise.all([
     getStaticPathnamesFromRoutes(),
     getDocSitemapEntries(),
+    getStaticShellLastmodMs(),
   ]);
+  const docMaxMs = maxLastmodMsFromDocEntries(docEntries);
+  const staticLastmod = new Date(
+    Math.max(shellMs, docMaxMs) > 0 ? Math.max(shellMs, docMaxMs) : Date.now(),
+  ).toISOString();
 
   const staticRows: SitemapUrlRow[] = staticPathnames.map((pathname) => ({
     pathname,
