@@ -21,6 +21,12 @@ const INTASTELLAR_PUBLISHER_ORG = {
   url: "https://www.intastellarsolutions.com/",
 } as const;
 
+/** WebSite `about`: products documented on this portal. */
+const INTA_DEV_WEBSITE_ABOUT = [
+  { "@type": "SoftwareApplication", name: "Intastellar Consents" },
+  { "@type": "SoftwareApplication", name: "Intastellar Accounts" },
+] as const;
+
 /**
  * Site-wide JSON-LD: all stable `@id` values live on inta.dev so crawlers resolve the graph here.
  * Intastellar Solutions is the parent company; inta.dev is an organizational unit (portal);
@@ -60,6 +66,7 @@ export function buildGlobalSeoJsonLdMeta(): MetaDescriptor[] {
         name: SITE_NAME,
         url: `${origin}/`,
         publisher: { ...INTASTELLAR_PUBLISHER_ORG },
+        about: [...INTA_DEV_WEBSITE_ABOUT],
       },
       {
         "@type": "SoftwareApplication",
@@ -226,6 +233,7 @@ export function buildHomePageMeta(
     description: desc,
     url,
     publisher: { ...INTASTELLAR_PUBLISHER_ORG },
+    about: [...INTA_DEV_WEBSITE_ABOUT],
   };
 
   return [
