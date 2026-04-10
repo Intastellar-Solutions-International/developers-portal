@@ -5,7 +5,6 @@ import { DocMeta } from "~/components/doc-meta";
 import { DocPrevNext } from "~/components/doc-prev-next";
 import { DocsBreadcrumbs } from "~/components/docs-breadcrumbs";
 import { CookieBannerTryoutDocBody } from "~/components/cookie-banner-tryout-doc-body";
-import { MdxContent } from "~/components/mdx-content";
 import { RelatedLinks } from "~/components/related-links";
 import {
   getAdjacentDocs,
@@ -88,24 +87,22 @@ export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
 
 export default function ProductDocPage() {
   const doc = useLoaderData<typeof loader>();
+  const docPathNorm = doc.docPath.replace(/^\/+|\/+$/g, "");
   const showIntaTryout =
     doc.isJavascriptTryOutDoc === true ||
-    (doc.productSlug === "cookie-banner" && doc.docPath === "javascript/try-out");
+    (doc.productSlug === "cookie-banner" && docPathNorm === "javascript/try-out");
 
   return (
     <article className="docs-prose prose prose-zinc max-w-none dark:prose-invert prose-pre:bg-transparent prose-pre:p-0">
       <DocsBreadcrumbs items={doc.breadcrumbs} />
-      {showIntaTryout ? (
-        <CookieBannerTryoutDocBody
-          title={doc.title}
-          description={doc.description}
-          code={doc.code}
-          previewOrigin={doc.previewOrigin}
-          previewHostname={doc.previewHostname}
-        />
-      ) : (
-        <MdxContent code={doc.code} />
-      )}
+      <CookieBannerTryoutDocBody
+        tryout={showIntaTryout}
+        title={doc.title}
+        description={doc.description}
+        code={doc.code}
+        previewOrigin={doc.previewOrigin}
+        previewHostname={doc.previewHostname}
+      />
       <RelatedLinks items={doc.related} />
       <DocPrevNext prev={doc.prev} next={doc.next} />
       <DocMeta

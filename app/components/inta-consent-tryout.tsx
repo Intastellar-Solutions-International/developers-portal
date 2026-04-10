@@ -1,13 +1,13 @@
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const UC_SCRIPT_SRC = "https://consents.cdn.intastellarsolutions.com/uc.js";
 
 const PREVIEW_MSG_SOURCE = "inta-consent-preview" as const;
 
 /** Injected into preview iframe: tap dataLayer.push + console, postMessage to parent. */
-function buildPreviewBridgeScript(): string {
+function buildPreviewBridgeScript(parentOrigin: string): string {
   return `(function(){
-var O=${JSON.stringify(window.location.origin)};
+var O=${JSON.stringify(parentOrigin)};
 function safe(v){try{return typeof v==="object"&&v!==null?JSON.stringify(v):String(v)}catch(e){return"[unserializable]"}}
 function pm(kind,extra){
   try{if(window.parent!==window)window.parent.postMessage(Object.assign({source:"${PREVIEW_MSG_SOURCE}",kind:kind},extra||{}),O)}catch(e){}
@@ -121,9 +121,12 @@ function intaJsonForInlineScript(inta: Record<string, unknown>): string {
   return JSON.stringify(inta).replace(/</g, "\\u003c");
 }
 
-function buildPreviewSrcDoc(inta: Record<string, unknown>): string {
+function buildPreviewSrcDoc(
+  inta: Record<string, unknown>,
+  parentOrigin: string,
+): string {
   const payload = intaJsonForInlineScript(inta);
-  const bridge = buildPreviewBridgeScript();
+  const bridge = buildPreviewBridgeScript(parentOrigin);
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -188,11 +191,9 @@ export function IntaConsentTryout({
     });
   }, []);
 
-  const deferredText = useDeferredValue(jsonText);
-
   const { inta, deferredError } = useMemo(() => {
     try {
-      const parsed = JSON.parse(deferredText) as unknown;
+      const parsed = JSON.parse(jsonText) as unknown;
       if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
         return {
           inta: null,
@@ -204,7 +205,7 @@ export function IntaConsentTryout({
       const msg = e instanceof Error ? e.message : "Invalid JSON";
       return { inta: null, deferredError: msg };
     }
-  }, [deferredText]);
+  }, [jsonText]);
 
   const [iframeSrcDoc, setIframeSrcDoc] = useState<string | null>(null);
 
@@ -214,7 +215,7 @@ export function IntaConsentTryout({
       return;
     }
     pushDebug("system", "Preview HTML updated — iframe will reload.");
-    setIframeSrcDoc(buildPreviewSrcDoc(inta));
+    setIframeSrcDoc(buildPreviewSrcDoc(inta, window.location.origin));
   }, [inta, deferredError, pushDebug]);
 
   useEffect(() => {
@@ -424,14 +425,6 @@ export function IntaConsentTryout({
                   role="alert"
                 >
                   JSON: {parseError}
-                </p>
-              ) : null}
-              {inta && deferredError ? (
-                <p
-                  className="rounded-lg border border-amber-300/80 bg-amber-50 px-3 py-2 text-xs text-amber-950 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-100"
-                  role="alert"
-                >
-                  Preview: {deferredError}
                 </p>
               ) : null}
             </div>
