@@ -2,20 +2,28 @@
 title: Debugging
 description: Symptom-first troubleshooting—banner missing, tags firing early, GTM races, consent not sticking.
 sidebar_label: Debugging
-order: 3
+order: 4
 lastUpdated: "2026-04-08"
 related:
   - title: Quickstart
     href: /docs/cookie-banner/quickstart
   - title: How it works
     href: /docs/cookie-banner/how-it-works
+  - title: Core concepts
+    href: /docs/cookie-banner/core-concepts
   - title: Google Tag Manager
     href: /docs/cookie-banner/google-tag-manager
 ---
 
 # Debugging
 
-Verify in small steps before changing unrelated settings.
+Work **symptom → verify → fix**. Keep GTM Preview and DevTools open; one change at a time.
+
+## Quick checks (any issue)
+
+1. **View page source** (not only Elements): `uc.js` appears **once**, near the top of `<head>`.
+2. **GTM Preview** (if you use GTM): CMP tag fires on **Consent Initialization** before dependent tags.
+3. **Application** tab: after choosing consent, storage/cookies look plausible for your `rootDomain`.
 
 ## Banner does not appear
 
@@ -30,9 +38,11 @@ Verify in small steps before changing unrelated settings.
 
 | Likely cause | How to verify | Fix |
 | --- | --- | --- |
-| Tag has no post-consent trigger | GTM Preview: tag never fires after accept | Add consent-aware triggers or Consent Mode settings |
-| `gtagId` missing for GA4 | Compare with [Quickstart](/docs/cookie-banner/quickstart) | Set `gtagId` or wire GA per your chosen pattern |
-| Consent Mode defaults too strict | GA / Tag Assistant | Adjust defaults **deliberately** and document the choice |
+| Tag has no post-consent trigger | GTM Preview: accept in banner; tag never appears in timeline after | Add a **Custom Event** trigger on **`cookie_consent_update`** ([Events and API](/docs/cookie-banner/javascript/events-and-api)), and/or consent-aware tag settings |
+| Tag blocked by GTM “consent” settings | Tag configuration → Consent settings; Preview shows tag “blocked” | Align tag consent with your legal default or fire only when purpose is granted |
+| `gtagId` missing for GA4 + CMP-driven Google path | Compare with [Quickstart](/docs/cookie-banner/quickstart) | Set `settings.gtagId` **or** wire GA without it using a documented alternative |
+| Consent Mode defaults too strict | GA DebugView / Tag Assistant: no hits after accept | Adjust defaults **on purpose** and document; see [Google Consent Mode](/docs/cookie-banner/google-consent-mode) |
+| Ad blockers / browser privacy | Same page in clean profile or disable extensions | Distinguish product issue from client blocking |
 
 ## Tags fire before consent (serious)
 
@@ -56,6 +66,14 @@ Verify in small steps before changing unrelated settings.
 | --- | --- | --- |
 | Wrong `rootDomain` | Compare `settings.rootDomain` with hostname | Align with your cookie domain model |
 | Two copies of `uc.js` | Search for `uc.js` in source | Single canonical install |
+
+## Consent not updating in tags / “stale” state
+
+| Likely cause | How to verify | Fix |
+| --- | --- | --- |
+| Tags cached before choice | Full reload after clearing site data | Retest in private window |
+| Container not republished | GTM workspace vs live | Publish version with CMP + trigger changes |
+| Wrong environment (staging container) | GTM ID in source vs expected | Point site at correct container |
 
 ## Still stuck
 

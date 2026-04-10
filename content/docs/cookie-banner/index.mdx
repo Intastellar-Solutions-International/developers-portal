@@ -9,7 +9,9 @@ lastUpdated: "2026-04-08"
 
 # Documentation
 
-Intastellar Consents is a lightweight CMP for small sites and developers: **non-essential scripts stay gated until the visitor chooses**, **Google Consent Mode v2** can be wired correctly, and your stack stays **predictable** when you follow the load-order patterns below.
+Intastellar Consents is a **script-first CMP** for small sites and teams who ship their own HTML or GTM: **non-essential tracking does not run as fully consented before the visitor chooses**, **Google Consent Mode v2** can align with your measurement ID when you configure `gtagId` and tag settings, and **analytics or ads can keep working in consent-aware modes** after accept—without promising vague “full compliance” (that always depends on **your** policy text, vendor list, and every tag’s triggers).
+
+**Trust model:** the product applies the **consent mechanics** documented here. **You** are responsible for correct placement, GTM configuration, and legal positioning. If you follow [Quickstart](/docs/cookie-banner/quickstart) → [How it works](/docs/cookie-banner/how-it-works) → [Core concepts](/docs/cookie-banner/core-concepts), you can **verify behaviour in DevTools and GTM Preview** before production.
 
 <div className="not-prose my-8 rounded-xl border border-emerald-300/70 bg-gradient-to-br from-emerald-50 via-white to-teal-50/90 p-5 shadow-md shadow-emerald-900/5 ring-1 ring-emerald-500/10 dark:border-emerald-800/60 dark:from-emerald-950/50 dark:via-zinc-950 dark:to-emerald-950/30 dark:shadow-black/20 dark:ring-emerald-400/10 md:p-6">
   <div className="m-0 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-emerald-900 dark:text-emerald-400">
@@ -35,12 +37,23 @@ Intastellar Consents is a lightweight CMP for small sites and developers: **non-
       →
     </span>
     <a
+      href="/docs/cookie-banner/core-concepts"
+      className="font-semibold text-emerald-800 underline decoration-emerald-600/35 underline-offset-[3px] transition-colors hover:text-emerald-900 hover:decoration-emerald-700 dark:text-emerald-300 dark:decoration-emerald-400/35 dark:hover:text-emerald-200"
+    >
+      Core concepts
+    </a>
+    <span className="mx-2 font-normal text-zinc-400 dark:text-zinc-500" aria-hidden="true">
+      →
+    </span>
+    <a
       href="/docs/cookie-banner/debugging"
       className="font-semibold text-emerald-800 underline decoration-emerald-600/35 underline-offset-[3px] transition-colors hover:text-emerald-900 hover:decoration-emerald-700 dark:text-emerald-300 dark:decoration-emerald-400/35 dark:hover:text-emerald-200"
     >
       Debugging
     </a>
-    <span className="mt-2 block text-sm font-normal text-zinc-600 dark:text-zinc-400">~5 minutes total</span>
+    <span className="mt-2 block text-sm font-normal text-zinc-600 dark:text-zinc-400">
+      ~5 min to install · then read through for production
+    </span>
   </div>
 </div>
 
@@ -48,9 +61,10 @@ Intastellar Consents is a lightweight CMP for small sites and developers: **non-
 
 | Topic | Guide |
 | --- | --- |
-| **Quickstart (~5 min)** | [Quickstart](/docs/cookie-banner/quickstart) — minimal `window.INTA` + `uc.js`, verify in the browser |
-| **Architecture** | [How it works](/docs/cookie-banner/how-it-works) — blocking, signals, what the CMP does not do |
-| **Troubleshooting** | [Debugging](/docs/cookie-banner/debugging) — banner missing, GTM races, tags before consent |
+| **Quickstart (~5 min)** | [Quickstart](/docs/cookie-banner/quickstart) — copy-paste `window.INTA` + `uc.js`, exact `<head>` placement, expected before/after consent |
+| **Architecture** | [How it works](/docs/cookie-banner/how-it-works) — page load order, blocking model, GTM/GA/Meta signals |
+| **Core concepts** | [Core concepts](/docs/cookie-banner/core-concepts) — purposes, consent states, blocking vs your tags, responsibility split |
+| **Troubleshooting** | [Debugging](/docs/cookie-banner/debugging) — banner missing, tags early, consent not sticking, GTM triggers |
 | **Full JS snippet** | [Get started (JavaScript)](/docs/cookie-banner/javascript/getting-started) — common options + branding |
 | **SPAs / Next.js** | [SPAs and SSR](/docs/cookie-banner/javascript/spa-and-ssr) |
 | **`window.INTA` fields** | [`window.INTA` (JSON Schema)](/docs/cookie-banner/javascript/inta-schema) |

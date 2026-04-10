@@ -1,10 +1,12 @@
 ---
 title: Events and API
-description: What this portal documents for programmatic consent—configuration vs runtime API surface.
+description: cookie_consent_update dataLayer event for GTM, window.INTA, and what this portal does not document as a global API.
 sidebar_label: Events & API
 order: 22
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
+  - title: Core concepts
+    href: /docs/cookie-banner/core-concepts
   - title: Quickstart
     href: /docs/cookie-banner/quickstart
   - title: Script lifecycle
@@ -15,6 +17,8 @@ related:
 
 # Events and API
 
+For **categories, states, and who owns what** in a stack, see [Core concepts](/docs/cookie-banner/core-concepts).
+
 ## What this developer portal documents
 
 | Surface | Purpose |
@@ -24,12 +28,31 @@ related:
 
 Those are the **supported** integration contracts for building on inta.dev.
 
+## `cookie_consent_update` (Google Tag Manager / `dataLayer`)
+
+When the visitor **changes consent** (accept, reject, granular update, etc.), the banner pushes an entry to the Google **`dataLayer`** array (the same object GTM uses when `dataLayer` is initialized before GTM loads).
+
+| Detail | Value |
+| --- | --- |
+| **Event name** | `cookie_consent_update` |
+| **Where it appears** | `dataLayer` — visible in **GTM Preview** (Data Layer tab) and in the browser after interacting with the banner |
+
+**Using it in GTM**
+
+1. **Triggers → New → Custom Event**
+2. **Event name:** `cookie_consent_update` (exact match unless you use a regex trigger intentionally)
+3. Attach this trigger to tags that should run **when consent changes** (e.g. after the user accepts statistics or marketing), in addition to any **Consent** settings on those tags.
+
+The push includes a **data object** next to the event (consent-related fields). **Do not hard-code** assumptions about every property—open **GTM Preview**, perform a consent action, and read the current **Data Layer** state for your deployment.
+
+If GTM is not on the page, ensure `window.dataLayer = window.dataLayer || []` exists **before** `uc.js` when you rely on this event for other consumers.
+
 ## Programmatic JavaScript API (runtime)
 
-**There is no separate public “CMP JavaScript API” documented on this portal** (no guaranteed global such as `window.IntastellarConsents.*` for production use). Implementers should:
+**There is no separate public “CMP JavaScript API” documented on this portal** (no guaranteed global such as `window.IntastellarConsents.*` for production use). For **GTM**, use the **`cookie_consent_update`** `dataLayer` event above. Otherwise:
 
 - Drive behaviour through **`window.INTA`** and **`uc.js`** as documented.
-- Use **Google Tag Manager** (or your stack’s tag layer) for events, triggers, and vendor tags.
+- Use **Google Tag Manager** (or your stack’s tag layer) for triggers and vendor tags.
 - Rely on **vendor consent mechanisms** (e.g. Google Consent Mode, Meta consent parameters) where applicable.
 
 If your organisation publishes a **versioned runtime API** for a specific CDN build or enterprise tier, add its canonical URL to this page’s frontmatter or the [documentation home](/docs/cookie-banner) when it is stable.
@@ -38,7 +61,7 @@ If your organisation publishes a **versioned runtime API** for a specific CDN bu
 
 1. Validate consent-driven behaviour with **GTM Preview** or your bundler’s load order.
 2. Use DevTools (**Application** → cookies / storage, **Network**) to confirm tags align with consent **before** and **after** choices.
-3. If something must run only after accept, express that in **GTM triggers** or application code that loads **after** the CMP—not by undocumented globals.
+3. If something must run when consent **changes**, use a **Custom Event** trigger on **`cookie_consent_update`** (see above) or application code that runs **after** the CMP—not undocumented globals.
 
 ## Consent signals to third parties
 

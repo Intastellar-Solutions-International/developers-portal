@@ -1,11 +1,15 @@
 ---
 title: Google Tag Manager
-description: Opinionated GTM setup—Consent Initialization, CMP tag, then consent-aware analytics and ads.
+description: Step-by-step GTM setup—Consent Initialization, Intastellar CMP tag, GA4/Meta with real configuration patterns.
 order: 60
 lastUpdated: "2026-04-08"
 related:
   - title: Quickstart
     href: /docs/cookie-banner/quickstart
+  - title: How it works
+    href: /docs/cookie-banner/how-it-works
+  - title: Core concepts
+    href: /docs/cookie-banner/core-concepts
   - title: Google Consent Mode
     href: /docs/cookie-banner/google-consent-mode
   - title: Google Analytics 4
@@ -16,55 +20,98 @@ related:
 
 # Google Tag Manager
 
-Use GTM to inject the **same** `window.INTA` + `uc.js` pair as in [Quickstart](/docs/cookie-banner/quickstart). The only difference is **where** it runs in the tag sequence.
+This guide is **opinionated**: one clear path that works for most sites. You inject the **same** `window.INTA` + `uc.js` pair as in [Quickstart](/docs/cookie-banner/quickstart); GTM only controls **when** it runs relative to other tags.
 
 ## Prerequisites
 
-- GTM container on the site and permission to **publish** versions.
-- Values for `policy_link`, `rootDomain`, `company`, and optional `gtagId` decided.
+- GTM container installed on the site (`GTM-XXXX`).
+- Values ready for `policy_link`, `rootDomain`, `company`, and optional `gtagId` (if using Google tags with CMP-assisted Consent Mode).
+- Permission to **publish** a container version.
 
-## 1. Create the CMP tag
+## Step 1 — Create the Intastellar CMP tag
 
-1. **Tags → New → Tag type: Custom HTML**
-2. Paste the full snippet from [Quickstart](/docs/cookie-banner/quickstart) (both `<script>` blocks: inline `window.INTA` and `uc.js`).
-3. **Support document.write**: usually **off** unless your site specifically needs it.
+1. In GTM: **Tags → New**.
+2. Tag type: **Custom HTML**.
+3. Paste **both** parts from [Quickstart](/docs/cookie-banner/quickstart):
 
-## 2. Firing priority (critical)
+   - Inline `<script>` that sets `window.INTA` (include `gtagId` in `settings` if you use GA4/Ads with this pattern).
+   - `<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>`.
 
-**Trigger:** **Consent Initialization – All pages** (or your container’s equivalent first consent event).
+4. **Advanced settings → Support document.write:** leave **off** unless your site specifically requires it.
+5. Name the tag clearly, e.g. `Intastellar Consents - CMP`.
 
-**Why:** That trigger exists so a CMP can run **before** tags that assume consent. If the CMP fires on a normal Page View **after** GA4, you will see “ghost” issues (hits or cookies before choice).
+## Step 2 — Trigger: Consent Initialization (required)
 
-## 3. Dependent tags (GA4, Ads, Meta, etc.)
+1. **Triggers → New**.
+2. Trigger type: **Consent Initialization – All pages** (in some workspaces: **Consent Initialization** with **All pages**).
 
-- Configure **GA4 Configuration**, **Google Ads**, **Meta Pixel**, and similar tags with **consent settings** and triggers that match your policy.
-- **Rule of thumb:** anything that sets non-essential cookies or sends personal data for ads/analytics should **not** behave as fully consented **before** the CMP has run.
+Assign this trigger **only** to the CMP tag from Step 1.
 
-Concrete recipes:
+**Why this matters:** Consent Initialization was added so a CMP can run **before** tags that behave as if consent were already granted. If your CMP tag uses a standard **Page View** trigger that runs **after** GA4 in the sequence, you will see pre-consent hits or cookies—see [Debugging](/docs/cookie-banner/debugging).
 
-- [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
-- [Meta Pixel](/docs/cookie-banner/meta-pixel)
-- [Google Consent Mode](/docs/cookie-banner/google-consent-mode)
+## Step 3 — Google tags: Consent Mode + tag settings
 
-## 4. Google Consent Mode
+If you use **GA4**, **Google Ads**, or other Google tags:
 
-When using Google tags, set `settings.gtagId` in `window.INTA` and align GTM tag **consent** configuration with your defaults (documented in Consent Mode guide).
+1. Set `settings.gtagId` in `window.INTA` inside the CMP tag (your `G-XXXXXXXX` or Ads equivalent as documented in [Quickstart](/docs/cookie-banner/quickstart)).
+2. In each Google tag’s GTM configuration, open **Consent settings** (or your GTM version’s equivalent).
+3. Align **default** and **update** consent with your legal position—do not “grant all” by default unless counsel agrees. Details and semantics: [Google Consent Mode](/docs/cookie-banner/google-consent-mode).
 
-## 5. Preview mode checklist
+## Step 4 — GA4 Configuration tag (example pattern)
 
-1. Open **GTM Preview** on staging.
-2. Confirm the **CMP** tag appears on the **Consent Initialization** event (early).
-3. **Before** accepting marketing/analytics in the banner: GA/Ads should **not** behave as fully consented (use Preview + Network).
-4. **After** accept: expected hits or pings should appear or switch mode appropriately.
+Exact UI labels change between GTM versions; the intent is:
 
-## 6. Publish
+1. **GA4 Configuration** (or **Google tag**) tag with your measurement ID.
+2. **Trigger:** not a bare “All pages” at first paint **if** that implies full analytics cookies before the CMP—prefer:
 
-Create a version note such as: `CMP: Intastellar via Consent Init; gated GA4/Meta`.
+   - a trigger that fires **after** consent (e.g. **Custom Event** when your policy says analytics is allowed), or  
+   - GTM’s built-in **consent** checks on the tag so the tag respects denied analytics until updated.
+
+3. **Consent settings** on the tag: require the appropriate consent types for analytics storage / ad storage as per Google’s model.
+
+Concrete GA4 page: [Google Analytics 4](/docs/cookie-banner/google-analytics-4).
+
+## Step 5 — `cookie_consent_update` (when consent changes)
+
+The banner sends a **`dataLayer`** event named **`cookie_consent_update`** whenever the visitor **changes** consent (not only on first page load).
+
+1. **Triggers → New → Custom Event**
+2. **Event name:** `cookie_consent_update`
+3. Use this trigger on tags that must run **at that moment** (e.g. push to another system, fire a tag that could not use Consent Initialization alone).
+
+Combine with **tag Consent settings** and vendor docs where relevant. Inspect the event and payload in **GTM Preview** after clicking accept/reject in the banner—see [Events and API](/docs/cookie-banner/javascript/events-and-api).
+
+## Step 6 — Meta Pixel (example pattern)
+
+1. **Meta Pixel** tag (or Custom HTML from Meta).
+2. **Trigger:** fires only when **marketing/advertising** consent is granted in **your** model—often a custom event or consent-aware condition—not **All pages** at load before the CMP.
+3. See [Meta Pixel](/docs/cookie-banner/meta-pixel).
+
+## Step 7 — Preview checklist (do this on staging)
+
+1. **Preview** the container; open your site.
+2. In the **Tag Assistant** timeline, confirm the **Intastellar** CMP tag fires on **Consent Initialization** **before** GA4/Meta fire (if those are configured to wait).
+3. **Before** clicking accept in the banner: GA/Ads should **not** behave as **fully consented** unless you deliberately configured defaults that way (verify in Preview + **Network**).
+4. **After** accept: expected requests or mode changes should appear.
+5. Repeat with **Reject** / minimal consent to confirm restricted behaviour.
+
+## Step 8 — Publish
+
+Create a version with a note, e.g.:
+
+`CMP: Intastellar on Consent Init; GA4/Meta gated by consent`
+
+## Common mistakes
+
+| Mistake | Symptom | Fix |
+| --- | --- | --- |
+| CMP on Page View only | GA4 before CMP in timeline | Move CMP to **Consent Initialization** |
+| GA4 + hard-coded `gtag.js` | Double hits / wrong consent | Use **one** primary GA path |
+| “All pages” on pixel | Meta fires before choice | Marketing trigger only after consent |
 
 ## Related
 
 - [Integrations overview](/docs/cookie-banner/integrations-overview)
 - [Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle)
-- [How it works](/docs/cookie-banner/how-it-works)
 
 [← Documentation home](/docs/cookie-banner)

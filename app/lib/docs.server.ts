@@ -95,6 +95,7 @@ function sidebarSectionId(relFromProduct: string): SidebarSectionId {
   if (
     n === "quickstart.mdx" ||
     n === "how-it-works.mdx" ||
+    n === "core-concepts.mdx" ||
     n === "debugging.mdx"
   ) {
     return "overview";

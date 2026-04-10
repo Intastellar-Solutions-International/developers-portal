@@ -1,12 +1,14 @@
 ---
 title: How it works
-description: Load order, blocking model, consent signals, and why measurement can stay usable after consent choices.
+description: Page load sequence, how blocking and consent signals work with GTM, GA4, and Meta—without marketing fluff.
 sidebar_label: How it works
 order: 2
 lastUpdated: "2026-04-08"
 related:
   - title: Quickstart
     href: /docs/cookie-banner/quickstart
+  - title: Core concepts
+    href: /docs/cookie-banner/core-concepts
   - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: Google Consent Mode
@@ -15,55 +17,75 @@ related:
 
 # How it works
 
-This page is the **mental model** for implementers. For copy-paste install steps, use [Quickstart](/docs/cookie-banner/quickstart).
+Read this once you have the snippet from [Quickstart](/docs/cookie-banner/quickstart). It explains **what happens in the browser** so GTM and vendor tags make sense.
 
-## What runs first
+## 1. What runs on page load (order)
 
-1. **`window.INTA`** — configuration object (policy URL, domain, company, optional `gtagId`, styling, etc.).
-2. **`uc.js`** — the CMP loader from `consents.cdn.intastellarsolutions.com`.
+Every visit follows roughly this sequence:
 
-Both should live **early in `<head>`**, before analytics, ads, pixels, or other non-essential third parties. If those tags run first, you can get **pre-consent hits** or cookies that are hard to justify under GDPR-style rules.
+1. **HTML starts parsing.** Your early `<head>` content runs in order.
+2. **`window.INTA` executes** — configuration only (policy URL, domain, company, optional `gtagId`, UI options). Nothing here loads third-party trackers by itself.
+3. **`uc.js` loads** — the CMP bootstrap from `consents.cdn.intastellarsolutions.com`. It should run **before** analytics, ads, or pixels that assume consent.
+4. **Rest of `<head>` and body** — GTM, `gtag`, Meta, embeds, etc.
 
-See [Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle) for practical ordering notes.
+If step 3 runs **after** GA4 or a pixel, you can get cookies or hits **before** the visitor chose—hard to defend under GDPR-style law and confusing in reports. That is why [Quickstart](/docs/cookie-banner/quickstart) insists on **top of `<head>`**.
 
-## Blocking model (plain language)
+## 2. How “blocking” actually works
 
-Intastellar Consents is built so **non-essential tracking does not behave as if consent were granted** before the visitor chooses.
+“Blocking” here means: **non-essential tracking must not behave as if the visitor already granted full consent** before they interact with the banner.
 
-- **Before a choice:** marketing/analytics tags should stay **restricted** or **not fire** in a way that assumes full consent—depending on how you wired GTM, `gtag`, Meta, etc.
-- **After a choice:** the CMP applies the visitor’s decision. Tags that support **consent APIs** (e.g. Google **Consent Mode v2**) can receive **updated signals** so behaviour matches **accept**, **deny**, or **granular** choices.
+That is achieved **together** by:
 
-Exact behaviour is always a **combination** of:
+| Piece | Role |
+| --- | --- |
+| **CMP** | Shows the UI, stores the choice, applies documented signals to supported stacks. |
+| **Load order** | Late or mis-ordered tags defeat the CMP—see [Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle). |
+| **GTM triggers & tag consent** | Tags must not fire on naked “All Pages” before consent unless your legal model explicitly allows it. |
+| **Vendor APIs** | Google **Consent Mode v2**, Meta consent parameters, etc.—each vendor defines how tags react. |
 
-- the CMP,
-- your **tag manager / triggers**, and
-- each **vendor’s** consent integration.
+**Hard-coded** `<script src="https://…">` tags in HTML are **not** automatically rewritten. You must **move** them below the CMP or **gate** them (GTM, dynamic inject after consent).
 
-The docs give **opinionated patterns** (e.g. GTM on **Consent Initialization**) so the three line up.
+## 3. Before the visitor chooses
 
-## Google Consent Mode
+Until a choice is stored (or defaults apply per your setup):
 
-When you set `settings.gtagId` and use Google tags, Intastellar can align with **Consent Mode v2** (including Advanced Mode where applicable). That lets Google tags adjust how they collect or **ping** based on consent instead of silently acting fully granted.
+- Marketing/analytics tags should stay **restricted** or **not fire** in a way that assumes full ad/analytics cookies—**depending on your GTM and vendor configuration**.
+- Google tags, when using Consent Mode with `gtagId` and correct defaults, can use **consent-aware** behaviour (including limited pings in Advanced Mode—see [Google Consent Mode](/docs/cookie-banner/google-consent-mode)).
 
-Details: [Google Consent Mode](/docs/cookie-banner/google-consent-mode).
+## 4. After the visitor chooses
 
-## Why measurement does not have to “break”
+When the visitor accepts, rejects, or picks granular categories:
 
-After consent is **denied** or limited, platforms like Google may still support **aggregated or modelled** insights (per their policies)—so dashboards do not necessarily go to zero. That is **not** the same as full personal-level tracking.
+1. The CMP **persists** the decision (subject to cookie/storage rules).
+2. **Integrated vendors** receive **updated consent signals** where configured (e.g. Google Consent Mode updates when `gtagId` is set and tags are wired correctly).
+3. **GTM** should fire dependent tags only when your triggers match the new state (custom events, consent checks, etc.).
 
-After **accept**, tags can run in **normal** measurement modes again, as long as your container fires them **after** consent state is known.
+**GTM / `dataLayer`:** When consent **changes**, the banner pushes **`cookie_consent_update`** to `dataLayer`. In GTM, use a **Custom Event** trigger with that name so tags can fire on accept/reject/granular updates—see [Events and API](/docs/cookie-banner/javascript/events-and-api). There is still no documented global such as `window.IntastellarConsents.*`; inspect the **Data Layer** in GTM Preview for the current payload shape.
 
-We avoid claiming “tracking never breaks”: we document **load order + Consent Mode + triggers** so you can make behaviour **predictable**.
+## 5. How GTM and GA receive signals
 
-## What the CMP does not do
+- **GTM:** The recommended pattern is a **Custom HTML** (or equivalent) tag containing the same `window.INTA` + `uc.js` snippet, fired on **Consent Initialization – All pages**, **before** tags that need consent. See [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+- **GA4 / Google Ads:** With `settings.gtagId` and Consent Mode–aware tag settings, Google tags adjust behaviour to match consent instead of acting “fully on” silently.
+- **Meta Pixel:** Consent is handled via **Meta’s** options and **your** trigger timing—see [Meta Pixel](/docs/cookie-banner/meta-pixel).
 
-- It does not replace your **privacy policy**, **vendor disclosures**, or **legal** assessment.
-- It does not automatically fix **hard-coded** third-party scripts that ignore consent—you still **gate** those in code or GTM.
+## 6. Why measurement does not have to “break”
+
+After **reject** or limited consent, platforms like Google may still show **aggregated or modelled** metrics (per **their** policies). That is **not** the same as unrestricted personal tracking.
+
+After **accept**, full measurement can resume **if** your container fires tags **after** consent is known.
+
+We avoid promises like “zero impact on analytics”—we document **order + Consent Mode + triggers** so results are **explainable** and **auditable**.
+
+## 7. What the CMP does not do
+
+- Replace your **privacy policy**, **vendor list**, or **legal** sign-off.
+- Fix tags you placed **above** the CMP or that ignore consent APIs.
+- Guarantee compliance without **your** correct configuration.
 
 ## Related
 
-- [Quickstart](/docs/cookie-banner/quickstart)
-- [Integrations overview](/docs/cookie-banner/integrations-overview)
+- [Core concepts](/docs/cookie-banner/core-concepts) — categories, states, responsibility split.
 - [Debugging](/docs/cookie-banner/debugging)
+- [Integrations overview](/docs/cookie-banner/integrations-overview)
 
 [← Documentation home](/docs/cookie-banner)
