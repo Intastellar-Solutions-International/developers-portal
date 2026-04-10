@@ -1,6 +1,12 @@
 import type { MetaDescriptor } from "react-router";
 
-import { DEFAULT_LOCALE, isLocale, type Locale } from "~/lib/i18n/locale";
+import type { BreadcrumbItem } from "~/lib/docs.server";
+import {
+  DEFAULT_LOCALE,
+  HREFLANG_TAG,
+  isLocale,
+  type Locale,
+} from "~/lib/i18n/locale";
 import { getLocaleFromPathname } from "~/lib/i18n/localized-path";
 import {
   interpolate,
@@ -109,6 +115,51 @@ export function resolveMetaLocale(
   return getLocaleFromPathname(pathname);
 }
 
+/** Same fragment as `buildGlobalSeoJsonLdMeta` WebSite `@id` (inta.dev graph). */
+function intaDevWebsiteSchemaId(): string {
+  return `${siteOrigin()}/#website`;
+}
+
+function breadcrumbLdItemUrl(href: string): string {
+  if (href.startsWith("http://") || href.startsWith("https://")) return href;
+  return absoluteUrl(href.startsWith("/") ? href : `/${href}`);
+}
+
+function buildDocBreadcrumbListLd(
+  items: readonly BreadcrumbItem[],
+  pageUrl: string,
+):
+  | {
+      "@type": "BreadcrumbList";
+      "@id": string;
+      itemListElement: Array<{
+        "@type": "ListItem";
+        position: number;
+        name: string;
+        item: string;
+      }>;
+    }
+  | null {
+  const itemListElement = items
+    .filter((crumb): crumb is BreadcrumbItem & { href: string } =>
+      Boolean(crumb.href?.trim()),
+    )
+    .map((crumb, i) => ({
+      "@type": "ListItem" as const,
+      position: i + 1,
+      name: crumb.label,
+      item: breadcrumbLdItemUrl(crumb.href),
+    }));
+
+  if (itemListElement.length === 0) return null;
+
+  return {
+    "@type": "BreadcrumbList",
+    "@id": `${pageUrl}#breadcrumb`,
+    itemListElement,
+  };
+}
+
 export function buildDocPageMeta(opts: {
   title: string;
   description?: string;
@@ -118,6 +169,8 @@ export function buildDocPageMeta(opts: {
   /** Absolute image URL for Open Graph / Twitter */
   ogImage?: string;
   locale?: Locale;
+  /** UI breadcrumbs — emitted as `BreadcrumbList` in JSON-LD when non-empty. */
+  breadcrumbs?: readonly BreadcrumbItem[];
 }): MetaDescriptor[] {
   const {
     title,
@@ -126,6 +179,7 @@ export function buildDocPageMeta(opts: {
     modifiedTime,
     ogImage,
     locale = DEFAULT_LOCALE,
+    breadcrumbs,
   } = opts;
   const pageTitle = `${title} · ${SITE_NAME}`;
   const url = absoluteUrl(pathname);
@@ -137,12 +191,13 @@ export function buildDocPageMeta(opts: {
 
   const twitterCard = ogImage ? "summary_large_image" : "summary";
 
-  const jsonLd = {
-    "@context": "https://schema.org",
+  const articleNode: Record<string, unknown> = {
     "@type": "TechArticle",
+    "@id": `${url}#article`,
     headline: title,
     description: desc,
     url,
+    inLanguage: HREFLANG_TAG[locale],
     ...(modifiedTime ? { dateModified: modifiedTime } : {}),
     ...(ogImage ? { image: ogImage } : {}),
     author: {
@@ -150,6 +205,23 @@ export function buildDocPageMeta(opts: {
       name: "Intastellar Solutions",
     },
     publisher: { ...INTASTELLAR_PUBLISHER_ORG },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${url}#webpage`,
+      url,
+    },
+    isPartOf: { "@id": intaDevWebsiteSchemaId() },
+  };
+
+  const graph: object[] = [articleNode];
+  if (breadcrumbs?.length) {
+    const breadcrumbLd = buildDocBreadcrumbListLd(breadcrumbs, url);
+    if (breadcrumbLd) graph.push(breadcrumbLd);
+  }
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": graph,
   };
 
   return [

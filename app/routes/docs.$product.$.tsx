@@ -87,6 +87,7 @@ export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
     modifiedTime: doc.lastUpdated,
     ogImage: doc.ogImage,
     locale: doc.locale,
+    breadcrumbs: doc.breadcrumbs,
   });
 }
 
