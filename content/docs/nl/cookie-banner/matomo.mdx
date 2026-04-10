@@ -1,0 +1,44 @@
+---
+title: Matomo
+description: Matomo (self-hosted of cloud) met Intastellar Consents en toestemmingsbewust laden.
+order: 47
+lastUpdated: "2026-04-08"
+related:
+  - title: Integraties overzicht
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Snelstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Matomo
+
+Matomo wordt vaak als **analytics / statistiek** gezien. Met Intastellar Consents mag het tracking-snippet **niet** volledig actief draaien tot de bezoeker het bijbehorende doel accepteert.
+
+## Vereisten
+
+- [Snelstart](/docs/cookie-banner/quickstart) zodat de CMP eerst initialiseert.
+- Lees Matomo **Consent Manager** of **opt-out**-documentatie naast deze pagina—Intastellar levert site-brede toestemmings-UI; Matomo moet mogelijk nog weten wanneer tracking is toegestaan.
+
+## Google Tag Manager
+
+1. Rol Matomo uit via **Custom HTML** of officiële sjabloon als u die gebruikt.
+2. Laat vuren op een trigger gekoppeld aan **analytics-toestemming** (of container-equivalent), **niet** op kale „All Pages“ vóór de CMP.
+3. Houd de CMP op **Consent Initialization** — zie [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+
+## Matomo Consent API
+
+Gebruikt u Matomo’s JavaScript-API voor consent-vlaggen, zet ze wanneer Intastellar de keuze van de gebruiker toepast (vaak via GTM custom events of app-laag). Exacte eventnamen hangen van uw setup af; valideer op **staging**.
+
+## Controleren
+
+- Vóór accepteren: geen Matomo-hits die volledige analytics-cookies veronderstellen, volgens uw configuratie.
+- Na accepteren: tracking en dashboards tonen verwacht verkeer.
+
+## Zie ook
+
+- [Probleemoplossing](/docs/cookie-banner/debugging)
+- [Marketingintegraties-overzicht](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integraties overzicht](/docs/cookie-banner/integrations-overview)

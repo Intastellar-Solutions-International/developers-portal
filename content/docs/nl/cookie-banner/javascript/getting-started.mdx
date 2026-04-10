@@ -1,18 +1,30 @@
 ---
 title: Aan de slag
-description: Intastellar Consents via JavaScript op uw site integreren.
+description: Volledige JavaScript-installatie—snippet met veelgebruikte opties, privacy-URL en links naar Snelstart en schema.
 order: 10
-lastUpdated: "2026-04-05"
+lastUpdated: "2026-04-08"
 related:
+  - title: Snelstart
+    href: /docs/cookie-banner/quickstart
   - title: window.INTA JSON-schema
     href: /docs/cookie-banner/javascript/inta-schema
+  - title: SPA’s en SSR
+    href: /docs/cookie-banner/javascript/spa-and-ssr
+  - title: Scriptlevenscyclus
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Integraties overzicht
+    href: /docs/cookie-banner/integrations-overview
   - title: Uiterlijk en gedrag aanpassen
     href: /docs/cookie-banner/javascript/customize
 ---
 
 # Aan de slag (JavaScript)
 
-Plaats het fragment **direct na** de openende `<head>`-tag op elke pagina (of één keer in het root-layout). Dezelfde configuratievorm staat op de openbare pagina [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents) — vervang placeholders door echte domeinen, id’s en branding. [Plannen en prijzen](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) staan op de productpagina.
+Voor een **minimale eerste installatie** (~5 minuten) gebruikt u **[Snelstart](/docs/cookie-banner/quickstart)** — kleine snippet, duidelijke controlestappen.
+
+Deze pagina is de **volledige** installatiereferentie: veelgebruikte `settings`-velden, optioneel `gtagId` en placeholders voor branding. Dezelfde configuratievorm staat op de openbare [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents)-overzichtspagina. [Plannen en prijzen](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) staan op de productpagina.
+
+**Frameworks:** [SPA’s en SSR (Next.js, enz.)](/docs/cookie-banner/javascript/spa-and-ssr)
 
 ```html
 <script>
@@ -34,15 +46,20 @@ Plaats het fragment **direct na** de openende `<head>`-tag op elke pagina (of é
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
-Vervang placeholders door uw domein, bedrijfsnaam, kleuren, logo-URL en meet-id’s.
+Vervang placeholders door domein, bedrijfsnaam, kleuren, logo-URL en meet-ID’s. Laat `gtagId` weg tot u Google-tags gebruikt; zie [Snelstart](/docs/cookie-banner/quickstart) stap 2.
 
-## URL van het privacybeleid
+## URL privacybeleid
 
-Vul een bereikbare privacy-URL in. Gebruik `policy_link` en/of `settings.privacy_policy` op `window.INTA`. Ontbrekende of ongeldige URL’s zijn een veelvoorkomende reden dat de banner niet zichtbaar is — zie de [FAQ](/docs/cookie-banner#faq) op de documentatie-startpagina.
+Zet een bereikbare privacy-URL. Gebruik `policy_link` en/of `settings.privacy_policy` op `window.INTA`. Ontbrekende of ongeldige URL’s zijn een veelvoorkomende reden dat de banner verborgen blijft — zie [FAQ](/docs/cookie-banner#faq) op de documentatie-start.
 
 ## Zie ook
 
+- [Snelstart](/docs/cookie-banner/quickstart)
 - [`window.INTA`-referentie (JSON-schema)](/docs/cookie-banner/javascript/inta-schema)
+- [Scriptlevenscyclus](/docs/cookie-banner/javascript/script-lifecycle)
+- [Events en API](/docs/cookie-banner/javascript/events-and-api)
+- [Integraties overzicht](/docs/cookie-banner/integrations-overview)
+- [Google Consent Mode](/docs/cookie-banner/google-consent-mode)
 - [Aanpassen](/docs/cookie-banner/javascript/customize)
 - [iFrames](/docs/cookie-banner/javascript/iframes)
 - [Logo toevoegen](/docs/cookie-banner/javascript/logo)

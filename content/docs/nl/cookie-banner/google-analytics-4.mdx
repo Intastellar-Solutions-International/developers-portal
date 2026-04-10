@@ -1,0 +1,50 @@
+---
+title: Google Analytics 4
+description: Aanbevolen GA4-setup met Intastellar Consents en Google Consent Mode v2.
+order: 54
+lastUpdated: "2026-04-08"
+related:
+  - title: Snelstart
+    href: /docs/cookie-banner/quickstart
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Google Analytics 4
+
+Aanbevolen pad: **GA4 + Consent Mode v2**, CMP eerst, tags geblokkeerd in GTM of equivalent.
+
+## Vereisten
+
+- [Snelstart](/docs/cookie-banner/quickstart) afgerond (of dezelfde `window.INTA` + `uc.js`-volgorde in GTM).
+- `settings.gtagId` op uw **GA4-meet-ID** (`G-XXXXXXXX`) wanneer de CMP Google automatisch afstemt.
+- Lees [Google Consent Mode](/docs/cookie-banner/google-consent-mode) één keer—defaults zijn belangrijk.
+
+## Aanbevolen: GA4 via Google Tag Manager
+
+1. Implementeer de CMP zoals in [Google Tag Manager](/docs/cookie-banner/google-tag-manager) op **Consent Initialization**.
+2. Voeg een **Google-tag** of **GA4-configuratietag** toe die **toestemming** respecteert in de taginstellingen (stem af op uw juridische defaults per type).
+3. **Vuur** GA4 **niet** af met een kale „All Pages“-trigger als dat volledige analytics-cookies vóór de CMP betekent—gebruik toestemmingsbewuste configuratie.
+
+## Inline `gtag` (zonder GTM)
+
+Laadt u `gtag.js` direct:
+
+- Zet **`window.INTA` + `uc.js` eerst** in `<head>`.
+- Laad GA **na** de CMP-snippet of zorg dat Consent Mode vóór relevante hits staat.
+
+Dubbele GA-loaders (GTM + hardcoded `gtag`) veroorzaken vaak dubbele hits en verkeerde toestemmingsstatus—kies **één** hoofdpad.
+
+## Controleren
+
+1. **GTM-voorbeeld** of GA **DebugView**: vóór accepteren mag analytics zich niet gedragen als **volledig ingestemd**, tenzij u defaults bewust zo hebt gezet.
+2. Na **Accepteren** zou normale verzameling moeten lopen (m.u.v. adblockers, enz.).
+
+## Zie ook
+
+- [Probleemoplossing](/docs/cookie-banner/debugging)
+- [Integraties overzicht](/docs/cookie-banner/integrations-overview)
+
+[← Documentatie-start](/docs/cookie-banner)

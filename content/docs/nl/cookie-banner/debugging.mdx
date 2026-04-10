@@ -1,0 +1,64 @@
+---
+title: Probleemoplossing
+description: Probleemgestuurde troubleshooting—geen banner, tags te vroeg, GTM-races, toestemming blijft niet hangen.
+sidebar_label: Probleemoplossing
+order: 3
+lastUpdated: "2026-04-08"
+related:
+  - title: Snelstart
+    href: /docs/cookie-banner/quickstart
+  - title: Hoe het werkt
+    href: /docs/cookie-banner/how-it-works
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Probleemoplossing
+
+Controleer in kleine stappen voordat u ongerelateerde instellingen wijzigt.
+
+## Banner verschijnt niet
+
+| Waarschijnlijke oorzaak | Zo controleren | Oplossing |
+| --- | --- | --- |
+| Slechte `policy_link` | URL in nieuw tabblad openen; HTTPS en statuscode | Werkende policy-pagina gebruiken; redirects / 404 oplossen |
+| Snippet te laag of alleen in body | Paginabron bekijken; zoeken naar `uc.js` | Blok naar begin van `<head>` verplaatsen |
+| SPA / framework laat laat mounten | Server-HTML vs. gerenderde DOM vergelijken | CMP laden vanuit **root-layout** of shell rond elke route |
+| Dubbele of conflicterende `window.INTA` | Repo / HTML doorzoeken op `window.INTA` | **Eén** definitie vóór `uc.js` houden |
+
+## Tracking „vuurt niet“ na toestemming
+
+| Waarschijnlijke oorzaak | Zo controleren | Oplossing |
+| --- | --- | --- |
+| Tag heeft geen post-consent-trigger | GTM-voorbeeld: tag vuurt niet na accepteren | Toestemmingsbewuste triggers of Consent Mode-instellingen |
+| `gtagId` ontbreekt voor GA4 | Vergelijken met [Snelstart](/docs/cookie-banner/quickstart) | `gtagId` zetten of GA volgens uw patroon aansluiten |
+| Consent Mode-defaults te streng | GA / Tag Assistant | Defaults **bewust** aanpassen en vastleggen |
+
+## Tags vuren vóór toestemming (ernstig)
+
+| Waarschijnlijke oorzaak | Zo controleren | Oplossing |
+| --- | --- | --- |
+| GA/Ads op „All Pages“ vóór CMP | Tijdlijn GTM-voorbeeld | CMP op **Consent Initialization** laten vuren; afhankelijke tags blokkeren |
+| Hardcoded `gtag.js` in HTML | Zoeken naar `googletagmanager.com/gtag` | Dubbele loaders verwijderen of **na** CMP plaatsen |
+| Embed van derden in `<head>` | Netwerk-tab | Uitstellen tot het doel is toegestaan |
+
+## GTM-triggers „werken niet“
+
+| Waarschijnlijke oorzaak | Zo controleren | Oplossing |
+| --- | --- | --- |
+| CMP niet op Consent Init | Triggertype in GTM | **Consent Initialization – All pages** (of equivalent) |
+| Race met Page View | Volgorde in Voorbeeld | CMP moet **vóór** analytics-tags vuren |
+| Verkeerde container | Container-ID op site | Juiste GTM-container gebruiken |
+
+## Toestemmingskeuze blijft niet bestaan
+
+| Waarschijnlijke oorzaak | Zo controleren | Oplossing |
+| --- | --- | --- |
+| Verkeerde `rootDomain` | `settings.rootDomain` met hostnaam vergelijken | Afstemmen op cookie-domeinmodel |
+| Twee kopieën van `uc.js` | Zoeken naar `uc.js` in bron | Eén canonieke installatie |
+
+## Nog steeds vast
+
+Noteer: browser, pagina-URL (staging is ok), **paginabron**-fragment rond `uc.js`, en bij GTM een **Voorbeeld**-screenshot of export. Gebruik daarna support of [FAQ](/docs/cookie-banner#faq) op de documentatie-start.
+
+[← Documentatie-start](/docs/cookie-banner)

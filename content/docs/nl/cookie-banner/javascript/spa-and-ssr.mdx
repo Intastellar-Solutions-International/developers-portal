@@ -1,0 +1,45 @@
+---
+title: SPA’s en SSR (Next.js, enz.)
+description: Houd Intastellar Consents in het documenthoofd bij React, Next.js of andere SPA-frameworks.
+sidebar_label: SPA & SSR
+order: 11
+lastUpdated: "2026-04-08"
+related:
+  - title: Snelstart
+    href: /docs/cookie-banner/quickstart
+  - title: Scriptlevenscyclus
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Probleemoplossing
+    href: /docs/cookie-banner/debugging
+---
+
+# SPA’s en SSR (Next.js, enz.)
+
+Frameworks die de UI hydrateren kunnen de CMP per ongeluk **te laat** of **dubbel** laden. De regel blijft: **`window.INTA` dan `uc.js`, zo vroeg mogelijk in het echte HTML-document.**
+
+## Next.js (App Router)
+
+- Gebruik bij voorkeur **`app/layout.tsx`** (of root-layout) met een **server-** of **client**-component die de snippet in `<head>` uitgeeft.
+- Met **`next/script`**: zorg dat de CMP **vóór** analytics-scripts in de **documentvolgorde** draait—`strategy="beforeInteractive"` kan passen voor de CMP-loader; vermijd GA met eerder effectieve volgorde.
+- Monteer de CMP niet alleen in een diepe clientroute (bijv. één paginacomponent), tenzij elke instaproute die bevat.
+
+## React (SPA)
+
+- Voeg beide script-tags toe aan **`public/index.html`** of het **HTML-sjabloon** van het framework, niet alleen in een laat gemounte component.
+- Zoek in de bundle naar dubbel `uc.js` bij scripts van derden via plugins.
+
+## Vue / Nuxt / SvelteKit
+
+- Gebruik het **root-layout** of **`app.html`** / head-hooks zodat de CMP in het **initiële** HTML-antwoord voor de eerste paint zit.
+
+## Controleren
+
+1. **Paginabron weergeven** (niet alleen Elementen): `uc.js` moet in de ruwe HTML staan.
+2. Geen banner of toestemming reset bij navigatie: [Probleemoplossing](/docs/cookie-banner/debugging).
+
+## Zie ook
+
+- [Aan de slag (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- [Hoe het werkt](/docs/cookie-banner/how-it-works)
+
+[← Documentatie-start](/docs/cookie-banner)

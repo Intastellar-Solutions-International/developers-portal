@@ -1,0 +1,46 @@
+---
+title: Pinterest
+description: Pinterest Tag et suivi des conversions avec Intastellar Consents.
+order: 52
+lastUpdated: "2026-04-08"
+related:
+  - title: Vue d’ensemble des intégrations
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Meta Pixel
+    href: /docs/cookie-banner/meta-pixel
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+---
+
+# Pinterest
+
+Le **Pinterest Tag** est du suivi publicitaire / conversions. Il doit s’exécuter **après** Intastellar Consents et seulement lorsque le consentement **marketing** ou **publicité** est accordé (selon les catégories de votre bandeau).
+
+## Prérequis
+
+- [Démarrage rapide](/docs/cookie-banner/quickstart).
+- ID du tag Pinterest et noms d’événements depuis [la doc Pinterest](https://help.pinterest.com/) pour votre campagne.
+
+## Google Tag Manager
+
+1. Ajoutez le code de base Pinterest et les balises d’événements dans GTM.
+2. Définissez des déclencheurs qui ne se déclenchent que lorsque le consentement **publicité/marketing** est autorisé — même schéma que [Meta Pixel](/docs/cookie-banner/meta-pixel).
+3. N’attachez pas Pinterest à **All Pages** au chargement avant la CMP.
+
+## Balise inline
+
+Si la balise est codée en dur, placez-la **après** `uc.js` dans `<head>` ou injectez-la dynamiquement après consentement.
+
+## Vérifier
+
+- Les appels réseau `pinimg.com` / Pinterest pour le tag ne doivent pas se comporter comme un suivi marketing complet **avant** acceptation.
+- Après acceptation, conversions et événements catalogue se déclenchent comme configuré.
+
+## Voir aussi
+
+- [Dépannage](/docs/cookie-banner/debugging)
+- [Répertoire des intégrations marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)

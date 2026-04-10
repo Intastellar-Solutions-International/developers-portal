@@ -1,0 +1,44 @@
+---
+title: HubSpot
+description: HubSpot-tracking en formulieren met Intastellar Consents—CMP eerst, toestemmingsbewust afvuren.
+order: 46
+lastUpdated: "2026-04-08"
+related:
+  - title: Integraties overzicht
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Snelstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# HubSpot
+
+Intastellar Consents integreert met **HubSpot**, zodat marketing en tracking toestemming respecteren. Sluit HubSpot aan als elke andere niet-essentiële stack: **CMP vóór HubSpot-scripts**, daarna pas vuren wanneer de keuze van de bezoeker het toelaat.
+
+## Vereisten
+
+- [Snelstart](/docs/cookie-banner/quickstart) (of equivalent) zodat `window.INTA` + `uc.js` **vroeg** in `<head>` laadt.
+- Duidelijkheid welke HubSpot-functies u gebruikt (trackingcode, formulieren, chat) en welke toestemmingsdoelen daarbij horen.
+
+## Aanbevolen: Google Tag Manager
+
+1. Rol de CMP uit op **Consent Initialization** — zie [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+2. Voeg **HubSpot**-tags (of Custom HTML) toe met triggers die **geaccepteerde** marketing-/analytics-toestemming weerspiegelen, volgens uw beleid.
+3. Laad de HubSpot-embed niet globaal op **All Pages** vóór toestemming, tenzij juridische review anders voorschrijft.
+
+## HubSpot Cookie API / CMP-gedrag
+
+De documentatie van HubSpot beschrijft hoe hun tags met cookies en consent-tools omgaan. Volg **HubSpot + CMP**-richtlijnen naast de laadvolgorde van Intastellar: de CMP levert toestemmingsstatus; GTM of site mag tracking **niet** als verleend behandelen vóór de keuze.
+
+## Controleren
+
+- **Netwerk / Applicatie**: HubSpot-gerelateerde requests en cookies mogen vóór accepteren niet volledig actief zijn (voor de beperkte doeleinden).
+- Na accepteren werken formulieren en tracking zoals geconfigureerd.
+
+## Zie ook
+
+- [Probleemoplossing](/docs/cookie-banner/debugging)
+- [Marketingintegraties-overzicht](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integraties overzicht](/docs/cookie-banner/integrations-overview)

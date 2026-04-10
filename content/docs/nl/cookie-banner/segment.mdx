@@ -1,0 +1,46 @@
+---
+title: Segment
+description: Segment CDP en analytics-pijplijn met Intastellar Consents—bronnen na toestemming.
+order: 51
+lastUpdated: "2026-04-08"
+related:
+  - title: Integraties overzicht
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Snelstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Segment
+
+**Segment** verzamelt events en stuurt ze door naar bestemmingen. Het **Analytics.js**-snippet (of vergelijkbaar) is pas nodig als toestemming het toelaat—behandel Segment als elke analytics-/marketing-loader: **CMP eerst**, dan Segment wanneer toegestaan.
+
+## Vereisten
+
+- [Snelstart](/docs/cookie-banner/quickstart).
+- Lijst welke Segment-**bestemmingen** bij welke toestemmingsdoelen horen (analytics vs. ads, enz.).
+
+## Google Tag Manager
+
+Veel teams laden Segment via GTM:
+
+1. Voeg het Segment-snippet toe in een tag die alleen vuurt als **analytics** (of het gecombineerde doel) is geaccepteerd.
+2. Of laad Segment in applicatiecode **nadat** u toestemmingsstatus leest—lezen moet **na** CMP-initialisatie gebeuren.
+
+## Bestemmingen
+
+Elke bestemming (GA4, ad-pixels, enz.) kan eigen toestemmingsregels nodig hebben. Segment vervangt niet het **blokkeren** van downstream-tags; Intastellar levert site-brede toestemming—koppel Segment-laden en **bestemmings**-schakelaars daaraan.
+
+## Controleren
+
+- Aanroepen naar `cdn.segment.com` / analytics mogen zich niet als volledig ingestemd gedragen **vóór** wat uw beleid toestaat.
+- Na accepteren stromen events naar bestemmingen zoals geconfigureerd.
+
+## Zie ook
+
+- [Probleemoplossing](/docs/cookie-banner/debugging)
+- [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
+- [Marketingintegraties-overzicht](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integraties overzicht](/docs/cookie-banner/integrations-overview)
