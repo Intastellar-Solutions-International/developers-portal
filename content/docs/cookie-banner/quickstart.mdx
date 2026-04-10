@@ -1,0 +1,103 @@
+---
+title: Quickstart
+description: Install Intastellar Consents in minutes—minimal snippet, verify in the browser, then wire GTM or Google tags.
+sidebar_label: Quickstart
+order: 1
+lastUpdated: "2026-04-08"
+related:
+  - title: How it works
+    href: /docs/cookie-banner/how-it-works
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Debugging
+    href: /docs/cookie-banner/debugging
+---
+
+# Quickstart
+
+**Target:** under 5 minutes.  
+**Outcome:** The consent UI appears, non-essential tags stay gated until the visitor chooses, and Google tags can receive Consent Mode updates when you configure them.
+
+## Before you start
+
+- You can edit HTML `<head>` or your root layout (WordPress theme, Shopify `theme.liquid`, etc.).
+- You need a **working privacy policy URL** (HTTPS, no 404). Missing or invalid URLs are the most common reason the banner does not show.
+
+## Step 1 — Two tags in `<head>` (order matters)
+
+Paste **immediately after** the opening `<head>` tag (as early as possible):
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://YOURDOMAIN.com/privacy-policy",
+    settings: {
+      rootDomain: "YOURDOMAIN.com",
+      company: "Your company name",
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+**Rules**
+
+1. `window.INTA` must run **before** `uc.js`.
+2. Do **not** load analytics or marketing scripts **above** this block unless you explicitly intend to (default: do not).
+
+Replace:
+
+- `policy_link` — your real privacy policy.
+- `settings.rootDomain` — the site’s registrable domain (no `https://`).
+- `settings.company` — name shown in the UI.
+
+## Step 2 — Google Analytics / Ads only: add `gtagId`
+
+If you use **GA4 or Google Ads** and want Intastellar to coordinate **Google Consent Mode** with your measurement ID, extend `settings`:
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://YOURDOMAIN.com/privacy-policy",
+    settings: {
+      rootDomain: "YOURDOMAIN.com",
+      company: "Your company name",
+      gtagId: "G-XXXXXXXXXX",
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+If you do **not** use Google tags yet, skip `gtagId` until you add them.
+
+Full field list: [`window.INTA` (JSON Schema)](/docs/cookie-banner/javascript/inta-schema).
+
+## Step 3 — Verify in the browser
+
+1. Open the site in a **private window**.
+2. You should **see the consent UI** (banner or overlay, depending on configuration).
+3. DevTools → **Network**:
+   - `uc.js` loads **early** in the document.
+   - Before accepting marketing/analytics, non-essential requests should not behave as if consent were granted—exact behaviour depends on your tags; see [How it works](/docs/cookie-banner/how-it-works).
+
+## Step 4 — Reject, then accept
+
+1. Choose **Reject** (or minimal consent), then reload once.
+2. Your choice should **persist** (subject to cookie/storage rules). If it resets every time, check for **duplicate** `window.INTA` / `uc.js` blocks or a wrong `rootDomain`.
+
+## What “done” looks like
+
+- Banner visible for new visitors.
+- Tags that need consent do **not** run as fully consented **before** a choice.
+- After **Accept**, measurement can resume or use **consent-aware** behaviour (Google: Consent Mode; Meta: your pixel + consent configuration).
+
+## Next
+
+- **GTM:** [Google Tag Manager](/docs/cookie-banner/google-tag-manager)
+- **GA4:** [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
+- **Meta:** [Meta Pixel](/docs/cookie-banner/meta-pixel)
+- **Full snippet & styling:** [Get started (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- **Stuck:** [Debugging](/docs/cookie-banner/debugging)
+
+[← Documentation home](/docs/cookie-banner)

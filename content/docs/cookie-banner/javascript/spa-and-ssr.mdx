@@ -1,0 +1,45 @@
+---
+title: SPAs and SSR (Next.js, etc.)
+description: Keep Intastellar Consents in the document head when using React, Next.js, or other SPA frameworks.
+sidebar_label: SPAs & SSR
+order: 11
+lastUpdated: "2026-04-08"
+related:
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+  - title: Script lifecycle
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Debugging
+    href: /docs/cookie-banner/debugging
+---
+
+# SPAs and SSR (Next.js, etc.)
+
+Frameworks that hydrate the UI can accidentally load the CMP **too late** or **twice**. The rule stays the same: **`window.INTA` then `uc.js`, as early as possible in the real HTML document.**
+
+## Next.js (App Router)
+
+- Prefer **`app/layout.tsx`** (or root layout) with a **server** or **client** component that emits the snippet in `<head>`.
+- If you use **`next/script`**, ensure the CMP runs **before** analytics scripts in the **document order**—`strategy="beforeInteractive"` can be appropriate for the CMP loader; avoid loading GA with an earlier effective order.
+- Do not mount the CMP only inside a deep client route (e.g. a single page component) unless every entry route includes it.
+
+## React (SPA)
+
+- Add the two script tags to **`public/index.html`** or the framework’s **HTML template**, not only inside a late-mounted component.
+- Search the bundle for duplicate `uc.js` when adding third-party scripts via plugins.
+
+## Vue / Nuxt / SvelteKit
+
+- Use the framework’s **root layout** or **`app.html`** / head hooks so the CMP is in the **initial** HTML response for the first paint.
+
+## Verify
+
+1. **View Page Source** (not only Elements): `uc.js` should appear in the raw HTML.
+2. [Debugging](/docs/cookie-banner/debugging) if the banner is missing or consent resets on navigation.
+
+## Related
+
+- [Get started (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- [How it works](/docs/cookie-banner/how-it-works)
+
+[← Documentation home](/docs/cookie-banner)

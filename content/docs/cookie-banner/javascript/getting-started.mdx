@@ -1,11 +1,15 @@
 ---
 title: Get Started
-description: Integrate Intastellar Consents on your website via JavaScript.
+description: Full JavaScript install—snippet with common options, privacy URL, and links to Quickstart and schema.
 order: 10
 lastUpdated: "2026-04-08"
 related:
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
   - title: window.INTA JSON Schema
     href: /docs/cookie-banner/javascript/inta-schema
+  - title: SPAs and SSR
+    href: /docs/cookie-banner/javascript/spa-and-ssr
   - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: Integrations overview
@@ -14,9 +18,13 @@ related:
     href: /docs/cookie-banner/javascript/customize
 ---
 
-# Get Started (JavaScript)
+# Get started (JavaScript)
 
-Paste the snippet **immediately after** the opening `<head>` tag on each page (or once in your root layout). The same shape of config is shown on the public [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents) overview—swap in your real domains, IDs, and branding. [Plans and pricing](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) are on the product page.
+For a **minimal first install** (~5 minutes), use **[Quickstart](/docs/cookie-banner/quickstart)**—small snippet, clear verification steps.
+
+This page is the **full** reference install: common `settings` fields, optional `gtagId`, and placeholders for branding. The same shape of config appears on the public [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents) overview. [Plans and pricing](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) are on the product page.
+
+**Frameworks:** [SPAs and SSR (Next.js, etc.)](/docs/cookie-banner/javascript/spa-and-ssr)
 
 ```html
 <script>
@@ -38,7 +46,7 @@ Paste the snippet **immediately after** the opening `<head>` tag on each page (o
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
-Replace placeholders with your domain, company name, colours, logo URL, and measurement IDs.
+Replace placeholders with your domain, company name, colours, logo URL, and measurement IDs. Omit `gtagId` until you use Google tags; see [Quickstart](/docs/cookie-banner/quickstart) step 2.
 
 ## Privacy policy URL
 
@@ -46,6 +54,7 @@ Set a reachable privacy policy URL. Use `policy_link` and/or `settings.privacy_p
 
 ## Related
 
+- [Quickstart](/docs/cookie-banner/quickstart)
 - [`window.INTA` reference (JSON Schema)](/docs/cookie-banner/javascript/inta-schema)
 - [Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle)
 - [Events and API](/docs/cookie-banner/javascript/events-and-api)

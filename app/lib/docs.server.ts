@@ -92,11 +92,20 @@ function sidebarSectionHeading(id: SidebarSectionId, locale: Locale): string {
 function sidebarSectionId(relFromProduct: string): SidebarSectionId {
   const n = relFromProduct.split(path.sep).join("/");
   if (n === "index.mdx") return "overview";
+  if (
+    n === "quickstart.mdx" ||
+    n === "how-it-works.mdx" ||
+    n === "debugging.mdx"
+  ) {
+    return "overview";
+  }
   if (n.startsWith("web/")) return "accounts";
   if (n.startsWith("javascript/")) return "javascript";
   if (n.startsWith("wordpress/")) return "wordpress";
   if (
     n === "google-tag-manager.mdx" ||
+    n === "google-analytics-4.mdx" ||
+    n === "meta-pixel.mdx" ||
     n === "shopify.mdx" ||
     n === "integrations-overview.mdx" ||
     n === "google-consent-mode.mdx"

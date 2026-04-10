@@ -5,6 +5,8 @@ sidebar_label: Script lifecycle
 order: 18
 lastUpdated: "2026-04-08"
 related:
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
   - title: Get started (JavaScript)
     href: /docs/cookie-banner/javascript/getting-started
   - title: Google Tag Manager
@@ -13,10 +15,12 @@ related:
 
 # Script lifecycle (JavaScript)
 
+For a minimal install, follow [Quickstart](/docs/cookie-banner/quickstart) first.
+
 ## Load order
 
 1. Define **`window.INTA`** in an inline `<script>` in `<head>`.
-2. Load **`https://consents.cdn.intastellarsolutions.com/uc.js`** immediately after (see [Get started](/docs/cookie-banner/javascript/getting-started)).
+2. Load **`https://consents.cdn.intastellarsolutions.com/uc.js`** immediately after (see [Quickstart](/docs/cookie-banner/quickstart) or [Get started](/docs/cookie-banner/javascript/getting-started)).
 
 Placing both **early in `<head>`** reduces the chance that analytics or marketing tags execute before the CMP initializes.
 

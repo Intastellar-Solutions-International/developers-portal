@@ -1,6 +1,6 @@
 ---
 title: Intastellar Consents
-description: Integre o Intastellar Consents (banner de cookies / CMP) via JavaScript, WordPress, GTM ou Shopify — alinhado à LGPD no Brasil.
+description: Quickstart, GTM, GA4 e Consent Mode — documentação Intastellar Consents para desenvolvedores.
 hub_order: 10
 hub_tagline: Banner de cookies e CMP — JS, WordPress, GTM, Shopify.
 order: 0
@@ -9,21 +9,27 @@ lastUpdated: "2026-04-08"
 
 # Documentação
 
-O Intastellar Consents é um banner de cookies leve que você inclui com um script curto ou plugin WordPress. Foi pensado para consentimento **alinhado à LGPD** e a boas práticas de privacidade: bloquear cookies não essenciais até o visitante escolher e respeitar essa escolha em toda a sua stack.
+O Intastellar Consents é um CMP leve para sites pequenos e desenvolvedores: **scripts não essenciais ficam limitados até o visitante escolher**, o **Google Consent Mode v2** pode ser integrado corretamente, e sua stack permanece **previsível** se você seguir os padrões de carregamento desta documentação.
 
-Use estes guias para implementar no seu próprio site.
+**Comece aqui:** [Quickstart](/docs/cookie-banner/quickstart) (~5 min) → [How it works](/docs/cookie-banner/how-it-works) → [Debugging](/docs/cookie-banner/debugging).
 
 ## Referência para desenvolvedores
 
 | Tópico | Guia |
 | --- | --- |
-| **Trecho de instalação** | [Primeiros passos (JavaScript)](/docs/cookie-banner/javascript/getting-started) — `window.INTA` mínimo + `uc.js` |
+| **Quickstart (~5 min)** | [Quickstart](/docs/cookie-banner/quickstart) — `window.INTA` mínimo + `uc.js`, verificação no navegador |
+| **Arquitetura** | [How it works](/docs/cookie-banner/how-it-works) — bloqueio, sinais, limites do CMP |
+| **Solução de problemas** | [Debugging](/docs/cookie-banner/debugging) |
+| **Snippet JS completo** | [Primeiros passos (JavaScript)](/docs/cookie-banner/javascript/getting-started) — opções comuns + branding |
+| **SPAs / Next.js** | [SPAs and SSR](/docs/cookie-banner/javascript/spa-and-ssr) |
 | **Campos `window.INTA`** | [`window.INTA` (JSON Schema)](/docs/cookie-banner/javascript/inta-schema) |
 | **Ordem de carregamento e bloqueio** | [Ciclo de vida do script](/docs/cookie-banner/javascript/script-lifecycle) |
-| **Eventos / API programática** | [Eventos e API](/docs/cookie-banner/javascript/events-and-api) |
+| **Eventos / superfície de API** | [Eventos e API](/docs/cookie-banner/javascript/events-and-api) |
 | **Ferramentas de terceiros** | [Visão geral das integrações](/docs/cookie-banner/integrations-overview) |
 | **Google Consent Mode** | [Google Consent Mode](/docs/cookie-banner/google-consent-mode) |
 | **GTM** | [Google Tag Manager](/docs/cookie-banner/google-tag-manager) |
+| **GA4** | [Google Analytics 4](/docs/cookie-banner/google-analytics-4) |
+| **Meta Pixel** | [Meta Pixel](/docs/cookie-banner/meta-pixel) |
 | **TCF, Cookie Observer** | [Recursos avançados](/docs/cookie-banner/advanced-features) |
 | **Idiomas e regiões** | [Idioma e regiões](/docs/cookie-banner/locale-and-regions) |
 

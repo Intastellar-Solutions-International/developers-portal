@@ -1,0 +1,69 @@
+---
+title: How it works
+description: Load order, blocking model, consent signals, and why measurement can stay usable after consent choices.
+sidebar_label: How it works
+order: 2
+lastUpdated: "2026-04-08"
+related:
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+  - title: Script lifecycle
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+---
+
+# How it works
+
+This page is the **mental model** for implementers. For copy-paste install steps, use [Quickstart](/docs/cookie-banner/quickstart).
+
+## What runs first
+
+1. **`window.INTA`** — configuration object (policy URL, domain, company, optional `gtagId`, styling, etc.).
+2. **`uc.js`** — the CMP loader from `consents.cdn.intastellarsolutions.com`.
+
+Both should live **early in `<head>`**, before analytics, ads, pixels, or other non-essential third parties. If those tags run first, you can get **pre-consent hits** or cookies that are hard to justify under GDPR-style rules.
+
+See [Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle) for practical ordering notes.
+
+## Blocking model (plain language)
+
+Intastellar Consents is built so **non-essential tracking does not behave as if consent were granted** before the visitor chooses.
+
+- **Before a choice:** marketing/analytics tags should stay **restricted** or **not fire** in a way that assumes full consent—depending on how you wired GTM, `gtag`, Meta, etc.
+- **After a choice:** the CMP applies the visitor’s decision. Tags that support **consent APIs** (e.g. Google **Consent Mode v2**) can receive **updated signals** so behaviour matches **accept**, **deny**, or **granular** choices.
+
+Exact behaviour is always a **combination** of:
+
+- the CMP,
+- your **tag manager / triggers**, and
+- each **vendor’s** consent integration.
+
+The docs give **opinionated patterns** (e.g. GTM on **Consent Initialization**) so the three line up.
+
+## Google Consent Mode
+
+When you set `settings.gtagId` and use Google tags, Intastellar can align with **Consent Mode v2** (including Advanced Mode where applicable). That lets Google tags adjust how they collect or **ping** based on consent instead of silently acting fully granted.
+
+Details: [Google Consent Mode](/docs/cookie-banner/google-consent-mode).
+
+## Why measurement does not have to “break”
+
+After consent is **denied** or limited, platforms like Google may still support **aggregated or modelled** insights (per their policies)—so dashboards do not necessarily go to zero. That is **not** the same as full personal-level tracking.
+
+After **accept**, tags can run in **normal** measurement modes again, as long as your container fires them **after** consent state is known.
+
+We avoid claiming “tracking never breaks”: we document **load order + Consent Mode + triggers** so you can make behaviour **predictable**.
+
+## What the CMP does not do
+
+- It does not replace your **privacy policy**, **vendor disclosures**, or **legal** assessment.
+- It does not automatically fix **hard-coded** third-party scripts that ignore consent—you still **gate** those in code or GTM.
+
+## Related
+
+- [Quickstart](/docs/cookie-banner/quickstart)
+- [Integrations overview](/docs/cookie-banner/integrations-overview)
+- [Debugging](/docs/cookie-banner/debugging)
+
+[← Documentation home](/docs/cookie-banner)

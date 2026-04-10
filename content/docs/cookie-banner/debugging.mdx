@@ -1,0 +1,64 @@
+---
+title: Debugging
+description: Symptom-first troubleshooting—banner missing, tags firing early, GTM races, consent not sticking.
+sidebar_label: Debugging
+order: 3
+lastUpdated: "2026-04-08"
+related:
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+  - title: How it works
+    href: /docs/cookie-banner/how-it-works
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Debugging
+
+Verify in small steps before changing unrelated settings.
+
+## Banner does not appear
+
+| Likely cause | How to verify | Fix |
+| --- | --- | --- |
+| Bad `policy_link` | Open the URL in a new tab; check HTTPS and status code | Use a live policy page; fix redirects / 404 |
+| Snippet too low or only in body | View page source; search for `uc.js` | Move the block to the start of `<head>` |
+| SPA / framework mounts late | Compare server HTML vs rendered DOM | Load the CMP from the **root layout** or shell that wraps every route |
+| Duplicate or conflicting `window.INTA` | Search the repo / HTML for `window.INTA` | Keep **one** definition before `uc.js` |
+
+## Tracking “not firing” after consent
+
+| Likely cause | How to verify | Fix |
+| --- | --- | --- |
+| Tag has no post-consent trigger | GTM Preview: tag never fires after accept | Add consent-aware triggers or Consent Mode settings |
+| `gtagId` missing for GA4 | Compare with [Quickstart](/docs/cookie-banner/quickstart) | Set `gtagId` or wire GA per your chosen pattern |
+| Consent Mode defaults too strict | GA / Tag Assistant | Adjust defaults **deliberately** and document the choice |
+
+## Tags fire before consent (serious)
+
+| Likely cause | How to verify | Fix |
+| --- | --- | --- |
+| GA/Ads on “All Pages” before CMP | GTM Preview timeline | Fire CMP on **Consent Initialization**; gate dependent tags |
+| Hard-coded `gtag.js` in HTML | Search for `googletagmanager.com/gtag` | Remove duplicate loaders or place **after** CMP |
+| Third-party embed in `<head>` | Network tab | Defer until the matching purpose is allowed |
+
+## GTM triggers “not working”
+
+| Likely cause | How to verify | Fix |
+| --- | --- | --- |
+| CMP not on Consent Init | Tag trigger type in GTM | Use **Consent Initialization – All pages** (or equivalent) |
+| Race with Page View | Order of events in Preview | Ensure CMP fires **before** analytics tags |
+| Wrong container | Container ID on site | Point the site at the intended GTM container |
+
+## Consent choice does not stick
+
+| Likely cause | How to verify | Fix |
+| --- | --- | --- |
+| Wrong `rootDomain` | Compare `settings.rootDomain` with hostname | Align with your cookie domain model |
+| Two copies of `uc.js` | Search for `uc.js` in source | Single canonical install |
+
+## Still stuck
+
+Capture: browser, page URL (staging is fine), **view-source** snippet around `uc.js`, and if using GTM a **Preview** screenshot or export. Then use your support channel or [FAQ resources](/docs/cookie-banner#faq) on the docs home.
+
+[← Documentation home](/docs/cookie-banner)

@@ -1,10 +1,12 @@
 ---
 title: Events and API
-description: Where to find callbacks, events, and programmatic consent APIs.
+description: What this portal documents for programmatic consent—configuration vs runtime API surface.
 sidebar_label: Events & API
 order: 22
 lastUpdated: "2026-04-08"
 related:
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
   - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: window.INTA reference
@@ -13,25 +15,31 @@ related:
 
 # Events and API
 
-## Configuration surface
+## What this developer portal documents
 
-This documentation set focuses on:
+| Surface | Purpose |
+| --- | --- |
+| **`window.INTA`** | Bootstrap object **before** `uc.js` runs—policy URL, domain, company, optional `gtagId`, UI options ([JSON Schema](/docs/cookie-banner/javascript/inta-schema)). |
+| **Integration patterns** | GTM firing order, GA4, Meta, Google Consent Mode ([Integrations overview](/docs/cookie-banner/integrations-overview)). |
 
-- **`window.INTA`** — bootstrap object consumed before `uc.js` runs ([reference](/docs/cookie-banner/javascript/inta-schema))
-- **Integration patterns** — GTM, Google Consent Mode, CMS ([Integrations overview](/docs/cookie-banner/integrations-overview))
+Those are the **supported** integration contracts for building on inta.dev.
 
-## Events and callbacks
+## Programmatic JavaScript API (runtime)
 
-The marketing site and deployment may expose additional **JavaScript APIs** (custom events, global hooks, or `dataLayer` contracts) that are not duplicated here in full.
+**There is no separate public “CMP JavaScript API” documented on this portal** (no guaranteed global such as `window.IntastellarConsents.*` for production use). Implementers should:
 
-**Checklist for implementers:**
+- Drive behaviour through **`window.INTA`** and **`uc.js`** as documented.
+- Use **Google Tag Manager** (or your stack’s tag layer) for events, triggers, and vendor tags.
+- Rely on **vendor consent mechanisms** (e.g. Google Consent Mode, Meta consent parameters) where applicable.
 
-1. Validate consent updates against **tag triggers** in GTM or your bundler.  
-2. Use **browser devtools** (Application → Cookies / Storage, Network) to confirm tags fire only after the expected state.  
-3. Refer to any **versioned JS docs** published for your account or CDN build if your team maintains a separate API reference.
+If your organisation publishes a **versioned runtime API** for a specific CDN build or enterprise tier, add its canonical URL to this page’s frontmatter or the [documentation home](/docs/cookie-banner) when it is stable.
 
-If you maintain a canonical URL for the full JS API, add it to this page’s frontmatter or the [documentation home](/docs/cookie-banner) when available.
+## Practical checklist
+
+1. Validate consent-driven behaviour with **GTM Preview** or your bundler’s load order.
+2. Use DevTools (**Application** → cookies / storage, **Network**) to confirm tags align with consent **before** and **after** choices.
+3. If something must run only after accept, express that in **GTM triggers** or application code that loads **after** the CMP—not by undocumented globals.
 
 ## Consent signals to third parties
 
-Intastellar Consents is built to pass **consent signals** into supported stacks automatically so you do not hand-wire every vendor. Platform-specific parameters still follow **Google**, **Meta**, **Microsoft**, etc.—see [Integrations overview](/docs/cookie-banner/integrations-overview).
+Intastellar Consents passes **consent signals** into supported stacks when configured so you do not hand-wire every vendor. Platform-specific parameters still follow **Google**, **Meta**, **Microsoft**, etc.—see [Integrations overview](/docs/cookie-banner/integrations-overview).

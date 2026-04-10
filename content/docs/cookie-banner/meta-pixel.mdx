@@ -1,0 +1,46 @@
+---
+title: Meta Pixel
+description: Meta (Facebook) Pixel with Intastellar Consents—load order, consent, and practical checks.
+order: 55
+lastUpdated: "2026-04-08"
+related:
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+  - title: Integrations overview
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Meta Pixel
+
+Opinionated path: **CMP first**, pixel **after** consent state is known, wired through **GTM** when possible.
+
+## Prerequisites
+
+- [Quickstart](/docs/cookie-banner/quickstart) or GTM equivalent so `uc.js` runs **early**.
+- You use Meta’s **consent** or **limited data use** options in line with your policy (Meta’s docs define the exact parameters).
+
+## Google Tag Manager
+
+1. Fire the **Meta Pixel** tag only on triggers that match **accepted** marketing/advertising consent (or your container’s consent checks).
+2. Do **not** place the pixel in Custom HTML that runs on **All Pages** before consent unless you have deliberately configured Meta’s API for that case.
+
+## Inline pixel
+
+If the pixel is hard-coded:
+
+- Avoid injecting the base pixel script **above** the CMP in `<head>`.
+- Prefer loading it from a **post-consent** callback or a tag manager—hard-coded pixels are the hardest to keep aligned with granular choices.
+
+## Verify
+
+- **Network**: `facebook.net` / `fbevents` requests should not appear as full marketing firing **before** accept (unless your legal setup explicitly allows it).
+- After accept, you should see the expected pixel traffic.
+
+## Related
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [How it works](/docs/cookie-banner/how-it-works)
+
+[← Documentation home](/docs/cookie-banner)

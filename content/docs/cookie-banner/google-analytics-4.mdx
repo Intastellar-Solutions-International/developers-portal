@@ -1,0 +1,50 @@
+---
+title: Google Analytics 4
+description: Opinionated GA4 setup with Intastellar Consents and Google Consent Mode v2.
+order: 52
+lastUpdated: "2026-04-08"
+related:
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Google Analytics 4
+
+Opinionated path: **GA4 + Consent Mode v2**, CMP first, tags gated in GTM or equivalent.
+
+## Prerequisites
+
+- [Quickstart](/docs/cookie-banner/quickstart) completed (or the same `window.INTA` + `uc.js` order in GTM).
+- `settings.gtagId` set to your **GA4 measurement ID** (`G-XXXXXXXX`) when using automatic Google coordination from the CMP.
+- Read [Google Consent Mode](/docs/cookie-banner/google-consent-mode) once—defaults matter.
+
+## Recommended: GA4 via Google Tag Manager
+
+1. Implement the CMP using [Google Tag Manager](/docs/cookie-banner/google-tag-manager) on **Consent Initialization**.
+2. Add a **Google tag** or **GA4 Configuration** tag that respects **consent** in the tag’s consent settings (align with your legal default for each consent type).
+3. **Do not** fire GA4 on a naked “All Pages” trigger if that implies full analytics cookies before the CMP runs—use consent-aware configuration.
+
+## Inline `gtag` (no GTM)
+
+If you load `gtag.js` directly:
+
+- Still place **`window.INTA` + `uc.js` first** in `<head>`.
+- Load GA **after** the CMP snippet, or ensure Consent Mode is set before hits you care about.
+
+Duplicate GA loaders (GTM + hard-coded `gtag`) are a common source of double hits and wrong consent state—pick **one** primary path.
+
+## Verify
+
+1. **GTM Preview** or GA **DebugView**: before accept, analytics should not behave as **fully consented** unless you deliberately configured defaults that way.
+2. After **Accept**, you should see normal collection (subject to ad blockers, etc.).
+
+## Related
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Integrations overview](/docs/cookie-banner/integrations-overview)
+
+[← Documentation home](/docs/cookie-banner)
