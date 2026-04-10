@@ -4,7 +4,7 @@ export const da: MessageTree = {
   meta: {
     homeTitle: "inta.dev · Intastellar Developers",
     homeDescription:
-      "Dokumentation, API-nøgler og integrationsvejledninger til Intastellar Consents og Intastellar Accounts på inta.dev.",
+      "Dokumentation, API-nøgler og integrationsvejledninger på inta.dev til Intastellar Consents og Intastellar Accounts — begge produkter fra Intastellar Solutions International.",
   },
   seo: {
     searchTitle: "Søg · inta.dev",
@@ -61,7 +61,7 @@ export const da: MessageTree = {
   },
   footer: {
     tagline:
-      "Dokumentation, API-nøgler og integrationsvejledninger til Intastellar Consents og Intastellar Accounts.",
+      "Dokumentation, API-nøgler og integrationsvejledninger til Intastellar Consents og Intastellar Accounts — begge produkter fra Intastellar Solutions International.",
     documentation: "Dokumentation",
     allDocs: "Al dokumentation",
     intastellarConsents: "Intastellar Consents",

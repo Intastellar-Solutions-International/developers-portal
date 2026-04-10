@@ -12,7 +12,7 @@ export const en = {
   meta: {
     homeTitle: "inta.dev · Intastellar Developers",
     homeDescription:
-      "Documentation, API keys, and integration guides for Intastellar Consents and Intastellar Accounts on inta.dev.",
+      "Documentation, API keys, and integration guides on inta.dev for Intastellar Consents and Intastellar Accounts — both products of Intastellar Solutions International.",
   },
   seo: {
     searchTitle: "Search · inta.dev",
@@ -69,7 +69,7 @@ export const en = {
   },
   footer: {
     tagline:
-      "Documentation, API keys, and integration guides for Intastellar Consents and Intastellar Accounts.",
+      "Documentation, API keys, and integration guides for Intastellar Consents and Intastellar Accounts — both products of Intastellar Solutions International.",
     documentation: "Documentation",
     allDocs: "All docs",
     intastellarConsents: "Intastellar Consents",

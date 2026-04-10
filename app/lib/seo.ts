@@ -51,8 +51,11 @@ export function buildGlobalSeoJsonLdMeta(): MetaDescriptor[] {
         "@id": websiteId,
         name: SITE_NAME,
         url: `${origin}/`,
-        publisher: { "@id": companyId },
-        copyrightHolder: { "@id": companyId },
+        publisher: {
+          "@type": "Organization",
+          "name": "Intastellar Solutions International",
+          "url": "https://www.intastellarsolutions.com"
+        },
       },
       {
         "@type": "SoftwareApplication",
