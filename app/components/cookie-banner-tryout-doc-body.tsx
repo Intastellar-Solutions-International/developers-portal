@@ -1,10 +1,7 @@
-import { useLayoutEffect, useState } from "react";
-
 import { IntaConsentTryout } from "~/components/inta-consent-tryout";
 import { MdxContent } from "~/components/mdx-content";
 
 type Props = {
-  /** When true, MDX is shown for SSR + first client paint, then the interactive tryout mounts (hydration-safe). */
   tryout: boolean;
   title: string;
   description?: string;
@@ -14,8 +11,7 @@ type Props = {
 };
 
 /**
- * Single doc body entrypoint: plain MDX, or try-out page (minimal MDX first, then interactive UI).
- * The deferred swap avoids server vs client branching on loader/params during hydration.
+ * Doc body: normal pages render MDX; cookie-banner try-out renders the interactive UI (MDX body is empty).
  */
 export function CookieBannerTryoutDocBody({
   tryout,
@@ -25,17 +21,7 @@ export function CookieBannerTryoutDocBody({
   previewOrigin,
   previewHostname,
 }: Props) {
-  const [tryoutReady, setTryoutReady] = useState(false);
-
-  useLayoutEffect(() => {
-    if (tryout) setTryoutReady(true);
-  }, [tryout]);
-
   if (!tryout) {
-    return <MdxContent code={code} />;
-  }
-
-  if (!tryoutReady) {
     return <MdxContent code={code} />;
   }
 

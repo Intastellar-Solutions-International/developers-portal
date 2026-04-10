@@ -1,4 +1,4 @@
-import { data, redirect, useLoaderData } from "react-router";
+import { data, redirect, useLoaderData, useLocation } from "react-router";
 
 import type { Route } from "./+types/docs.$product.$";
 import { DocMeta } from "~/components/doc-meta";
@@ -12,7 +12,12 @@ import {
   getDocsNavFlat,
   loadDoc,
 } from "~/lib/docs.server";
-import { docHref, parseDocSplat } from "~/lib/docs-versions";
+import {
+  docHref,
+  docsProductSlugFromPathname,
+  parseDocSplat,
+  parseDocsProductPath,
+} from "~/lib/docs-versions";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { buildDocPageMeta, resolveMetaLocale } from "~/lib/seo";
 import { translatePath } from "~/lib/i18n/messages";
@@ -87,10 +92,19 @@ export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
 
 export default function ProductDocPage() {
   const doc = useLoaderData<typeof loader>();
-  const docPathNorm = doc.docPath.replace(/^\/+|\/+$/g, "");
-  const showIntaTryout =
+  const { pathname } = useLocation();
+  const docPathNorm = (doc.docPath ?? "").replace(/^\/+|\/+$/g, "");
+  const productSlug = doc.productSlug ?? "";
+  const loaderTryout =
     doc.isJavascriptTryOutDoc === true ||
-    (doc.productSlug === "cookie-banner" && docPathNorm === "javascript/try-out");
+    (productSlug === "cookie-banner" && docPathNorm === "javascript/try-out");
+  const productFromPath = docsProductSlugFromPathname(pathname);
+  const { docTail } = parseDocsProductPath(pathname, productFromPath);
+  const docTailNorm = docTail.replace(/^\/+|\/+$/g, "");
+  const urlTryout =
+    productFromPath === "cookie-banner" && docTailNorm === "javascript/try-out";
+  /** URL fallback avoids an empty MDX shell when loader fields are briefly missing during hydration. */
+  const showIntaTryout = loaderTryout || urlTryout;
 
   return (
     <article className="docs-prose prose prose-zinc max-w-none dark:prose-invert prose-pre:bg-transparent prose-pre:p-0">

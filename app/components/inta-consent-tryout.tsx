@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Locale } from "~/lib/i18n/locale";
+import { translatePath } from "~/lib/i18n/messages";
 import { useI18n, useLocalizedHref } from "~/providers/i18n-provider";
 
 const UC_SCRIPT_SRC = "https://consents.cdn.intastellarsolutions.com/uc.js";
@@ -174,8 +175,13 @@ export function IntaConsentTryout({
   const hrefSchema = useLocalizedHref("/docs/cookie-banner/javascript/inta-schema");
 
   const defaultInta = useMemo(
-    () => buildDefaultInta(previewOrigin, previewHostname, t("intaTryout.demoCompany")),
-    [previewOrigin, previewHostname, t],
+    () =>
+      buildDefaultInta(
+        previewOrigin,
+        previewHostname,
+        translatePath(locale, "intaTryout.demoCompany"),
+      ),
+    [previewOrigin, previewHostname, locale],
   );
 
   const [jsonText, setJsonText] = useState(() => formatIntaJson(defaultInta));
@@ -189,9 +195,9 @@ export function IntaConsentTryout({
     () =>
       FIELD_HELP_KEYS.map(({ path, hintKey }) => ({
         path,
-        hint: t(`intaTryout.fieldHints.${String(hintKey)}`),
+        hint: translatePath(locale, `intaTryout.fieldHints.${hintKey}`),
       })),
-    [t],
+    [locale],
   );
 
   const pushDebug = useCallback((kind: string, text: string) => {
@@ -229,10 +235,10 @@ export function IntaConsentTryout({
   const iframeUi = useMemo(
     () => ({
       htmlLang: IFRAME_HTML_LANG[locale],
-      documentTitle: t("intaTryout.iframeDocumentTitle"),
-      hintText: t("intaTryout.iframePreviewHint"),
+      documentTitle: translatePath(locale, "intaTryout.iframeDocumentTitle"),
+      hintText: translatePath(locale, "intaTryout.iframePreviewHint"),
     }),
-    [locale, t],
+    [locale],
   );
 
   useEffect(() => {
@@ -240,11 +246,14 @@ export function IntaConsentTryout({
       setIframeSrcDoc(null);
       return;
     }
-    pushDebug(t("intaTryout.preview"), t("intaTryout.previewUpdated"));
+    pushDebug(
+      translatePath(locale, "intaTryout.preview"),
+      translatePath(locale, "intaTryout.previewUpdated"),
+    );
     setIframeSrcDoc(
       buildPreviewSrcDoc(inta, window.location.origin, iframeUi),
     );
-  }, [inta, deferredIssue, iframeUi, pushDebug, t]);
+  }, [inta, deferredIssue, iframeUi, pushDebug, locale]);
 
   useEffect(() => {
     try {
@@ -267,8 +276,8 @@ export function IntaConsentTryout({
       if (kind === "datalayer") {
         const detail = typeof d.detail === "string" ? d.detail : JSON.stringify(d.detail);
         const label = detail.includes("cookie_consent_update")
-          ? t("intaTryout.dataLayerConsent")
-          : t("intaTryout.dataLayer");
+          ? translatePath(locale, "intaTryout.dataLayerConsent")
+          : translatePath(locale, "intaTryout.dataLayer");
         pushDebug(label, detail);
         return;
       }
@@ -278,18 +287,18 @@ export function IntaConsentTryout({
       }
       if (kind === "error") {
         pushDebug(
-          t("intaTryout.windowError"),
+          translatePath(locale, "intaTryout.windowError"),
           String(d.message ?? "") + (d.filename ? ` @ ${d.filename}` : ""),
         );
         return;
       }
       if (kind === "system") {
-        pushDebug(t("intaTryout.preview"), String(d.message ?? ""));
+        pushDebug(translatePath(locale, "intaTryout.preview"), String(d.message ?? ""));
       }
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [pushDebug, t]);
+  }, [pushDebug, locale]);
 
   const handleReset = useCallback(() => {
     setJsonText(formatIntaJson(defaultInta));

@@ -82,6 +82,13 @@ export function parseDocSplat(
   return { version, docPath: docRest || undefined };
 }
 
+/** First segment after `/docs/` (product slug), from any locale-prefixed pathname. */
+export function docsProductSlugFromPathname(pathname: string): string {
+  const bare = stripLocalePrefix(pathname);
+  const m = bare.match(/^\/docs\/([^/]+)/);
+  return m?.[1] ?? "";
+}
+
 export function parseDocsProductPath(
   pathname: string,
   product: string,
