@@ -125,6 +125,89 @@ export const en = {
     changelog: "Changelog",
     apiKeys: "API keys",
   },
+  intaTryout: {
+    introBeforePrivacy:
+      "Edit the JSON below to change window.INTA. The preview reloads when the JSON is valid. Policy URLs default to this site's ",
+    privacyPage: "privacy page",
+    introAfterPrivacy:
+      ". Preview uses same-origin localStorage as these docs.",
+    minimumSetupTitle: "Minimum setup",
+    minimumSetupLeadBeforeRoot: "You only need a valid policy URL, ",
+    minimumSetupLeadBetweenRootCompany: ", ",
+    minimumSetupLeadBeforeUc: ", and the ",
+    minimumSetupLeadAfterUc:
+      " tag. Everything else is optional branding or integrations.",
+    copyMinimumSnippet: "Copy minimum snippet",
+    whatNextTitle: "What happens next",
+    whatNextStep1:
+      "You paste the two script tags high in <head>, before analytics or marketing tags.",
+    whatNextStep2:
+      "uc.js reads window.INTA and shows the banner if the policy URL responds.",
+    whatNextStep3:
+      "The visitor accepts, rejects, or changes granular choices; the CMP stores the decision (cookies / storage per your domain).",
+    whatNextStep4:
+      "On consent changes, cookie_consent_update is pushed to dataLayer for GTM — watch it in the console below.",
+    whatNextStep5Before: "Wire GTM / vendor tags to those signals (see ",
+    whatNextStep5Between: ", ",
+    whatNextStep5After: ").",
+    docLinkQuickstart: "Quickstart",
+    docLinkEventsApi: "Events and API",
+    editorLabel: "window.INTA (JSON)",
+    format: "Format",
+    reset: "Reset",
+    copyHtmlSnippet: "Copy HTML snippet",
+    copied: "Copied",
+    jsonErrorPrefix: "JSON: ",
+    fieldReferenceTitle: "Field reference",
+    fieldReferenceAria: "Field reference",
+    fieldHints: {
+      policy_link:
+        "Public HTTPS URL of your privacy policy. Broken or placeholder URLs usually prevent the banner from showing.",
+      settingsPrivacyPolicy:
+        "Alternate policy URL some builds read; keep in sync with policy_link when both are set.",
+      settingsRootDomain:
+        "Registrable domain for cookies (e.g. example.com). Must match the site visitors use.",
+      settingsCompany: "Name shown in the consent UI.",
+      settingsColor: "Primary accent colour (CSS hex or token).",
+      settingsLogo: "Absolute URL to a logo image; omit or empty if none.",
+      settingsDesign: "Layout preset (e.g. overlay).",
+      settingsArrange: "ltr or rtl for layout direction.",
+      settingsGtagId:
+        "GA4 / Google tag ID when you want Consent Mode wired from the CMP; omit until you use Google tags.",
+      settingsRequiredCookies: "Names of strictly necessary cookies your site sets.",
+      settingsKeepInLocalStorage:
+        "localStorage keys the CMP should not wipe on consent changes.",
+    },
+    fullSchema: "Full schema",
+    fullSchemaExtra: "allows extra keys.",
+    pasteFooterBefore:
+      "Paste the copied snippet in <head> before other tracking scripts. ",
+    pasteFooterAfter: " has placement rules.",
+    quickstartLink: "Quickstart",
+    debugConsoleTitle: "Event / debug console",
+    clear: "Clear",
+    debugEmpty:
+      "dataLayer pushes, preview messages, and forwarded console output from the iframe appear here. Interact with the banner to see ",
+    debugEmptyCode: "cookie_consent_update",
+    debugEmptyAfter: ".",
+    bannerPreview: "Banner preview",
+    wideFrameHint:
+      "Wide desktop frame (1280px) — scroll horizontally if the panel is narrower.",
+    iframeDocumentTitle: "Banner preview",
+    iframePreviewHint:
+      "Live preview — the real CMP script from our CDN runs here. This frame is same-origin as the docs app so localStorage works; consent keys may appear in this site's storage until you clear them.",
+    previewUpdated: "Preview HTML updated — iframe will reload.",
+    fixJsonPreview: "Fix the JSON to load the preview.",
+    loadingPreview: "Loading preview…",
+    configMustBeObject:
+      "Configuration must be a JSON object (not an array or primitive).",
+    iframeBannerPreviewTitle: "Intastellar Consents banner preview",
+    dataLayer: "dataLayer",
+    dataLayerConsent: "dataLayer (cookie_consent_update)",
+    windowError: "window.error",
+    preview: "preview",
+    demoCompany: "Acme Demo",
+  },
   legacy: {
     line1Strong: "Formerly developers.intastellarsolutions.com",
     line1Mid: " — developer documentation and tools now live here on ",

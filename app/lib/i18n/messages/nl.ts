@@ -116,6 +116,89 @@ export const nl: MessageTree = {
     changelog: "Changelog",
     apiKeys: "API-sleutels",
   },
+  intaTryout: {
+    introBeforePrivacy:
+      "Bewerk de JSON hieronder om window.INTA te wijzigen. De voorbeeldweergave herlaadt zodra de JSON geldig is. Beleids-URL's verwijzen standaard naar de ",
+    privacyPage: "privacy-pagina",
+    introAfterPrivacy:
+      " van deze site. De voorbeeldweergave gebruikt dezelfde origin en localStorage als deze documentatie.",
+    minimumSetupTitle: "Minimale installatie",
+    minimumSetupLeadBeforeRoot: "U heeft alleen een geldige beleids-URL nodig, ",
+    minimumSetupLeadBetweenRootCompany: ", ",
+    minimumSetupLeadBeforeUc: ", en de ",
+    minimumSetupLeadAfterUc:
+      "-tag. Verder is alles optionele branding of integraties.",
+    copyMinimumSnippet: "Minimaal fragment kopiëren",
+    whatNextTitle: "Wat gebeurt er daarna",
+    whatNextStep1:
+      "U plakt de twee scripttags hoog in <head>, vóór analyse- of marketingtags.",
+    whatNextStep2:
+      "uc.js leest window.INTA en toont de banner als de beleids-URL reageert.",
+    whatNextStep3:
+      "De bezoeker accepteert, weigert of kiest granulair; de CMP slaat de beslissing op (cookies / opslag voor uw domein).",
+    whatNextStep4:
+      "Bij wijzigingen van toestemming wordt cookie_consent_update naar dataLayer voor GTM gestuurd — zie het hieronder in de console.",
+    whatNextStep5Before: "Koppel GTM / vendor-tags aan die signalen (zie ",
+    whatNextStep5Between: ", ",
+    whatNextStep5After: ").",
+    docLinkQuickstart: "Snelstart",
+    docLinkEventsApi: "Gebeurtenissen en API",
+    editorLabel: "window.INTA (JSON)",
+    format: "Formatteren",
+    reset: "Herstellen",
+    copyHtmlSnippet: "HTML-fragment kopiëren",
+    copied: "Gekopieerd",
+    jsonErrorPrefix: "JSON: ",
+    fieldReferenceTitle: "Veldreferentie",
+    fieldReferenceAria: "Veldreferentie",
+    fieldHints: {
+      policy_link:
+        "Openbare HTTPS-URL van uw privacybeleid. Ongeldige of tijdelijke URL's voorkomen meestal dat de banner verschijnt.",
+      settingsPrivacyPolicy:
+        "Alternatieve beleids-URL die sommige builds lezen; gelijk houden met policy_link als beide zijn ingesteld.",
+      settingsRootDomain:
+        "Registreerbaar domein voor cookies (bijv. example.com). Moet overeenkomen met de site die bezoekers gebruiken.",
+      settingsCompany: "Naam in de toestemmings-UI.",
+      settingsColor: "Primaire accentkleur (CSS-hex of token).",
+      settingsLogo: "Absolute URL naar logo; weglaten of leeg als er geen is.",
+      settingsDesign: "Layout-voorinstelling (bijv. overlay).",
+      settingsArrange: "ltr of rtl voor lay-outrichting.",
+      settingsGtagId:
+        "GA4 / Google-tag-ID voor Consent Mode via de CMP; weglaten tot u Google-tags gebruikt.",
+      settingsRequiredCookies: "Namen van strikt noodzakelijke cookies die uw site plaatst.",
+      settingsKeepInLocalStorage:
+        "localStorage-sleutels die de CMP bij toestemmingswijzigingen niet mag wissen.",
+    },
+    fullSchema: "Volledig schema",
+    fullSchemaExtra: "staat extra sleutels toe.",
+    pasteFooterBefore:
+      "Plak het gekopieerde fragment in <head> vóór andere tracking-scripts. ",
+    pasteFooterAfter: " bevat plaatsingsregels.",
+    quickstartLink: "Snelstart",
+    debugConsoleTitle: "Gebeurtenis- / debugconsole",
+    clear: "Wissen",
+    debugEmpty:
+      "dataLayer-pushes, voorbeeldberichten en doorgestuurde console-output uit de iframe verschijnen hier. Werk met de banner om ",
+    debugEmptyCode: "cookie_consent_update",
+    debugEmptyAfter: " te zien.",
+    bannerPreview: "Bannervoorbeeld",
+    wideFrameHint:
+      "Brede desktopframe (1280 px) — horizontaal scrollen als het paneel smaller is.",
+    iframeDocumentTitle: "Bannervoorbeeld",
+    iframePreviewHint:
+      "Live voorbeeld — het echte CMP-script van onze CDN draait hier. Het frame heeft dezelfde origin als de docs-app, dus localStorage werkt; toestemmingssleutels kunnen in de opslag van deze site blijven tot u ze wist.",
+    previewUpdated: "Voorbeeld-HTML bijgewerkt — iframe herlaadt.",
+    fixJsonPreview: "Corrigeer de JSON om het voorbeeld te laden.",
+    loadingPreview: "Voorbeeld laden…",
+    configMustBeObject:
+      "De configuratie moet een JSON-object zijn (geen array of primitief).",
+    iframeBannerPreviewTitle: "Intastellar Consents bannervoorbeeld",
+    dataLayer: "dataLayer",
+    dataLayerConsent: "dataLayer (cookie_consent_update)",
+    windowError: "window.error",
+    preview: "voorbeeld",
+    demoCompany: "Acme Demo",
+  },
   legacy: {
     line1Strong: "Voorheen developers.intastellarsolutions.com",
     line1Mid: " — ontwikkelaarsdocumentatie en -tools staan nu hier op ",

@@ -116,6 +116,89 @@ export const fr: MessageTree = {
     changelog: "Journal des modifications",
     apiKeys: "Clés API",
   },
+  intaTryout: {
+    introBeforePrivacy:
+      "Modifiez le JSON ci-dessous pour changer window.INTA. L’aperçu se recharge lorsque le JSON est valide. Les URL de politique pointent par défaut vers la ",
+    privacyPage: "page de confidentialité",
+    introAfterPrivacy:
+      " de ce site. L’aperçu utilise la même origine et le même localStorage que cette documentation.",
+    minimumSetupTitle: "Configuration minimale",
+    minimumSetupLeadBeforeRoot: "Il vous suffit d’une URL de politique valide, ",
+    minimumSetupLeadBetweenRootCompany: ", ",
+    minimumSetupLeadBeforeUc: ", et de la balise ",
+    minimumSetupLeadAfterUc:
+      ". Tout le reste est du branding ou des intégrations facultatifs.",
+    copyMinimumSnippet: "Copier l’extrait minimal",
+    whatNextTitle: "Ensuite",
+    whatNextStep1:
+      "Vous collez les deux balises script en haut du <head>, avant les tags d’analyse ou marketing.",
+    whatNextStep2:
+      "uc.js lit window.INTA et affiche la bannière si l’URL de politique répond.",
+    whatNextStep3:
+      "Le visiteur accepte, refuse ou affine ; la CMP enregistre la décision (cookies / stockage pour votre domaine).",
+    whatNextStep4:
+      "Lors des changements de consentement, cookie_consent_update est envoyé au dataLayer pour GTM — voyez-le dans la console ci-dessous.",
+    whatNextStep5Before: "Reliez GTM / tags fournisseurs à ces signaux (voir ",
+    whatNextStep5Between: ", ",
+    whatNextStep5After: ").",
+    docLinkQuickstart: "Démarrage rapide",
+    docLinkEventsApi: "Événements et API",
+    editorLabel: "window.INTA (JSON)",
+    format: "Formater",
+    reset: "Réinitialiser",
+    copyHtmlSnippet: "Copier l’extrait HTML",
+    copied: "Copié",
+    jsonErrorPrefix: "JSON : ",
+    fieldReferenceTitle: "Référence des champs",
+    fieldReferenceAria: "Référence des champs",
+    fieldHints: {
+      policy_link:
+        "URL HTTPS publique de votre politique de confidentialité. Des URL invalides ou factices empêchent souvent l’affichage de la bannière.",
+      settingsPrivacyPolicy:
+        "URL de politique alternative lue par certaines builds ; alignez-la sur policy_link si les deux sont définis.",
+      settingsRootDomain:
+        "Domaine enregistrable pour les cookies (p. ex. example.com). Doit correspondre au site utilisé par les visiteurs.",
+      settingsCompany: "Nom affiché dans l’interface de consentement.",
+      settingsColor: "Couleur d’accent principale (hex CSS ou jeton).",
+      settingsLogo: "URL absolue du logo ; omettre ou vide si aucun.",
+      settingsDesign: "Préréglage de mise en page (p. ex. overlay).",
+      settingsArrange: "ltr ou rtl pour la direction de mise en page.",
+      settingsGtagId:
+        "ID de balise GA4 / Google pour le mode consentement via la CMP ; omettre tant que vous n’utilisez pas les balises Google.",
+      settingsRequiredCookies: "Noms des cookies strictement nécessaires définis par votre site.",
+      settingsKeepInLocalStorage:
+        "Clés localStorage que la CMP ne doit pas effacer lors des changements de consentement.",
+    },
+    fullSchema: "Schéma complet",
+    fullSchemaExtra: "autorise des clés supplémentaires.",
+    pasteFooterBefore:
+      "Collez l’extrait copié dans le <head> avant les autres scripts de suivi. ",
+    pasteFooterAfter: " décrit les règles de placement.",
+    quickstartLink: "Démarrage rapide",
+    debugConsoleTitle: "Console événements / débogage",
+    clear: "Effacer",
+    debugEmpty:
+      "Les envois dataLayer, les messages d’aperçu et la sortie console transférée depuis l’iframe apparaissent ici. Interagissez avec la bannière pour voir ",
+    debugEmptyCode: "cookie_consent_update",
+    debugEmptyAfter: ".",
+    bannerPreview: "Aperçu de la bannière",
+    wideFrameHint:
+      "Cadre bureau large (1280 px) — faites défiler horizontalement si le panneau est plus étroit.",
+    iframeDocumentTitle: "Aperçu de la bannière",
+    iframePreviewHint:
+      "Aperçu en direct — le vrai script CMP de notre CDN s’exécute ici. Le cadre est de même origine que l’app docs, donc localStorage fonctionne ; des clés de consentement peuvent rester dans le stockage de ce site jusqu’à suppression.",
+    previewUpdated: "HTML d’aperçu mis à jour — l’iframe se recharge.",
+    fixJsonPreview: "Corrigez le JSON pour charger l’aperçu.",
+    loadingPreview: "Chargement de l’aperçu…",
+    configMustBeObject:
+      "La configuration doit être un objet JSON (pas un tableau ni une valeur primitive).",
+    iframeBannerPreviewTitle: "Aperçu bannière Intastellar Consents",
+    dataLayer: "dataLayer",
+    dataLayerConsent: "dataLayer (cookie_consent_update)",
+    windowError: "window.error",
+    preview: "aperçu",
+    demoCompany: "Acme Demo",
+  },
   legacy: {
     line1Strong: "Anciennement developers.intastellarsolutions.com",
     line1Mid: " — la documentation et les outils développeur sont maintenant sur ",

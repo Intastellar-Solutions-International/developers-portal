@@ -116,6 +116,89 @@ export const ptBr: MessageTree = {
     changelog: "Changelog",
     apiKeys: "Chaves de API",
   },
+  intaTryout: {
+    introBeforePrivacy:
+      "Edite o JSON abaixo para alterar window.INTA. A pré-visualização recarrega quando o JSON for válido. As URLs de política usam por padrão a ",
+    privacyPage: "página de privacidade",
+    introAfterPrivacy:
+      " deste site. A pré-visualização usa a mesma origem e localStorage desta documentação.",
+    minimumSetupTitle: "Configuração mínima",
+    minimumSetupLeadBeforeRoot: "Você só precisa de uma URL de política válida, ",
+    minimumSetupLeadBetweenRootCompany: ", ",
+    minimumSetupLeadBeforeUc: ", e da tag ",
+    minimumSetupLeadAfterUc:
+      ". Todo o resto é branding ou integrações opcionais.",
+    copyMinimumSnippet: "Copiar snippet mínimo",
+    whatNextTitle: "O que acontece em seguida",
+    whatNextStep1:
+      "Você cola as duas tags de script no topo do <head>, antes de tags de análise ou marketing.",
+    whatNextStep2:
+      "uc.js lê window.INTA e mostra o banner se a URL de política responder.",
+    whatNextStep3:
+      "O visitante aceita, recusa ou escolhe de forma granular; a CMP armazena a decisão (cookies / armazenamento do seu domínio).",
+    whatNextStep4:
+      "Em mudanças de consentimento, cookie_consent_update é enviado ao dataLayer para o GTM — veja no console abaixo.",
+    whatNextStep5Before: "Conecte tags do GTM / fornecedores a esses sinais (veja ",
+    whatNextStep5Between: ", ",
+    whatNextStep5After: ").",
+    docLinkQuickstart: "Início rápido",
+    docLinkEventsApi: "Eventos e API",
+    editorLabel: "window.INTA (JSON)",
+    format: "Formatar",
+    reset: "Redefinir",
+    copyHtmlSnippet: "Copiar snippet HTML",
+    copied: "Copiado",
+    jsonErrorPrefix: "JSON: ",
+    fieldReferenceTitle: "Referência de campos",
+    fieldReferenceAria: "Referência de campos",
+    fieldHints: {
+      policy_link:
+        "URL HTTPS pública da sua política de privacidade. URLs inválidas ou placeholder costumam impedir o banner.",
+      settingsPrivacyPolicy:
+        "URL alternativa de política lida por algumas builds; mantenha alinhada a policy_link quando ambas existirem.",
+      settingsRootDomain:
+        "Domínio registrável para cookies (ex.: example.com). Deve corresponder ao site que os visitantes usam.",
+      settingsCompany: "Nome exibido na interface de consentimento.",
+      settingsColor: "Cor de destaque principal (hex CSS ou token).",
+      settingsLogo: "URL absoluta do logo; omita ou deixe vazio se não houver.",
+      settingsDesign: "Predefinição de layout (ex.: overlay).",
+      settingsArrange: "ltr ou rtl para direção do layout.",
+      settingsGtagId:
+        "ID da tag GA4 / Google quando quiser Consent Mode pela CMP; omita até usar tags Google.",
+      settingsRequiredCookies: "Nomes dos cookies estritamente necessários que o site define.",
+      settingsKeepInLocalStorage:
+        "Chaves de localStorage que a CMP não deve apagar ao mudar o consentimento.",
+    },
+    fullSchema: "Esquema completo",
+    fullSchemaExtra: "permite chaves extras.",
+    pasteFooterBefore:
+      "Cole o snippet copiado no <head> antes de outros scripts de rastreamento. ",
+    pasteFooterAfter: " tem regras de posicionamento.",
+    quickstartLink: "Início rápido",
+    debugConsoleTitle: "Console de eventos / depuração",
+    clear: "Limpar",
+    debugEmpty:
+      "Envios ao dataLayer, mensagens da pré-visualização e saída do console encaminhada do iframe aparecem aqui. Interaja com o banner para ver ",
+    debugEmptyCode: "cookie_consent_update",
+    debugEmptyAfter: ".",
+    bannerPreview: "Pré-visualização do banner",
+    wideFrameHint:
+      "Quadro desktop largo (1280 px) — role na horizontal se o painel for mais estreito.",
+    iframeDocumentTitle: "Pré-visualização do banner",
+    iframePreviewHint:
+      "Pré-visualização ao vivo — o script real da CMP do nosso CDN roda aqui. O quadro é da mesma origem que o app de documentação, então localStorage funciona; chaves de consentimento podem ficar no armazenamento deste site até você limpar.",
+    previewUpdated: "HTML da pré-visualização atualizado — o iframe recarrega.",
+    fixJsonPreview: "Corrija o JSON para carregar a pré-visualização.",
+    loadingPreview: "Carregando pré-visualização…",
+    configMustBeObject:
+      "A configuração deve ser um objeto JSON (não um array nem um primitivo).",
+    iframeBannerPreviewTitle: "Pré-visualização do banner Intastellar Consents",
+    dataLayer: "dataLayer",
+    dataLayerConsent: "dataLayer (cookie_consent_update)",
+    windowError: "window.error",
+    preview: "pré-visualização",
+    demoCompany: "Acme Demo",
+  },
   legacy: {
     line1Strong: "Antes developers.intastellarsolutions.com",
     line1Mid: " — a documentação e as ferramentas para desenvolvedores estão agora aqui em ",

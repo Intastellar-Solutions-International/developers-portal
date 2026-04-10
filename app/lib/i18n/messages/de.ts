@@ -117,6 +117,89 @@ export const de: MessageTree = {
     changelog: "Änderungsprotokoll",
     apiKeys: "API-Schlüssel",
   },
+  intaTryout: {
+    introBeforePrivacy:
+      "Bearbeiten Sie das JSON unten, um window.INTA zu ändern. Die Vorschau lädt neu, sobald das JSON gültig ist. Richtlinien-URLs verweisen standardmäßig auf die ",
+    privacyPage: "Datenschutzseite",
+    introAfterPrivacy:
+      " dieser Website. Die Vorschau nutzt dieselbe Origin und localStorage wie diese Dokumentation.",
+    minimumSetupTitle: "Minimale Einrichtung",
+    minimumSetupLeadBeforeRoot: "Sie brauchen nur eine gültige Richtlinien-URL, ",
+    minimumSetupLeadBetweenRootCompany: ", ",
+    minimumSetupLeadBeforeUc: ", und das ",
+    minimumSetupLeadAfterUc:
+      "-Tag. Alles andere ist optionales Branding oder Integrationen.",
+    copyMinimumSnippet: "Minimales Snippet kopieren",
+    whatNextTitle: "Was als Nächstes passiert",
+    whatNextStep1:
+      "Sie fügen die beiden Script-Tags weit oben im <head> ein, vor Analyse- oder Marketing-Tags.",
+    whatNextStep2:
+      "uc.js liest window.INTA und zeigt das Banner, wenn die Richtlinien-URL erreichbar ist.",
+    whatNextStep3:
+      "Der Besucher akzeptiert, lehnt ab oder wählt granular; die CMP speichert die Entscheidung (Cookies / Speicher für Ihre Domain).",
+    whatNextStep4:
+      "Bei Einwilligungsänderungen wird cookie_consent_update an dataLayer für GTM geschickt — unten in der Konsole sichtbar.",
+    whatNextStep5Before: "Verbinden Sie GTM / Vendor-Tags mit diesen Signalen (siehe ",
+    whatNextStep5Between: ", ",
+    whatNextStep5After: ").",
+    docLinkQuickstart: "Schnellstart",
+    docLinkEventsApi: "Ereignisse und API",
+    editorLabel: "window.INTA (JSON)",
+    format: "Formatieren",
+    reset: "Zurücksetzen",
+    copyHtmlSnippet: "HTML-Snippet kopieren",
+    copied: "Kopiert",
+    jsonErrorPrefix: "JSON: ",
+    fieldReferenceTitle: "Felderreferenz",
+    fieldReferenceAria: "Felderreferenz",
+    fieldHints: {
+      policy_link:
+        "Öffentliche HTTPS-URL Ihrer Datenschutzerklärung. Ungültige oder Platzhalter-URLs verhindern oft die Banner-Anzeige.",
+      settingsPrivacyPolicy:
+        "Alternative Richtlinien-URL, die manche Builds lesen; mit policy_link abgleichen, wenn beide gesetzt sind.",
+      settingsRootDomain:
+        "Registrierbare Domain für Cookies (z. B. example.com). Muss zur besuchten Site passen.",
+      settingsCompany: "Name in der Einwilligungs-Oberfläche.",
+      settingsColor: "Primäre Akzentfarbe (CSS-Hex oder Token).",
+      settingsLogo: "Absolute URL zum Logo; weglassen oder leer, wenn keins.",
+      settingsDesign: "Layout-Voreinstellung (z. B. overlay).",
+      settingsArrange: "ltr oder rtl für die Layout-Richtung.",
+      settingsGtagId:
+        "GA4- / Google-Tag-ID für Consent Mode über die CMP; weglassen, bis Sie Google-Tags nutzen.",
+      settingsRequiredCookies: "Namen unbedingt nötiger Cookies Ihrer Site.",
+      settingsKeepInLocalStorage:
+        "localStorage-Schlüssel, die die CMP bei Einwilligungsänderungen nicht löschen soll.",
+    },
+    fullSchema: "Vollständiges Schema",
+    fullSchemaExtra: "erlaubt zusätzliche Schlüssel.",
+    pasteFooterBefore:
+      "Fügen Sie das kopierte Snippet im <head> vor anderen Tracking-Skripten ein. ",
+    pasteFooterAfter: " enthält Regeln zur Platzierung.",
+    quickstartLink: "Schnellstart",
+    debugConsoleTitle: "Ereignis- / Debug-Konsole",
+    clear: "Leeren",
+    debugEmpty:
+      "dataLayer-Pushes, Vorschau-Meldungen und weitergeleitete Konsolen-Ausgaben aus dem iframe erscheinen hier. Interagieren Sie mit dem Banner, um ",
+    debugEmptyCode: "cookie_consent_update",
+    debugEmptyAfter: " zu sehen.",
+    bannerPreview: "Banner-Vorschau",
+    wideFrameHint:
+      "Breiter Desktop-Rahmen (1280px) — bei schmalerem Panel horizontal scrollen.",
+    iframeDocumentTitle: "Banner-Vorschau",
+    iframePreviewHint:
+      "Live-Vorschau — das echte CMP-Skript von unserem CDN läuft hier. Der Frame hat dieselbe Origin wie die Docs-App, daher funktioniert localStorage; Einwilligungs-Schlüssel können im Speicher dieser Site bleiben, bis Sie sie löschen.",
+    previewUpdated: "Vorschau-HTML aktualisiert — iframe lädt neu.",
+    fixJsonPreview: "JSON korrigieren, um die Vorschau zu laden.",
+    loadingPreview: "Vorschau wird geladen…",
+    configMustBeObject:
+      "Die Konfiguration muss ein JSON-Objekt sein (kein Array und kein Primitiv).",
+    iframeBannerPreviewTitle: "Intastellar Consents Banner-Vorschau",
+    dataLayer: "dataLayer",
+    dataLayerConsent: "dataLayer (cookie_consent_update)",
+    windowError: "window.error",
+    preview: "Vorschau",
+    demoCompany: "Acme Demo",
+  },
   legacy: {
     line1Strong: "Früher developers.intastellarsolutions.com",
     line1Mid: " — Entwicklerdokumentation und -werkzeuge finden Sie jetzt hier auf ",

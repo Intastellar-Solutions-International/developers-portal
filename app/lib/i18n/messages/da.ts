@@ -116,6 +116,89 @@ export const da: MessageTree = {
     changelog: "Ændringslog",
     apiKeys: "API-nøgler",
   },
+  intaTryout: {
+    introBeforePrivacy:
+      "Rediger JSON nedenfor for at ændre window.INTA. Forhåndsvisningen genindlæses, når JSON er gyldig. Politik-URL'er peger som standard på dette sites ",
+    privacyPage: "privatlivsside",
+    introAfterPrivacy:
+      ". Forhåndsvisningen bruger samme origin og localStorage som denne dokumentation.",
+    minimumSetupTitle: "Minimal opsætning",
+    minimumSetupLeadBeforeRoot: "Du skal kun bruge en gyldig politik-URL, ",
+    minimumSetupLeadBetweenRootCompany: ", ",
+    minimumSetupLeadBeforeUc: ", og ",
+    minimumSetupLeadAfterUc:
+      "-tagget. Alt andet er valgfrit branding eller integrationer.",
+    copyMinimumSnippet: "Kopiér minimums-snippet",
+    whatNextTitle: "Hvad sker der så",
+    whatNextStep1:
+      "Du indsætter de to script-tags højt i <head>, før analyse- eller marketing-tags.",
+    whatNextStep2:
+      "uc.js læser window.INTA og viser banneret, hvis politik-URL'en svarer.",
+    whatNextStep3:
+      "Besøgende accepterer, afviser eller vælger granulært; CMP'en gemmer beslutningen (cookies / lager pr. dit domæne).",
+    whatNextStep4:
+      "Ved samtykkeændring skubbes cookie_consent_update til dataLayer til GTM — se det i konsollen nedenfor.",
+    whatNextStep5Before: "Kobl GTM / leverandør-tags til signalerne (se ",
+    whatNextStep5Between: ", ",
+    whatNextStep5After: ").",
+    docLinkQuickstart: "Hurtigstart",
+    docLinkEventsApi: "Begivenheder og API",
+    editorLabel: "window.INTA (JSON)",
+    format: "Formatér",
+    reset: "Nulstil",
+    copyHtmlSnippet: "Kopiér HTML-snippet",
+    copied: "Kopieret",
+    jsonErrorPrefix: "JSON: ",
+    fieldReferenceTitle: "Feltsreference",
+    fieldReferenceAria: "Feltsreference",
+    fieldHints: {
+      policy_link:
+        "Offentlig HTTPS-URL til din privatlivspolitik. Ugyldige eller pladsholder-URL'er forhindrer ofte banneret i at vises.",
+      settingsPrivacyPolicy:
+        "Alternativ politik-URL som nogle builds læser; hold synkroniseret med policy_link når begge er sat.",
+      settingsRootDomain:
+        "Registrerbart domæne til cookies (f.eks. example.com). Skal matche det site besøgende bruger.",
+      settingsCompany: "Navn vist i samtykke-UI.",
+      settingsColor: "Primær accentfarve (CSS-hex eller token).",
+      settingsLogo: "Absolut URL til logo; udelad eller tom hvis intet.",
+      settingsDesign: "Layout-forvalg (f.eks. overlay).",
+      settingsArrange: "ltr eller rtl for layoutretning.",
+      settingsGtagId:
+        "GA4 / Google tag-id når Consent Mode skal kobles fra CMP; udelad indtil du bruger Google-tags.",
+      settingsRequiredCookies: "Navne på strengt nødvendige cookies dit site sætter.",
+      settingsKeepInLocalStorage:
+        "localStorage-nøgler CMP'en ikke skal slette ved samtykkeændringer.",
+    },
+    fullSchema: "Fuldt skema",
+    fullSchemaExtra: "tillader ekstra nøgler.",
+    pasteFooterBefore:
+      "Indsæt det kopierede snippet i <head> før andre tracking-scripts. ",
+    pasteFooterAfter: " har placeringsregler.",
+    quickstartLink: "Hurtigstart",
+    debugConsoleTitle: "Begivenheds- / debug-konsol",
+    clear: "Ryd",
+    debugEmpty:
+      "dataLayer-push, forhåndsvisningsbeskeder og videresendt konsol-output fra iframen vises her. Interager med banneret for at se ",
+    debugEmptyCode: "cookie_consent_update",
+    debugEmptyAfter: ".",
+    bannerPreview: "Banner-forhåndsvisning",
+    wideFrameHint:
+      "Bred desktop-ramme (1280 px) — scroll vandret hvis panelet er smallere.",
+    iframeDocumentTitle: "Banner-forhåndsvisning",
+    iframePreviewHint:
+      "Live-forhåndsvisning — det rigtige CMP-script fra vores CDN kører her. Rammen har samme origin som docs-appen, så localStorage virker; samtykkenøgler kan blive i dette sites lager, indtil du rydder.",
+    previewUpdated: "Forhåndsvisnings-HTML opdateret — iframe genindlæses.",
+    fixJsonPreview: "Ret JSON for at indlæse forhåndsvisningen.",
+    loadingPreview: "Indlæser forhåndsvisning…",
+    configMustBeObject:
+      "Konfigurationen skal være et JSON-objekt (ikke et array eller primitiv).",
+    iframeBannerPreviewTitle: "Intastellar Consents banner-forhåndsvisning",
+    dataLayer: "dataLayer",
+    dataLayerConsent: "dataLayer (cookie_consent_update)",
+    windowError: "window.error",
+    preview: "forhåndsvisning",
+    demoCompany: "Acme Demo",
+  },
   legacy: {
     line1Strong: "Tidligere developers.intastellarsolutions.com",
     line1Mid: " — udviklerdokumentation og -værktøjer ligger nu her på ",
