@@ -10,6 +10,7 @@
     "dev": "node scripts/build-search-index.mjs && react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "status:cron": "node scripts/trigger-status-cron.mjs",
+    "indexnow": "node scripts/indexnow-publish.mjs",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
