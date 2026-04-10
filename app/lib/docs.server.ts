@@ -494,13 +494,16 @@ function mdxFileToPathname(product: string, filePath: string): string {
   return unlocalizedDocPath(product, version, withoutExt);
 }
 
-/** Public doc URL pathnames (default version only) for sitemap generation. */
-export async function getAllDocPathnamesForSitemap(): Promise<string[]> {
+export type DocSitemapEntry = { pathname: string; lastmod: string };
+
+/** Public doc URLs (default version only) with `lastmod` from frontmatter or file mtime. */
+export async function getDocSitemapEntries(): Promise<DocSitemapEntry[]> {
   const isProd = process.env.NODE_ENV === "production";
   const entries = await fs.readdir(DOCS_ROOT, { withFileTypes: true }).catch(
     () => [],
   );
-  const pathnames = new Set<string>();
+  /** One pathname per doc; if several files map to the same path, keep the newer `lastmod`. */
+  const byPath = new Map<string, string>();
 
   for (const ent of entries) {
     if (!ent.isDirectory() || ent.name.startsWith("_")) continue;
@@ -518,15 +521,34 @@ export async function getAllDocPathnamesForSitemap(): Promise<string[]> {
 
     await walkDocsTree(path.join(DOCS_ROOT, product), async (filePath) => {
       if (!filePath.endsWith(".mdx")) return;
-      const raw = await fs.readFile(filePath, "utf8");
+      const [raw, stat] = await Promise.all([
+        fs.readFile(filePath, "utf8"),
+        fs.stat(filePath),
+      ]);
       const { data } = matter(raw);
       const fm = data as Partial<DocFrontmatter>;
       if (isProd && fm.draft === true) return;
-      pathnames.add(mdxFileToPathname(product, filePath));
+      const pathname = mdxFileToPathname(product, filePath);
+      const { lastUpdated } = resolveLastUpdated(
+        fm as DocFrontmatter,
+        stat.mtime,
+      );
+      const prev = byPath.get(pathname);
+      if (prev == null) {
+        byPath.set(pathname, lastUpdated);
+      } else {
+        const pt = Date.parse(prev);
+        const nt = Date.parse(lastUpdated);
+        if (Number.isFinite(nt) && (!Number.isFinite(pt) || nt >= pt)) {
+          byPath.set(pathname, lastUpdated);
+        }
+      }
     });
   }
 
-  return [...pathnames].sort();
+  return [...byPath.entries()]
+    .sort(([a], [b]) => a.localeCompare(b, "en"))
+    .map(([pathname, lastmod]) => ({ pathname, lastmod }));
 }
 
 export async function listProducts(
