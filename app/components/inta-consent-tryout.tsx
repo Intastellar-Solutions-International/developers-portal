@@ -16,6 +16,7 @@ function buildDefaultInta(origin: string, hostname: string): Record<string, unkn
       arrange: "ltr",
       color: "#059669",
       design: "overlay",
+      language: "english",
       requiredCookies: [] as string[],
       keepInLocalStorage: [] as string[],
     },
