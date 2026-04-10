@@ -1,13 +1,15 @@
 ---
 title: Eventos e API
-description: O que este portal documenta sobre consentimento programático—configuração versus superfície de API em tempo de execução.
+description: Evento dataLayer cookie_consent_update para GTM, window.INTA e o que este portal não documenta como API global.
 sidebar_label: Eventos & API
 order: 22
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 related:
+  - title: Conceitos fundamentais
+    href: /docs/cookie-banner/core-concepts
   - title: Início rápido
     href: /docs/cookie-banner/quickstart
-  - title: Ciclo de vida do script
+  - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: Referência window.INTA
     href: /docs/cookie-banner/javascript/inta-schema
@@ -15,31 +17,52 @@ related:
 
 # Eventos e API
 
+Para **categorias, estados e responsabilidades** na stack, veja [Conceitos fundamentais](/docs/cookie-banner/core-concepts).
+
 ## O que este portal de desenvolvedores documenta
 
 | Superfície | Finalidade |
 | --- | --- |
-| **`window.INTA`** | Objeto de bootstrap **antes** de `uc.js` rodar—URL da política, domínio, empresa, `gtagId` opcional, opções de UI ([esquema JSON](/docs/cookie-banner/javascript/inta-schema)). |
-| **Padrões de integração** | Ordem de disparo GTM, GA4, Meta, Google Consent Mode ([visão geral das integrações](/docs/cookie-banner/integrations-overview)). |
+| **`window.INTA`** | Objeto bootstrap **antes** de `uc.js` rodar—URL da política, domínio, empresa, `gtagId` opcional, opções de UI ([JSON Schema](/docs/cookie-banner/javascript/inta-schema)). |
+| **Padrões de integração** | Ordem de disparo GTM, GA4, Meta, Google Consent Mode ([Integrations overview](/docs/cookie-banner/integrations-overview)). |
 
 Esses são os contratos de integração **suportados** para construir em inta.dev.
 
+## `cookie_consent_update` (Google Tag Manager / `dataLayer`)
+
+Quando o visitante **altera o consentimento** (aceitar, recusar, atualização granular, etc.), o banner envia uma entrada para o array Google **`dataLayer`** (o mesmo objeto que o GTM usa quando `dataLayer` é inicializado antes do carregamento do GTM).
+
+| Detalhe | Valor |
+| --- | --- |
+| **Nome do evento** | `cookie_consent_update` |
+| **Onde aparece** | `dataLayer`—visível no **GTM Preview** (aba Data Layer) e no navegador após interação com o banner |
+
+**Uso no GTM**
+
+1. **Triggers → New → Custom Event**
+2. **Event name:** `cookie_consent_update` (correspondência exata, salvo se usar trigger regex de propósito)
+3. Anexe este trigger às tags que devem rodar **quando o consentimento mudar** (ex. após aceitar estatísticas ou marketing), além das configurações de **Consent** nessas tags.
+
+O push inclui um **objeto de dados** junto ao evento (campos relacionados ao consentimento). **Não codifique em pedra** suposições sobre cada propriedade—abra **GTM Preview**, faça uma ação de consentimento e leia o estado atual do **Data Layer** do seu deployment.
+
+Se o GTM não estiver na página, garanta que `window.dataLayer = window.dataLayer || []` exista **antes** de `uc.js` quando depender deste evento para outros consumidores.
+
 ## API JavaScript programática (runtime)
 
-**Não há uma „API JavaScript CMP“ pública separada documentada neste portal** (nenhum global garantido como `window.IntastellarConsents.*` para uso em produção). Quem implementa deve:
+**Não há uma „API JavaScript CMP“ pública separada documentada neste portal** (nenhum global garantido como `window.IntastellarConsents.*` para produção). Para **GTM**, use o evento **`dataLayer`** **`cookie_consent_update`** acima. Caso contrário:
 
-- Conduzir o comportamento via **`window.INTA`** e **`uc.js`** conforme documentado.
-- Usar **Google Tag Manager** (ou sua camada de tags) para eventos, gatilhos e tags de fornecedores.
-- Confiar nos **mecanismos de consentimento dos fornecedores** (por exemplo Google Consent Mode, parâmetros Meta) quando aplicável.
+- Controle o comportamento via **`window.INTA`** e **`uc.js`** conforme documentado.
+- Use **Google Tag Manager** (ou a camada de tags da sua stack) para triggers e tags de fornecedores.
+- Apoie-se em **mecanismos de consentimento dos fornecedores** (ex.: Google Consent Mode, parâmetros Meta) quando aplicável.
 
-Se sua organização publicar uma **API runtime versionada** para um build CDN ou nível enterprise específico, adicione a URL canônica ao frontmatter desta página ou à [página inicial da documentação](/docs/cookie-banner) quando estiver estável.
+Se sua organização publicar uma **API runtime versionada** para um build CDN ou tier enterprise específico, adicione a URL canônica ao frontmatter desta página ou ao [início da documentação](/docs/cookie-banner) quando estiver estável.
 
 ## Lista de verificação prática
 
-1. Valide o comportamento orientado a consentimento com **Pré-visualização GTM** ou a ordem de carregamento do seu bundler.
-2. Use DevTools (**Aplicativo** → cookies / armazenamento, **Rede**) para confirmar alinhamento das tags **antes** e **depois** das escolhas.
-3. Se algo só pode rodar após aceitar, expresse isso em **gatilhos GTM** ou código da aplicação carregado **depois** da CMP — não via globais não documentados.
+1. Valide o comportamento orientado a consentimento com **GTM Preview** ou a ordem de carregamento do seu bundler.
+2. Use DevTools (**Application** → cookies / storage, **Network**) para confirmar que as tags se alinham ao consentimento **antes** e **depois** das escolhas.
+3. Se algo precisar rodar quando o consentimento **mudar**, use um trigger **Custom Event** em **`cookie_consent_update`** (veja acima) ou código de aplicação que rode **depois** da CMP—not globals não documentados.
 
 ## Sinais de consentimento para terceiros
 
-O Intastellar Consents repassa **sinais de consentimento** para pilhas suportadas quando configurado, para que você não precise cabear cada fornecedor manualmente. Parâmetros específicos de plataforma ainda seguem **Google**, **Meta**, **Microsoft**, etc. — veja [visão geral das integrações](/docs/cookie-banner/integrations-overview).
+Intastellar Consents repassa **sinais de consentimento** para stacks suportadas quando configurado, para que você não precise ligar cada fornecedor manualmente. Parâmetros específicos de plataforma ainda seguem **Google**, **Meta**, **Microsoft**, etc.—veja [Integrations overview](/docs/cookie-banner/integrations-overview).

@@ -4,12 +4,14 @@ description: Quickstart, GTM, GA4 e Consent Mode — documentação Intastellar 
 hub_order: 10
 hub_tagline: Banner de cookies e CMP — JS, WordPress, GTM, Shopify.
 order: 0
-lastUpdated: "2026-04-08"
+lastUpdated: "2026-04-09"
 ---
 
 # Documentação
 
-O Intastellar Consents é um CMP leve para sites pequenos e desenvolvedores: **scripts não essenciais ficam limitados até o visitante escolher**, o **Google Consent Mode v2** pode ser integrado corretamente, e sua stack permanece **previsível** se você seguir os padrões de carregamento desta documentação.
+O Intastellar Consents é uma **CMP centrada em script** para sites pequenos e equipes que publicam HTML ou GTM próprios: **o rastreamento não essencial não roda como plenamente consentido antes da escolha do visitante**, o **Google Consent Mode v2** pode alinhar-se ao seu ID de medição quando você configura `gtagId` e as definições das tags, e **análise ou anúncios podem continuar em modos conscientes de consentimento** após aceitar—sem prometer uma „conformidade total“ vaga (isso sempre depende dos **seus** textos de política, lista de fornecedores e o trigger de cada tag).
+
+**Modelo de confiança:** o produto aplica os **mecanismos de consentimento** documentados aqui. **Você** é responsável pelo posicionamento correto, configuração GTM e posicionamento jurídico. Seguindo [Início rápido](/docs/cookie-banner/quickstart) → [Como funciona](/docs/cookie-banner/how-it-works) → [Conceitos fundamentais](/docs/cookie-banner/core-concepts), você pode **verificar o comportamento em DevTools e GTM Preview** antes da produção.
 
 <div className="not-prose my-8 rounded-xl border border-emerald-300/70 bg-gradient-to-br from-emerald-50 via-white to-teal-50/90 p-5 shadow-md shadow-emerald-900/5 ring-1 ring-emerald-500/10 dark:border-emerald-800/60 dark:from-emerald-950/50 dark:via-zinc-950 dark:to-emerald-950/30 dark:shadow-black/20 dark:ring-emerald-400/10 md:p-6">
   <div className="m-0 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-emerald-900 dark:text-emerald-400">
@@ -35,12 +37,23 @@ O Intastellar Consents é um CMP leve para sites pequenos e desenvolvedores: **s
       →
     </span>
     <a
+      href="/docs/cookie-banner/core-concepts"
+      className="font-semibold text-emerald-800 underline decoration-emerald-600/35 underline-offset-[3px] transition-colors hover:text-emerald-900 hover:decoration-emerald-700 dark:text-emerald-300 dark:decoration-emerald-400/35 dark:hover:text-emerald-200"
+    >
+      Conceitos fundamentais
+    </a>
+    <span className="mx-2 font-normal text-zinc-400 dark:text-zinc-500" aria-hidden="true">
+      →
+    </span>
+    <a
       href="/docs/cookie-banner/debugging"
       className="font-semibold text-emerald-800 underline decoration-emerald-600/35 underline-offset-[3px] transition-colors hover:text-emerald-900 hover:decoration-emerald-700 dark:text-emerald-300 dark:decoration-emerald-400/35 dark:hover:text-emerald-200"
     >
       Solução de problemas
     </a>
-    <span className="mt-2 block text-sm font-normal text-zinc-600 dark:text-zinc-400">~5 minutos no total</span>
+    <span className="mt-2 block text-sm font-normal text-zinc-600 dark:text-zinc-400">
+      ~5 min de instalação · depois leia para produção
+    </span>
   </div>
 </div>
 
@@ -48,9 +61,10 @@ O Intastellar Consents é um CMP leve para sites pequenos e desenvolvedores: **s
 
 | Tópico | Guia |
 | --- | --- |
-| **Quickstart (~5 min)** | [Quickstart](/docs/cookie-banner/quickstart) — `window.INTA` mínimo + `uc.js`, verificação no navegador |
-| **Arquitetura** | [How it works](/docs/cookie-banner/how-it-works) — bloqueio, sinais, limites do CMP |
-| **Solução de problemas** | [Debugging](/docs/cookie-banner/debugging) |
+| **Início rápido (~5 min)** | [Início rápido](/docs/cookie-banner/quickstart) — copiar e colar `window.INTA` + `uc.js`, posição exata no `<head>`, expectativa antes/depois do consentimento |
+| **Arquitetura** | [Como funciona](/docs/cookie-banner/how-it-works) — ordem de carregamento da página, modelo de bloqueio, sinais GTM/GA/Meta |
+| **Conceitos fundamentais** | [Conceitos fundamentais](/docs/cookie-banner/core-concepts) — finalidades, estados de consentimento, bloqueio vs. suas tags, divisão de responsabilidades |
+| **Solução de problemas** | [Solução de problemas](/docs/cookie-banner/debugging) — banner ausente, tags cedo demais, consentimento instável, triggers GTM |
 | **Snippet JS completo** | [Primeiros passos (JavaScript)](/docs/cookie-banner/javascript/getting-started) — opções comuns + branding |
 | **SPAs / Next.js** | [SPAs and SSR](/docs/cookie-banner/javascript/spa-and-ssr) |
 | **Campos `window.INTA`** | [`window.INTA` (JSON Schema)](/docs/cookie-banner/javascript/inta-schema) |
