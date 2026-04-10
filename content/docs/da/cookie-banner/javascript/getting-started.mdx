@@ -1,18 +1,30 @@
 ---
 title: Kom i gang
-description: Integrér Intastellar Consents på dit website via JavaScript.
+description: Fuld JavaScript-installation—snippet med almindelige indstillinger, privatlivs-URL og links til hurtigstart og skema.
 order: 10
-lastUpdated: "2026-04-05"
+lastUpdated: "2026-04-08"
 related:
+  - title: Hurtigstart
+    href: /docs/cookie-banner/quickstart
   - title: window.INTA JSON Schema
     href: /docs/cookie-banner/javascript/inta-schema
+  - title: SPA’er og SSR
+    href: /docs/cookie-banner/javascript/spa-and-ssr
+  - title: Script-livscyklus
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Integrationsoversigt
+    href: /docs/cookie-banner/integrations-overview
   - title: Tilpas udseende og adfærd
     href: /docs/cookie-banner/javascript/customize
 ---
 
 # Kom i gang (JavaScript)
 
-Indsæt snippet’et **lige efter** det åbnende `<head>`-tag på hver side (eller én gang i dit root-layout). Samme konfigurationsform vises på den offentlige [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents)-oversigt — udskift med dine rigtige domæner, id’er og branding. [Planer og priser](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) findes på produktsiden.
+Til en **minimal første installation** (~5 minutter) brug **[Hurtigstart](/docs/cookie-banner/quickstart)** — lille snippet, klare verifikationstrin.
+
+Denne side er den **fulde** installationsreference: almindelige `settings`-felter, valgfrit `gtagId` og pladsholdere til branding. Samme konfigurationsform vises på den offentlige [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents)-oversigt. [Planer og priser](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) findes på produktsiden.
+
+**Frameworks:** [SPA’er og SSR (Next.js m.fl.)](/docs/cookie-banner/javascript/spa-and-ssr)
 
 ```html
 <script>
@@ -34,15 +46,20 @@ Indsæt snippet’et **lige efter** det åbnende `<head>`-tag på hver side (ell
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
-Erstat pladsholdere med dit domæne, firmanavn, farver, logo-URL og målings-id’er.
+Erstat pladsholdere med domæne, firmanavn, farver, logo-URL og målings-id’er. Udelad `gtagId`, indtil I bruger Google-tags; se [Hurtigstart](/docs/cookie-banner/quickstart) trin 2.
 
 ## URL til privatlivspolitik
 
-Angiv en tilgængelig privatlivspolitik-URL. Brug `policy_link` og/eller `settings.privacy_policy` på `window.INTA`. Manglende eller ugyldige URL’er er en almindelig årsag til, at banneret forbliver skjult — se [FAQ](/docs/cookie-banner#faq) på doc-forsiden.
+Angiv en tilgængelig privatlivspolitik-URL. Brug `policy_link` og/eller `settings.privacy_policy` på `window.INTA`. Manglende eller ugyldige URL’er er en almindelig årsag til, at banneret forbliver skjult — se [FAQ](/docs/cookie-banner#faq) på dokumentationsforsiden.
 
 ## Relateret
 
+- [Hurtigstart](/docs/cookie-banner/quickstart)
 - [`window.INTA`-reference (JSON Schema)](/docs/cookie-banner/javascript/inta-schema)
+- [Script-livscyklus](/docs/cookie-banner/javascript/script-lifecycle)
+- [Begivenheder og API](/docs/cookie-banner/javascript/events-and-api)
+- [Integrationsoversigt](/docs/cookie-banner/integrations-overview)
+- [Google Consent Mode](/docs/cookie-banner/google-consent-mode)
 - [Tilpas](/docs/cookie-banner/javascript/customize)
 - [iFrames](/docs/cookie-banner/javascript/iframes)
 - [Tilføj logo](/docs/cookie-banner/javascript/logo)

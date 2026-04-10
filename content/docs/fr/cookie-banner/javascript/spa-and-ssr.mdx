@@ -1,0 +1,45 @@
+---
+title: SPA et SSR (Next.js, etc.)
+description: Gardez Intastellar Consents dans l’en-tête du document avec React, Next.js ou d’autres frameworks SPA.
+sidebar_label: SPA & SSR
+order: 11
+lastUpdated: "2026-04-08"
+related:
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+  - title: Cycle de vie du script
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Dépannage
+    href: /docs/cookie-banner/debugging
+---
+
+# SPA et SSR (Next.js, etc.)
+
+Les frameworks qui hydratent l’interface peuvent charger la CMP **trop tard** ou **deux fois**. La règle reste : **`window.INTA` puis `uc.js`, le plus tôt possible dans le vrai document HTML.**
+
+## Next.js (App Router)
+
+- Préférez **`app/layout.tsx`** (ou layout racine) avec un composant **serveur** ou **client** qui émet l’extrait dans `<head>`.
+- Avec **`next/script`**, assurez-vous que la CMP s’exécute **avant** les scripts analytics dans l’**ordre du document** — `strategy="beforeInteractive"` peut convenir au chargeur CMP ; évitez GA avec un ordre effectif plus précoce.
+- Ne montez pas la CMP uniquement dans une route client profonde (ex. un seul composant de page) sauf si chaque entrée l’inclut.
+
+## React (SPA)
+
+- Ajoutez les deux balises script dans **`public/index.html`** ou le **modèle HTML** du framework, pas seulement dans un composant monté tard.
+- Cherchez `uc.js` en double dans le bundle lors de l’ajout de scripts tiers via plugins.
+
+## Vue / Nuxt / SvelteKit
+
+- Utilisez le **layout racine** ou **`app.html`** / hooks de tête pour que la CMP soit dans la **réponse HTML initiale** du premier rendu.
+
+## Vérifier
+
+1. **Afficher le code source de la page** (pas seulement Éléments) : `uc.js` doit figurer dans le HTML brut.
+2. Bandeau absent ou consentement réinitialisé à la navigation : [Dépannage](/docs/cookie-banner/debugging).
+
+## Voir aussi
+
+- [Premiers pas (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- [Fonctionnement](/docs/cookie-banner/how-it-works)
+
+[← Accueil documentation](/docs/cookie-banner)

@@ -1,16 +1,70 @@
 ---
 title: Google Tag Manager
-description: Charger Intastellar Consents via Google Tag Manager.
+description: Configuration GTM recommandée—Consent Initialization, balise CMP, puis analytics et pubs sensibles au consentement.
 order: 60
-lastUpdated: "2026-04-05"
+lastUpdated: "2026-04-08"
+related:
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Analytics 4
+    href: /docs/cookie-banner/google-analytics-4
+  - title: Dépannage
+    href: /docs/cookie-banner/debugging
 ---
 
 # Google Tag Manager
 
-Utilisez GTM pour intégrer le même amorçage que vous mettriez manuellement dans le HTML.
+Utilisez GTM pour injecter la **même** paire `window.INTA` + `uc.js` que dans le [Démarrage rapide](/docs/cookie-banner/quickstart). Seule la **position** dans la séquence des balises change.
 
-1. Créez une balise **HTML personnalisé** avec le bloc `window.INTA` et le script `uc.js` de [Premiers pas (JavaScript)](/docs/cookie-banner/javascript/getting-started).
-2. Déclenchez-la sur **Consent Initialization – All pages** (ou l’équivalent de votre conteneur) pour que le bandeau charge avant analytics et pubs.
-3. Autres balises avec des déclencheurs qui ne s’exécutent **qu’après** l’état de consentement d’Intastellar Consents — ne pas « courir » contre le bandeau.
+## Prérequis
+
+- Conteneur GTM sur le site et droits de **publier** des versions.
+- Valeurs pour `policy_link`, `rootDomain`, `company` et `gtagId` optionnel décidées.
+
+## 1. Créer la balise CMP
+
+1. **Balises → Nouveau → Type de balise : HTML personnalisé**
+2. Collez l’extrait complet du [Démarrage rapide](/docs/cookie-banner/quickstart) (les deux blocs `<script>` : `window.INTA` inline et `uc.js`).
+3. **Prendre en charge document.write** : en général **désactivé** sauf besoin spécifique du site.
+
+## 2. Priorité de déclenchement (critique)
+
+**Déclencheur :** **Consent Initialization – All pages** (ou l’événement de consentement initial équivalent de votre conteneur).
+
+**Pourquoi :** ce déclencheur permet à une CMP de s’exécuter **avant** les balises qui supposent le consentement. Si la CMP ne se déclenche qu’au Page View **après** GA4, vous aurez des problèmes « fantômes » (hits ou cookies avant le choix).
+
+## 3. Balises dépendantes (GA4, Ads, Meta, etc.)
+
+- Configurez **Configuration GA4**, **Google Ads**, **Meta Pixel** et similaires avec des **réglages de consentement** et des déclencheurs alignés sur votre politique.
+- **Règle pratique :** tout ce qui pose des cookies non essentiels ou envoie des données personnelles pour pub/analytics ne doit **pas** se comporter comme pleinement consenti **avant** l’exécution de la CMP.
+
+Guides concrets :
+
+- [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
+- [Meta Pixel](/docs/cookie-banner/meta-pixel)
+- [Google Consent Mode](/docs/cookie-banner/google-consent-mode)
+
+## 4. Google Consent Mode
+
+Avec les balises Google, définissez `settings.gtagId` dans `window.INTA` et alignez la configuration **consentement** des balises GTM sur vos valeurs par défaut (documentées dans le guide du mode consentement).
+
+## 5. Liste de contrôle Aperçu
+
+1. Ouvrez **Aperçu GTM** sur la préproduction.
+2. Vérifiez que la balise **CMP** apparaît sur l’événement **Consent Initialization** (tôt).
+3. **Avant** d’accepter marketing/analytics : GA/Ads ne doivent **pas** se comporter comme pleinement consentis (Aperçu + Réseau).
+4. **Après** acceptation : les hits ou pings attendus doivent apparaître ou changer de mode correctement.
+
+## 6. Publier
+
+Note de version du type : `CMP : Intastellar via Consent Init ; GA4/Meta bloqués`.
+
+## Voir aussi
+
+- [Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)
+- [Cycle de vie du script](/docs/cookie-banner/javascript/script-lifecycle)
+- [Fonctionnement](/docs/cookie-banner/how-it-works)
 
 [← Accueil documentation](/docs/cookie-banner)

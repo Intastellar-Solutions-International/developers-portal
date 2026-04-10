@@ -1,0 +1,43 @@
+---
+title: Optimizely
+description: Expériences Optimizely, cookies et stockage local avec Intastellar Consents.
+order: 48
+lastUpdated: "2026-04-08"
+related:
+  - title: Vue d’ensemble des intégrations
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+---
+
+# Optimizely
+
+Optimizely utilise **cookies et stockage local** pour les expériences et la personnalisation. C’est en général **non essentiel** tant que le consentement ne le couvre pas — chargez Optimizely **après** la CMP et bloquez selon la bonne finalité.
+
+## Prérequis
+
+- [Démarrage rapide](/docs/cookie-banner/quickstart).
+- Savoir si vous traitez les expériences comme **marketing**, **analytics** ou catégorie dédiée dans le texte de politique CMP.
+
+## Google Tag Manager
+
+1. Chargez l’extrait Optimizely depuis une balise qui ne se déclenche que lorsque le consentement correspondant est **accordé** (ou utilisez les schémas de consentement Optimizely).
+2. Ne déclenchez pas Optimizely sur **All Pages** à l’init du consentement avant le choix sauf si votre défaut juridique l’autorise explicitement.
+
+## Consentement cookies et stockage local
+
+La documentation Optimizely décrit le comportement de stockage. Alignez les **catégories du bandeau** sur ce qu’Optimizely pose ; utilisez [Dépannage](/docs/cookie-banner/debugging) si du stockage apparaît avant acceptation.
+
+## Vérifier
+
+- Stockage / réseau Optimizely doivent correspondre **avant vs après** consentement.
+- Les expériences assignent toujours correctement les visiteurs une fois autorisé.
+
+## Voir aussi
+
+- [Fonctionnement](/docs/cookie-banner/how-it-works)
+- [Répertoire des intégrations marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)

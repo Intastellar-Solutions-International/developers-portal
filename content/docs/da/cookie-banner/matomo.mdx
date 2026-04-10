@@ -1,0 +1,44 @@
+---
+title: Matomo
+description: Matomo (self-hosted eller cloud) med Intastellar Consents og samtykkebevidst indlæsning.
+order: 47
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrationsoversigt
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Hurtigstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Matomo
+
+Matomo behandles ofte som **analytics / statistik**. Med Intastellar Consents bør sporings-snippetten **ikke** køre som fuldt aktiv, før besøgende accepterer det matchende formål.
+
+## Forudsætninger
+
+- [Hurtigstart](/docs/cookie-banner/quickstart), så CMP initialiseres først.
+- Læs Matomos **Consent Manager** eller **opt-out**-dokumentation ved siden af denne side—Intastellar leverer site-bred samtykke-UI; Matomo skal måske stadig vide, hvornår sporing er tilladt.
+
+## Google Tag Manager
+
+1. Udrul Matomo via **Custom HTML** eller officiel skabelon hvis I bruger en.
+2. Affyr på trigger bundet til **analytics-samtykke** (eller containers ækvivalent), **ikke** på rå „All Pages“ før CMP har kørt.
+3. Hold CMP på **Consent Initialization** — se [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+
+## Matomo Consent API
+
+Bruger I Matomos JavaScript-API til samtykkeflag, sæt dem når Intastellar anvender brugerens valg (ofte via GTM custom events eller app-lag). Eksakte eventnavne afhænger af opsætningen; valider på **staging**.
+
+## Verificer
+
+- Før accept: ingen Matomo-hits der antager fulde analytics-cookies efter jeres konfiguration.
+- Efter accept: sporing og dashboards viser forventet trafik.
+
+## Relateret
+
+- [Fejlfinding](/docs/cookie-banner/debugging)
+- [Marketingintegrationskatalog](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsoversigt](/docs/cookie-banner/integrations-overview)

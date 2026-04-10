@@ -1,0 +1,46 @@
+---
+title: Pinterest
+description: Pinterest Tag og konverteringssporing med Intastellar Consents.
+order: 52
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrationsoversigt
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Meta Pixel
+    href: /docs/cookie-banner/meta-pixel
+  - title: Hurtigstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Pinterest
+
+**Pinterest Tag** er reklame- / konverteringssporing. Den bør køre **efter** Intastellar Consents og kun når **marketing**- eller **reklame**-samtykke er givet (efter jeres bannerkategorier).
+
+## Forudsætninger
+
+- [Hurtigstart](/docs/cookie-banner/quickstart).
+- Pinterest Tag-ID og eventnavne fra [Pinterests dokumentation](https://help.pinterest.com/) til jeres kampagneopsætning.
+
+## Google Tag Manager
+
+1. Tilføj Pinterest-basiskode og event-tags i GTM.
+2. Sæt triggers til kun at affyre når **reklame-/marketing**-samtykke er tilladt—samme mønster som [Meta Pixel](/docs/cookie-banner/meta-pixel).
+3. Kobl ikke Pinterest til **All Pages** ved sideindlæsning før CMP kører.
+
+## Inline-tag
+
+Er tagget hardkodet, placer det **efter** `uc.js` i `<head>` eller injicer dynamisk efter samtykke.
+
+## Verificer
+
+- `pinimg.com` / Pinterest-netværkskald for tagget bør ikke opføre sig som fuld marketing-sporing **før** accept.
+- Efter accept affyrer konverteringer og katalog-events som konfigureret.
+
+## Relateret
+
+- [Fejlfinding](/docs/cookie-banner/debugging)
+- [Marketingintegrationskatalog](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsoversigt](/docs/cookie-banner/integrations-overview)

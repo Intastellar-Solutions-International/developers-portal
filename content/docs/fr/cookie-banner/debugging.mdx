@@ -1,0 +1,64 @@
+---
+title: Dépannage
+description: Dépannage par symptômes—bandeau absent, balises trop tôt, courses GTM, consentement qui ne persiste pas.
+sidebar_label: Dépannage
+order: 3
+lastUpdated: "2026-04-08"
+related:
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+  - title: Fonctionnement
+    href: /docs/cookie-banner/how-it-works
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Dépannage
+
+Vérifiez par petites étapes avant de modifier des réglages sans lien.
+
+## Le bandeau n’apparaît pas
+
+| Cause probable | Comment vérifier | Correctif |
+| --- | --- | --- |
+| Mauvaise `policy_link` | Ouvrir l’URL dans un nouvel onglet ; HTTPS et code HTTP | Page de politique en ligne ; corriger redirections / 404 |
+| Extrait trop bas ou seulement dans le body | Code source ; chercher `uc.js` | Déplacer le bloc au début de `<head>` |
+| SPA / framework monte tard | Comparer HTML serveur vs DOM rendu | Charger la CMP depuis la **mise en page racine** ou le shell qui enveloppe chaque route |
+| `window.INTA` dupliqué ou conflictuel | Chercher `window.INTA` dans le dépôt / HTML | **Une** définition avant `uc.js` |
+
+## Le suivi « ne se déclenche pas » après consentement
+
+| Cause probable | Comment vérifier | Correctif |
+| --- | --- | --- |
+| Pas de déclencheur post-consentement | Aperçu GTM : la balise ne se déclenche pas après acceptation | Ajouter des déclencheurs sensibles au consentement ou réglages du mode consentement |
+| `gtagId` manquant pour GA4 | Comparer avec [Démarrage rapide](/docs/cookie-banner/quickstart) | Définir `gtagId` ou câbler GA selon votre schéma |
+| Defaults du mode consentement trop stricts | GA / Tag Assistant | Ajuster les defaults **volontairement** et documenter le choix |
+
+## Les balises se déclenchent avant le consentement (grave)
+
+| Cause probable | Comment vérifier | Correctif |
+| --- | --- | --- |
+| GA/Ads sur « All Pages » avant la CMP | Chronologie Aperçu GTM | Déclencher la CMP sur **Consent Initialization** ; bloquer les balises dépendantes |
+| `gtag.js` codé en dur dans le HTML | Chercher `googletagmanager.com/gtag` | Supprimer les chargeurs dupliqués ou placer **après** la CMP |
+| Intégration tierce dans `<head>` | Onglet Réseau | Reporter jusqu’à ce que l’objectif correspondant soit autorisé |
+
+## Les déclencheurs GTM « ne fonctionnent pas »
+
+| Cause probable | Comment vérifier | Correctif |
+| --- | --- | --- |
+| CMP pas sur Consent Init | Type de déclencheur dans GTM | Utiliser **Consent Initialization – All pages** (ou équivalent) |
+| Course avec Page View | Ordre des événements dans l’Aperçu | S’assurer que la CMP se déclenche **avant** les balises analytics |
+| Mauvais conteneur | ID de conteneur sur le site | Pointer vers le conteneur GTM voulu |
+
+## Le choix de consentement ne persiste pas
+
+| Cause probable | Comment vérifier | Correctif |
+| --- | --- | --- |
+| Mauvais `rootDomain` | Comparer `settings.rootDomain` et le nom d’hôte | Aligner sur votre modèle de domaine cookies |
+| Deux copies de `uc.js` | Chercher `uc.js` dans la source | Une installation canonique |
+
+## Toujours bloqué
+
+Notez : navigateur, URL de la page (staging OK), extrait **afficher le code source** autour de `uc.js`, et avec GTM une **capture d’Aperçu** ou export. Puis contact support ou [FAQ](/docs/cookie-banner#faq) sur l’accueil de la doc.
+
+[← Accueil documentation](/docs/cookie-banner)

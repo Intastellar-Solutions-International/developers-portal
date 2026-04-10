@@ -1,0 +1,46 @@
+---
+title: Segment
+description: CDP Segment et pipeline analytics avec Intastellar Consents—sources après consentement.
+order: 51
+lastUpdated: "2026-04-08"
+related:
+  - title: Vue d’ensemble des intégrations
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+---
+
+# Segment
+
+**Segment** collecte des événements et les transmet aux destinations. L’extrait **Analytics.js** (ou équivalent) n’est pas essentiel tant que le consentement ne l’autorise pas — traitez Segment comme tout chargeur analytics/marketing : **CMP d’abord**, puis Segment lorsque c’est permis.
+
+## Prérequis
+
+- [Démarrage rapide](/docs/cookie-banner/quickstart).
+- Liste des **destinations** Segment et des finalités de consentement (analytics vs pubs, etc.).
+
+## Google Tag Manager
+
+Beaucoup d’équipes chargent Segment via GTM :
+
+1. Ajoutez l’extrait Segment dans une balise qui ne se déclenche que lorsque **analytics** (ou la finalité combinée) est acceptée.
+2. Ou chargez Segment dans le code applicatif **après** lecture de l’état du consentement — la lecture doit avoir lieu **après** l’initialisation de la CMP.
+
+## Destinations
+
+Chaque destination (GA4, pixels pub, etc.) peut avoir ses propres règles de consentement. Segment ne supprime pas le besoin de **bloquer** les balises en aval ; Intastellar fournit le consentement site-wide — alignez le chargement Segment et les **bascules de destination**.
+
+## Vérifier
+
+- Les appels vers `cdn.segment.com` / analytics ne doivent pas s’exécuter comme pleinement consentis **avant** ce que votre politique autorise.
+- Après acceptation, les événements atteignent les destinations comme configuré.
+
+## Voir aussi
+
+- [Dépannage](/docs/cookie-banner/debugging)
+- [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
+- [Répertoire des intégrations marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)

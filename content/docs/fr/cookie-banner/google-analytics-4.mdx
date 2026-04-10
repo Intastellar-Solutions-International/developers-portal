@@ -1,0 +1,50 @@
+---
+title: Google Analytics 4
+description: Configuration GA4 recommandée avec Intastellar Consents et Google Consent Mode v2.
+order: 54
+lastUpdated: "2026-04-08"
+related:
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Google Analytics 4
+
+Parcours recommandé : **GA4 + Consent Mode v2**, CMP en premier, balises bloquées dans GTM ou équivalent.
+
+## Prérequis
+
+- [Démarrage rapide](/docs/cookie-banner/quickstart) effectué (ou le même ordre `window.INTA` + `uc.js` dans GTM).
+- `settings.gtagId` défini sur votre **ID de mesure GA4** (`G-XXXXXXXX`) lorsque la CMP coordonne Google automatiquement.
+- Lire [Google Consent Mode](/docs/cookie-banner/google-consent-mode) une fois — les valeurs par défaut comptent.
+
+## Recommandé : GA4 via Google Tag Manager
+
+1. Intégrez la CMP comme dans [Google Tag Manager](/docs/cookie-banner/google-tag-manager) sur **Consent Initialization**.
+2. Ajoutez une balise **Google** ou **Configuration GA4** qui respecte le **consentement** dans les réglages de la balise (alignez-vous sur vos défauts juridiques par type de consentement).
+3. Ne déclenchez **pas** GA4 avec un simple déclencheur « All Pages » si cela implique des cookies analytics complets avant la CMP — utilisez une configuration sensible au consentement.
+
+## `gtag` inline (sans GTM)
+
+Si vous chargez `gtag.js` directement :
+
+- Placez toujours **`window.INTA` + `uc.js` en premier** dans `<head>`.
+- Chargez GA **après** l’extrait CMP, ou assurez-vous que le mode consentement est défini avant les hits concernés.
+
+Les double chargeurs GA (GTM + `gtag` codé en dur) provoquent souvent des doubles hits et un mauvais état de consentement — choisissez **un** chemin principal.
+
+## Vérifier
+
+1. **Aperçu GTM** ou **DebugView** GA : avant acceptation, l’analytics ne doit pas se comporter comme **pleinement consentie** sauf configuration volontaire des defaults.
+2. Après **Accepter**, la collecte normale doit reprendre (sous réserve des bloqueurs de pub, etc.).
+
+## Voir aussi
+
+- [Dépannage](/docs/cookie-banner/debugging)
+- [Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)
+
+[← Accueil documentation](/docs/cookie-banner)

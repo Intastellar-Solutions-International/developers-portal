@@ -1,0 +1,48 @@
+---
+title: Microsoft Clarity et UET
+description: Microsoft Clarity (replay de session / heatmaps) et Universal Event Tracking (UET) avec Intastellar Consents.
+sidebar_label: Clarity & UET
+order: 53
+lastUpdated: "2026-04-08"
+related:
+  - title: Vue d’ensemble des intégrations
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+---
+
+# Microsoft Clarity et UET
+
+**Clarity** (analyse comportementale, enregistrements, heatmaps) et **UET** (conversion / remarketing Microsoft Advertising) sont des produits distincts, mais la même règle s’applique : chargez-les **après** la CMP et seulement lorsque le consentement couvre la finalité.
+
+## Prérequis
+
+- [Démarrage rapide](/docs/cookie-banner/quickstart) pour qu’Intastellar passe en premier.
+- Associez Clarity à **analytics / statistiques** (ou équivalent) et UET à **marketing / publicité** dans votre modèle de consentement.
+
+## Google Tag Manager
+
+1. **Clarity :** ajoutez la balise Clarity avec un déclencheur qui ne se déclenche que lorsque **analytics** (ou la finalité choisie) est autorisée.
+2. **UET :** ajoutez la balise UET avec un déclencheur qui ne se déclenche que lorsque le consentement **publicité/marketing** est autorisé.
+3. N’utilisez pas un seul déclencheur global « All Pages » pour les deux si votre bandeau distingue ces finalités.
+
+## Scripts inline
+
+Si Clarity ou UET est codé en dur :
+
+- Placez les extraits **sous** `window.INTA` + `uc.js` dans `<head>`, ou injectez-les seulement après consentement via l’app ou GTM.
+- Évitez les double chargeurs (GTM + code en dur).
+
+## Vérifier
+
+- Avant acceptation : l’activité réseau Clarity/UET doit correspondre à votre défaut **restreint**.
+- Après acceptation : les balises se chargent et enregistrent comme prévu.
+
+## Voir aussi
+
+- [Dépannage](/docs/cookie-banner/debugging)
+- [Répertoire des intégrations marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)

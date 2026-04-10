@@ -1,0 +1,44 @@
+---
+title: HubSpot
+description: Suivi et formulaires HubSpot avec Intastellar Consents—CMP d’abord, déclenchement sensible au consentement.
+order: 46
+lastUpdated: "2026-04-08"
+related:
+  - title: Vue d’ensemble des intégrations
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+---
+
+# HubSpot
+
+Intastellar Consents s’intègre à **HubSpot** pour que le marketing et le suivi respectent le consentement. Câblez HubSpot comme toute autre pile non essentielle : **CMP avant les scripts HubSpot**, puis déclenchez uniquement lorsque les choix du visiteur le permettent.
+
+## Prérequis
+
+- [Démarrage rapide](/docs/cookie-banner/quickstart) (ou équivalent) pour que `window.INTA` + `uc.js` chargent **tôt** dans `<head>`.
+- Clarté sur les fonctionnalités HubSpot utilisées (code de suivi, formulaires, chat) et les objectifs de consentement associés.
+
+## Recommandé : Google Tag Manager
+
+1. Déployez la CMP sur **Consent Initialization** — voir [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+2. Ajoutez des balises **HubSpot** (ou HTML personnalisé) avec des déclencheurs correspondant au consentement **marketing/analytics** accepté, selon votre politique.
+3. Évitez de charger l’intégration HubSpot globalement sur **All Pages** avant le consentement sauf avis juridique contraire.
+
+## API cookies HubSpot / comportement CMP
+
+La documentation HubSpot décrit l’interaction des balises avec les cookies et les outils de consentement. Suivez les guides **HubSpot + CMP** avec l’ordre de chargement Intastellar : la CMP fournit l’état ; votre GTM ou site ne doit **pas** traiter le suivi comme accordé avant le choix.
+
+## Vérifier
+
+- **Réseau / Application** : les requêtes et cookies liés à HubSpot ne doivent pas être pleinement actifs **avant** acceptation (pour les finalités restreintes).
+- Après acceptation, formulaires et suivi fonctionnent comme configuré.
+
+## Voir aussi
+
+- [Dépannage](/docs/cookie-banner/debugging)
+- [Répertoire des intégrations marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)

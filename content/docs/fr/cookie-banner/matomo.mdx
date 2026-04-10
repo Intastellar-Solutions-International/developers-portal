@@ -1,0 +1,44 @@
+---
+title: Matomo
+description: Matomo (auto-hébergé ou cloud) avec Intastellar Consents et chargement sensible au consentement.
+order: 47
+lastUpdated: "2026-04-08"
+related:
+  - title: Vue d’ensemble des intégrations
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+---
+
+# Matomo
+
+Matomo est souvent traité comme **analytics / statistiques**. Avec Intastellar Consents, l’extrait de suivi ne doit **pas** s’exécuter comme pleinement actif tant que le visiteur n’a pas accepté la finalité correspondante.
+
+## Prérequis
+
+- [Démarrage rapide](/docs/cookie-banner/quickstart) pour que la CMP s’initialise en premier.
+- Lire la doc Matomo **Consent Manager** ou **opt-out** en parallèle — Intastellar fournit l’UI de consentement site-wide ; Matomo peut encore devoir savoir quand le suivi est autorisé.
+
+## Google Tag Manager
+
+1. Déployez Matomo via **HTML personnalisé** ou modèle officiel si vous en utilisez un.
+2. Déclenchez sur un déclencheur lié au **consentement analytics** (ou équivalent conteneur), **pas** sur un « All Pages » brut avant la CMP.
+3. Gardez la CMP sur **Consent Initialization** — voir [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+
+## API de consentement Matomo
+
+Si vous utilisez l’API JavaScript Matomo pour les drapeaux de consentement, définissez-les lorsqu’Intastellar applique le choix (souvent via événements personnalisés GTM ou couche applicative). Les noms d’événements exacts dépendent de votre configuration ; validez en **préproduction**.
+
+## Vérifier
+
+- Avant acceptation : pas de hits Matomo supposant des cookies analytics complets, selon votre configuration.
+- Après acceptation : suivi et tableaux de bord reflètent le trafic attendu.
+
+## Voir aussi
+
+- [Dépannage](/docs/cookie-banner/debugging)
+- [Répertoire des intégrations marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview)
