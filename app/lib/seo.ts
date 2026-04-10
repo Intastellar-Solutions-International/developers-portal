@@ -13,6 +13,13 @@ const SITE_NAME = "inta.dev";
 const INTASTELLAR_ORG_LOGO =
   "https://www.intastellarsolutions.com/assets/logos/intastellar-new-planet.svg";
 
+/** JSON-LD publisher for inta.dev site graph and doc articles (Intastellar Solutions International). */
+const INTASTELLAR_PUBLISHER_ORG = {
+  "@type": "Organization",
+  name: "Intastellar Solutions International",
+  url: "https://www.intastellarsolutions.com/",
+} as const;
+
 /**
  * Site-wide JSON-LD: all stable `@id` values live on inta.dev so crawlers resolve the graph here.
  * Intastellar Solutions is the parent company; inta.dev is an organizational unit (portal);
@@ -51,11 +58,7 @@ export function buildGlobalSeoJsonLdMeta(): MetaDescriptor[] {
         "@id": websiteId,
         name: SITE_NAME,
         url: `${origin}/`,
-        publisher: {
-          "@type": "Organization",
-          "name": "Intastellar Solutions International",
-          "url": "https://www.intastellarsolutions.com"
-        },
+        publisher: { ...INTASTELLAR_PUBLISHER_ORG },
       },
       {
         "@type": "SoftwareApplication",
@@ -138,10 +141,7 @@ export function buildDocPageMeta(opts: {
       "@type": "Organization",
       name: "Intastellar Solutions",
     },
-    publisher: {
-      "@type": "Organization",
-      name: "Intastellar Solutions",
-    },
+    publisher: { ...INTASTELLAR_PUBLISHER_ORG },
   };
 
   return [
@@ -224,6 +224,7 @@ export function buildHomePageMeta(
     name: title,
     description: desc,
     url,
+    publisher: { ...INTASTELLAR_PUBLISHER_ORG },
   };
 
   return [
