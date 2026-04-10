@@ -17,6 +17,7 @@ function buildDefaultInta(origin: string, hostname: string): Record<string, unkn
       color: "#059669",
       design: "overlay",
       language: "english",
+      logo: 'https://www.intastellarsolutions.com/assets/logos/intastellar-new-planet.svg',
       requiredCookies: [] as string[],
       keepInLocalStorage: [] as string[],
     },
@@ -51,7 +52,7 @@ function buildPreviewSrcDoc(inta: Record<string, unknown>): string {
 <script src="${UC_SCRIPT_SRC}"></script>
 </head>
 <body>
-<p class="inta-preview-hint">Live preview — the real CMP script from our CDN runs here. Consent in this frame does not affect the docs site.</p>
+<p class="inta-preview-hint">Live preview — the real CMP script from our CDN runs here. This frame is same-origin as the docs app so localStorage works; consent keys may appear in this site&apos;s storage until you clear them.</p>
 </body>
 </html>`;
 }
@@ -164,7 +165,9 @@ export function IntaConsentTryout({
         <a className="text-brand underline-offset-2 hover:underline" href="/legal/privacy">
           privacy page
         </a>{" "}
-        so the banner can appear in the sandbox—replace with your own URLs before going live.
+        so the banner can appear. The preview iframe uses same-origin storage so the CMP can call{" "}
+        <code className="text-xs">localStorage</code> (keys may show up for this site; clear site data if needed).
+        Replace policy URLs with your own before going live.
       </p>
 
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
@@ -243,7 +246,7 @@ export function IntaConsentTryout({
               <iframe
                 title="Intastellar Consents banner preview"
                 className="h-[min(520px,70vh)] w-full border-0 bg-zinc-100 dark:bg-zinc-950"
-                sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin"
                 srcDoc={iframeSrcDoc}
               />
             ) : (

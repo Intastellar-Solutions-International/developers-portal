@@ -4,7 +4,7 @@ import type { Route } from "./+types/docs.$product.$";
 import { DocMeta } from "~/components/doc-meta";
 import { DocPrevNext } from "~/components/doc-prev-next";
 import { DocsBreadcrumbs } from "~/components/docs-breadcrumbs";
-import { IntaConsentTryout } from "~/components/inta-consent-tryout";
+import { CookieBannerTryoutDocBody } from "~/components/cookie-banner-tryout-doc-body";
 import { MdxContent } from "~/components/mdx-content";
 import { RelatedLinks } from "~/components/related-links";
 import {
@@ -48,9 +48,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     doc.title,
     locale,
   );
-  const intaTryout =
-    product === "cookie-banner" && docPath === "javascript/try-out";
   const url = new URL(request.url);
+  const isJavascriptTryOutDoc =
+    product === "cookie-banner" && docPath === "javascript/try-out";
   return {
     ...doc,
     prev,
@@ -58,13 +58,13 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     breadcrumbs,
     version,
     locale,
-    intaTryout,
-    ...(intaTryout
-      ? {
-          previewOrigin: url.origin,
-          previewHostname: url.hostname,
-        }
-      : {}),
+    /** Always from the request URL so serialized loader data matches SSR on hydration. */
+    previewOrigin: url.origin,
+    previewHostname: url.hostname,
+    isJavascriptTryOutDoc,
+    /** Redundant with isJavascriptTryOutDoc — strings help if a client hydrate quirk drops the boolean. */
+    productSlug: product,
+    docPath: docPath ?? "",
   };
 }
 
@@ -88,21 +88,21 @@ export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
 
 export default function ProductDocPage() {
   const doc = useLoaderData<typeof loader>();
+  const showIntaTryout =
+    doc.isJavascriptTryOutDoc === true ||
+    (doc.productSlug === "cookie-banner" && doc.docPath === "javascript/try-out");
 
   return (
     <article className="docs-prose prose prose-zinc max-w-none dark:prose-invert prose-pre:bg-transparent prose-pre:p-0">
       <DocsBreadcrumbs items={doc.breadcrumbs} />
-      {doc.intaTryout && doc.previewOrigin && doc.previewHostname ? (
-        <>
-          <h1>{doc.title}</h1>
-          {doc.description ? (
-            <p className="lead text-zinc-600 dark:text-zinc-400">{doc.description}</p>
-          ) : null}
-          <IntaConsentTryout
-            previewOrigin={doc.previewOrigin}
-            previewHostname={doc.previewHostname}
-          />
-        </>
+      {showIntaTryout ? (
+        <CookieBannerTryoutDocBody
+          title={doc.title}
+          description={doc.description}
+          code={doc.code}
+          previewOrigin={doc.previewOrigin}
+          previewHostname={doc.previewHostname}
+        />
       ) : (
         <MdxContent code={doc.code} />
       )}
