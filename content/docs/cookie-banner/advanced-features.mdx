@@ -1,0 +1,36 @@
+---
+title: Advanced features
+description: IAB TCF 2.3, Cookie Observer, and certification notes.
+order: 70
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrations overview
+    href: /docs/cookie-banner/integrations-overview
+  - title: Script lifecycle
+    href: /docs/cookie-banner/javascript/script-lifecycle
+---
+
+# Advanced features
+
+## IAB Transparency & Consent Framework (TCF) 2.3
+
+Intastellar Consents implements **TCF 2.3**-oriented behaviour:
+
+- **Vendor management UI** for the TCF ecosystem  
+- **Consent string** handling and standardized signaling for ad tech / programmatic use
+
+**Certification:** The CMP is **not IAB-certified** as of the latest product FAQ; core **signaling and consent string handling** are implemented to align with IAB TCF specifications. Treat certification status as a separate checklist for RFPs and publisher agreements.
+
+For framework rules, see [IAB Europe TCF](https://iabeurope.eu/tcf-2-0/).
+
+## Cookie Observer
+
+- Runs **only after** the banner is live on the site—it does **not** scan the site before installation.
+- Observes **real traffic**: cookies and **modern browser storage**, **before and after** consent decisions.
+- Useful for audits and understanding what actually fires in production.
+
+Availability is tied to **platform** (paid) tiers; see the public feature matrix.
+
+## Controlled execution
+
+The product emphasizes **precision over tag firing**: scripts tied to marketing/analytics should activate only when policy and user choice allow—see [Script lifecycle](/docs/cookie-banner/javascript/script-lifecycle).

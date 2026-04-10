@@ -1,0 +1,39 @@
+---
+title: Locale and regions
+description: Language detection, regional consent UX, and hosting.
+order: 65
+lastUpdated: "2026-04-08"
+related:
+  - title: Customize
+    href: /docs/cookie-banner/javascript/customize
+  - title: Get started (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+---
+
+# Locale and regions
+
+## Language (`<html lang>`)
+
+The banner selects language from the document’s **`<html lang="...">`** attribute.
+
+- **No manual per-locale config** is required for supported languages when `lang` is set correctly.
+- If **`lang` is missing**, the product applies a **default** so the UI still renders (fail-safe, not silent failure).
+
+Ensure your templates output a valid BCP 47 code (e.g. `da`, `en`, `de`).
+
+## Regional compliance UX (summary)
+
+The same installation can adapt UX for multiple jurisdictions (exact rules evolve with product and law):
+
+| Context | Implementer-facing note |
+| --- | --- |
+| **EU / EEA — GDPR & ePrivacy** | Non-essential cookies/scripts blocked until valid consent; integrations default to restricted mode until allowed. |
+| **Brazil — LGPD** | Portuguese (PT-BR) experience and user-rights-oriented flow. |
+| **California — CCPA / CPRA** | **“Do Not Sell My Personal Information”** path; preference stored and applied to integrations (e.g. Google Consent Mode) on later visits. |
+| **South Africa — POPIA** | Zulu banner option and flow aligned to POPIA-oriented UX. |
+
+**Legal:** This documentation describes **product behaviour**, not legal advice. Map features to your privacy policy and DPA.
+
+## Data hosting
+
+Consent-related data for the hosted product is processed in the **European Union**, per public product statements.

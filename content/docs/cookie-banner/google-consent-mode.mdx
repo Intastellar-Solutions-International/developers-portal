@@ -1,0 +1,52 @@
+---
+title: Google Consent Mode
+description: Google Consent Mode v2 and Advanced Mode with Intastellar Consents.
+order: 50
+lastUpdated: "2026-04-08"
+related:
+  - title: Get started (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Integrations overview
+    href: /docs/cookie-banner/integrations-overview
+---
+
+# Google Consent Mode
+
+**Google Consent Mode** lets Google tags (Analytics, Ads, etc.) adjust behaviour based on the user’s consent choices—so you can limit data collection when consent is denied while still getting **aggregated / modeled** insights where Google supports it.
+
+Intastellar Consents supports **Consent Mode v2** and **Advanced Mode**: consent updates are applied so tags do not run “wide open” before choice.
+
+## Configuration in `window.INTA`
+
+Set your measurement ID so the bootstrap can align with Google tags:
+
+```js
+window.INTA = {
+  policy_link: "https://yourdomain.com/privacy-policy",
+  settings: {
+    // …other settings…
+    gtagId: "G-XXXXXXXXXX",
+  },
+};
+```
+
+Use the full snippet from [Get started](/docs/cookie-banner/javascript/getting-started). Field details: [`window.INTA` reference](/docs/cookie-banner/javascript/inta-schema).
+
+## v2 and Advanced Mode
+
+- **v2** extends consent types (e.g. ad storage, analytics storage, ad user data, personalization) so tags map cleanly to GDPR-style categories.
+- **Advanced Mode** sends **consent pings** without cookies when the user has not consented, so Google can apply conversion modeling while identifiers stay restricted—subject to Google’s policies and your legal review.
+
+## GTM
+
+Load the banner **before** tags that depend on consent. See [Google Tag Manager](/docs/cookie-banner/google-tag-manager): **Consent Initialization – All pages** (or your container’s equivalent), then gate other tags on consent state.
+
+## California (CCPA / CPRA)
+
+When a visitor uses **“Do Not Sell My Personal Information”**, Intastellar Consents updates stored preference and **updates integrations such as Google Consent Mode** for future visits. Legal interpretation remains your responsibility.
+
+## Further reading
+
+- [Google: About Consent Mode](https://support.google.com/tagmanager/answer/9976101) (official)

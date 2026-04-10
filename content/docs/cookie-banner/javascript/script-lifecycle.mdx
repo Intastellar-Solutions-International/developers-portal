@@ -1,0 +1,36 @@
+---
+title: Script lifecycle
+description: Load order, blocking behaviour, and measurement expectations for uc.js.
+sidebar_label: Script lifecycle
+order: 18
+lastUpdated: "2026-04-08"
+related:
+  - title: Get started (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Script lifecycle (JavaScript)
+
+## Load order
+
+1. Define **`window.INTA`** in an inline `<script>` in `<head>`.
+2. Load **`https://consents.cdn.intastellarsolutions.com/uc.js`** immediately after (see [Get started](/docs/cookie-banner/javascript/getting-started)).
+
+Placing both **early in `<head>`** reduces the chance that analytics or marketing tags execute before the CMP initializes.
+
+## Blocking and consent
+
+Non-essential trackers are **blocked until the visitor makes a choice** (accept / reject / granular, per product behaviour). After enforcement:
+
+- **Analytics and ad metrics may decrease** compared to an unconstrained setup. That is **expected** when consent is applied honestly.
+- Tags that respect Consent Mode (or your GTM triggers) should still receive **correct consent signals** after choice so reporting stays compliant.
+
+## Consent storage and proof
+
+On **paid / platform** tiers, consent decisions can be **logged** for audit and reporting (see product comparison on the public site). The free banner still enforces UI and blocking; retention and export features depend on your plan.
+
+## Public JavaScript API
+
+If you need **named events, callbacks, or a programmatic API** (e.g. `dataLayer` integration details), confirm the latest **JavaScript API** reference maintained for your deployment. This portal documents **configuration** (`window.INTA`) and **integration patterns**; low-level event names may ship in a separate developer reference.

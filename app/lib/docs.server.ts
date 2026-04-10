@@ -95,7 +95,12 @@ function sidebarSectionId(relFromProduct: string): SidebarSectionId {
   if (n.startsWith("web/")) return "accounts";
   if (n.startsWith("javascript/")) return "javascript";
   if (n.startsWith("wordpress/")) return "wordpress";
-  if (n === "google-tag-manager.mdx" || n === "shopify.mdx") {
+  if (
+    n === "google-tag-manager.mdx" ||
+    n === "shopify.mdx" ||
+    n === "integrations-overview.mdx" ||
+    n === "google-consent-mode.mdx"
+  ) {
     return "integrations";
   }
   if (!n.includes("/")) return "other";
