@@ -1,0 +1,48 @@
+---
+title: Microsoft Clarity and UET
+description: Microsoft Clarity (session replay/heatmaps) and Universal Event Tracking (UET) with Intastellar Consents.
+sidebar_label: Clarity & UET
+order: 53
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrations overview
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Microsoft Clarity and UET
+
+**Clarity** (behaviour analytics, recordings, heatmaps) and **UET** (Microsoft Advertising conversion / remarketing) are separate products but the same rule applies: load them **after** the CMP and only when consent covers their purpose.
+
+## Prerequisites
+
+- [Quickstart](/docs/cookie-banner/quickstart) so Intastellar runs first.
+- Map Clarity to **analytics / statistics** (or your equivalent category) and UET to **marketing / advertising** in your consent model.
+
+## Google Tag Manager
+
+1. **Clarity:** add the Clarity tag with a trigger that fires only when **analytics** (or your chosen purpose) is allowed.
+2. **UET:** add the UET tag with a trigger that fires only when **advertising / marketing** consent is allowed.
+3. Do not use a single blanket “All Pages” trigger for both if your banner treats those purposes differently.
+
+## Inline scripts
+
+If Clarity or UET is hard-coded:
+
+- Place snippets **below** `window.INTA` + `uc.js` in `<head>`, or inject them only after consent via your app or tag manager.
+- Avoid duplicate loaders (GTM + hard-coded).
+
+## Verify
+
+- Before accept: Clarity/UET network activity should match your **restricted** default.
+- After accept: tags should load and record as expected.
+
+## Related
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Marketing integrations directory](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrations overview](/docs/cookie-banner/integrations-overview)

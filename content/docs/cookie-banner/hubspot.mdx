@@ -1,0 +1,44 @@
+---
+title: HubSpot
+description: HubSpot tracking and forms with Intastellar Consents—CMP first, consent-aware firing.
+order: 46
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrations overview
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# HubSpot
+
+Intastellar Consents integrates with **HubSpot** so marketing and tracking respect consent. Wire HubSpot like any other non-essential stack: **CMP before HubSpot scripts**, then fire only when the visitor’s choices allow it.
+
+## Prerequisites
+
+- [Quickstart](/docs/cookie-banner/quickstart) (or equivalent) so `window.INTA` + `uc.js` load **early** in `<head>`.
+- Clarity on which HubSpot features you use (tracking code, forms, chat) and which consent purposes they map to.
+
+## Recommended: Google Tag Manager
+
+1. Deploy the CMP on **Consent Initialization** — see [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+2. Add **HubSpot** tags (or Custom HTML) with triggers that match **accepted** marketing / analytics consent, per your policy.
+3. Avoid loading the HubSpot embed globally on **All Pages** before consent unless your legal review says otherwise.
+
+## HubSpot Cookie API / CMP behaviour
+
+HubSpot’s own documentation describes how their tags interact with cookies and consent tools. Follow **HubSpot + CMP** guidance alongside Intastellar’s load order: the CMP supplies consent state; your GTM or site must **not** treat tracking as granted before choice.
+
+## Verify
+
+- **Network / Application**: HubSpot-related requests and cookies should not appear as fully active **before** accept (for the purposes you restrict).
+- After accept, forms and tracking should work as configured.
+
+## Related
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Marketing integrations directory](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrations overview](/docs/cookie-banner/integrations-overview)

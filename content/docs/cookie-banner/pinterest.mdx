@@ -1,0 +1,46 @@
+---
+title: Pinterest
+description: Pinterest Tag and conversion tracking with Intastellar Consents.
+order: 52
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrations overview
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Meta Pixel
+    href: /docs/cookie-banner/meta-pixel
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Pinterest
+
+The **Pinterest Tag** is advertising / conversion tracking. It should run **after** Intastellar Consents and only when **marketing** or **advertising** consent is granted (per your banner categories).
+
+## Prerequisites
+
+- [Quickstart](/docs/cookie-banner/quickstart).
+- Pinterest Tag ID and event names from [Pinterest’s docs](https://help.pinterest.com/) for your campaign setup.
+
+## Google Tag Manager
+
+1. Add the Pinterest base code and event tags in GTM.
+2. Set triggers to fire only when **advertising / marketing** consent is allowed—same pattern as [Meta Pixel](/docs/cookie-banner/meta-pixel).
+3. Do not attach Pinterest to **All Pages** at page load before the CMP runs.
+
+## Inline tag
+
+If the tag is hard-coded, place it **after** `uc.js` in `<head>` or inject dynamically post-consent.
+
+## Verify
+
+- `pinimg.com` / Pinterest network calls for the tag should not behave as full marketing tracking **before** accept.
+- After accept, conversions and catalog events fire as configured.
+
+## Related
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Marketing integrations directory](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrations overview](/docs/cookie-banner/integrations-overview)

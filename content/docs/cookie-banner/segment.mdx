@@ -1,0 +1,46 @@
+---
+title: Segment
+description: Segment CDP and analytics pipeline with Intastellar Consents—sources after consent.
+order: 51
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrations overview
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Segment
+
+**Segment** collects events and forwards them to destinations. The **Analytics.js** (or similar) snippet is not essential until consent allows it—treat Segment like any analytics/marketing loader: **CMP first**, then Segment when permitted.
+
+## Prerequisites
+
+- [Quickstart](/docs/cookie-banner/quickstart).
+- List which Segment **destinations** map to which consent purposes (analytics vs ads, etc.).
+
+## Google Tag Manager
+
+Many teams load Segment via GTM:
+
+1. Add the Segment snippet in a tag that fires only when **analytics** (or the combined purpose you use) is accepted.
+2. Alternatively load Segment in application code **after** you read consent state—ensure that read happens **after** the CMP has initialized.
+
+## Destinations
+
+Each destination (GA4, ads pixels, etc.) may need its own consent rules. Segment does not remove the need to **gate** downstream tags; Intastellar supplies site-wide consent—wire Segment’s load and **destination** toggles to match.
+
+## Verify
+
+- `cdn.segment.com` / analytics calls should not run as fully consented **before** your policy allows.
+- After accept, events flow to destinations as configured.
+
+## Related
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
+- [Marketing integrations directory](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrations overview](/docs/cookie-banner/integrations-overview)

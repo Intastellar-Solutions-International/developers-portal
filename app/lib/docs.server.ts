@@ -105,10 +105,17 @@ function sidebarSectionId(relFromProduct: string): SidebarSectionId {
   if (
     n === "google-tag-manager.mdx" ||
     n === "google-analytics-4.mdx" ||
+    n === "google-consent-mode.mdx" ||
     n === "meta-pixel.mdx" ||
+    n === "hubspot.mdx" ||
+    n === "microsoft-clarity-and-uet.mdx" ||
+    n === "matomo.mdx" ||
+    n === "optimizely.mdx" ||
+    n === "vwo.mdx" ||
+    n === "segment.mdx" ||
+    n === "pinterest.mdx" ||
     n === "shopify.mdx" ||
-    n === "integrations-overview.mdx" ||
-    n === "google-consent-mode.mdx"
+    n === "integrations-overview.mdx"
   ) {
     return "integrations";
   }
