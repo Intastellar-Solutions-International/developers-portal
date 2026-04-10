@@ -1,0 +1,48 @@
+---
+title: Microsoft Clarity og UET
+description: Microsoft Clarity (session replay/heatmaps) og Universal Event Tracking (UET) med Intastellar Consents.
+sidebar_label: Clarity & UET
+order: 53
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrationsoversigt
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Hurtigstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Microsoft Clarity og UET
+
+**Clarity** (adfærdsanalyse, optagelser, heatmaps) og **UET** (Microsoft Advertising konvertering / remarketing) er separate produkter, men samme regel gælder: indlæs dem **efter** CMP og kun når samtykke dækker formålet.
+
+## Forudsætninger
+
+- [Hurtigstart](/docs/cookie-banner/quickstart), så Intastellar kører først.
+- Map Clarity til **analytics / statistik** (eller jeres tilsvarende kategori) og UET til **marketing / reklame** i jeres samtykkemodel.
+
+## Google Tag Manager
+
+1. **Clarity:** tilføj Clarity-tag med trigger der kun affyrer når **analytics** (eller jeres valgte formål) er tilladt.
+2. **UET:** tilføj UET-tag med trigger der kun affyrer når **reklame-/marketing**-samtykke er tilladt.
+3. Brug ikke én samlet „All Pages“-trigger til begge, hvis jeres banner behandler disse formål forskelligt.
+
+## Inline-scripts
+
+Er Clarity eller UET hardkodet:
+
+- Placer snippets **under** `window.INTA` + `uc.js` i `<head>`, eller injicer kun efter samtykke via app eller tag manager.
+- Undgå dobbelte loadere (GTM + hardkodet).
+
+## Verificer
+
+- Før accept: Clarity/UET-netværksaktivitet bør matche jeres **begrænsede** default.
+- Efter accept: tags bør indlæse og optage som forventet.
+
+## Relateret
+
+- [Fejlfinding](/docs/cookie-banner/debugging)
+- [Marketingintegrationskatalog](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsoversigt](/docs/cookie-banner/integrations-overview)

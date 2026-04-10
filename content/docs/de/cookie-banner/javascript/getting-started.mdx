@@ -1,18 +1,30 @@
 ---
 title: Erste Schritte
-description: Intastellar Consents per JavaScript auf Ihrer Website einbinden.
+description: Vollständige JavaScript-Installation—Snippet mit gängigen Optionen, Datenschutz-URL und Links zu Schnellstart und Schema.
 order: 10
-lastUpdated: "2026-04-05"
+lastUpdated: "2026-04-08"
 related:
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
   - title: window.INTA JSON Schema
     href: /docs/cookie-banner/javascript/inta-schema
+  - title: SPAs und SSR
+    href: /docs/cookie-banner/javascript/spa-and-ssr
+  - title: Skript-Lebenszyklus
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Integrationsübersicht
+    href: /docs/cookie-banner/integrations-overview
   - title: Darstellung und Verhalten anpassen
     href: /docs/cookie-banner/javascript/customize
 ---
 
 # Erste Schritte (JavaScript)
 
-Fügen Sie das Snippet **direkt nach** dem öffnenden `<head>`-Tag auf jeder Seite ein (oder einmal im Root-Layout). Dieselbe Konfigurationsform finden Sie auf der öffentlichen [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents)-Übersicht — ersetzen Sie Platzhalter durch echte Domains, IDs und Branding. [Pläne und Preise](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) stehen auf der Produktseite.
+Für eine **minimale Ersteinrichtung** (~5 Minuten) nutzen Sie den **[Schnellstart](/docs/cookie-banner/quickstart)** — kleines Snippet, klare Prüfschritte.
+
+Diese Seite ist die **vollständige** Installationsreferenz: gängige `settings`-Felder, optionales `gtagId` und Platzhalter für Branding. Dieselbe Konfigurationsform finden Sie auf der öffentlichen [Intastellar Consents](https://www.intastellarsolutions.com/solutions/cookie-consents)-Übersicht. [Pläne und Preise](https://www.intastellarsolutions.com/solutions/cookie-consents#pricing) stehen auf der Produktseite.
+
+**Frameworks:** [SPAs und SSR (Next.js usw.)](/docs/cookie-banner/javascript/spa-and-ssr)
 
 ```html
 <script>
@@ -34,7 +46,7 @@ Fügen Sie das Snippet **direkt nach** dem öffnenden `<head>`-Tag auf jeder Sei
 <script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
 ```
 
-Ersetzen Sie Platzhalter durch Ihre Domain, Firmenname, Farben, Logo-URL und Mess-IDs.
+Ersetzen Sie Platzhalter durch Domain, Firmenname, Farben, Logo-URL und Mess-IDs. Lassen Sie `gtagId` weg, bis Sie Google-Tags nutzen; siehe [Schnellstart](/docs/cookie-banner/quickstart) Schritt 2.
 
 ## URL der Datenschutzerklärung
 
@@ -42,7 +54,12 @@ Tragen Sie eine erreichbare Datenschutz-URL ein. Nutzen Sie `policy_link` und/od
 
 ## Verwandt
 
+- [Schnellstart](/docs/cookie-banner/quickstart)
 - [`window.INTA`-Referenz (JSON Schema)](/docs/cookie-banner/javascript/inta-schema)
+- [Skript-Lebenszyklus](/docs/cookie-banner/javascript/script-lifecycle)
+- [Ereignisse und API](/docs/cookie-banner/javascript/events-and-api)
+- [Integrationsübersicht](/docs/cookie-banner/integrations-overview)
+- [Google Consent Mode](/docs/cookie-banner/google-consent-mode)
 - [Anpassen](/docs/cookie-banner/javascript/customize)
 - [iFrames](/docs/cookie-banner/javascript/iframes)
 - [Logo hinzufügen](/docs/cookie-banner/javascript/logo)

@@ -1,0 +1,43 @@
+---
+title: Optimizely
+description: Optimizely-Experimente, Cookies und Local Storage mit Intastellar Consents.
+order: 48
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrationsübersicht
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Optimizely
+
+Optimizely nutzt **Cookies und Local Storage** für Experimente und Personalisierung. Das ist typischerweise **nicht notwendig**, bis die Einwilligung es abdeckt — Optimizely **nach** der CMP laden und am richtigen Zweck sperren.
+
+## Voraussetzungen
+
+- [Schnellstart](/docs/cookie-banner/quickstart).
+- Klarheit, ob Sie Experimente als **Marketing**, **Analytics** oder eigene Kategorie im CMP-Policytext führen.
+
+## Google Tag Manager
+
+1. Optimizely-Snippet aus einem Tag laden, das nur feuert, wenn die passende Einwilligung **erteilt** ist (oder Optimizelys eigene Consent-Muster nutzen).
+2. Optimizely **nicht** auf **All Pages** bei Consent Init vor der Wahl feuern lassen, außer Ihr rechtlicher Default erlaubt es ausdrücklich.
+
+## Cookie- und Local-Storage-Einwilligung
+
+Die Optimizely-Dokumentation beschreibt das Speicherverhalten. **Banner-Kategorien** mit dem abstimmen, was Optimizely setzt; bei Speicher vor Akzeptieren [Debugging](/docs/cookie-banner/debugging) nutzen.
+
+## Prüfen
+
+- Speicher / Netzwerk für Optimizely sollten **vor vs. nach** Einwilligung passen.
+- Experimente weisen Besucher nach Freigabe weiterhin korrekt zu.
+
+## Verwandtes
+
+- [So funktioniert es](/docs/cookie-banner/how-it-works)
+- [Marketing-Integrationsverzeichnis](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsübersicht](/docs/cookie-banner/integrations-overview)

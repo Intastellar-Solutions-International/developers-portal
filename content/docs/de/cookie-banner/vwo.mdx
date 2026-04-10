@@ -1,0 +1,44 @@
+---
+title: VWO
+description: VWO (Visual Website Optimizer) A/B-Tests mit Intastellar Consents—Einwilligung vor Experimenten.
+order: 49
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrationsübersicht
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# VWO
+
+VWO führt **Experimentier- und Personalisierungscode** aus, der Cookies nutzt und oft als nicht notwendig gilt. VWO **nach** Intastellar Consents laden und nur, wenn die Einwilligung den relevanten Zweck erlaubt.
+
+## Voraussetzungen
+
+- [Schnellstart](/docs/cookie-banner/quickstart).
+- VWO konsistent dem **Marketing**, **Statistik** oder einer benutzerdefinierten Kategorie Ihres Banners zuordnen.
+
+## Google Tag Manager
+
+1. VWO-Snippet per GTM **Custom HTML** installieren (oder VWOs GTM-Anleitung).
+2. Trigger nutzen, der **nach** Einwilligung für diesen Zweck feuert — z. B. Custom Event bei Akzeptieren oder GTM-Consent-Checks mit VWO.
+3. CMP-Tag auf **Consent Initialization** halten — [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+
+## Async Smart Code
+
+Stellt VWO async Loader-Code bere, darf er trotzdem **nicht oberhalb** der CMP im Dokument ausgeführt werden. Die Reihenfolge im **initialen HTML** ist für Wettläufe beim ersten Paint wichtiger als „async“ allein.
+
+## Prüfen
+
+- VWO-Cookies / Local Storage sollten für eingeschränkte Nutzer **vor** Akzeptieren nicht aktiv sein.
+- Nach Akzeptieren verhalten sich Experimente und Heatmaps wie von VWO erwartet.
+
+## Verwandtes
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Marketing-Integrationsverzeichnis](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsübersicht](/docs/cookie-banner/integrations-overview)

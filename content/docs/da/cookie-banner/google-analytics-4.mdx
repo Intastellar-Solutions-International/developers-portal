@@ -1,0 +1,50 @@
+---
+title: Google Analytics 4
+description: Meningsfuldt GA4-setup med Intastellar Consents og Google Consent Mode v2.
+order: 54
+lastUpdated: "2026-04-08"
+related:
+  - title: Hurtigstart
+    href: /docs/cookie-banner/quickstart
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Google Analytics 4
+
+Meningsfuld vej: **GA4 + Consent Mode v2**, CMP først, tags spærret i GTM eller tilsvarende.
+
+## Forudsætninger
+
+- [Hurtigstart](/docs/cookie-banner/quickstart) gennemført (eller samme `window.INTA` + `uc.js`-rækkefølge i GTM).
+- `settings.gtagId` sat til dit **GA4-målings-ID** (`G-XXXXXXXX`), når CMP’en koordinerer Google automatisk.
+- Læs [Google Consent Mode](/docs/cookie-banner/google-consent-mode) én gang—defaults betyder noget.
+
+## Anbefalet: GA4 via Google Tag Manager
+
+1. Implementer CMP med [Google Tag Manager](/docs/cookie-banner/google-tag-manager) på **Consent Initialization**.
+2. Tilføj et **Google-tag** eller **GA4 Configuration**-tag der respekterer **samtykke** i taggets indstillinger (juster efter jeres juridiske default for hver samtykketype).
+3. **Affyr ikke** GA4 med en nøgen „All Pages“-trigger, hvis det betyder fulde analytics-cookies før CMP kører—brug samtykkebevidst konfiguration.
+
+## Inline `gtag` (uden GTM)
+
+Hvis du indlæser `gtag.js` direkte:
+
+- Placer stadig **`window.INTA` + `uc.js` først** i `<head>`.
+- Indlæs GA **efter** CMP-snippetten, eller sørg for at Consent Mode er sat før hits du bekymrer dig om.
+
+Dobbelte GA-loadere (GTM + hardkodet `gtag`) er en almindelig kilde til dobbelte hits og forkert samtykketilstand—vælg **én** primær vej.
+
+## Verificer
+
+1. **GTM Preview** eller GA **DebugView**: før accept bør analytics ikke opføre sig som **fuldt accepteret**, medmindre du bevidst har konfigureret defaults sådan.
+2. Efter **Accept** bør normal indsamling køre (underlagt adblockere osv.).
+
+## Relateret
+
+- [Fejlfinding](/docs/cookie-banner/debugging)
+- [Integrationsoversigt](/docs/cookie-banner/integrations-overview)
+
+[← Dokumentationsforside](/docs/cookie-banner)

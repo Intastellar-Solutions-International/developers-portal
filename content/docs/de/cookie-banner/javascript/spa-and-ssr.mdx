@@ -1,0 +1,45 @@
+---
+title: SPAs und SSR (Next.js usw.)
+description: Intastellar Consents im Dokumentkopf behalten bei React, Next.js oder anderen SPA-Frameworks.
+sidebar_label: SPAs & SSR
+order: 11
+lastUpdated: "2026-04-08"
+related:
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
+  - title: Skript-Lebenszyklus
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Debugging
+    href: /docs/cookie-banner/debugging
+---
+
+# SPAs und SSR (Next.js usw.)
+
+Frameworks, die die UI hydratisieren, können die CMP **zu spät** oder **doppelt** laden. Die Regel bleibt: **`window.INTA` dann `uc.js`, so früh wie möglich im echten HTML-Dokument.**
+
+## Next.js (App Router)
+
+- Bevorzugt **`app/layout.tsx`** (oder Root-Layout) mit **Server-** oder **Client**-Komponente, die das Snippet in `<head>` ausgibt.
+- Bei **`next/script`** sicherstellen, dass die CMP **vor** Analytics-Skripten in der **Dokumentreihenfolge** läuft — `strategy="beforeInteractive"` kann für den CMP-Loader passen; GA nicht mit früherer effektiver Reihenfolge laden.
+- CMP nicht nur in einer tiefen Client-Route mounten (z. B. einzelne Seitenkomponente), es sei denn, jeder Einstiegspfad enthält sie.
+
+## React (SPA)
+
+- Die beiden Script-Tags in **`public/index.html`** oder dem **HTML-Template** des Frameworks einfügen, nicht nur in einer spät gemounteten Komponente.
+- Beim Hinzufügen von Drittanbieter-Skripten per Plugin das Bundle auf doppeltes `uc.js` prüfen.
+
+## Vue / Nuxt / SvelteKit
+
+- **Root-Layout** oder **`app.html`** / Head-Hooks nutzen, damit die CMP in der **initialen** HTML-Antwort für den ersten Paint steht.
+
+## Prüfen
+
+1. **Seitenquelltext anzeigen** (nicht nur Elemente): `uc.js` soll im Roh-HTML vorkommen.
+2. Bei fehlendem Banner oder zurückgesetzter Einwilligung bei Navigation: [Debugging](/docs/cookie-banner/debugging).
+
+## Verwandtes
+
+- [Erste Schritte (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- [So funktioniert es](/docs/cookie-banner/how-it-works)
+
+[← Dokumentations-Start](/docs/cookie-banner)

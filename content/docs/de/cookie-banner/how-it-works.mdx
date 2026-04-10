@@ -1,0 +1,69 @@
+---
+title: So funktioniert es
+description: Ladereihenfolge, Blockierungsmodell, Einwilligungssignale und warum Messung nach Einwilligungswahlen weiter nutzbar bleiben kann.
+sidebar_label: So funktioniert es
+order: 2
+lastUpdated: "2026-04-08"
+related:
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
+  - title: Skript-Lebenszyklus
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+---
+
+# So funktioniert es
+
+Diese Seite ist das **Mentalmodell** für Implementierer. Für Copy-Paste-Installation nutzen Sie den [Schnellstart](/docs/cookie-banner/quickstart).
+
+## Was zuerst läuft
+
+1. **`window.INTA`** — Konfigurationsobjekt (Policy-URL, Domain, Firma, optionales `gtagId`, Styling usw.).
+2. **`uc.js`** — CMP-Loader von `consents.cdn.intastellarsolutions.com`.
+
+Beides soll **früh im `<head>`** stehen, vor Analytics, Ads, Pixeln oder anderen nicht notwendigen Drittanbietern. Laufen diese Tags zuerst, können **Treffer vor Einwilligung** oder Cookies entstehen, die sich unter DSGVO-artigen Regeln schwer rechtfertigen lassen.
+
+Praktische Reihenfolge: [Skript-Lebenszyklus](/docs/cookie-banner/javascript/script-lifecycle).
+
+## Blockierungsmodell (einfach erklärt)
+
+Intastellar Consents ist so gebaut, dass **nicht notwendiges Tracking sich nicht so verhält, als wäre eingewilligt**, bevor der Besucher wählt.
+
+- **Vor der Wahl:** Marketing-/Analytics-Tags sollten **eingeschränkt** bleiben oder **nicht** so feuern, als läge volle Einwilligung vor — je nachdem, wie Sie GTM, `gtag`, Meta usw. verdrahtet haben.
+- **Nach der Wahl:** wendet die CMP die Entscheidung des Besuchers an. Tags mit **Consent-APIs** (z. B. Google **Consent Mode v2**) können **aktualisierte Signale** erhalten, sodass das Verhalten zu **Akzeptieren**, **Ablehnen** oder **granularen** Wahlen passt.
+
+Das genaue Verhalten ist immer eine **Kombination** aus:
+
+- der CMP,
+- Ihrem **Tag-Manager / Triggern** und
+- der **Einwilligungsintegration** jedes Anbieters.
+
+Die Docs liefern **bewusste Muster** (z. B. GTM auf **Consent Initialization**), damit die drei zusammenpassen.
+
+## Google Consent Mode
+
+Wenn Sie `settings.gtagId` setzen und Google-Tags nutzen, kann Intastellar mit **Consent Mode v2** übereinstimmen (einschließlich Advanced Mode wo zutreffend). Google-Tags können dann Datenerfassung oder **Pings** an die Einwilligung anpassen, statt still voll „offen“ zu laufen.
+
+Details: [Google Consent Mode](/docs/cookie-banner/google-consent-mode).
+
+## Warum Messung nicht „kaputtgehen“ muss
+
+Nach **verweigerter** oder eingeschränkter Einwilligung unterstützen Plattformen wie Google weiterhin **aggregierte oder modellierte** Einblicke (laut deren Richtlinien) — Dashboards müssen also nicht zwingend auf null fallen. Das ist **nicht** dasselbe wie vollständiges personenbezogenes Tracking.
+
+Nach **Akzeptieren** können Tags wieder in **normalen** Messmodi laufen, solange Ihr Container sie **nach** bekannter Einwilligung feuert.
+
+Wir behaupten nicht „Tracking bricht nie“: Wir dokumentieren **Ladereihenfolge + Consent Mode + Trigger**, damit das Verhalten **vorhersehbar** wird.
+
+## Was die CMP nicht leistet
+
+- Sie ersetzt weder Ihre **Datenschutzerklärung**, **Anbieterhinweise** noch die **rechtliche** Bewertung.
+- Sie behebt nicht automatisch **fest eingebaute** Drittanbieter-Skripte, die Einwilligung ignorieren — die müssen Sie weiterhin im Code oder GTM **sperren**.
+
+## Verwandtes
+
+- [Schnellstart](/docs/cookie-banner/quickstart)
+- [Integrationsübersicht](/docs/cookie-banner/integrations-overview)
+- [Debugging](/docs/cookie-banner/debugging)
+
+[← Dokumentations-Start](/docs/cookie-banner)

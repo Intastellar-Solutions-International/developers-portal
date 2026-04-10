@@ -1,0 +1,44 @@
+---
+title: HubSpot
+description: HubSpot-Tracking und Formulare mit Intastellar Consents—CMP zuerst, einwilligungsbewusstes Feuern.
+order: 46
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrationsübersicht
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# HubSpot
+
+Intastellar Consents integriert sich mit **HubSpot**, sodass Marketing und Tracking die Einwilligung respektieren. Verdrahten Sie HubSpot wie jeden anderen nicht notwendigen Stack: **CMP vor HubSpot-Skripten**, dann erst feuern, wenn die Nutzerwahl es erlaubt.
+
+## Voraussetzungen
+
+- [Schnellstart](/docs/cookie-banner/quickstart) (oder Äquivalent), damit `window.INTA` + `uc.js` **früh** im `<head>` laden.
+- Klarheit, welche HubSpot-Funktionen Sie nutzen (Tracking-Code, Formulare, Chat) und welchen Einwilligungszwecken sie zugeordnet sind.
+
+## Empfohlen: Google Tag Manager
+
+1. CMP auf **Consent Initialization** ausrollen — siehe [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+2. **HubSpot**-Tags (oder Custom HTML) mit Triggern, die **akzeptierte** Marketing-/Analytics-Einwilligung abbilden, gemäß Ihrer Policy.
+3. HubSpot-Embed **nicht** global auf **All Pages** vor Einwilligung laden, außer Ihre Rechtsprüfung sagt etwas anderes.
+
+## HubSpot Cookie API / CMP-Verhalten
+
+Die HubSpot-Dokumentation beschreibt, wie ihre Tags mit Cookies und Consent-Tools interagieren. Befolgen Sie **HubSpot + CMP**-Hinweise zusätzlich zur Ladereihenfolge von Intastellar: die CMP liefert den Einwilligungszustand; GTM oder Site dürfen Tracking **nicht** vor der Wahl als erteilt behandeln.
+
+## Prüfen
+
+- **Netzwerk / Anwendung**: HubSpot-bezogene Anfragen und Cookies sollten vor Akzeptieren (für die eingeschränkten Zwecke) nicht voll aktiv sein.
+- Nach Akzeptieren sollten Formulare und Tracking wie konfiguriert funktionieren.
+
+## Verwandtes
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Marketing-Integrationsverzeichnis](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsübersicht](/docs/cookie-banner/integrations-overview)

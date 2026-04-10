@@ -1,0 +1,103 @@
+---
+title: Hurtigstart
+description: Installer Intastellar Consents på få minutter—minimalt udsnit, verifikation i browseren, derefter GTM eller Google-tags.
+sidebar_label: Hurtigstart
+order: 1
+lastUpdated: "2026-04-08"
+related:
+  - title: Sådan virker det
+    href: /docs/cookie-banner/how-it-works
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Fejlfinding
+    href: /docs/cookie-banner/debugging
+---
+
+# Hurtigstart
+
+**Mål:** under 5 minutter.  
+**Resultat:** Samtykke-UI vises, ikke-væsentlige tags forbliver spærret, indtil besøgende vælger, og Google-tags kan modtage Consent Mode-opdateringer, når du konfigurerer dem.
+
+## Før du starter
+
+- Du kan redigere HTML `<head>` eller dit rodlayout (WordPress-tema, Shopify `theme.liquid` osv.).
+- Du skal have en **fungerende privatlivspolitik-URL** (HTTPS, ingen 404). Manglende eller ugyldige URL’er er den hyppigste årsag til, at banneret ikke vises.
+
+## Trin 1 — To tags i `<head>` (rækkefølgen betyder noget)
+
+Indsæt **straks efter** det åbnende `<head>`-tag (så tidligt som muligt):
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://YOURDOMAIN.com/privacy-policy",
+    settings: {
+      rootDomain: "YOURDOMAIN.com",
+      company: "Dit firmanavn",
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+**Regler**
+
+1. `window.INTA` skal køre **før** `uc.js`.
+2. Indlæs **ikke** analytics- eller marketing-scripts **over** denne blok, medmindre du bevidst vil det (standard: gør ikke).
+
+Erstat:
+
+- `policy_link` — din rigtige privatlivspolitik.
+- `settings.rootDomain` — sitets registrerbare domæne (uden `https://`).
+- `settings.company` — navn vist i UI’et.
+
+## Trin 2 — Kun Google Analytics / Ads: tilføj `gtagId`
+
+Hvis du bruger **GA4 eller Google Ads** og vil have Intastellar til at koordinere **Google Consent Mode** med dit målings-ID, udvid `settings`:
+
+```html
+<script>
+  window.INTA = {
+    policy_link: "https://YOURDOMAIN.com/privacy-policy",
+    settings: {
+      rootDomain: "YOURDOMAIN.com",
+      company: "Dit firmanavn",
+      gtagId: "G-XXXXXXXXXX",
+    },
+  };
+</script>
+<script src="https://consents.cdn.intastellarsolutions.com/uc.js"></script>
+```
+
+Hvis du **endnu ikke** bruger Google-tags, udelad `gtagId`, indtil du tilføjer dem.
+
+Fuld feltliste: [`window.INTA` (JSON Schema)](/docs/cookie-banner/javascript/inta-schema).
+
+## Trin 3 — Verificer i browseren
+
+1. Åbn sitet i et **privat vindue**.
+2. Du bør **se samtykke-UI** (banner eller overlay afhængigt af konfiguration).
+3. DevTools → **Network**:
+   - `uc.js` indlæses **tidligt** i dokumentet.
+   - Før accept af marketing/analytics bør ikke-væsentlige anmodninger ikke opføre sig som ved fuldt samtykke—præcis adfærd afhænger af dine tags; se [Sådan virker det](/docs/cookie-banner/how-it-works).
+
+## Trin 4 — Afvis, derefter accepter
+
+1. Vælg **Afvis** (eller minimalt samtykke), genindlæs én gang.
+2. Dit valg bør **bestå** (underlagt cookie-/lagerregler). Nulstilles det hver gang, tjek for **dobbelte** `window.INTA` / `uc.js`-blokke eller forkert `rootDomain`.
+
+## Når du er „færdig“
+
+- Banner synligt for nye besøgende.
+- Tags der kræver samtykke kører **ikke** som fuldt accepteret **før** et valg.
+- Efter **Accept** kan måling genoptage eller bruge **samtykkebevidst** adfærd (Google: Consent Mode; Meta: pixel + samtykkekonfiguration).
+
+## Næste skridt
+
+- **GTM:** [Google Tag Manager](/docs/cookie-banner/google-tag-manager)
+- **GA4:** [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
+- **Meta:** [Meta Pixel](/docs/cookie-banner/meta-pixel)
+- **Fuld snippet og styling:** [Kom i gang (JavaScript)](/docs/cookie-banner/javascript/getting-started)
+- **Fastlåst:** [Fejlfinding](/docs/cookie-banner/debugging)
+
+[← Dokumentationsforside](/docs/cookie-banner)

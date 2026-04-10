@@ -1,0 +1,44 @@
+---
+title: HubSpot
+description: HubSpot-sporing og formularer med Intastellar Consents—CMP først, samtykkebevidst affyring.
+order: 46
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrationsoversigt
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Hurtigstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# HubSpot
+
+Intastellar Consents integrerer med **HubSpot**, så marketing og sporing respekterer samtykke. Kobl HubSpot som enhver anden ikke-væsentlig stack: **CMP før HubSpot-scripts**, affyr kun når besøgendes valg tillader det.
+
+## Forudsætninger
+
+- [Hurtigstart](/docs/cookie-banner/quickstart) (eller tilsvarende), så `window.INTA` + `uc.js` indlæses **tidligt** i `<head>`.
+- Klarhed over hvilke HubSpot-funktioner I bruger (sporingskode, formularer, chat) og hvilke samtykkeformål de mapper til.
+
+## Anbefalet: Google Tag Manager
+
+1. Udrul CMP på **Consent Initialization** — se [Google Tag Manager](/docs/cookie-banner/google-tag-manager).
+2. Tilføj **HubSpot**-tags (eller Custom HTML) med triggers der matcher **accepteret** marketing-/analytics-samtykke efter jeres politik.
+3. Undgå at indlæse HubSpot-embed globalt på **All Pages** før samtykke, medmindre juridisk gennemgang siger andet.
+
+## HubSpot Cookie API / CMP-adfærd
+
+HubSpots egen dokumentation beskriver hvordan deres tags interagerer med cookies og samtykkeværktøjer. Følg **HubSpot + CMP**-vejledning sammen med Intastellars indlæsningsrækkefølge: CMP leverer samtykketilstand; GTM eller sitet må **ikke** behandle sporing som givet før valg.
+
+## Verificer
+
+- **Network / Application**: HubSpot-relaterede anmodninger og cookies bør ikke være fuldt aktive **før** accept (for de formål I begrænser).
+- Efter accept bør formularer og sporing fungere som konfigureret.
+
+## Relateret
+
+- [Fejlfinding](/docs/cookie-banner/debugging)
+- [Marketingintegrationskatalog](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsoversigt](/docs/cookie-banner/integrations-overview)

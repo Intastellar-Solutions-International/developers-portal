@@ -1,0 +1,48 @@
+---
+title: Microsoft Clarity und UET
+description: Microsoft Clarity (Session Replay/Heatmaps) und Universal Event Tracking (UET) mit Intastellar Consents.
+sidebar_label: Clarity & UET
+order: 53
+lastUpdated: "2026-04-08"
+related:
+  - title: Integrationsübersicht
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# Microsoft Clarity und UET
+
+**Clarity** (Verhaltensanalyse, Aufzeichnungen, Heatmaps) und **UET** (Microsoft Advertising Conversion / Remarketing) sind separate Produkte, aber dieselbe Regel gilt: **nach** der CMP laden und nur, wenn die Einwilligung den Zweck abdeckt.
+
+## Voraussetzungen
+
+- [Schnellstart](/docs/cookie-banner/quickstart), damit Intastellar zuerst läuft.
+- Clarity **Analytics / Statistik** (oder Ihre gleichwertige Kategorie) und UET **Marketing / Werbung** im Einwilligungsmodell zuordnen.
+
+## Google Tag Manager
+
+1. **Clarity:** Clarity-Tag mit Trigger, der nur feuert, wenn **Analytics** (oder Ihr gewählter Zweck) erlaubt ist.
+2. **UET:** UET-Tag mit Trigger, der nur feuert, wenn **Werbe-/Marketing**-Einwilligung erlaubt ist.
+3. **Keinen** einzigen pauschalen „All Pages“-Trigger für beide, wenn Ihr Banner diese Zwecke unterschiedlich behandelt.
+
+## Inline-Skripte
+
+Sind Clarity oder UET fest eingebunden:
+
+- Snippets **unter** `window.INTA` + `uc.js` im `<head>` platzieren oder erst nach Einwilligung per App oder Tag-Manager injizieren.
+- Doppelte Loader (GTM + fest eingebunden) vermeiden.
+
+## Prüfen
+
+- Vor Akzeptieren: Clarity/UET-Netzwerkaktivität sollte Ihrem **eingeschränkten** Default entsprechen.
+- Nach Akzeptieren: Tags laden und zeichnen wie erwartet auf.
+
+## Verwandtes
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Marketing-Integrationsverzeichnis](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsübersicht](/docs/cookie-banner/integrations-overview)

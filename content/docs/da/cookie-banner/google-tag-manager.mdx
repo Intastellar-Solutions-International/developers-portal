@@ -1,16 +1,70 @@
 ---
 title: Google Tag Manager
-description: Indlæs Intastellar Consents via Google Tag Manager.
+description: Meningsfuldt GTM-setup—Consent Initialization, CMP-tag, derefter samtykkebevidst analytics og annoncer.
 order: 60
-lastUpdated: "2026-04-05"
+lastUpdated: "2026-04-08"
+related:
+  - title: Hurtigstart
+    href: /docs/cookie-banner/quickstart
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Analytics 4
+    href: /docs/cookie-banner/google-analytics-4
+  - title: Fejlfinding
+    href: /docs/cookie-banner/debugging
 ---
 
 # Google Tag Manager
 
-Brug GTM til at injicere den samme bootstrap, du ellers ville tilføje manuelt i HTML.
+Brug GTM til at injicere det **samme** `window.INTA` + `uc.js`-par som i [Hurtigstart](/docs/cookie-banner/quickstart). Den eneste forskel er **hvor** det kører i tag-sekvensen.
 
-1. Opret et **Custom HTML**-tag med `window.INTA`-blokken og `uc.js`-scriptet fra [Kom i gang (JavaScript)](/docs/cookie-banner/javascript/getting-started).
-2. Lad det køre ved **Consent Initialization – All pages** (eller dit containers tilsvarende), så banneret indlæses før analytics og annoncer.
-3. Tilføj andre tags med triggers, der kun kører **efter** at samtykkestatus fra Intastellar Consents er tilgængelig — undgå at kappe med banneret.
+## Forudsætninger
+
+- GTM-container på sitet og tilladelse til at **publicere** versioner.
+- Værdier for `policy_link`, `rootDomain`, `company` og valgfrit `gtagId` besluttet.
+
+## 1. Opret CMP-tagget
+
+1. **Tags → Ny → Tagtype: Custom HTML**
+2. Indsæt fuld snippet fra [Hurtigstart](/docs/cookie-banner/quickstart) (begge `<script>`-blokke: inline `window.INTA` og `uc.js`).
+3. **Understøt document.write**: som regel **fra**, medmindre jeres site specifikt kræver det.
+
+## 2. Affyringsprioritet (kritisk)
+
+**Trigger:** **Consent Initialization – All pages** (eller jeres containers tilsvarende første samtykke-event).
+
+**Hvorfor:** Denne trigger findes, så en CMP kan køre **før** tags der antager samtykke. Kører CMP på almindelig Page View **efter** GA4, får du „spøgelses“-problemer (hits eller cookies før valg).
+
+## 3. Afhængige tags (GA4, Ads, Meta osv.)
+
+- Konfigurer **GA4 Configuration**, **Google Ads**, **Meta Pixel** og lignende med **samtykkeindstillinger** og triggers der matcher jeres politik.
+- **Tommelfingerregel:** alt der sætter ikke-væsentlige cookies eller sender persondata til ads/analytics bør **ikke** opføre sig som fuldt accepteret **før** CMP har kørt.
+
+Konkrete opskrifter:
+
+- [Google Analytics 4](/docs/cookie-banner/google-analytics-4)
+- [Meta Pixel](/docs/cookie-banner/meta-pixel)
+- [Google Consent Mode](/docs/cookie-banner/google-consent-mode)
+
+## 4. Google Consent Mode
+
+Ved Google-tags: sæt `settings.gtagId` i `window.INTA` og stem GTM-taggets **samtykke**-konfiguration overens med jeres defaults (dokumenteret i Consent Mode-guiden).
+
+## 5. Preview-tjekliste
+
+1. Åbn **GTM Preview** på staging.
+2. Bekræft **CMP**-tagget på **Consent Initialization**-eventet (tidligt).
+3. **Før** accept af marketing/analytics: GA/Ads bør **ikke** opføre sig som fuldt accepteret (brug Preview + Network).
+4. **Efter** accept: forventede hits eller pings bør vises eller skifte tilstand passende.
+
+## 6. Publicer
+
+Versionsnote f.eks.: `CMP: Intastellar via Consent Init; spærret GA4/Meta`.
+
+## Relateret
+
+- [Integrationsoversigt](/docs/cookie-banner/integrations-overview)
+- [Script-livscyklus](/docs/cookie-banner/javascript/script-lifecycle)
+- [Sådan virker det](/docs/cookie-banner/how-it-works)
 
 [← Dokumentationsforside](/docs/cookie-banner)

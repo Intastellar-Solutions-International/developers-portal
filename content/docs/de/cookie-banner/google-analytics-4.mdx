@@ -1,0 +1,50 @@
+---
+title: Google Analytics 4
+description: Bewusstes GA4-Setup mit Intastellar Consents und Google Consent Mode v2.
+order: 54
+lastUpdated: "2026-04-08"
+related:
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Google Analytics 4
+
+Bewusster Weg: **GA4 + Consent Mode v2**, CMP zuerst, Tags in GTM oder Äquivalent gesperrt.
+
+## Voraussetzungen
+
+- [Schnellstart](/docs/cookie-banner/quickstart) erledigt (oder dieselbe `window.INTA` + `uc.js`-Reihenfolge in GTM).
+- `settings.gtagId` auf Ihre **GA4-Mess-ID** (`G-XXXXXXXX`) gesetzt, wenn die CMP die Google-Koordination übernimmt.
+- [Google Consent Mode](/docs/cookie-banner/google-consent-mode) einmal lesen — Defaults sind wichtig.
+
+## Empfohlen: GA4 über Google Tag Manager
+
+1. CMP wie in [Google Tag Manager](/docs/cookie-banner/google-tag-manager) auf **Consent Initialization** einbinden.
+2. **Google-Tag** oder **GA4-Konfiguration** so einrichten, dass **Einwilligung** in den Tag-Einstellungen respektiert wird (an Ihre rechtlichen Defaults pro Einwilligungstyp anpassen).
+3. GA4 **nicht** mit einem nackten „All Pages“-Trigger feuern, wenn das volle Analytics-Cookies vor dem CMP bedeutet — einwilligungsbewusste Konfiguration nutzen.
+
+## Inline-`gtag` (ohne GTM)
+
+Wenn Sie `gtag.js` direkt laden:
+
+- **`window.INTA` + `uc.js` zuerst** im `<head>` platzieren.
+- GA **nach** dem CMP-Snippet laden oder Consent Mode vor relevanten Hits setzen.
+
+Doppelte GA-Loader (GTM + fest eingebundenes `gtag`) sind eine häufige Quelle für Doppel-Treffer und falschen Consent-Zustand — **einen** Hauptweg wählen.
+
+## Prüfen
+
+1. **GTM-Vorschau** oder GA **DebugView**: vor Akzeptieren sollte Analytics sich nicht wie **voll eingewilligt** verhalten, sofern Sie die Defaults nicht bewusst so gesetzt haben.
+2. Nach **Akzeptieren** sollte die normale Erfassung laufen (vorbehaltlich Adblockern usw.).
+
+## Verwandtes
+
+- [Debugging](/docs/cookie-banner/debugging)
+- [Integrationsübersicht](/docs/cookie-banner/integrations-overview)
+
+[← Dokumentations-Start](/docs/cookie-banner)

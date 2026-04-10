@@ -1,0 +1,64 @@
+---
+title: Debugging
+description: Symptomorientierte Fehlersuche—Banner fehlt, Tags feuern zu früh, GTM-Wettläufe, Einwilligung bleibt nicht bestehen.
+sidebar_label: Debugging
+order: 3
+lastUpdated: "2026-04-08"
+related:
+  - title: Schnellstart
+    href: /docs/cookie-banner/quickstart
+  - title: So funktioniert es
+    href: /docs/cookie-banner/how-it-works
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Debugging
+
+Prüfen Sie in kleinen Schritten, bevor Sie unzusammenhängende Einstellungen ändern.
+
+## Banner erscheint nicht
+
+| Wahrscheinliche Ursache | So prüfen | Lösung |
+| --- | --- | --- |
+| Ungültige `policy_link` | URL in neuem Tab öffnen; HTTPS und Statuscode prüfen | Live Policy-Seite nutzen; Weiterleitungen / 404 beheben |
+| Snippet zu weit unten oder nur im Body | Seitenquelltext; nach `uc.js` suchen | Block an den Anfang von `<head>` verschieben |
+| SPA / Framework lädt spät | Server-HTML vs. gerendertes DOM vergleichen | CMP aus dem **Root-Layout** oder der Shell laden, die jede Route umschließt |
+| Doppeltes oder widersprüchliches `window.INTA` | Repo / HTML nach `window.INTA` durchsuchen | **Eine** Definition vor `uc.js` behalten |
+
+## Tracking „feuert nicht“ nach Einwilligung
+
+| Wahrscheinliche Ursache | So prüfen | Lösung |
+| --- | --- | --- |
+| Tag hat keinen Trigger nach Einwilligung | GTM-Vorschau: Tag feuert nach Akzeptieren nicht | Einwilligungsbewusste Trigger oder Consent-Mode-Einstellungen |
+| `gtagId` fehlt für GA4 | Mit [Schnellstart](/docs/cookie-banner/quickstart) vergleichen | `gtagId` setzen oder GA nach Ihrem Muster verdrahten |
+| Consent-Mode-Defaults zu streng | GA / Tag Assistant | Defaults **bewusst** anpassen und dokumentieren |
+
+## Tags feuern vor Einwilligung (ernst)
+
+| Wahrscheinliche Ursache | So prüfen | Lösung |
+| --- | --- | --- |
+| GA/Ads auf „All Pages“ vor CMP | GTM-Vorschau-Zeitleiste | CMP auf **Consent Initialization** feuern; abhängige Tags sperren |
+| Fest eingebundenes `gtag.js` im HTML | Nach `googletagmanager.com/gtag` suchen | Doppelte Loader entfernen oder **nach** CMP platzieren |
+| Drittanbieter-Embed im `<head>` | Netzwerk-Tab | Bis zur passenden Zweckfreigabe verschieben |
+
+## GTM-Trigger „funktionieren nicht“
+
+| Wahrscheinliche Ursache | So prüfen | Lösung |
+| --- | --- | --- |
+| CMP nicht auf Consent Init | Triggertyp in GTM | **Consent Initialization – All pages** (oder Äquivalent) |
+| Wettlauf mit Page View | Reihenfolge in der Vorschau | Sicherstellen, dass CMP **vor** Analytics-Tags feuert |
+| Falscher Container | Container-ID auf der Site | Auf den gewünschten GTM-Container zeigen |
+
+## Einwilligungswahl bleibt nicht bestehen
+
+| Wahrscheinliche Ursache | So prüfen | Lösung |
+| --- | --- | --- |
+| Falsches `rootDomain` | `settings.rootDomain` mit Hostname vergleichen | An Ihr Cookie-Domain-Modell anpassen |
+| Zwei Kopien von `uc.js` | Nach `uc.js` in der Quelle suchen | Eine kanonische Installation |
+
+## Immer noch hängen
+
+Erfassen Sie: Browser, Seiten-URL (Staging reicht), **Seitenquelltext**-Ausschnitt um `uc.js`, und bei GTM einen **Vorschau**-Screenshot oder Export. Dann Support-Kanal oder [FAQ-Ressourcen](/docs/cookie-banner#faq) auf der Docs-Startseite.
+
+[← Dokumentations-Start](/docs/cookie-banner)

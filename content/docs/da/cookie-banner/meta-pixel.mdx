@@ -1,0 +1,46 @@
+---
+title: Meta Pixel
+description: Meta (Facebook) Pixel med Intastellar Consents—indlæsningsrækkefølge, samtykke og praktiske tjek.
+order: 55
+lastUpdated: "2026-04-08"
+related:
+  - title: Hurtigstart
+    href: /docs/cookie-banner/quickstart
+  - title: Integrationsoversigt
+    href: /docs/cookie-banner/integrations-overview
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Meta Pixel
+
+Meningsfuld vej: **CMP først**, pixel **efter** at samtykketilstand er kendt, helst koblet gennem **GTM**.
+
+## Forudsætninger
+
+- [Hurtigstart](/docs/cookie-banner/quickstart) eller GTM-ækvivalent, så `uc.js` kører **tidligt**.
+- Brug af Metas **samtykke** eller **limited data use**-muligheder i tråd med jeres politik (Metas dokumentation definerer de præcise parametre).
+
+## Google Tag Manager
+
+1. Affyr **Meta Pixel**-tag kun på triggers der matcher **accepteret** marketing/reklame-samtykke (eller jeres containers samtykketjek).
+2. Placer **ikke** pixelen i Custom HTML på **All Pages** før samtykke, medmindre du bevidst har konfigureret Metas API til det tilfælde.
+
+## Inline-pixel
+
+Er pixelen hardkodet:
+
+- Undgå at injicere basis-pixel-scriptet **over** CMP i `<head>`.
+- Foretræk at indlæse fra et **callback efter samtykke** eller en tag manager—hardkodede pixels er sværest at holde på linje med granulære valg.
+
+## Verificer
+
+- **Network**: `facebook.net` / `fbevents`-anmodninger bør ikke opføre sig som fuld marketing før accept (medmindre jeres juridiske setup udtrykkeligt tillader det).
+- Efter accept bør du se forventet pixel-trafik.
+
+## Relateret
+
+- [Fejlfinding](/docs/cookie-banner/debugging)
+- [Sådan virker det](/docs/cookie-banner/how-it-works)
+
+[← Dokumentationsforside](/docs/cookie-banner)
