@@ -1,0 +1,52 @@
+---
+title: Google Consent Mode
+description: Google Consent Mode v2 og Advanced Mode med Intastellar Consents.
+order: 50
+lastUpdated: "2026-04-08"
+related:
+  - title: Kom i gang (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Integrationsoversigt
+    href: /docs/cookie-banner/integrations-overview
+---
+
+# Google Consent Mode
+
+**Google Consent Mode** lader Google-tags (Analytics, Ads m.fl.) tilpasse sig brugerens samtykkevalg — I kan begrænse dataindsamling ved afvisning og stadig få **aggregerede / modellerede** indsigter, hvor Google understøtter det.
+
+Intastellar Consents understøtter **Consent Mode v2** og **Advanced Mode**: samtykkeopdateringer anvendes, så tags ikke kører „helt åbne“ før valg.
+
+## Konfiguration i `window.INTA`
+
+Angiv målings-id, så bootstrap matcher Google-tags:
+
+```js
+window.INTA = {
+  policy_link: "https://yourdomain.com/privacy-policy",
+  settings: {
+    // …øvrige indstillinger…
+    gtagId: "G-XXXXXXXXXX",
+  },
+};
+```
+
+Fuld snippet: [Kom i gang](/docs/cookie-banner/javascript/getting-started). Felter: [`window.INTA`-reference](/docs/cookie-banner/javascript/inta-schema).
+
+## v2 og Advanced Mode
+
+- **v2** udvider samtykketyper (f.eks. ad storage, analytics storage, ad user data, personalization), så tags mapper til GDPR-lignende kategorier.
+- **Advanced Mode** sender **consent pings** uden cookies, når brugeren ikke har samtykket — Google kan modellere, mens id’er forbliver begrænset (jf. Googles politikker og jeres juridiske vurdering).
+
+## GTM
+
+Indlæs banneret **før** tags, der afhænger af samtykke. Se [Google Tag Manager](/docs/cookie-banner/google-tag-manager): **Consent Initialization – All pages** (eller tilsvarende), og lås øvrige tags til samtykketilstand.
+
+## Californien (CCPA / CPRA)
+
+Ved **„Do Not Sell My Personal Information“** opdaterer Intastellar Consents den lagrede præference og **integrationer såsom Google Consent Mode** ved senere besøg. Juridisk fortolkning er jeres ansvar.
+
+## Læs mere
+
+- [Google: About Consent Mode](https://support.google.com/tagmanager/answer/9976101) (officiel)

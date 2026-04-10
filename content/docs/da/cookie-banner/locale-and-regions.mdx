@@ -1,0 +1,39 @@
+---
+title: Sprog og regioner
+description: Sprogdetektion, regional samtykke-UX og hosting.
+order: 65
+lastUpdated: "2026-04-08"
+related:
+  - title: Tilpas
+    href: /docs/cookie-banner/javascript/customize
+  - title: Kom i gang (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+---
+
+# Sprog og regioner
+
+## Sprog (`<html lang>`)
+
+Banneret vælger sprog ud fra dokumentets **`<html lang="...">`**.
+
+- For understøttede sprog kræves **ingen** manuel locale-konfiguration, når `lang` er korrekt.
+- Mangler **`lang`**, anvendes en **standard**, så UI stadig vises (fail-safe, ikke stille fejl).
+
+Sørg for gyldig BCP 47-kode i templates (f.eks. `da`, `en`, `de`).
+
+## Regional samtykke-UX (resumé)
+
+Samme installation kan tilpasse UX til flere jurisdiktioner (regler udvikler sig med produkt og lov):
+
+| Kontekst | Note til implementering |
+| --- | --- |
+| **EU / EØS — GDPR & ePrivacy** | Ikke-nødvendige cookies/scripts blokeret til gyldigt samtykke; integrationer som udgangspunkt begrænset, indtil tilladt. |
+| **Brasilien — LGPD** | Portugisisk (PT-BR) og brugerrettighedsorienteret flow. |
+| **Californien — CCPA / CPRA** | **„Do Not Sell My Personal Information“**; præference gemmes og anvendes på integrationer (f.eks. Google Consent Mode) ved senere besøg. |
+| **Sydafrika — POPIA** | Zulu-banner og POPIA-orienteret flow. |
+
+**Jura:** Beskriver **produktadfærd**, ikke juridisk rådgivning. Kobl funktioner til privatlivspolitik og DPA.
+
+## Data-hosting
+
+Samtykkerelaterede data for det hostede produkt behandles i **Den Europæiske Union** (jf. offentlige produktoplysninger).

@@ -1,0 +1,39 @@
+---
+title: Idioma e regiões
+description: Detecção de idioma, UX de consentimento regional e hospedagem.
+order: 65
+lastUpdated: "2026-04-08"
+related:
+  - title: Personalizar
+    href: /docs/cookie-banner/javascript/customize
+  - title: Primeiros passos (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+---
+
+# Idioma e regiões
+
+## Idioma (`<html lang>`)
+
+O banner escolhe o idioma a partir do atributo **`<html lang="...">`** do documento.
+
+- Para idiomas suportados, **não** é necessária configuração manual por locale quando `lang` está correto.
+- Se **`lang` estiver ausente**, o produto aplica um **padrão** para que a interface ainda seja exibida (fail-safe, sem falha silenciosa).
+
+Garanta que seus templates emitam um código BCP 47 válido (ex.: `da`, `en`, `de`, `pt-br`).
+
+## UX de consentimento por região (resumo)
+
+A mesma instalação pode adaptar a UX a várias jurisdições (as regras evoluem com o produto e a lei):
+
+| Contexto | Nota para implementação |
+| --- | --- |
+| **UE / EEE — GDPR e ePrivacy** | Cookies/scripts não essenciais bloqueados até consentimento válido; integrações em modo restrito por padrão até permitidas. |
+| **Brasil — LGPD** | Fluxo em português (PT-BR) e orientado a direitos do usuário. |
+| **Califórnia — CCPA / CPRA** | Caminho **„Do Not Sell My Personal Information“**; preferência armazenada e aplicada às integrações (ex.: Google Consent Mode) em visitas posteriores. |
+| **África do Sul — POPIA** | Opção de banner em zulu e fluxo alinhado a UX orientada à POPIA. |
+
+**Jurídico:** esta documentação descreve o **comportamento do produto**, não aconselhamento jurídico. Relacione os recursos à sua política de privacidade e ao DPA.
+
+## Hospedagem de dados
+
+Dados relacionados ao consentimento no produto hospedado são processados na **União Europeia**, segundo as informações públicas do produto.

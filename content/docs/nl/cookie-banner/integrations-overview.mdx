@@ -1,0 +1,57 @@
+---
+title: Integraties met derden
+description: Toestemmingsbewuste analytics, advertenties, CRM en tagmanagers met Intastellar Consents.
+sidebar_label: Integraties overzicht
+order: 45
+lastUpdated: "2026-04-08"
+related:
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Integraties met derden
+
+Intastellar Consents is zo opgezet dat **tags en scripts de toestemming respecteren**: niet-noodzakelijke tracking blijft geblokkeerd tot de bezoeker kiest; daarna ontvangen ondersteunde platforms een **gestructureerde toestemmingsstatus**, zodat meting onder GDPR-achtige regels verdedigbaar blijft.
+
+Gebruik deze pagina als kaart. Concrete `window.INTA`-sleutels en tagvolgorde staan in [Aan de slag](/docs/cookie-banner/javascript/getting-started), [`window.INTA`-referentie](/docs/cookie-banner/javascript/inta-schema) en [Aanpassen](/docs/cookie-banner/javascript/customize).
+
+## Tagbeheer
+
+| Kanaal | Documentatie |
+| --- | --- |
+| **Google Tag Manager** | [Google Tag Manager](/docs/cookie-banner/google-tag-manager) — Custom HTML-tag, **Consent Initialization** (of equivalent), geen race met analytics/advertenties. |
+| **Platte HTML / JS** | [Aan de slag (JavaScript)](/docs/cookie-banner/javascript/getting-started) — `window.INTA` vóór `uc.js` in `<head>`. |
+
+## Google-stack
+
+| Product | Opmerkingen |
+| --- | --- |
+| **Google Analytics / GA4** | Stel `settings.gtagId` in waar van toepassing; combineer met [Google Consent Mode](/docs/cookie-banner/google-consent-mode). |
+| **Google Consent Mode v2** | Ondersteund, inclusief **Advanced Mode** (signalen zonder id’s waar beleid het toelaat). Zie [Google Consent Mode](/docs/cookie-banner/google-consent-mode). |
+
+## Analytics, advertenties en tools
+
+Het product koppelt met gangbare stacks zodat toestemming wordt doorgegeven zonder ad-hoc-hacks. Verifieer elke integratie in **staging** na go-live.
+
+| Categorie | Voorbeelden (niet uitputtend) |
+| --- | --- |
+| **Advertenties / attributie** | Meta (Facebook) Pixel, Microsoft Advertising **UET** |
+| **Analytics / gedrag** | Microsoft **Clarity**, Google Analytics |
+| **CRM / marketing automation** | **HubSpot** |
+| **Experimenten** | **VWO** |
+
+Id’s en tagbedrading volgen de Consent Mode- of CMP-documentatie van elke leverancier; Intastellar levert de toestemmingslaag — uw container of thema moet tags nog steeds **aan die status koppelen**.
+
+## CMS en commerce
+
+| Kanaal | Documentatie |
+| --- | --- |
+| **WordPress** | [WordPress: aan de slag](/docs/cookie-banner/wordpress/getting-started) |
+| **Shopify** | [Shopify (thema / Liquid)](/docs/cookie-banner/shopify) |
+
+## Na uitrol
+
+- **Metrics kunnen dalen** (minder hits vóór toestemming). Dat is **verwacht** als toestemming echt wordt afgedwongen.
+- **Cookie Observer** (platformlaag) observeert **live** cookies en opslag **nadat** de banner staat — geen pre-scan van de site. Zie [Geavanceerde functies](/docs/cookie-banner/advanced-features).

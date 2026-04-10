@@ -1,0 +1,36 @@
+---
+title: Fonctionnalités avancées
+description: IAB TCF 2.3, Cookie Observer et notes de certification.
+order: 70
+lastUpdated: "2026-04-08"
+related:
+  - title: Vue d’ensemble des intégrations
+    href: /docs/cookie-banner/integrations-overview
+  - title: Cycle de vie du script
+    href: /docs/cookie-banner/javascript/script-lifecycle
+---
+
+# Fonctionnalités avancées
+
+## IAB Transparency & Consent Framework (TCF) 2.3
+
+Intastellar Consents met en œuvre un comportement orienté **TCF 2.3** :
+
+- **Interface de gestion des fournisseurs** pour l’écosystème TCF  
+- Gestion des **chaînes de consentement** et signalisation normalisée pour l’ad tech / le programmatic
+
+**Certification :** la CMP **n’est pas certifiée IAB** selon la FAQ produit récente ; la **signalisation centrale et la gestion des chaînes** visent l’alignement sur les spécifications IAB TCF. Traitez le statut de certification comme une checklist distincte pour les appels d’offres et contrats éditeurs.
+
+Cadre : [IAB Europe TCF](https://iabeurope.eu/tcf-2-0/).
+
+## Cookie Observer
+
+- S’exécute **uniquement après** mise en ligne de la bannière — **pas** de scan du site avant installation.
+- Observe le **trafic réel** : cookies et **stockage navigateur moderne**, **avant et après** les décisions de consentement.
+- Utile pour les audits et pour voir ce qui s’exécute réellement en production.
+
+Disponibilité liée aux offres **plateforme** (payantes) ; voir la matrice publique des fonctionnalités.
+
+## Exécution contrôlée
+
+Le produit privilégie la **précision plutôt que le déclenchement aveugle des tags** : les scripts marketing / analytics ne doivent s’activer que lorsque la politique et le choix utilisateur le permettent — voir [Cycle de vie du script](/docs/cookie-banner/javascript/script-lifecycle).

@@ -1,0 +1,39 @@
+---
+title: Langue et régions
+description: Détection de langue, UX de consentement régional et hébergement.
+order: 65
+lastUpdated: "2026-04-08"
+related:
+  - title: Personnaliser
+    href: /docs/cookie-banner/javascript/customize
+  - title: Premiers pas (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+---
+
+# Langue et régions
+
+## Langue (`<html lang>`)
+
+La bannière choisit la langue à partir de l’attribut **`<html lang="...">`** du document.
+
+- Aucune configuration manuelle par locale n’est requise pour les langues prises en charge lorsque `lang` est correct.
+- Si **`lang` est absent**, le produit applique une **valeur par défaut** pour que l’interface s’affiche tout de même (mode dégradé contrôlé, pas d’échec silencieux).
+
+Assurez-vous que vos modèles émettent un code BCP 47 valide (ex. `da`, `en`, `de`).
+
+## UX de consentement par région (résumé)
+
+Une même installation peut adapter l’UX à plusieurs juridictions (les règles évoluent avec le produit et le droit) :
+
+| Contexte | Note pour l’implémentation |
+| --- | --- |
+| **UE / EEE — RGPD & ePrivacy** | Cookies / scripts non essentiels bloqués jusqu’à un consentement valide ; intégrations en mode restreint par défaut jusqu’à autorisation. |
+| **Brésil — LGPD** | Parcours en portugais (PT-BR) et orienté droits des utilisateurs. |
+| **Californie — CCPA / CPRA** | Parcours **« Do Not Sell My Personal Information »** ; préférence enregistrée et appliquée aux intégrations (ex. Google Consent Mode) lors des visites suivantes. |
+| **Afrique du Sud — POPIA** | Option bannière en zoulou et parcours aligné sur une UX de type POPIA. |
+
+**Juridique :** cette documentation décrit le **comportement produit**, pas un conseil juridique. Rapprochez les fonctionnalités de votre politique de confidentialité et de votre DPA.
+
+## Hébergement des données
+
+Les données liées au consentement pour l’offre hébergée sont traitées dans l’**Union européenne**, selon les communications publiques du produit.

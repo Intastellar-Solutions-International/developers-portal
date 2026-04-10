@@ -1,0 +1,37 @@
+---
+title: Hændelser og API
+description: Callbacks, hændelser og programmatisk samtykke-API.
+sidebar_label: Hændelser & API
+order: 22
+lastUpdated: "2026-04-08"
+related:
+  - title: Script-livscyklus
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: window.INTA-reference
+    href: /docs/cookie-banner/javascript/inta-schema
+---
+
+# Hændelser og API
+
+## Konfigurationsoverflade
+
+Denne dokumentation fokuserer på:
+
+- **`window.INTA`** — bootstrap-objekt før `uc.js` ([reference](/docs/cookie-banner/javascript/inta-schema))
+- **Integrationsmønstre** — GTM, Google Consent Mode, CMS ([Integrationsoversigt](/docs/cookie-banner/integrations-overview))
+
+## Hændelser og callbacks
+
+Marketing-sitet og deployment kan eksponere yderligere **JavaScript-API’er** (custom events, globale hooks eller `dataLayer`-kontrakter), som ikke gentages fuldt ud her.
+
+**Tjekliste for implementering:**
+
+1. Valider samtykkeopdateringer mod **tag-triggers** i GTM eller jeres bundler.  
+2. Brug **browser-devtools** (Program → Cookies / lager, Netværk) for at bekræfte, at tags kun affyres efter forventet tilstand.  
+3. Henvis til **versionslåst JS-dokumentation**, hvis teamet vedligeholder separat API-reference.
+
+Har I en kanonisk URL til den fulde JS-API, kan den tilføjes i frontmatter på denne side eller på [dokumentationsforsiden](/docs/cookie-banner).
+
+## Samtykkesignaler til tredjeparter
+
+Intastellar Consents er bygget til at sende **samtykkesignaler** til understøttede stacks automatisk, uden manuel ledning til hver leverandør. Platforms-specifikke parametre følger stadig **Google**, **Meta**, **Microsoft** m.fl. — se [Integrationsoversigt](/docs/cookie-banner/integrations-overview).

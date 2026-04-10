@@ -1,0 +1,36 @@
+---
+title: Scriptlevenscyclus
+description: Laadvolgorde, blokkering en meetverwachtingen voor uc.js.
+sidebar_label: Scriptlevenscyclus
+order: 18
+lastUpdated: "2026-04-08"
+related:
+  - title: Aan de slag (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Scriptlevenscyclus (JavaScript)
+
+## Laadvolgorde
+
+1. Definieer **`window.INTA`** in een inline-`<script>` in `<head>`.
+2. Laad **`https://consents.cdn.intastellarsolutions.com/uc.js`** direct daarna (zie [Aan de slag](/docs/cookie-banner/javascript/getting-started)).
+
+Beide **vroeg in `<head>`** plaatsen verkleint de kans dat analytics- of marketing-tags vóór CMP-initialisatie draaien.
+
+## Blokkeren en toestemming
+
+Niet-noodzakelijke trackers zijn **geblokkeerd tot de bezoeker kiest** (accepteren / weigeren / granulair, afhankelijk van het product). Na handhaving:
+
+- **Analytics- en advertentiemetrics kunnen dalen** vergeleken met een onbeperkte setup. Dat is **verwacht** als toestemming eerlijk wordt afgedwongen.
+- Tags die Consent Mode respecteren (of uw GTM-triggers) moeten na de keuze nog steeds **juiste toestemmingssignalen** ontvangen voor compliant rapportage.
+
+## Toestemmingsopslag en bewijs
+
+Op **betaalde / platform**-niveaus kunnen toestemmingsbeslissingen worden **gelogd** voor audit en rapportage (zie openbare productvergelijking). De gratis banner handhaaft UI en blokkering; retentie en export hangen van het plan af.
+
+## Openbare JavaScript-API
+
+Heeft u **benoemde events, callbacks of een programmatische API** nodig (bijv. `dataLayer`), raadpleeg de actuele **JavaScript API**-referentie voor uw deployment. Dit portaal documenteert **configuratie** (`window.INTA`) en **integratiepatronen**; low-level eventnamen kunnen in een aparte ontwikkelaarsreferentie staan.

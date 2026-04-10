@@ -1,0 +1,37 @@
+---
+title: Events en API
+description: Callbacks, events en programmatische toestemmings-API’s.
+sidebar_label: Events & API
+order: 22
+lastUpdated: "2026-04-08"
+related:
+  - title: Scriptlevenscyclus
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: window.INTA-referentie
+    href: /docs/cookie-banner/javascript/inta-schema
+---
+
+# Events en API
+
+## Configuratie-oppervlak
+
+Deze documentatie richt zich op:
+
+- **`window.INTA`** — bootstrap-object vóór `uc.js` ([referentie](/docs/cookie-banner/javascript/inta-schema))
+- **Integratiepatronen** — GTM, Google Consent Mode, CMS ([Integraties overzicht](/docs/cookie-banner/integrations-overview))
+
+## Events en callbacks
+
+De marketing-site en deployment kunnen extra **JavaScript-API’s** tonen (custom events, globale hooks of `dataLayer`-contracten) die hier niet volledig worden gedupliceerd.
+
+**Checklist voor implementatie:**
+
+1. Valideer toestemmingsupdates tegen **tag-triggers** in GTM of uw bundler.  
+2. Gebruik **browser-devtools** (Applicatie → Cookies / opslag, Netwerk) om te bevestigen dat tags pas na de verwachte status vuren.  
+3. Verwijs naar **versiegebonden JS-docs** voor uw account of CDN-build als uw team een aparte API-referentie onderhoudt.
+
+Als u een canonieke URL voor de volledige JS-API hebt, voeg die toe aan het frontmatter van deze pagina of aan de [documentatie-startpagina](/docs/cookie-banner) wanneer beschikbaar.
+
+## Toestemmingssignalen naar derden
+
+Intastellar Consents is gebouwd om **toestemmingssignalen** automatisch naar ondersteunde stacks te sturen zonder elke leverancier handmatig te koppelen. Platforms-specifieke parameters volgen nog steeds **Google**, **Meta**, **Microsoft**, enz. — zie [Integraties overzicht](/docs/cookie-banner/integrations-overview).

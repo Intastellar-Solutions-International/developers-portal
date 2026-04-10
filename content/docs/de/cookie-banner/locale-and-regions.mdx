@@ -1,0 +1,39 @@
+---
+title: Sprache und Regionen
+description: Spracherkennung, regionales Einwilligungs-UX und Hosting.
+order: 65
+lastUpdated: "2026-04-08"
+related:
+  - title: Anpassen
+    href: /docs/cookie-banner/javascript/customize
+  - title: Erste Schritte (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+---
+
+# Sprache und Regionen
+
+## Sprache (`<html lang>`)
+
+Das Banner wählt die Sprache aus dem Attribut **`<html lang="...">`** des Dokuments.
+
+- Bei korrekt gesetztem `lang` ist für unterstützte Sprachen **keine** manuelle Locale-Konfiguration nötig.
+- Fehlt **`lang`**, wendet das Produkt einen **Standard** an, damit die UI dennoch erscheint (fail-safe, kein stilles Versagen).
+
+Templates sollten einen gültigen BCP-47-Code ausgeben (z. B. `da`, `en`, `de`).
+
+## Regionales Einwilligungs-UX (Kurzüberblick)
+
+Dieselbe Installation kann die UX für mehrere Rechtsräume anpassen (Details entwickeln sich mit Produkt und Gesetz):
+
+| Kontext | Hinweis für Implementierer |
+| --- | --- |
+| **EU / EWR — DSGVO & ePrivacy** | Nicht notwendige Cookies/Skripte bis zur gültigen Einwilligung blockiert; Integrationen standardmäßig eingeschränkt, bis erlaubt. |
+| **Brasilien — LGPD** | Portugiesisch (PT-BR) und nutzerrechtsorientierter Ablauf. |
+| **Kalifornien — CCPA / CPRA** | Pfad **„Do Not Sell My Personal Information“**; Präferenz gespeichert und auf Integrationen (z. B. Google Consent Mode) bei späteren Besuchen angewendet. |
+| **Südafrika — POPIA** | Zulu-Banner-Option und POPIA-orientierter Ablauf. |
+
+**Rechtliches:** Diese Dokumentation beschreibt **Produktverhalten**, keine Rechtsberatung. Features mit Datenschutzerklärung und AVV abgleichen.
+
+## Daten-Hosting
+
+Einwilligungsbezogene Daten des gehosteten Produkts werden in der **Europäischen Union** verarbeitet (laut öffentlichen Produktangaben).

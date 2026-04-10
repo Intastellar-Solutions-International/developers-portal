@@ -1,0 +1,39 @@
+---
+title: Taal en regio’s
+description: Taaldetectie, regionale toestemmings-UX en hosting.
+order: 65
+lastUpdated: "2026-04-08"
+related:
+  - title: Aanpassen
+    href: /docs/cookie-banner/javascript/customize
+  - title: Aan de slag (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+---
+
+# Taal en regio’s
+
+## Taal (`<html lang>`)
+
+De banner kiest de taal uit het attribuut **`<html lang="...">`** van het document.
+
+- Voor ondersteunde talen is **geen** handmatige locale-configuratie nodig als `lang` correct is.
+- Als **`lang` ontbreekt**, past het product een **standaard** toe zodat de UI nog steeds rendert (fail-safe, geen stille fout).
+
+Zorg dat templates een geldige BCP 47-code uitvoeren (bijv. `da`, `en`, `de`).
+
+## Regionale toestemmings-UX (samenvatting)
+
+Dezelfde installatie kan de UX voor meerdere rechtsgebieden aanpassen (regels evolueren met product en wet):
+
+| Context | Opmerking voor implementatie |
+| --- | --- |
+| **EU / EER — GDPR & ePrivacy** | Niet-noodzakelijke cookies/scripts geblokkeerd tot geldige toestemming; integraties standaard beperkt tot toegestaan. |
+| **Brazilië — LGPD** | Portugees (PT-BR) en flow gericht op gebruikersrechten. |
+| **Californië — CCPA / CPRA** | **„Do Not Sell My Personal Information“**; voorkeur opgeslagen en toegepast op integraties (bijv. Google Consent Mode) bij latere bezoeken. |
+| **Zuid-Afrika — POPIA** | Zulu-banneroptie en POPIA-georiënteerde flow. |
+
+**Juridisch:** beschrijft **productgedrag**, geen juridisch advies. Koppel functies aan uw privacybeleid en DPA.
+
+## Datahosting
+
+Toestemmingsgerelateerde gegevens voor het gehoste product worden in de **Europese Unie** verwerkt (volgens openbare productinformatie).

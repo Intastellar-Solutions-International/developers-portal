@@ -1,0 +1,36 @@
+---
+title: Cycle de vie du script
+description: Ordre de chargement, blocage et attentes de mesure pour uc.js.
+sidebar_label: Cycle de vie du script
+order: 18
+lastUpdated: "2026-04-08"
+related:
+  - title: Premiers pas (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Cycle de vie du script (JavaScript)
+
+## Ordre de chargement
+
+1. Définir **`window.INTA`** dans un `<script>` inline dans le `<head>`.
+2. Charger **`https://consents.cdn.intastellarsolutions.com/uc.js`** immédiatement après (voir [Premiers pas](/docs/cookie-banner/javascript/getting-started)).
+
+Placer les deux **tôt dans le `<head>`** réduit le risque que les tags analytics ou marketing s’exécutent avant l’initialisation de la CMP.
+
+## Blocage et consentement
+
+Les traceurs non essentiels sont **bloqués jusqu’au choix du visiteur** (accepter / refuser / granulaire, selon le produit). Après application :
+
+- **Les métriques analytics et publicitaires peuvent baisser** par rapport à une configuration sans contrainte. C’est **attendu** lorsque le consentement est appliqué de manière sérieuse.
+- Les tags qui respectent le Consent Mode (ou vos déclencheurs GTM) doivent toujours recevoir des **signaux de consentement corrects** après le choix pour un reporting conforme.
+
+## Stockage du consentement et preuve
+
+Sur les offres **payantes / plateforme**, les décisions de consentement peuvent être **journalisées** pour audit et reporting (voir la grille publique). La bannière gratuite applique toujours l’UI et le blocage ; rétention et export dépendent du plan.
+
+## API JavaScript publique
+
+Si vous avez besoin d’**événements nommés, de callbacks ou d’une API programmatique** (ex. détails `dataLayer`), consultez la référence **JavaScript API** à jour pour votre déploiement. Ce portail documente la **configuration** (`window.INTA`) et les **schémas d’intégration** ; les noms d’événements de bas niveau peuvent figurer dans une référence développeur séparée.

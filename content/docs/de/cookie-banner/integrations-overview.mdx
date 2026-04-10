@@ -1,0 +1,57 @@
+---
+title: Integrationen mit Drittanbietern
+description: Einwilligungsbewusste Analytics, Werbung, CRM und Tag-Manager mit Intastellar Consents.
+sidebar_label: Integrationsübersicht
+order: 45
+lastUpdated: "2026-04-08"
+related:
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Integrationen mit Drittanbietern
+
+Intastellar Consents ist so aufgebaut, dass **Tags und Skripte die Einwilligung respektieren**: nicht notwendiges Tracking bleibt blockiert, bis der Besucher wählt; danach erhalten unterstützte Plattformen einen **strukturierten Einwilligungszustand**, sodass Messungen unter DSGVO-ähnlichen Regeln vertretbar bleiben.
+
+Diese Seite dient als Überblick. Konkrete `window.INTA`-Schlüssel und Tag-Reihenfolgen finden Sie unter [Erste Schritte](/docs/cookie-banner/javascript/getting-started), [`window.INTA`-Referenz](/docs/cookie-banner/javascript/inta-schema) und [Anpassen](/docs/cookie-banner/javascript/customize).
+
+## Tag-Management
+
+| Kanal | Dokumentation |
+| --- | --- |
+| **Google Tag Manager** | [Google Tag Manager](/docs/cookie-banner/google-tag-manager) — Custom-HTML-Tag, **Consent Initialization** (oder gleichwertig), kein Wettlauf mit Analytics/Werbung. |
+| **Reines HTML / JS** | [Erste Schritte (JavaScript)](/docs/cookie-banner/javascript/getting-started) — `window.INTA` vor `uc.js` im `<head>`. |
+
+## Google-Stack
+
+| Produkt | Hinweise |
+| --- | --- |
+| **Google Analytics / GA4** | `settings.gtagId` setzen, wo zutreffend; mit [Google Consent Mode](/docs/cookie-banner/google-consent-mode) kombinieren. |
+| **Google Consent Mode v2** | Unterstützt, einschließlich **Advanced Mode** (Signale ohne Identifikatoren, soweit die Richtlinie es erlaubt). Siehe [Google Consent Mode](/docs/cookie-banner/google-consent-mode). |
+
+## Analytics, Werbung und Produkt-Tools
+
+Das Produkt ist mit gängigen Stacks verknüpfft, damit Einwilligung ohne Ad-hoc-Hacks durchgereicht wird. Jede Integration nach dem Go-Live in **Staging** prüfen.
+
+| Kategorie | Beispiele (nicht abschließend) |
+| --- | --- |
+| **Werbung / Attribution** | Meta (Facebook) Pixel, Microsoft Advertising **UET** |
+| **Analytics / Verhalten** | Microsoft **Clarity**, Google Analytics |
+| **CRM / Marketing-Automation** | **HubSpot** |
+| **Experimente** | **VWO** |
+
+IDs und Tag-Verdrahtung folgen der Consent-Mode- bzw. CMP-Dokumentation des jeweiligen Anbieters; Intastellar liefert die Einwilligungsebene — Ihr Container oder Theme muss Tags weiterhin **an diesem Zustand** ausrichten.
+
+## CMS und Commerce
+
+| Kanal | Dokumentation |
+| --- | --- |
+| **WordPress** | [WordPress: Erste Schritte](/docs/cookie-banner/wordpress/getting-started) |
+| **Shopify** | [Shopify (Theme / Liquid)](/docs/cookie-banner/shopify) |
+
+## Nach dem Rollout
+
+- **Kennzahlen können sinken** (weniger Hits vor Einwilligung). Das ist bei echter Einwilligung **erwartbar**.
+- **Cookie Observer** (Plattform-Tarif) beobachtet **Live** Cookies und Speicher **nach** Banner-Installation — kein Pre-Scan der Website. Siehe [Erweiterte Funktionen](/docs/cookie-banner/advanced-features).

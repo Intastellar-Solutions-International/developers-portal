@@ -1,0 +1,37 @@
+---
+title: Événements et API
+description: Callbacks, événements et API de consentement programmatique.
+sidebar_label: Événements & API
+order: 22
+lastUpdated: "2026-04-08"
+related:
+  - title: Cycle de vie du script
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Référence window.INTA
+    href: /docs/cookie-banner/javascript/inta-schema
+---
+
+# Événements et API
+
+## Surface de configuration
+
+Cette documentation se concentre sur :
+
+- **`window.INTA`** — objet bootstrap consommé avant `uc.js` ([référence](/docs/cookie-banner/javascript/inta-schema))
+- **Schémas d’intégration** — GTM, Google Consent Mode, CMS ([Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview))
+
+## Événements et callbacks
+
+Le site marketing et le déploiement peuvent exposer des **API JavaScript** supplémentaires (événements personnalisés, hooks globaux ou contrats `dataLayer`) qui ne sont pas entièrement dupliqués ici.
+
+**Checklist pour les implémenteurs :**
+
+1. Valider les mises à jour de consentement par rapport aux **déclencheurs de tags** dans GTM ou votre bundler.  
+2. Utiliser les **outils de développement** du navigateur (Application → Cookies / stockage, Réseau) pour vérifier que les tags ne se déclenchent qu’après l’état attendu.  
+3. Se référer à toute **documentation JS versionnée** publiée pour votre compte ou build CDN si votre équipe maintient une référence API séparée.
+
+Si vous avez une URL canonique pour l’API JS complète, ajoutez-la au frontmatter de cette page ou à l’[accueil documentation](/docs/cookie-banner) lorsqu’elle est disponible.
+
+## Signaux de consentement vers les tiers
+
+Intastellar Consents est conçu pour transmettre **automatiquement** des signaux de consentement aux stacks prises en charge sans câbler chaque fournisseur à la main. Les paramètres spécifiques à chaque plateforme suivent toujours **Google**, **Meta**, **Microsoft**, etc. — voir [Vue d’ensemble des intégrations](/docs/cookie-banner/integrations-overview).

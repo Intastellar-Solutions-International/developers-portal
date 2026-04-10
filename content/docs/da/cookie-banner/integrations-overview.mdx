@@ -1,0 +1,57 @@
+---
+title: Tredjepartsintegrationer
+description: Samtykkebevidste analytics, annoncer, CRM og tag managers med Intastellar Consents.
+sidebar_label: Integrationsoversigt
+order: 45
+lastUpdated: "2026-04-08"
+related:
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Tredjepartsintegrationer
+
+Intastellar Consents er bygget så **tags og scripts respekterer samtykke**: ikke-nødvendig sporing forbliver blokeret, indtil besøgende vælger; derefter får understøttede platforme **struktureret samtykketilstand**, så måling kan forsvares under GDPR-lignende regler.
+
+Brug siden som kort. Konkrete `window.INTA`-nøgler og tag-rækkefølge findes i [Kom i gang](/docs/cookie-banner/javascript/getting-started), [`window.INTA`-reference](/docs/cookie-banner/javascript/inta-schema) og [Tilpas](/docs/cookie-banner/javascript/customize).
+
+## Tag-administration
+
+| Kanal | Dokumentation |
+| --- | --- |
+| **Google Tag Manager** | [Google Tag Manager](/docs/cookie-banner/google-tag-manager) — Custom HTML-tag, **Consent Initialization** (eller tilsvarende), intet kapløb med analytics/annoncer. |
+| **Ren HTML / JS** | [Kom i gang (JavaScript)](/docs/cookie-banner/javascript/getting-started) — `window.INTA` før `uc.js` i `<head>`. |
+
+## Google-stack
+
+| Produkt | Noter |
+| --- | --- |
+| **Google Analytics / GA4** | Angiv `settings.gtagId` hvor relevant; kombinér med [Google Consent Mode](/docs/cookie-banner/google-consent-mode). |
+| **Google Consent Mode v2** | Understøttet, inkl. **Advanced Mode** (signaler uden id’er hvor politik tillader det). Se [Google Consent Mode](/docs/cookie-banner/google-consent-mode). |
+
+## Analytics, annoncer og værktøjer
+
+Produktet integrerer med gængse stacks, så samtykke sendes videre uden ad hoc-hacks. Verificér hver integration i **staging** efter go-live.
+
+| Kategori | Eksempler (ikke udtømmende) |
+| --- | --- |
+| **Annoncering / attribution** | Meta (Facebook) Pixel, Microsoft Advertising **UET** |
+| **Analytics / adfærd** | Microsoft **Clarity**, Google Analytics |
+| **CRM / marketing automation** | **HubSpot** |
+| **Eksperimenter** | **VWO** |
+
+ID’er og tag-opkobling følger hver leverandørs Consent Mode- eller CMP-dokumentation; Intastellar leverer samtykkelaget — jeres container eller tema skal stadig **styre** tags ud fra den tilstand.
+
+## CMS og handel
+
+| Kanal | Dokumentation |
+| --- | --- |
+| **WordPress** | [WordPress: Kom i gang](/docs/cookie-banner/wordpress/getting-started) |
+| **Shopify** | [Shopify (tema / Liquid)](/docs/cookie-banner/shopify) |
+
+## Efter udrulning
+
+- **Metrikker kan falde** (færre hits før samtykke). Det er **forventet**, hvis samtykke håndhæves reelt.
+- **Cookie Observer** (platformsniveau) observerer **live** cookies og lagring **efter** banner er installeret — ikke forhåndsscan af sitet. Se [Avancerede funktioner](/docs/cookie-banner/advanced-features).

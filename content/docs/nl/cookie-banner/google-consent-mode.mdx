@@ -1,0 +1,52 @@
+---
+title: Google Consent Mode
+description: Google Consent Mode v2 en Advanced Mode met Intastellar Consents.
+order: 50
+lastUpdated: "2026-04-08"
+related:
+  - title: Aan de slag (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Integraties overzicht
+    href: /docs/cookie-banner/integrations-overview
+---
+
+# Google Consent Mode
+
+**Google Consent Mode** laat Google-tags (Analytics, Ads, enz.) zich aanpassen aan de toestemmingskeuze van de gebruiker — u beperkt gegevensverzameling bij weigering en krijgt waar Google het ondersteunt nog **geaggregeerde / gemodelleerde** inzichten.
+
+Intastellar Consents ondersteunt **Consent Mode v2** en **Advanced Mode**: toestemmingsupdates worden toegepast zodat tags niet „volledig open“ draaien vóór de keuze.
+
+## Configuratie in `window.INTA`
+
+Stel uw meet-id in zodat de bootstrap aansluit op Google-tags:
+
+```js
+window.INTA = {
+  policy_link: "https://yourdomain.com/privacy-policy",
+  settings: {
+    // …overige instellingen…
+    gtagId: "G-XXXXXXXXXX",
+  },
+};
+```
+
+Volledige snippet: [Aan de slag](/docs/cookie-banner/javascript/getting-started). Velden: [`window.INTA`-referentie](/docs/cookie-banner/javascript/inta-schema).
+
+## v2 en Advanced Mode
+
+- **v2** breidt toestemmingstypen uit (bijv. ad storage, analytics storage, ad user data, personalization) zodat tags netjes mappen op GDPR-achtige categorieën.
+- **Advanced Mode** stuurt **consent pings** zonder cookies als de gebruiker niet heeft ingestemd — Google kan modelleren terwijl id’s beperkt blijven (onder voorbehoud van Google-beleid en uw juridische beoordeling).
+
+## GTM
+
+Laad de banner **vóór** tags die van toestemming afhangen. Zie [Google Tag Manager](/docs/cookie-banner/google-tag-manager): **Consent Initialization – All pages** (of container-equivalent), koppel andere tags daarna aan de toestemmingsstatus.
+
+## Californië (CCPA / CPRA)
+
+Bij **„Do Not Sell My Personal Information“** werkt Intastellar Consents de opgeslagen voorkeur bij en **integraties zoals Google Consent Mode** bij latere bezoeken. Juridische interpretatie blijft uw verantwoordelijkheid.
+
+## Meer lezen
+
+- [Google: About Consent Mode](https://support.google.com/tagmanager/answer/9976101) (officieel)

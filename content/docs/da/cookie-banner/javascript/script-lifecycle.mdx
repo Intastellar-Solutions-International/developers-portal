@@ -1,0 +1,36 @@
+---
+title: Script-livscyklus
+description: Indlæsningsrækkefølge, blokering og målingsforventninger for uc.js.
+sidebar_label: Script-livscyklus
+order: 18
+lastUpdated: "2026-04-08"
+related:
+  - title: Kom i gang (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+---
+
+# Script-livscyklus (JavaScript)
+
+## Indlæsningsrækkefølge
+
+1. Definér **`window.INTA`** i et inline-`<script>` i `<head>`.
+2. Indlæs **`https://consents.cdn.intastellarsolutions.com/uc.js`** umiddelbart efter (se [Kom i gang](/docs/cookie-banner/javascript/getting-started)).
+
+At placere begge **tidligt i `<head>`** mindsker risikoen for, at analytics- eller marketing-tags kører før CMP initialiseres.
+
+## Blokering og samtykke
+
+Ikke-nødvendige trackere er **blokeret, indtil besøgende vælger** (accepter / afvis / granular, afhængigt af produkt). Efter håndhævelse:
+
+- **Analytics- og annoncemetrik kan falde** sammenlignet med et ubegrænset setup. Det er **forventet**, når samtykke håndhæves ærligt.
+- Tags der respekterer Consent Mode (eller jeres GTM-triggers) bør efter valg stadig modtage **korrekte samtykkesignaler**, så rapportering forbliver compliant.
+
+## Samtykkelagring og bevis
+
+På **betalte / platform**-niveau kan samtykkebeslutninger **logges** til revision og rapportering (se offentlig produktsammenligning). Det gratis banner håndhæver UI og blokering; opbevaring og eksport afhænger af plan.
+
+## Offentlig JavaScript-API
+
+Har I brug for **navngivne hændelser, callbacks eller programmatisk API** (f.eks. `dataLayer`), se den nyeste **JavaScript API**-reference for jeres deployment. Denne portal dokumenterer **konfiguration** (`window.INTA`) og **integrationsmønstre**; lavniveau-hændelsesnavne kan findes i en separat udviklerreference.

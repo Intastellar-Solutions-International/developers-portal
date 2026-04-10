@@ -1,0 +1,52 @@
+---
+title: Google Consent Mode
+description: Google Consent Mode v2 e Advanced Mode com Intastellar Consents.
+order: 50
+lastUpdated: "2026-04-08"
+related:
+  - title: Primeiros passos (JavaScript)
+    href: /docs/cookie-banner/javascript/getting-started
+  - title: Google Tag Manager
+    href: /docs/cookie-banner/google-tag-manager
+  - title: Visão geral das integrações
+    href: /docs/cookie-banner/integrations-overview
+---
+
+# Google Consent Mode
+
+O **Google Consent Mode** permite que tags do Google (Analytics, Ads etc.) ajustem o comportamento às escolhas de consentimento do usuário — você limita a coleta quando o consentimento é negado e ainda obtém **insights agregados / modelados** onde o Google suporta.
+
+O Intastellar Consents suporta **Consent Mode v2** e **Advanced Mode**: as atualizações de consentimento são aplicadas para que os tags não rodem „totalmente abertos“ antes da escolha.
+
+## Configuração em `window.INTA`
+
+Defina o ID de medição para alinhar o bootstrap aos tags do Google:
+
+```js
+window.INTA = {
+  policy_link: "https://yourdomain.com/privacy-policy",
+  settings: {
+    // …outras configurações…
+    gtagId: "G-XXXXXXXXXX",
+  },
+};
+```
+
+Snippet completo: [Primeiros passos](/docs/cookie-banner/javascript/getting-started). Campos: [referência `window.INTA`](/docs/cookie-banner/javascript/inta-schema).
+
+## v2 e Advanced Mode
+
+- **v2** amplia os tipos de consentimento (ex.: armazenamento de anúncios, analytics, dados de usuário de anúncios, personalização) para mapear a categorias no estilo GDPR.
+- **Advanced Mode** envia **consent pings** sem cookies quando o usuário não consentiu — o Google pode aplicar modelagem enquanto identificadores permanecem restritos (sujeito às políticas do Google e à sua análise jurídica).
+
+## GTM
+
+Carregue o banner **antes** dos tags que dependem de consentimento. Veja [Google Tag Manager](/docs/cookie-banner/google-tag-manager): **Consent Initialization – All pages** (ou equivalente do contêiner) e só então condicione os demais tags ao estado de consentimento.
+
+## Califórnia (CCPA / CPRA)
+
+Quando o visitante usa **„Do Not Sell My Personal Information“**, o Intastellar Consents atualiza a preferência armazenada e **integrações como o Google Consent Mode** em visitas futuras. A interpretação jurídica é sua responsabilidade.
+
+## Leitura adicional
+
+- [Google: About Consent Mode](https://support.google.com/tagmanager/answer/9976101) (oficial)
