@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams, Link } from "react-router";
 
 import type { Route } from "./+types/account.login";
 import { GitHubSignInCta } from "~/components/github-sign-in-cta";
@@ -149,18 +149,9 @@ export default function AccountLogin() {
           </section>
         </>
       )}
-
-      {/* {githubOAuthConfigured ? (
-        <div className="mt-8 border-t border-zinc-200 pt-6 dark:border-zinc-600">
-          <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
-            {t("account.loginGitHubSignIn")}
-          </p>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            {t("account.loginGitHubHint")}
-          </p>
-          
-        </div>
-      ) : null} */}
+      <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-6">
+        By signing in, you agree to the <Link to="/legal/terms" className="text-brand hover:text-brand-hover">Terms of Service</Link> and <Link to="/legal/privacy" className="text-brand hover:text-brand-hover">Privacy Policy</Link>.
+      </p>
     </section>
   );
 }
