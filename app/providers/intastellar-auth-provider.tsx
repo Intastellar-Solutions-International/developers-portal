@@ -31,6 +31,8 @@ export type { IntastellarAuthContextValue } from "~/lib/intastellar-auth-context
 
 export type RootLoaderData = {
   ssoConfigured?: boolean;
+  /** GitHub OAuth app + secret present (server); `/auth/github` is available. */
+  githubOAuthConfigured?: boolean;
   /** UI language (cookie / Accept-Language). */
   locale?: Locale;
   /**

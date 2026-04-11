@@ -46,6 +46,7 @@ export function DocSaveBookmarkHeader({
   ssoPopupAvailable,
   onSignInPopup,
   signInPopupLoading,
+  githubOAuthAvailable,
 }: {
   variant: DocProfileSaveVariant;
   message: string | null;
@@ -62,6 +63,8 @@ export function DocSaveBookmarkHeader({
   ssoPopupAvailable: boolean;
   onSignInPopup: () => void;
   signInPopupLoading: boolean;
+  /** From root loader — GitHub OAuth env configured (`/auth/github`). */
+  githubOAuthAvailable: boolean;
 }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
@@ -70,6 +73,7 @@ export function DocSaveBookmarkHeader({
   const returnTo = `${location.pathname}${location.search}${location.hash}`;
   const loginWithRedirect = `${accountLoginHref}?redirect=${encodeURIComponent(returnTo)}`;
   const profileWithRedirect = `${profileFormAction}?redirect=${encodeURIComponent(returnTo)}`;
+  const githubSignInHref = `/auth/github?redirect=${encodeURIComponent(returnTo)}`;
 
   useEffect(() => {
     if (!open) return;
@@ -147,6 +151,14 @@ export function DocSaveBookmarkHeader({
                 >
                   {t("docs.saveLoginModalSignInPopup")}
                 </button>
+              ) : null}
+              {variant === "sign_in" && githubOAuthAvailable ? (
+                <Link
+                  to={githubSignInHref}
+                  className="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-900 shadow-sm hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:border-zinc-500 dark:hover:bg-zinc-800"
+                >
+                  {t("docs.saveLoginModalSignInGitHub")}
+                </Link>
               ) : null}
               {variant === "sign_in" ? (
                 <Link

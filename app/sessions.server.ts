@@ -15,7 +15,8 @@ export type PortalSessionFlash = {
   error?: string;
 };
 
-function portalSessionSecrets(): string[] {
+/** Shared by portal session + short-lived OAuth state cookies. */
+export function portalSessionSecrets(): string[] {
   const s = process.env.SESSION_SECRET?.trim();
   if (s) return [s];
   if (process.env.NODE_ENV === "production") {

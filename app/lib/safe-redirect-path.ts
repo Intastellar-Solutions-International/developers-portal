@@ -2,7 +2,9 @@
  * True when `raw` is a safe in-app navigation target (same-site path + optional
  * query/hash). Rejects protocol-relative URLs and embedded schemes.
  */
-export function isSafeInternalRedirect(raw: string | null): raw is string {
+export function isSafeInternalRedirect(
+  raw: string | null | undefined,
+): raw is string {
   if (raw == null) return false;
   const t = raw.trim();
   if (t === "" || !t.startsWith("/")) return false;

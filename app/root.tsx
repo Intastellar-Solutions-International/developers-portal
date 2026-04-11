@@ -64,6 +64,7 @@ import {
   isLegacyBannerActiveAt,
   requestSignalsLegacyMigrationBanner,
 } from "~/lib/legacy-banner";
+import { isGitHubOAuthConfigured } from "~/lib/github-oauth.server";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import {
   IntastellarAuthProvider,
@@ -105,6 +106,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   return data(
     {
       ssoConfigured,
+      githubOAuthConfigured: isGitHubOAuthConfigured(),
       portalAccount: account,
       locale: resolveLocaleFromRequest(request),
       legacyBannerFromLegacyReferrer:

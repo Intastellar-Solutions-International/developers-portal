@@ -47,6 +47,9 @@ const systemRoutes: RouteConfigEntry[] = [
     ".well-known/indexnow/:indexnowWellKey",
     "routes/indexnow-well-known.tsx",
   ),
+  /** GitHub OAuth — non-localized paths so a single callback URL works for all locales. */
+  route("auth/github/callback", "routes/auth.github.callback.tsx"),
+  route("auth/github", "routes/auth.github.tsx"),
   /** Must stay last in system routes: single dynamic segment (only matches e.g. `/your-key.txt`). */
   route(":indexnowKey", "routes/indexnow-key.tsx"),
 ];
