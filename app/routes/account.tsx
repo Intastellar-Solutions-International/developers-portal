@@ -1,12 +1,14 @@
 import { NavLink, Outlet, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/account";
-import { withLocalePrefix } from "~/lib/i18n/localized-path";
+import {
+  getLocaleFromPathname,
+  withLocalePrefix,
+} from "~/lib/i18n/localized-path";
 import { translatePath } from "~/lib/i18n/messages";
-import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const locale = resolveLocaleFromRequest(request);
+  const locale = getLocaleFromPathname(new URL(request.url).pathname);
   /**
    * Resolve copy in the loader so the document embeds final strings. Calling `translatePath` only on
    * the client during hydration has produced English fallbacks (e.g. “Account” vs “Konto”) while

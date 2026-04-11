@@ -61,7 +61,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   const mongoConfigured = isMongoConfigured();
   const { account, setCookieHeaders } =
     await resolvePortalSessionForRequest(request);
-
   const user = publicAccountToResolved(account);
   const keys =
     user && mongoConfigured

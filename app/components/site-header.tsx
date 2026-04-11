@@ -11,6 +11,10 @@ import {
   LanguageSwitcherMobileRow,
 } from "~/components/language-switcher";
 import { docHref, getDefaultVersionSlug } from "~/lib/docs-versions";
+import {
+  intastellarUserDisplayLine,
+  type IntastellarUserLike,
+} from "~/lib/intastellar-user-display";
 import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import {
   type RootLoaderData,
@@ -179,12 +183,35 @@ function SiteHeaderInner({
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const menuTitleId = useId();
-  const { authReady, configured, isLoading, signin, logout } = useIntastellarAuth();
+  const { authReady, configured, isLoading, signin, logout, users } =
+    useIntastellarAuth();
   const { t, locale } = useI18n();
   const lp = (path: string) => withLocalePrefix(path, locale);
   const rootLoaderData = useRouteLoaderData("root") as RootLoaderData | undefined;
   const portalAccount = rootLoaderData?.portalAccount ?? null;
-  const hasPortalSession = Boolean(portalAccount?.email?.trim());
+  const sessionUser = users[0] as IntastellarUserLike | undefined;
+  const hasSessionUser = Boolean(sessionUser?.email?.trim());
+  /** Same gate as `/account/profile`: root cookie alone must not show a user until context has a row. */
+  const headerAccount: PortalAccount | null = (() => {
+    if (!hasSessionUser || !sessionUser) return null;
+    const em = sessionUser.email.trim().toLowerCase();
+    if (
+      portalAccount?.email?.trim() &&
+      portalAccount.email.trim().toLowerCase() === em
+    ) {
+      return portalAccount;
+    }
+    return {
+      accountId: portalAccount?.accountId ?? "",
+      email: sessionUser.email,
+      displayName: intastellarUserDisplayLine(sessionUser),
+      avatarUrl:
+        typeof sessionUser.image === "string" && sessionUser.image.trim()
+          ? sessionUser.image.trim()
+          : undefined,
+    };
+  })();
+  const showHeaderSession = headerAccount != null;
 
   const consentsDocsHref = docHref(
     locale,
@@ -292,7 +319,7 @@ function SiteHeaderInner({
             >
               <ColorSchemeToggle />
             </span>
-            {authReady && configured && !hasPortalSession ? (
+            {authReady && configured && !showHeaderSession ? (
               <button
                 type="button"
                 className={headerBtnClass}
@@ -302,16 +329,16 @@ function SiteHeaderInner({
                 {isLoading ? "…" : t("nav.signIn")}
               </button>
             ) : null}
-            {authReady && configured && hasPortalSession && portalAccount ? (
+            {authReady && configured && showHeaderSession && headerAccount ? (
               <>
                 <Link
                   to={lp("/account/profile")}
                   className="flex max-w-[11rem] items-center gap-2 rounded-md py-1 pl-1 pr-2 transition-colors hover:bg-zinc-100 dark:hover:bg-white/10"
-                  title={portalAccount.email}
+                  title={headerAccount.email}
                 >
-                  <HeaderSessionAvatar account={portalAccount} />
+                  <HeaderSessionAvatar account={headerAccount} />
                   <span className="hidden min-w-0 truncate text-sm text-zinc-700 dark:text-zinc-300 xl:inline">
-                    {splitPortalDisplayName(portalAccount.displayName).first}
+                    {splitPortalDisplayName(headerAccount.displayName).first}
                   </span>
                 </Link>
                 <button
@@ -399,7 +426,7 @@ function SiteHeaderInner({
               <ColorSchemeToggleMobileRow />
             </nav>
             <div className="border-t border-zinc-200 p-3 dark:border-zinc-600/80">
-              {authReady && configured && !hasPortalSession ? (
+              {authReady && configured && !showHeaderSession ? (
                 <button
                   type="button"
                   className={mobileHeaderBtnClass}
@@ -412,23 +439,26 @@ function SiteHeaderInner({
                   {isLoading ? t("nav.signingIn") : t("nav.signIn")}
                 </button>
               ) : null}
-              {authReady && configured && hasPortalSession && portalAccount ? (
+              {authReady && configured && showHeaderSession && headerAccount ? (
                 <div className="space-y-2">
                   <Link
                     to={lp("/account/profile")}
                     className="flex items-center gap-3 rounded-lg px-1 py-2 transition-colors hover:bg-zinc-100 dark:hover:bg-white/5"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <HeaderSessionAvatar account={portalAccount} className="h-10 w-10" />
+                    <HeaderSessionAvatar
+                      account={headerAccount}
+                      className="h-10 w-10"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-200">
-                        {splitPortalDisplayName(portalAccount.displayName).first}
+                        {splitPortalDisplayName(headerAccount.displayName).first}
                       </p>
                       <p
                         className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-500"
-                        title={portalAccount.email}
+                        title={headerAccount.email}
                       >
-                        {portalAccount.email}
+                        {headerAccount.email}
                       </p>
                     </div>
                   </Link>

@@ -1,3 +1,5 @@
+import { intastellarDisplayNameFromSessionUserJson } from "./intastellar-user-display";
+
 /**
  * Profile shape used to upsert `user_accounts` and fill the signed portal cookie.
  * Intastellar identity is established by the SDK; this app trusts `account.user` from
@@ -24,16 +26,10 @@ export function portalSessionFromIntastellarUserJson(
   const email = emailRaw.trim().toLowerCase().slice(0, MAX_EMAIL);
   if (!email) return null;
 
-  let first = "";
-  let last = "";
-  const name = o.name;
-  if (name && typeof name === "object") {
-    const n = name as Record<string, unknown>;
-    first = typeof n.first === "string" ? n.first.slice(0, 120) : "";
-    last = typeof n.last === "string" ? n.last.slice(0, 120) : "";
-  }
-  const displayName =
-    `${first} ${last}`.trim().slice(0, MAX_DISPLAY) || email;
+  const displayName = intastellarDisplayNameFromSessionUserJson(o).slice(
+    0,
+    MAX_DISPLAY,
+  );
 
   const img = o.image;
   const imageUrl =
@@ -41,5 +37,9 @@ export function portalSessionFromIntastellarUserJson(
       ? img.trim().slice(0, MAX_IMAGE_URL)
       : undefined;
 
-  return { email, displayName, imageUrl };
+  return {
+    email,
+    displayName: displayName || email.slice(0, MAX_DISPLAY),
+    imageUrl,
+  };
 }

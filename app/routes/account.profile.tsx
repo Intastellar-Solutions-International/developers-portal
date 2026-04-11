@@ -1,13 +1,16 @@
 import { Link, useLoaderData } from "react-router";
 
 import type { Route } from "./+types/account.profile";
-import { withLocalePrefix } from "~/lib/i18n/localized-path";
+import {
+  getLocaleFromPathname,
+  withLocalePrefix,
+} from "~/lib/i18n/localized-path";
 import { translatePath } from "~/lib/i18n/messages";
-import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
+import { intastellarUserDisplayLine } from "~/lib/intastellar-user-display";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const locale = resolveLocaleFromRequest(request);
+  const locale = getLocaleFromPathname(new URL(request.url).pathname);
   /** Pre-resolve copy in the loader (same pattern as `account.tsx`) so hydration matches SSR. */
   return {
     locale,
@@ -47,6 +50,10 @@ export default function AccountProfile() {
   } = useIntastellarAuth();
 
   const user = users[0];
+  const hasValidUser = Boolean(user?.email?.trim());
+  /** SDK can report signed-in before `users` is populated; wait for a real profile. */
+  const awaitingUserAfterLogin = isSignedIn && !hasValidUser;
+  const showSessionLoading = isLoading || awaitingUserAfterLogin;
 
   return (
     <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
@@ -74,11 +81,44 @@ export default function AccountProfile() {
           </Link>{" "}
           {copy.seeSignInAfter}
         </p>
-      ) : isLoading ? (
+      ) : showSessionLoading ? (
         <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
           {copy.loading}
         </p>
-      ) : !isSignedIn || !user ? (
+      ) : hasValidUser && user ? (
+        <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
+          {user.image ? (
+            <img
+              src={user.image}
+              alt=""
+              className="h-20 w-20 shrink-0 rounded-full border border-zinc-200 object-cover dark:border-zinc-600"
+            />
+          ) : null}
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
+              {intastellarUserDisplayLine(user)}
+            </p>
+            <a
+              href="https://my.intastellaraccounts.com"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="text-sm text-brand hover:text-brand-hover"
+            >
+              Manage your Intastellar account
+            </a>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              {user.email}
+            </p>
+            <button
+              type="button"
+              onClick={() => void logout()}
+              className="mt-4 text-sm font-medium text-brand hover:text-brand-hover"
+            >
+              {copy.navSignOut}
+            </button>
+          </div>
+        </div>
+      ) : (
         <div className="mt-4">
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             {copy.signedOut}
@@ -106,31 +146,6 @@ export default function AccountProfile() {
             >
               {copy.openSignInPage}
             </Link>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
-          {user.image ? (
-            <img
-              src={user.image}
-              alt=""
-              className="h-20 w-20 shrink-0 rounded-full border border-zinc-200 object-cover dark:border-zinc-600"
-            />
-          ) : null}
-          <div className="min-w-0 flex-1 space-y-1">
-            <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
-              {user.name.first} {user.name.last}
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {user.email}
-            </p>
-            <button
-              type="button"
-              onClick={logout}
-              className="mt-4 text-sm font-medium text-brand hover:text-brand-hover"
-            >
-              {copy.navSignOut}
-            </button>
           </div>
         </div>
       )}
