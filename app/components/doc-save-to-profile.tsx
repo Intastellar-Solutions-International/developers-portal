@@ -142,47 +142,30 @@ export function DocSaveBookmarkHeader({
                 {message}
               </p>
             ) : null}
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
-              {variant === "sign_in" && ssoPopupAvailable ? (
+            <div className="mt-6 flex gap-3 sm:justify-end">
+                {githubOAuthAvailable ? (
+                  <GitHubSignInCta
+                    action={githubSignInHref}
+                    label={t("account.loginGitHubSignIn")}
+                    variant="login"
+                  />
+                ) : null}
                 <button
                   type="button"
                   disabled={signInPopupLoading}
                   onClick={() => void onSignInPopup()}
-                  className="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm hover:bg-brand-hover disabled:opacity-60"
+                  className="rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center gap-2 cursor-pointer px-5 py-2.5 text-sm font-semibold dark:text-zinc-50 text-zinc-900 shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 hover:border-zinc-400 hover:bg-zinc-50 dark:hover:border-zinc-500 dark:hover:bg-zinc-800"
                 >
-                  {t("docs.saveLoginModalSignInPopup")}
+                  <img
+                    src="https://www.intastellarsolutions.com/assets/logos/intastellar-new-planet.svg"
+                    alt={t("account.loginIntastellarLogoAlt")}
+                    width={30}
+                    height={30}
+                  />
+                  {signInPopupLoading
+                    ? t("account.loginCheckingSession")
+                    : t("account.loginSignInIntastellar")}
                 </button>
-              ) : null}
-              {variant === "sign_in" && githubOAuthAvailable ? (
-                <GitHubSignInCta
-                  action={githubSignInHref}
-                  label={t("docs.saveLoginModalSignInGitHub")}
-                  variant="compact"
-                />
-              ) : null}
-              {variant === "sign_in" ? (
-                <Link
-                  to={loginWithRedirect}
-                  className="inline-flex items-center justify-center rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-800 hover:border-brand/40 hover:text-brand dark:border-zinc-500 dark:text-zinc-100 dark:hover:border-brand/40"
-                >
-                  {t("docs.saveLoginModalOpenLoginPage")}
-                </Link>
-              ) : null}
-              {variant === "link_account" ? (
-                <Link
-                  to={profileWithRedirect}
-                  className="inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm hover:bg-brand-hover"
-                >
-                  {t("docs.saveLoginModalOpenProfile")}
-                </Link>
-              ) : null}
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="inline-flex items-center justify-center rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:border-zinc-400 dark:border-zinc-500 dark:text-zinc-200 dark:hover:border-zinc-400"
-              >
-                {t("docs.saveLoginModalClose")}
-              </button>
             </div>
           </div>
         </div>
