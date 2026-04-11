@@ -1,9 +1,17 @@
 import { ObjectId } from "mongodb";
-import { data, redirect, useLoaderData, useLocation } from "react-router";
+import {
+  data,
+  redirect,
+  useFetcher,
+  useLoaderData,
+  useLocation,
+} from "react-router";
 
 import type { Route } from "./+types/docs.$product.$";
 import {
+  DocSaveProfileHeaderIcon,
   DocSaveToProfile,
+  type BookmarkActionData,
   type DocProfileSaveVariant,
 } from "~/components/doc-save-to-profile";
 import { DocMeta } from "~/components/doc-meta";
@@ -25,6 +33,7 @@ import {
   unlocalizedDocPath,
 } from "~/lib/docs-versions";
 import { translatePath } from "~/lib/i18n/messages";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
@@ -100,6 +109,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     }
   }
 
+  const profileFormAction = withLocalePrefix("/account/profile", locale);
+
   const payload = {
     ...doc,
     prev,
@@ -107,6 +118,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     breadcrumbs,
     version,
     locale,
+    profileFormAction,
     /** Always from the request URL so serialized loader data matches SSR on hydration. */
     previewOrigin: url.origin,
     previewHostname: url.hostname,
@@ -151,6 +163,8 @@ export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
 
 export default function ProductDocPage() {
   const doc = useLoaderData<typeof loader>();
+  const bookmarkFetcher = useFetcher<BookmarkActionData>();
+  const isBookmark = doc.docProfileSaveVariant === "bookmark";
   const { pathname } = useLocation();
   const docPathNorm = (doc.docPath ?? "").replace(/^\/+|\/+$/g, "");
   const productSlug = doc.productSlug ?? "";
@@ -167,7 +181,20 @@ export default function ProductDocPage() {
 
   return (
     <article className="docs-prose prose prose-zinc max-w-none dark:prose-invert prose-pre:bg-transparent prose-pre:p-0">
-      <DocsBreadcrumbs items={doc.breadcrumbs} />
+      <DocsBreadcrumbs
+        items={doc.breadcrumbs}
+        toolbar={
+          isBookmark ? (
+            <DocSaveProfileHeaderIcon
+              fetcher={bookmarkFetcher}
+              profileAction={doc.profileFormAction}
+              canonicalPath={doc.canonicalDocPath}
+              title={doc.title}
+              saved={doc.docSavedToProfile}
+            />
+          ) : null
+        }
+      />
       <CookieBannerTryoutDocBody
         tryout={showIntaTryout}
         title={doc.title}
@@ -183,6 +210,8 @@ export default function ProductDocPage() {
         canonicalPath={doc.canonicalDocPath}
         title={doc.title}
         initiallySaved={doc.docSavedToProfile}
+        profileFormAction={doc.profileFormAction}
+        bookmarkFetcher={isBookmark ? bookmarkFetcher : undefined}
       />
       <DocPrevNext prev={doc.prev} next={doc.next} />
       <DocMeta
