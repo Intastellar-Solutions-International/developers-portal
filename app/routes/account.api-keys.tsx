@@ -3,17 +3,18 @@ import {
   data,
   Form,
   Link,
+  redirect,
   useActionData,
   useFetcher,
   useLoaderData,
   useNavigation,
-  useRevalidator,
 } from "react-router";
 
 import type { Route } from "./+types/account.api-keys";
 import { translateApiKeyServerError } from "~/lib/i18n/api-key-errors.server";
 import type { Locale } from "~/lib/i18n/locale";
 import { translatePath } from "~/lib/i18n/messages";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { copyToClipboard } from "~/lib/copy-to-clipboard";
 import { formatDateTimeMediumShort } from "~/lib/format-datetime";
@@ -62,8 +63,15 @@ export async function loader({ request }: Route.LoaderArgs) {
   const { account, setCookieHeaders } =
     await resolvePortalSessionForRequest(request);
   const user = publicAccountToResolved(account);
+  if (!user) {
+    const headers = loaderHeadersFromSetCookie(setCookieHeaders);
+    return redirect(
+      `${withLocalePrefix("/account/login", locale)}${new URL(request.url).search}`,
+      { headers },
+    );
+  }
   const keys =
-    user && mongoConfigured
+    mongoConfigured
       ? await listApiKeysForUser(user.accountId, user.email)
       : [];
   const payload: ApiKeysLoaderData = {
@@ -358,12 +366,9 @@ export default function AccountApiKeys() {
   const revealFetcher = useFetcher<typeof action>();
   const navigation = useNavigation();
   const busy = navigation.state !== "idle";
-  const revalidator = useRevalidator();
-  const sessionSyncRef = useRef(0);
   /** Until the new key appears in `keys`, don’t treat “missing id” as revoked. */
   const pendingNewKeyIdRef = useRef<string | null>(null);
   const storageSyncPass = useRef(0);
-  const [sessionHardFail, setSessionHardFail] = useState(false);
   /** Plaintext shown in UI: after create, reveal, or sessionStorage restore (same tab). */
   const [visibleSecrets, setVisibleSecrets] = useState<Record<string, string>>(
     {},
@@ -377,12 +382,6 @@ export default function AccountApiKeys() {
   } = useIntastellarAuth();
   const { t } = useI18n();
   const loginHref = useLocalizedHref("/account/login");
-
-  const sessionUiMismatch =
-    mongoConfigured &&
-    clientConfigured &&
-    clientSignedIn &&
-    !signedInOnServer;
 
   useEffect(() => {
     try {
@@ -462,21 +461,6 @@ export default function AccountApiKeys() {
     setEditingKeyId(null);
   }, [actionData]);
 
-  useEffect(() => {
-    if (!sessionUiMismatch) {
-      sessionSyncRef.current = 0;
-      setSessionHardFail(false);
-      return;
-    }
-    if (revalidator.state !== "idle") return;
-    if (sessionSyncRef.current >= 8) {
-      setSessionHardFail(true);
-      return;
-    }
-    sessionSyncRef.current += 1;
-    revalidator.revalidate();
-  }, [sessionUiMismatch, revalidator.state, revalidator.revalidate]);
-
   const canUseKeys =
     ssoConfigured &&
     mongoConfigured &&
@@ -542,62 +526,6 @@ export default function AccountApiKeys() {
           </code>{" "}
           {t("apiKeys.mongoAfterPepper")}
         </p>
-      ) : !signedInOnServer ? (
-        <div className="mt-4 space-y-3 text-sm text-amber-800 dark:text-amber-200">
-          {sessionUiMismatch && revalidator.state !== "idle" ? (
-            <p className="text-zinc-600 dark:text-zinc-400">
-              {t("apiKeys.sessionSyncing")}
-            </p>
-          ) : null}
-          {sessionUiMismatch && sessionHardFail ? (
-            <div className="space-y-2">
-              <p>
-                {t("apiKeys.sessionHardFailP1")}{" "}
-                <code className="mx-1 text-xs">localhost</code>{" "}
-                {t("apiKeys.sessionHardFailVs")}{" "}
-                <code className="text-xs">127.0.0.1</code>
-                {t("apiKeys.sessionHardFailP2")}{" "}
-                <code className="text-xs">SESSION_SECRET</code>{" "}
-                {t("apiKeys.sessionHardFailP3")}
-              </p>
-              <ul className="list-inside list-disc space-y-1 text-zinc-700 dark:text-zinc-300">
-                <li>{t("apiKeys.sessionHardFailBulletRefresh")}</li>
-                <li>
-                  {t("apiKeys.sessionHardFailBulletHostOpen")}
-                  <code className="text-xs">localhost</code>{" "}
-                  {t("apiKeys.sessionHardFailVs")}{" "}
-                  <code className="text-xs">127.0.0.1</code>
-                  {t("apiKeys.sessionHardFailBulletHostClose")}
-                </li>
-                <li>
-                  {t("apiKeys.sessionHardFailBulletSecretBefore")}
-                  {t("apiKeys.sessionHardFailBulletSecretBefore").trim() ? (
-                    <>{" "}</>
-                  ) : null}
-                  <code className="text-xs">SESSION_SECRET</code>{" "}
-                  {t("apiKeys.sessionHardFailBulletSecretAfter")}
-                </li>
-              </ul>
-              <p>
-                <Link to={loginHref} className={linkClass}>
-                  {t("apiKeys.signInAgain")}
-                </Link>
-              </p>
-            </div>
-          ) : sessionUiMismatch ? (
-            <p className="text-zinc-600 dark:text-zinc-400">
-              {t("apiKeys.sessionAligning")}
-            </p>
-          ) : (
-            <p>
-              {t("apiKeys.sessionVerifyBefore")}{" "}
-              <Link to={loginHref} className={linkClass}>
-                {t("apiKeys.sessionVerifyLink")}
-              </Link>
-              {t("apiKeys.sessionVerifyAfter")}
-            </p>
-          )}
-        </div>
       ) : (
         <div className="mt-4 space-y-6">
           {actionFormError ? (

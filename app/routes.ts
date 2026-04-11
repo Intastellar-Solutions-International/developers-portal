@@ -81,7 +81,7 @@ const localizedAppRoutes: RouteConfigEntry[] = [
       ]),
     ]),
   ]),
-  route("account", "routes/account.tsx", [
+  route("account", "routes/account.layout.tsx", [
     index("routes/account._index.tsx"),
     route("login", "routes/account.login.tsx"),
     route("profile", "routes/account.profile.tsx"),

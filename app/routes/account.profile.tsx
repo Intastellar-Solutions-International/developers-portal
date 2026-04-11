@@ -58,8 +58,6 @@ export type ProfileLoaderData = {
   navSignIn: string;
   navSignOut: string;
   signedOut: string;
-  signInWithIntastellar: string;
-  openSignInPage: string;
   intro: string;
   manageAccount: string;
   savedDocsHeading: string;
@@ -136,11 +134,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     navSignIn: translatePath(localeFromPath, "nav.signIn"),
     navSignOut: translatePath(localeFromPath, "nav.signOut"),
     signedOut: translatePath(localeFromPath, "profile.signedOut"),
-    signInWithIntastellar: translatePath(
-      localeFromPath,
-      "profile.signInWithIntastellar",
-    ),
-    openSignInPage: translatePath(localeFromPath, "profile.openSignInPage"),
     intro: translatePath(localeFromPath, "profile.intro"),
     manageAccount: translatePath(localeFromPath, "profile.manageAccount"),
     savedDocsHeading: translatePath(localeFromPath, "profile.savedDocsHeading"),
@@ -318,7 +311,6 @@ export default function AccountProfile() {
     isLoading,
     isSignedIn,
     users,
-    signin,
     logout,
     error,
   } = useIntastellarAuth();
@@ -518,22 +510,12 @@ export default function AccountProfile() {
               {error}
             </p>
           ) : null}
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              type="button"
-              disabled={isLoading}
-              onClick={() => void signin()}
-              className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:opacity-60"
-            >
-              {copy.signInWithIntastellar}
-            </button>
-            <Link
-              to={loginHref}
-              className="rounded-lg border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:border-brand/50 hover:text-brand dark:border-zinc-600 dark:text-zinc-300"
-            >
-              {copy.openSignInPage}
-            </Link>
-          </div>
+          <Link
+            to={loginHref}
+            className="mt-6 inline-flex rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover"
+          >
+            {copy.navSignIn}
+          </Link>
         </div>
       )}
     </section>

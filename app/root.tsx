@@ -16,13 +16,12 @@ import {
   ScrollRestoration,
   useFetcher,
   useLocation,
-  useMatches,
   useNavigate,
-  useRouteLoaderData,
   type ShouldRevalidateFunctionArgs,
 } from "react-router";
 
 import { buildGlobalSeoJsonLdMeta } from "~/lib/seo";
+import { useResolvedRootLoaderData } from "~/lib/use-resolved-root-loader-data";
 
 import type { Route } from "./+types/root";
 import { LegacyDevelopersBanner } from "./components/legacy-developers-banner";
@@ -255,19 +254,6 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
-
-/**
- * `useRouteLoaderData("root")` can be briefly undefined during hydration while `matches` still carries
- * `root` loader data — that mismatch caused the legacy banner (and main padding) to disagree with SSR HTML,
- * and `I18nProvider` to render English copy while SSR used the URL locale (e.g. Account vs Konto).
- */
-function useResolvedRootLoaderData(): RootLoaderData | undefined {
-  const fromRoute = useRouteLoaderData("root") as RootLoaderData | undefined;
-  const matches = useMatches();
-  if (fromRoute !== undefined) return fromRoute;
-  const rootMatch = matches.find((m) => m.id === "root");
-  return rootMatch?.loaderData as RootLoaderData | undefined;
-}
 
 /**
  * Locale for shell + `I18nProvider`. During hydration, loader hooks can be empty for a frame while
