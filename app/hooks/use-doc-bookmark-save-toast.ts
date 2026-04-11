@@ -44,10 +44,12 @@ export function useDocBookmarkSaveToast(
 
     const data = fetcher.data;
     if (data != null && !data.ok) {
-      const errKey = `${opts.canonicalPath}:err:${data.error}`;
+      const errMsg =
+        typeof data.error === "string" ? data.error : String(data.error ?? "");
+      const errKey = `${opts.canonicalPath}:err:${errMsg}`;
       if (lastErrorToastKey.current !== errKey) {
         lastErrorToastKey.current = errKey;
-        pushAppToast("error", data.error);
+        pushAppToast("error", errMsg || "Error");
       }
       awaitingResult.current = false;
       return;

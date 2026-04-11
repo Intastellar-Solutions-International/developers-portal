@@ -20,8 +20,12 @@ const deferred: AppToastAction[] = [];
 let idSeq = 0;
 
 function broadcast(action: AppToastAction) {
-  for (const l of listeners) {
-    l(action);
+  for (const l of Array.from(listeners)) {
+    try {
+      l(action);
+    } catch {
+      /* listener must not break dispatch */
+    }
   }
 }
 
@@ -53,8 +57,9 @@ export function pushAppToast(
   durationMs = 4800,
 ): void {
   if (typeof window === "undefined") return;
+  const text = typeof message === "string" ? message : String(message ?? "");
   const id = ++idSeq;
-  dispatch({ type: "push", item: { id, variant, message } });
+  dispatch({ type: "push", item: { id, variant, message: text } });
   window.setTimeout(() => {
     dispatch({ type: "remove", id });
   }, durationMs);

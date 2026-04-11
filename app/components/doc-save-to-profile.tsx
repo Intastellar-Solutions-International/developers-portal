@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FetcherWithComponents } from "react-router";
 import { Link, useFetcher, useLocation, useRevalidator } from "react-router";
 
@@ -204,12 +204,22 @@ export function DocSaveToProfile({
   const internalFetcher = useFetcher<BookmarkActionData>();
   const fetcher = bookmarkFetcherProp ?? internalFetcher;
   const revalidator = useRevalidator();
+  /** True after the user starts a bookmark POST until we handle the next idle result (avoids revalidate loops when `fetcher.data` gets a new object reference while still `{ ok: true }`). */
+  const bookmarkSubmitSeen = useRef(false);
 
   useEffect(() => {
     if (variant !== "bookmark") return;
-    if (fetcher.state !== "idle" || !fetcher.data?.ok) return;
-    revalidator.revalidate();
-  }, [variant, fetcher.data, fetcher.state, revalidator]);
+    if (fetcher.state !== "idle") {
+      bookmarkSubmitSeen.current = true;
+      return;
+    }
+    if (!bookmarkSubmitSeen.current) return;
+    if (fetcher.data == null) return;
+    bookmarkSubmitSeen.current = false;
+    if (fetcher.data.ok === true) {
+      void revalidator.revalidate();
+    }
+  }, [variant, fetcher.state, fetcher.data, revalidator]);
 
   const saved = initiallySaved;
   const pending = fetcher.state !== "idle";
