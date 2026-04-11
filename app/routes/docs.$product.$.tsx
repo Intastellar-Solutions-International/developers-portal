@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { useEffect } from "react";
 import {
   data,
   redirect,
@@ -21,6 +22,10 @@ import { DocPrevNext } from "~/components/doc-prev-next";
 import { DocsBreadcrumbs } from "~/components/docs-breadcrumbs";
 import { CookieBannerTryoutDocBody } from "~/components/cookie-banner-tryout-doc-body";
 import { RelatedLinks } from "~/components/related-links";
+import {
+  clearDocPendingBookmark,
+  readDocPendingBookmark,
+} from "~/lib/doc-pending-bookmark";
 import {
   getAdjacentDocs,
   getDocBreadcrumbs,
@@ -241,6 +246,36 @@ export default function ProductDocPage() {
   const root = useRouteLoaderData("root") as RootLoaderData | undefined;
 
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (doc == null) return;
+    if (doc.docProfileSaveVariant !== "bookmark") return;
+    if (doc.docSavedToProfile) {
+      const stale = readDocPendingBookmark();
+      if (stale?.canonicalPath === doc.canonicalDocPath) {
+        clearDocPendingBookmark();
+      }
+      return;
+    }
+    if (bookmarkFetcher.state !== "idle") return;
+    const pending = readDocPendingBookmark();
+    if (!pending) return;
+    if (pending.canonicalPath !== doc.canonicalDocPath) return;
+    if (pending.profileFormAction !== doc.profileFormAction) return;
+    clearDocPendingBookmark();
+    const fd = new FormData();
+    fd.set("intent", "saveDoc");
+    fd.set("path", pending.canonicalPath);
+    fd.set("title", pending.title.slice(0, 200));
+    bookmarkFetcher.submit(fd, {
+      method: "post",
+      action: pending.profileFormAction,
+    });
+  }, [
+    doc,
+    bookmarkFetcher.state,
+    bookmarkFetcher.submit,
+  ]);
   if (doc == null) {
     return null;
   }

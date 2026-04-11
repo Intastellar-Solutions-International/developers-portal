@@ -9,6 +9,7 @@ import type {
 } from "~/components/doc-bookmark-types";
 import { DocSaveProfileHeaderIcon } from "~/components/doc-save-profile-header-icon";
 import { GitHubSignInCta } from "~/components/github-sign-in-cta";
+import { writeDocPendingBookmark } from "~/lib/doc-pending-bookmark";
 import { useI18n } from "~/providers/i18n-provider";
 
 export type { BookmarkActionData, DocProfileSaveVariant } from "~/components/doc-bookmark-types";
@@ -76,6 +77,15 @@ export function DocSaveBookmarkHeader({
   const profileWithRedirect = `${profileFormAction}?redirect=${encodeURIComponent(returnTo)}`;
   const githubSignInHref = `/auth/github?redirect=${encodeURIComponent(returnTo)}`;
 
+  const stashPendingBookmark = () => {
+    writeDocPendingBookmark({
+      returnPath: returnTo,
+      canonicalPath,
+      title,
+      profileFormAction,
+    });
+  };
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -142,18 +152,23 @@ export function DocSaveBookmarkHeader({
                 {message}
               </p>
             ) : null}
-            <div className="mt-6 flex gap-3 sm:justify-end">
+            <div className="mt-6 flex flex-col gap-4">
+              <div className="flex flex-wrap gap-3 sm:justify-end">
                 {githubOAuthAvailable ? (
                   <GitHubSignInCta
                     action={githubSignInHref}
                     label={t("account.loginGitHubSignIn")}
                     variant="login"
+                    onBeforeSubmit={stashPendingBookmark}
                   />
                 ) : null}
                 <button
                   type="button"
                   disabled={signInPopupLoading}
-                  onClick={() => void onSignInPopup()}
+                  onClick={() => {
+                    stashPendingBookmark();
+                    void onSignInPopup();
+                  }}
                   className="rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center gap-2 cursor-pointer px-5 py-2.5 text-sm font-semibold dark:text-zinc-50 text-zinc-900 shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 hover:border-zinc-400 hover:bg-zinc-50 dark:hover:border-zinc-500 dark:hover:bg-zinc-800"
                 >
                   <img
@@ -166,6 +181,28 @@ export function DocSaveBookmarkHeader({
                     ? t("account.loginCheckingSession")
                     : t("account.loginSignInIntastellar")}
                 </button>
+              </div>
+              <p className="text-center text-sm sm:text-right">
+                <Link
+                  to={loginWithRedirect}
+                  onClick={stashPendingBookmark}
+                  className="font-medium text-brand hover:text-brand-hover"
+                >
+                  {t("docs.saveLoginModalOpenLoginPage")}
+                </Link>
+                {variant === "link_account" ? (
+                  <>
+                    {" · "}
+                    <Link
+                      to={profileWithRedirect}
+                      onClick={stashPendingBookmark}
+                      className="font-medium text-brand hover:text-brand-hover"
+                    >
+                      {t("docs.saveLoginModalOpenProfile")}
+                    </Link>
+                  </>
+                ) : null}
+              </p>
             </div>
           </div>
         </div>

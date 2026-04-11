@@ -24,13 +24,23 @@ export function GitHubSignInCta({
   action,
   label,
   variant,
+  onBeforeSubmit,
 }: {
   action: string;
   label: string;
   variant: GitHubSignInCtaVariant;
+  /** Runs immediately before the GET navigation (e.g. stash pending doc bookmark). */
+  onBeforeSubmit?: () => void;
 }) {
   return (
-    <form action={action} method="get" className={formClass[variant]}>
+    <form
+      action={action}
+      method="get"
+      className={formClass[variant]}
+      onSubmit={() => {
+        onBeforeSubmit?.();
+      }}
+    >
       <button type="submit" className={buttonClass[variant]}>
         <span
           className="flex h-5 w-5 shrink-0 items-center justify-center text-current"

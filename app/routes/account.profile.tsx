@@ -4,6 +4,7 @@ import {
   useFetcher,
   useLoaderData,
   useLocation,
+  useNavigate,
   useRevalidator,
   useSearchParams,
 } from "react-router";
@@ -20,6 +21,8 @@ import {
 } from "~/lib/i18n/localized-path";
 import { translatePath } from "~/lib/i18n/messages";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
+import { isSafeInternalRedirect } from "~/lib/safe-redirect-path";
+import { clearDocPendingBookmark, readDocPendingBookmark } from "~/lib/doc-pending-bookmark";
 import { intastellarUserDisplayLine } from "~/lib/intastellar-user-display";
 import { isMongoConfigured } from "~/lib/mongodb.server";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
@@ -71,6 +74,8 @@ export type ProfileLoaderData = {
   signedInOnServer: boolean;
   savedDocumentation: ProfileLoaderSavedDoc[];
   canLinkGithub: boolean;
+  /** User can persist doc bookmarks (`saveDoc` on profile). */
+  hasMongoUserAccount: boolean;
   githubLinkedLogin: string | null;
   linkGitHubHeading: string;
   linkGitHubDescription: string;
@@ -124,6 +129,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     !hasGithubIdentity &&
     ssoConfigured;
 
+  const hasMongoUserAccount = Boolean(mongoConfigured && resolved?.accountId);
+
   const payload: ProfileLoaderData = {
     locale: localeFromPath,
     heading: translatePath(localeFromPath, "profile.heading"),
@@ -150,6 +157,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     signedInOnServer: resolved != null,
     savedDocumentation,
     canLinkGithub,
+    hasMongoUserAccount,
     githubLinkedLogin,
     linkGitHubHeading: translatePath(localeFromPath, "profile.linkGitHubHeading"),
     linkGitHubDescription: translatePath(
@@ -269,9 +277,21 @@ export default function AccountProfile() {
   const labels = useLoaderData<typeof loader>();
   const removeFetcher = useFetcher<typeof action>();
   const revalidator = useRevalidator();
+  const navigate = useNavigate();
   const { t } = useI18n();
   const [searchParams] = useSearchParams();
   const { pathname, search } = useLocation();
+
+  useEffect(() => {
+    if (!labels.hasMongoUserAccount) return;
+    const pending = readDocPendingBookmark();
+    if (!pending?.returnPath) return;
+    if (!isSafeInternalRedirect(pending.returnPath)) {
+      clearDocPendingBookmark();
+      return;
+    }
+    navigate(pending.returnPath, { replace: true });
+  }, [labels.hasMongoUserAccount, navigate]);
 
   useEffect(() => {
     if (removeFetcher.data?.ok === true) {
