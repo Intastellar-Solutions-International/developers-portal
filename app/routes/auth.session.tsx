@@ -37,6 +37,8 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ ok: false as const, error: "invalid_user" }, { status: 400 });
   }
 
+  console.log("portalProfile", portalProfile);
+
   const portalSession = await getPortalSession(request.headers.get("Cookie"));
   portalSession.set("email", portalProfile.email);
   portalSession.set("displayName", portalProfile.displayName);

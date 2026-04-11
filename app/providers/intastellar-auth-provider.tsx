@@ -128,14 +128,14 @@ function IntastellarAuthEnabled({
   const submitIntastellarUserForPortalSession = useCallback(
     async (user: IntastellarUser) => {
       if (!user.email?.trim()) return;
+      /**
+       * Send the full SDK user object so `/auth/session` can read every field the API
+       * returns (e.g. top-level `given_name`, alternate `name` shapes). A narrow
+       * `{ name, email, image }` payload often leaves `displayName` parsing with only
+       * email to fall back on.
+       */
       await sessionFetcher.submit(
-        {
-          user: {
-            name: user.name,
-            email: user.email,
-            image: user.image,
-          },
-        },
+        { user: { ...user } },
         { method: "post", action: "/auth/session", encType: "application/json" },
       );
     },
