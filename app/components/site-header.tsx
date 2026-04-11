@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useRouteLoaderData } from "react-router";
 
 import {
@@ -44,6 +44,9 @@ const headerBtnClass =
 
 const mobileHeaderBtnClass =
   "flex w-full items-center justify-center rounded-lg px-4 py-3 text-base font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-brand disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-200 dark:hover:bg-white/10 dark:hover:text-brand";
+
+/** Fixed id so `aria-controls` matches SSR without `useId` (avoids hook-order drift vs auth bootstrap). */
+const SITE_HEADER_MENU_PANEL_ID = "inta-site-header-menu";
 
 const headerIconBtnClass =
   "rounded-md p-2.5 text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-brand dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-brand";
@@ -182,7 +185,7 @@ function SiteHeaderInner({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const menuTitleId = useId();
+  const menuTitleId = SITE_HEADER_MENU_PANEL_ID;
   const { authReady, configured, logout, users } = useIntastellarAuth();
   const { t, locale } = useI18n();
   const lp = (path: string) => withLocalePrefix(path, locale);
@@ -279,7 +282,7 @@ function SiteHeaderInner({
             <SearchIcon className="size-5" />
           </button>
           <span className="lg:hidden">
-            <LanguageSwitcher />
+            <LanguageSwitcher idPrefix="inta-header-lang-sm" />
           </span>
           <span className="lg:hidden">
             <ColorSchemeToggle />
@@ -310,7 +313,7 @@ function SiteHeaderInner({
               {t("nav.apiKeys")}
             </NavLink>
             <span className="hidden items-center gap-1 lg:inline-flex">
-              <LanguageSwitcher />
+              <LanguageSwitcher idPrefix="inta-header-lang-lg" />
             </span>
             <span
               className="hidden items-center lg:inline-flex"

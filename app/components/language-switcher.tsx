@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   LOCALE_FLAG_EMOJI,
@@ -39,12 +39,19 @@ const optionClass =
 const optionActiveClass =
   "bg-brand/10 font-medium text-brand dark:bg-brand/15 dark:text-brand";
 
-function LanguageFlagMenu({ className = "" }: { className?: string }) {
+function LanguageFlagMenu({
+  className = "",
+  idPrefix = "lang",
+}: {
+  className?: string;
+  /** Stable DOM ids for trigger/listbox (must be unique per menu instance on the page). */
+  idPrefix?: string;
+}) {
   const { locale, setLocale, t } = useI18n();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const listId = useId();
-  const btnId = useId();
+  const listId = `${idPrefix}-listbox`;
+  const btnId = `${idPrefix}-trigger`;
 
   useEffect(() => {
     if (!open) return;
@@ -120,8 +127,14 @@ function LanguageFlagMenu({ className = "" }: { className?: string }) {
   );
 }
 
-export function LanguageSwitcher({ className = "" }: { className?: string }) {
-  return <LanguageFlagMenu className={className} />;
+export function LanguageSwitcher({
+  className = "",
+  idPrefix,
+}: {
+  className?: string;
+  idPrefix?: string;
+}) {
+  return <LanguageFlagMenu className={className} idPrefix={idPrefix} />;
 }
 
 /** Mobile drawer: labeled row of flag buttons (no nested menu). */

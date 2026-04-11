@@ -266,6 +266,8 @@ export const en = {
       "{{title}} — Intastellar developer documentation on inta.dev.",
     saveToProfile: "Save to profile",
     removeFromProfile: "Remove from profile",
+    bookmarkToastSaved: "Saved to your profile.",
+    bookmarkToastRemoved: "Removed from your saved list.",
     saveToProfileHint:
       "Sign in with a portal session (same account as API keys) to bookmark this page on your profile.",
     onYourProfile: "This page is on your saved list in Account → Profile.",

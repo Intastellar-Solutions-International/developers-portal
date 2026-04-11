@@ -22,6 +22,7 @@ import { DocPrevNext } from "~/components/doc-prev-next";
 import { DocsBreadcrumbs } from "~/components/docs-breadcrumbs";
 import { CookieBannerTryoutDocBody } from "~/components/cookie-banner-tryout-doc-body";
 import { RelatedLinks } from "~/components/related-links";
+import { useDocBookmarkSaveToast } from "~/hooks/use-doc-bookmark-save-toast";
 import {
   clearDocPendingBookmark,
   readDocPendingBookmark,
@@ -276,6 +277,13 @@ export default function ProductDocPage() {
     bookmarkFetcher.state,
     bookmarkFetcher.submit,
   ]);
+
+  useDocBookmarkSaveToast(bookmarkFetcher, {
+    enabled: doc?.docProfileSaveVariant === "bookmark",
+    docSavedToProfile: doc?.docSavedToProfile ?? false,
+    canonicalPath: doc?.canonicalDocPath ?? "",
+  });
+
   if (doc == null) {
     return null;
   }

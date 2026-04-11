@@ -258,6 +258,8 @@ export const de: MessageTree = {
       "{{title}} — Intastellar-Entwicklerdokumentation auf inta.dev.",
     saveToProfile: "Im Profil speichern",
     removeFromProfile: "Aus Profil entfernen",
+    bookmarkToastSaved: "Im Profil gespeichert.",
+    bookmarkToastRemoved: "Aus Ihrer Merkliste entfernt.",
     saveToProfileHint:
       "Melden Sie sich mit einer Portal-Sitzung an (wie bei API-Schlüsseln), um diese Seite in Ihrem Profil zu merken.",
     onYourProfile:

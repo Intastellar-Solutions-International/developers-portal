@@ -257,6 +257,8 @@ export const fr: MessageTree = {
       "{{title}} — Documentation développeur Intastellar sur inta.dev.",
     saveToProfile: "Enregistrer dans le profil",
     removeFromProfile: "Retirer du profil",
+    bookmarkToastSaved: "Enregistré sur votre profil.",
+    bookmarkToastRemoved: "Retiré de votre liste enregistrée.",
     saveToProfileHint:
       "Connectez-vous avec une session portail (même compte que les clés API) pour ajouter cette page à votre profil.",
     onYourProfile:

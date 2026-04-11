@@ -257,6 +257,8 @@ export const nl: MessageTree = {
       "{{title}} — Intastellar-ontwikkelaarsdocumentatie op inta.dev.",
     saveToProfile: "Opslaan in profiel",
     removeFromProfile: "Verwijderen uit profiel",
+    bookmarkToastSaved: "Opgeslagen op uw profiel.",
+    bookmarkToastRemoved: "Verwijderd uit uw opgeslagen lijst.",
     saveToProfileHint:
       "Log in met een portalsessie (zelfde account als API-sleutels) om deze pagina op uw profiel te bewaren.",
     onYourProfile: "Deze pagina staat op uw opgeslagen lijst onder Account → Profiel.",

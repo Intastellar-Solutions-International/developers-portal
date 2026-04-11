@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 
 import type { SidebarSection } from "~/lib/docs.server";
@@ -25,7 +25,7 @@ export function DocsMobileNav({
 }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const titleId = useId();
+  const titleId = `inta-docs-mnav-${product.replace(/[^a-z0-9-]/gi, "-")}`;
 
   useEffect(() => {
     setOpen(false);

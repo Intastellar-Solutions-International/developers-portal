@@ -24,6 +24,7 @@ import { buildGlobalSeoJsonLdMeta } from "~/lib/seo";
 import { useResolvedRootLoaderData } from "~/lib/use-resolved-root-loader-data";
 
 import type { Route } from "./+types/root";
+import { AppToastViewport } from "./components/app-toast-viewport";
 import { LegacyDevelopersBanner } from "./components/legacy-developers-banner";
 import { NotFoundPage } from "./components/not-found-page";
 import { SearchOverlay } from "./components/search-overlay";
@@ -371,6 +372,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
           loading={loading}
           onNavigate={navigateToSearchResult}
         />
+        <AppToastViewport />
         <ScrollRestoration />
       </>
     </I18nProvider>

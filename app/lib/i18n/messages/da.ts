@@ -257,6 +257,8 @@ export const da: MessageTree = {
       "{{title}} — Intastellar-udviklerdokumentation på inta.dev.",
     saveToProfile: "Gem på profil",
     removeFromProfile: "Fjern fra profil",
+    bookmarkToastSaved: "Gemt på din profil.",
+    bookmarkToastRemoved: "Fjernet fra din gemte liste.",
     saveToProfileHint:
       "Log ind med en portal-session (samme konto som API-nøgler) for at bogmærke denne side på din profil.",
     onYourProfile: "Denne side er på din gemte liste under Konto → Profil.",

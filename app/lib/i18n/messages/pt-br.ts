@@ -257,6 +257,8 @@ export const ptBr: MessageTree = {
       "{{title}} — Documentação para desenvolvedores Intastellar no inta.dev.",
     saveToProfile: "Salvar no perfil",
     removeFromProfile: "Remover do perfil",
+    bookmarkToastSaved: "Salvo no seu perfil.",
+    bookmarkToastRemoved: "Removido da sua lista salva.",
     saveToProfileHint:
       "Entre com uma sessão do portal (mesma conta das chaves de API) para marcar esta página no seu perfil.",
     onYourProfile: "Esta página está na sua lista salva em Conta → Perfil.",
