@@ -260,6 +260,11 @@ export const da: MessageTree = {
     saveToProfileHint:
       "Log ind med en portal-session (samme konto som API-nøgler) for at bogmærke denne side på din profil.",
     onYourProfile: "Denne side er på din gemte liste under Konto → Profil.",
+    saveLoginModalTitle: "Gem denne side på din profil",
+    saveLoginModalClose: "Luk",
+    saveLoginModalSignInPopup: "Log ind med Intastellar",
+    saveLoginModalOpenLoginPage: "Åbn login-siden",
+    saveLoginModalOpenProfile: "Åbn kontoprofil",
   },
   search: {
     inputAria: "Søg i dokumentationen",

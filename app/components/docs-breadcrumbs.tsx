@@ -8,13 +8,14 @@ export function DocsBreadcrumbs({
   className,
   toolbar,
 }: {
-  items: BreadcrumbItem[];
+  items: BreadcrumbItem[] | undefined;
   /** Extra classes on the inner `<nav>` (outer row owns vertical spacing; `mb-0` is always applied). */
   className?: string;
   /** Optional right column (e.g. save-to-profile control). Root is always a layout `div` so SSR and hydration stay aligned. */
   toolbar?: ReactNode;
 }) {
-  const hasItems = items.length > 0;
+  const list = items ?? [];
+  const hasItems = list.length > 0;
   if (!hasItems && (toolbar == null || toolbar === false)) return null;
 
   return (
@@ -26,8 +27,8 @@ export function DocsBreadcrumbs({
             aria-label="Breadcrumb"
           >
             <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              {items.map((item, i) => {
-                const last = i === items.length - 1;
+              {list.map((item, i) => {
+                const last = i === list.length - 1;
                 return (
                   <li
                     key={`${item.label}-${i}`}

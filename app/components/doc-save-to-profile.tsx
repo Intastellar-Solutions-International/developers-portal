@@ -1,16 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { FetcherWithComponents } from "react-router";
-import { Link, useFetcher, useRevalidator } from "react-router";
+import { Link, useFetcher, useLocation, useRevalidator } from "react-router";
 
-import { useI18n, useLocalizedHref } from "~/providers/i18n-provider";
+import { BookmarkIcon } from "~/components/bookmark-icon";
+import type {
+  BookmarkActionData,
+  DocProfileSaveVariant,
+} from "~/components/doc-bookmark-types";
+import { DocSaveProfileHeaderIcon } from "~/components/doc-save-profile-header-icon";
+import { useI18n } from "~/providers/i18n-provider";
 
-export type BookmarkActionData = { ok: true } | { ok: false; error: string };
-
-export type DocProfileSaveVariant =
-  | "bookmark"
-  | "mongo_off"
-  | "sign_in"
-  | "link_account";
+export type { BookmarkActionData, DocProfileSaveVariant } from "~/components/doc-bookmark-types";
 
 type DocSaveToProfileProps = {
   variant: DocProfileSaveVariant;
@@ -28,89 +28,161 @@ type DocSaveToProfileProps = {
   bookmarkFetcher?: FetcherWithComponents<BookmarkActionData>;
 };
 
-function BookmarkIcon({ filled }: { filled: boolean }) {
-  const d = "M7 2h10a2 2 0 0 1 2 2v18l-8-4.9-8 4.9V4a2 2 0 0 1 2-2Z";
-  if (filled) {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        className="h-5 w-5"
-        aria-hidden
-      >
-        <path fill="currentColor" d={d} />
-      </svg>
-    );
-  }
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      className="h-5 w-5"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d={d} />
-    </svg>
-  );
-}
-
-/** Top-right save / remove control (documentation pages). */
-export function DocSaveProfileHeaderIcon({
-  fetcher,
-  profileAction,
+/**
+ * Always-visible bookmark control on doc pages: save/remove when allowed, otherwise
+ * an icon that opens a sign-in / setup modal.
+ */
+export function DocSaveBookmarkHeader({
+  variant,
+  message,
+  profileFormAction,
+  accountLoginHref,
   canonicalPath,
   title,
   saved,
+  bookmarkFetcher,
+  bookmarkSaveLabel,
+  bookmarkRemoveLabel,
+  ssoPopupAvailable,
+  onSignInPopup,
+  signInPopupLoading,
 }: {
-  fetcher: FetcherWithComponents<BookmarkActionData>;
-  profileAction: string;
+  variant: DocProfileSaveVariant;
+  message: string | null;
+  profileFormAction: string;
+  accountLoginHref: string;
   canonicalPath: string;
   title: string;
   saved: boolean;
+  bookmarkFetcher: FetcherWithComponents<BookmarkActionData>;
+  /** From doc route loader — stable with doc `locale` for hydration. */
+  bookmarkSaveLabel: string;
+  bookmarkRemoveLabel: string;
+  /** From `useIntastellarAuth()` in the route — avoids SSR/client mismatch inside this subtree. */
+  ssoPopupAvailable: boolean;
+  onSignInPopup: () => void;
+  signInPopupLoading: boolean;
 }) {
   const { t } = useI18n();
-  const pending = fetcher.state !== "idle";
-  const titleField = title.slice(0, 200);
+  const [open, setOpen] = useState(false);
+  const location = useLocation();
 
-  return saved ? (
-    <fetcher.Form method="post" action={profileAction}>
-      <input type="hidden" name="intent" value="removeDoc" />
-      <input type="hidden" name="path" value={canonicalPath} />
+  const returnTo = `${location.pathname}${location.search}${location.hash}`;
+  const loginWithRedirect = `${accountLoginHref}?redirect=${encodeURIComponent(returnTo)}`;
+  const profileWithRedirect = `${profileFormAction}?redirect=${encodeURIComponent(returnTo)}`;
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [variant, canonicalPath]);
+
+  if (variant === "bookmark") {
+    return (
+      <DocSaveProfileHeaderIcon
+        fetcher={bookmarkFetcher}
+        profileAction={profileFormAction}
+        canonicalPath={canonicalPath}
+        title={title}
+        saved={saved}
+        saveLabel={bookmarkSaveLabel}
+        removeLabel={bookmarkRemoveLabel}
+      />
+    );
+  }
+
+  const btnClass =
+    "rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-brand dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-brand";
+
+  return (
+    <>
       <button
-        type="submit"
-        disabled={pending}
-        title={t("docs.removeFromProfile")}
-        aria-label={t("docs.removeFromProfile")}
-        className="rounded-lg p-2 text-brand transition-colors hover:bg-brand/10 disabled:opacity-50 dark:hover:bg-brand/15"
-      >
-        <BookmarkIcon filled />
-      </button>
-    </fetcher.Form>
-  ) : (
-    <fetcher.Form method="post" action={profileAction}>
-      <input type="hidden" name="intent" value="saveDoc" />
-      <input type="hidden" name="path" value={canonicalPath} />
-      <input type="hidden" name="title" value={titleField} />
-      <button
-        type="submit"
-        disabled={pending}
-        title={t("docs.saveToProfile")}
-        aria-label={t("docs.saveToProfile")}
-        className="rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-brand disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-brand"
+        type="button"
+        onClick={() => setOpen(true)}
+        title={bookmarkSaveLabel}
+        aria-label={bookmarkSaveLabel}
+        aria-haspopup="dialog"
+        className={btnClass}
       >
         <BookmarkIcon filled={false} />
       </button>
-    </fetcher.Form>
+      {open ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 p-4 sm:items-center"
+          role="presentation"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="doc-save-modal-title"
+            className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-600 dark:bg-zinc-800"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2
+              id="doc-save-modal-title"
+              className="text-lg font-medium text-zinc-900 dark:text-zinc-50"
+            >
+              {t("docs.saveLoginModalTitle")}
+            </h2>
+            {message ? (
+              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                {message}
+              </p>
+            ) : null}
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
+              {variant === "sign_in" && ssoPopupAvailable ? (
+                <button
+                  type="button"
+                  disabled={signInPopupLoading}
+                  onClick={() => void onSignInPopup()}
+                  className="rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm hover:bg-brand-hover disabled:opacity-60"
+                >
+                  {t("docs.saveLoginModalSignInPopup")}
+                </button>
+              ) : null}
+              {variant === "sign_in" ? (
+                <Link
+                  to={loginWithRedirect}
+                  className="inline-flex items-center justify-center rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-800 hover:border-brand/40 hover:text-brand dark:border-zinc-500 dark:text-zinc-100 dark:hover:border-brand/40"
+                >
+                  {t("docs.saveLoginModalOpenLoginPage")}
+                </Link>
+              ) : null}
+              {variant === "link_account" ? (
+                <Link
+                  to={profileWithRedirect}
+                  className="inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm hover:bg-brand-hover"
+                >
+                  {t("docs.saveLoginModalOpenProfile")}
+                </Link>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="inline-flex items-center justify-center rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:border-zinc-400 dark:border-zinc-500 dark:text-zinc-200 dark:hover:border-zinc-400"
+              >
+                {t("docs.saveLoginModalClose")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
 
+/** Footer duplicate for save/remove when the bookmark flow is active. */
 export function DocSaveToProfile({
   variant,
-  message,
+  message: _message,
   canonicalPath,
   title,
   initiallySaved,
@@ -118,45 +190,24 @@ export function DocSaveToProfile({
   bookmarkFetcher: bookmarkFetcherProp,
 }: DocSaveToProfileProps) {
   const { t } = useI18n();
-  const loginHref = useLocalizedHref("/account/login");
-  const profileHref = useLocalizedHref("/account/profile");
   const internalFetcher = useFetcher<BookmarkActionData>();
   const fetcher = bookmarkFetcherProp ?? internalFetcher;
   const revalidator = useRevalidator();
 
   useEffect(() => {
+    if (variant !== "bookmark") return;
     if (fetcher.state !== "idle" || !fetcher.data?.ok) return;
     revalidator.revalidate();
-  }, [fetcher.data, fetcher.state, revalidator]);
+  }, [variant, fetcher.data, fetcher.state, revalidator]);
 
   const saved = initiallySaved;
   const pending = fetcher.state !== "idle";
 
   if (variant !== "bookmark") {
-    return (
-      <div className="not-prose mt-10 rounded-lg border border-zinc-200 bg-zinc-50/80 px-4 py-3 text-sm text-zinc-600 dark:border-zinc-600 dark:bg-zinc-900/40 dark:text-zinc-300">
-        <p>{message}</p>
-        {variant === "sign_in" ? (
-          <Link
-            to={loginHref}
-            className="mt-2 inline-block font-medium text-brand hover:text-brand-hover"
-          >
-            {t("nav.signIn")}
-          </Link>
-        ) : null}
-        {variant === "link_account" ? (
-          <Link
-            to={profileHref}
-            className="mt-2 inline-block font-medium text-brand hover:text-brand-hover"
-          >
-            {t("nav.profile")}
-          </Link>
-        ) : null}
-      </div>
-    );
+    return null;
   }
 
-  const titleField = title.slice(0, 200);
+  const titleField = (title ?? "").slice(0, 200);
 
   return (
     <div className="not-prose mt-10 rounded-lg border border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-600 dark:bg-zinc-900/40">

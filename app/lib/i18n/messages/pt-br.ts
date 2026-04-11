@@ -260,6 +260,11 @@ export const ptBr: MessageTree = {
     saveToProfileHint:
       "Entre com uma sessão do portal (mesma conta das chaves de API) para marcar esta página no seu perfil.",
     onYourProfile: "Esta página está na sua lista salva em Conta → Perfil.",
+    saveLoginModalTitle: "Salvar esta página no seu perfil",
+    saveLoginModalClose: "Fechar",
+    saveLoginModalSignInPopup: "Entrar com Intastellar",
+    saveLoginModalOpenLoginPage: "Abrir página de login",
+    saveLoginModalOpenProfile: "Abrir perfil da conta",
   },
   search: {
     inputAria: "Buscar na documentação",

@@ -262,6 +262,11 @@ export const de: MessageTree = {
       "Melden Sie sich mit einer Portal-Sitzung an (wie bei API-Schlüsseln), um diese Seite in Ihrem Profil zu merken.",
     onYourProfile:
       "Diese Seite steht unter Konto → Profil auf Ihrer Merkliste.",
+    saveLoginModalTitle: "Diese Seite im Profil speichern",
+    saveLoginModalClose: "Schließen",
+    saveLoginModalSignInPopup: "Mit Intastellar anmelden",
+    saveLoginModalOpenLoginPage: "Anmeldeseite öffnen",
+    saveLoginModalOpenProfile: "Konto-Profil öffnen",
   },
   search: {
     inputAria: "Dokumentation durchsuchen",

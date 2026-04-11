@@ -39,8 +39,9 @@ function RelatedAnchor(props: ComponentPropsWithoutRef<"a">) {
   );
 }
 
-export function RelatedLinks({ items }: { items: RelatedLink[] }) {
-  if (items.length === 0) return null;
+export function RelatedLinks({ items }: { items: RelatedLink[] | undefined }) {
+  const list = items ?? [];
+  if (list.length === 0) return null;
 
   return (
     <nav
@@ -51,7 +52,7 @@ export function RelatedLinks({ items }: { items: RelatedLink[] }) {
         Related
       </h2>
       <ul className="mt-3 space-y-2">
-        {items.map((item) => (
+        {list.map((item) => (
           <li key={`${item.href}-${item.title}`}>
             <RelatedAnchor
               href={item.href}

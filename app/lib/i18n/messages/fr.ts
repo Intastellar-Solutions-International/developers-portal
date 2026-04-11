@@ -261,6 +261,11 @@ export const fr: MessageTree = {
       "Connectez-vous avec une session portail (même compte que les clés API) pour ajouter cette page à votre profil.",
     onYourProfile:
       "Cette page figure dans vos enregistrements (Compte → Profil).",
+    saveLoginModalTitle: "Enregistrer cette page dans votre profil",
+    saveLoginModalClose: "Fermer",
+    saveLoginModalSignInPopup: "Se connecter avec Intastellar",
+    saveLoginModalOpenLoginPage: "Ouvrir la page de connexion",
+    saveLoginModalOpenProfile: "Ouvrir le profil du compte",
   },
   search: {
     inputAria: "Rechercher dans la documentation",

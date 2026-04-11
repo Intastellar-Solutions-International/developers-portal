@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 import type { Route } from "./+types/account.login";
+import { isSafeInternalRedirect } from "~/lib/safe-redirect-path";
 import { translatePath } from "~/lib/i18n/messages";
 import { resolveMetaLocale } from "~/lib/seo";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
@@ -14,14 +15,27 @@ export function meta({ matches, location }: Route.MetaArgs) {
 
 export default function AccountLogin() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTarget = searchParams.get("redirect");
   const profileHref = useLocalizedHref("/account/profile");
   const { authReady, configured, isLoading, isSignedIn, signin, error } =
     useIntastellarAuth();
 
   useEffect(() => {
     if (!authReady || !configured || !isSignedIn) return;
+    if (isSafeInternalRedirect(redirectTarget)) {
+      navigate(redirectTarget, { replace: true });
+      return;
+    }
     navigate(profileHref, { replace: true });
-  }, [authReady, configured, isSignedIn, navigate, profileHref]);
+  }, [
+    authReady,
+    configured,
+    isSignedIn,
+    navigate,
+    profileHref,
+    redirectTarget,
+  ]);
 
   return (
     <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">

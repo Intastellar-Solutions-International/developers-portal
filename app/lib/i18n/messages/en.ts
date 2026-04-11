@@ -269,6 +269,11 @@ export const en = {
     saveToProfileHint:
       "Sign in with a portal session (same account as API keys) to bookmark this page on your profile.",
     onYourProfile: "This page is on your saved list in Account → Profile.",
+    saveLoginModalTitle: "Save this page to your profile",
+    saveLoginModalClose: "Close",
+    saveLoginModalSignInPopup: "Sign in with Intastellar",
+    saveLoginModalOpenLoginPage: "Open sign-in page",
+    saveLoginModalOpenProfile: "Open account profile",
   },
   search: {
     inputAria: "Search documentation",

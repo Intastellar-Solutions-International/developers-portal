@@ -252,8 +252,9 @@ function IntastellarAuthEnabled({
     } catch {
       /* ignore */
     }
-    window.location.assign("/account/login");
-  }, [logoutFetcher.submit]);
+    /** Stay on the current URL (e.g. documentation); refresh root + route data after portal cookie clears. */
+    revalidator.revalidate();
+  }, [logoutFetcher.submit, revalidator.revalidate]);
 
   const [sessionProbeTimedOut, setSessionProbeTimedOut] = useState(false);
 

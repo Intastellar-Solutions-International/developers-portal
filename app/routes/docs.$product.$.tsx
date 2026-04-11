@@ -5,11 +5,12 @@ import {
   useFetcher,
   useLoaderData,
   useLocation,
+  useMatches,
 } from "react-router";
 
 import type { Route } from "./+types/docs.$product.$";
 import {
-  DocSaveProfileHeaderIcon,
+  DocSaveBookmarkHeader,
   DocSaveToProfile,
   type BookmarkActionData,
   type DocProfileSaveVariant,
@@ -32,6 +33,7 @@ import {
   parseDocsProductPath,
   unlocalizedDocPath,
 } from "~/lib/docs-versions";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "~/lib/i18n/locale";
 import { translatePath } from "~/lib/i18n/messages";
 import { withLocalePrefix } from "~/lib/i18n/localized-path";
 import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
@@ -39,6 +41,7 @@ import { isMongoConfigured } from "~/lib/mongodb.server";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import { buildDocPageMeta, resolveMetaLocale } from "~/lib/seo";
 import { getUserAccountById } from "~/lib/user-accounts.server";
+import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const locale = resolveLocaleFromRequest(request);
@@ -110,6 +113,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   }
 
   const profileFormAction = withLocalePrefix("/account/profile", locale);
+  const accountLoginHref = withLocalePrefix("/account/login", locale);
 
   const payload = {
     ...doc,
@@ -119,6 +123,10 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     version,
     locale,
     profileFormAction,
+    accountLoginHref,
+    /** Pre-translated with doc `locale` so header chrome matches SSR if `I18nProvider` lags one frame. */
+    docBookmarkSaveLabel: translatePath(locale, "docs.saveToProfile"),
+    docBookmarkRemoveLabel: translatePath(locale, "docs.removeFromProfile"),
     /** Always from the request URL so serialized loader data matches SSR on hydration. */
     previewOrigin: url.origin,
     previewHostname: url.hostname,
@@ -161,11 +169,78 @@ export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
   });
 }
 
+/** Full doc-page snapshot (avoids treating stale/partial loader data as complete). */
+function isDocSplatLoaderSnapshot(
+  value: unknown,
+): value is Awaited<ReturnType<typeof loader>> {
+  if (value == null || typeof value !== "object") return false;
+  const d = value as Record<string, unknown>;
+  return (
+    Array.isArray(d.breadcrumbs) &&
+    typeof d.docProfileSaveVariant === "string" &&
+    typeof d.docBookmarkSaveLabel === "string" &&
+    typeof d.docBookmarkRemoveLabel === "string" &&
+    typeof d.title === "string"
+  );
+}
+
+function withDocBookmarkLabelFallbacks<T extends Record<string, unknown>>(
+  d: T,
+): T & {
+  docBookmarkSaveLabel: string;
+  docBookmarkRemoveLabel: string;
+} {
+  const locale: Locale = isLocale(d.locale as string) ? (d.locale as Locale) : DEFAULT_LOCALE;
+  return {
+    ...d,
+    docBookmarkSaveLabel:
+      typeof d.docBookmarkSaveLabel === "string"
+        ? d.docBookmarkSaveLabel
+        : translatePath(locale, "docs.saveToProfile"),
+    docBookmarkRemoveLabel:
+      typeof d.docBookmarkRemoveLabel === "string"
+        ? d.docBookmarkRemoveLabel
+        : translatePath(locale, "docs.removeFromProfile"),
+  };
+}
+
+/**
+ * `useLoaderData()` can be briefly incomplete during hydration while `useMatches()` still
+ * carries this route's loader — same pattern as `useResolvedRootLoaderData` in `root.tsx`.
+ */
+function useResolvedDocSplatLoaderData() {
+  const direct = useLoaderData<typeof loader>();
+  const matches = useMatches();
+  if (isDocSplatLoaderSnapshot(direct)) {
+    return direct;
+  }
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const data = matches[i]?.loaderData;
+    if (isDocSplatLoaderSnapshot(data)) {
+      return data;
+    }
+  }
+  /** Stale client payloads can omit `docBookmarkSaveLabel*`; only enrich when the rest is clearly this route. */
+  if (
+    direct &&
+    typeof direct === "object" &&
+    Array.isArray((direct as Record<string, unknown>).breadcrumbs) &&
+    typeof (direct as Record<string, unknown>).docProfileSaveVariant === "string"
+  ) {
+    return withDocBookmarkLabelFallbacks(direct as Record<string, unknown>) as typeof direct;
+  }
+  return direct;
+}
+
 export default function ProductDocPage() {
-  const doc = useLoaderData<typeof loader>();
+  const doc = useResolvedDocSplatLoaderData();
   const bookmarkFetcher = useFetcher<BookmarkActionData>();
-  const isBookmark = doc.docProfileSaveVariant === "bookmark";
+  const inta = useIntastellarAuth();
+
   const { pathname } = useLocation();
+  if (doc == null) {
+    return null;
+  }
   const docPathNorm = (doc.docPath ?? "").replace(/^\/+|\/+$/g, "");
   const productSlug = doc.productSlug ?? "";
   const loaderTryout =
@@ -184,15 +259,21 @@ export default function ProductDocPage() {
       <DocsBreadcrumbs
         items={doc.breadcrumbs}
         toolbar={
-          isBookmark ? (
-            <DocSaveProfileHeaderIcon
-              fetcher={bookmarkFetcher}
-              profileAction={doc.profileFormAction}
-              canonicalPath={doc.canonicalDocPath}
-              title={doc.title}
-              saved={doc.docSavedToProfile}
-            />
-          ) : null
+          <DocSaveBookmarkHeader
+            variant={doc.docProfileSaveVariant}
+            message={doc.docProfileSaveMessage}
+            profileFormAction={doc.profileFormAction}
+            accountLoginHref={doc.accountLoginHref}
+            canonicalPath={doc.canonicalDocPath}
+            title={doc.title}
+            saved={doc.docSavedToProfile}
+            bookmarkFetcher={bookmarkFetcher}
+            bookmarkSaveLabel={doc.docBookmarkSaveLabel}
+            bookmarkRemoveLabel={doc.docBookmarkRemoveLabel}
+            ssoPopupAvailable={inta.configured}
+            onSignInPopup={() => void inta.signin()}
+            signInPopupLoading={inta.isLoading}
+          />
         }
       />
       <CookieBannerTryoutDocBody
@@ -203,16 +284,18 @@ export default function ProductDocPage() {
         previewOrigin={doc.previewOrigin}
         previewHostname={doc.previewHostname}
       />
-      <RelatedLinks items={doc.related} />
-      <DocSaveToProfile
-        variant={doc.docProfileSaveVariant}
-        message={doc.docProfileSaveMessage}
-        canonicalPath={doc.canonicalDocPath}
-        title={doc.title}
-        initiallySaved={doc.docSavedToProfile}
-        profileFormAction={doc.profileFormAction}
-        bookmarkFetcher={isBookmark ? bookmarkFetcher : undefined}
-      />
+      <RelatedLinks items={doc.related ?? []} />
+      {doc.docProfileSaveVariant === "bookmark" ? (
+        <DocSaveToProfile
+          variant={doc.docProfileSaveVariant}
+          message={doc.docProfileSaveMessage}
+          canonicalPath={doc.canonicalDocPath}
+          title={doc.title}
+          initiallySaved={doc.docSavedToProfile}
+          profileFormAction={doc.profileFormAction}
+          bookmarkFetcher={bookmarkFetcher}
+        />
+      ) : null}
       <DocPrevNext prev={doc.prev} next={doc.next} />
       <DocMeta
         lastUpdated={doc.lastUpdated}

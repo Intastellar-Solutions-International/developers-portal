@@ -260,6 +260,11 @@ export const nl: MessageTree = {
     saveToProfileHint:
       "Log in met een portalsessie (zelfde account als API-sleutels) om deze pagina op uw profiel te bewaren.",
     onYourProfile: "Deze pagina staat op uw opgeslagen lijst onder Account → Profiel.",
+    saveLoginModalTitle: "Deze pagina in uw profiel opslaan",
+    saveLoginModalClose: "Sluiten",
+    saveLoginModalSignInPopup: "Inloggen met Intastellar",
+    saveLoginModalOpenLoginPage: "Inlogpagina openen",
+    saveLoginModalOpenProfile: "Accountprofiel openen",
   },
   search: {
     inputAria: "Zoek in documentatie",
