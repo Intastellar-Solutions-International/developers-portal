@@ -1,15 +1,12 @@
 import { useEffect } from "react";
-import {
-  useNavigate,
-  useRouteLoaderData,
-  useSearchParams,
-} from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 import type { Route } from "./+types/account.login";
 import { GitHubSignInCta } from "~/components/github-sign-in-cta";
-import { isSafeInternalRedirect } from "~/lib/safe-redirect-path";
 import { translatePath } from "~/lib/i18n/messages";
+import { isSafeInternalRedirect } from "~/lib/safe-redirect-path";
 import { resolveMetaLocale } from "~/lib/seo";
+import { useResolvedRootLoaderData } from "~/lib/use-resolved-root-loader-data";
 import type { RootLoaderData } from "~/providers/intastellar-auth-provider";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 import { useI18n, useLocalizedHref } from "~/providers/i18n-provider";
@@ -36,7 +33,8 @@ export default function AccountLogin() {
   const profileHref = useLocalizedHref("/account/profile");
   const { authReady, configured, isLoading, isSignedIn, signin, error } =
     useIntastellarAuth();
-  const root = useRouteLoaderData("root") as RootLoaderData | undefined;
+  /** Matches SSR during hydration (`useRouteLoaderData("root")` can be briefly undefined on nested routes). */
+  const root = useResolvedRootLoaderData() as RootLoaderData | undefined;
   const githubOAuthConfigured = root?.githubOAuthConfigured === true;
   const { t } = useI18n();
 
@@ -132,18 +130,27 @@ export default function AccountLogin() {
               {error}
             </p>
           ) : null}
-          <button
-            type="button"
-            disabled={isLoading}
-            onClick={() => void signin()}
-            className="mt-6 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isLoading ? "Checking session…" : "Sign in with Intastellar"}
-          </button>
+          <section className="flex align-center justify-center gap-2">
+            {githubOAuthConfigured ? (
+              <GitHubSignInCta
+                action={githubStartHref}
+                label={t("account.loginGitHubSignIn")}
+                variant="login"
+              />
+            ) : null}
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={() => void signin()}
+              className="mt-6 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isLoading ? "Checking session…" : "Sign in with Intastellar"}
+            </button>
+          </section>
         </>
       )}
 
-      {githubOAuthConfigured ? (
+      {/* {githubOAuthConfigured ? (
         <div className="mt-8 border-t border-zinc-200 pt-6 dark:border-zinc-600">
           <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
             {t("account.loginGitHubSignIn")}
@@ -151,13 +158,9 @@ export default function AccountLogin() {
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
             {t("account.loginGitHubHint")}
           </p>
-          <GitHubSignInCta
-            action={githubStartHref}
-            label={t("account.loginGitHubSignIn")}
-            variant="login"
-          />
+          
         </div>
-      ) : null}
+      ) : null} */}
     </section>
   );
 }

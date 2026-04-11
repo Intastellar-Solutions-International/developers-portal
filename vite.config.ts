@@ -6,9 +6,10 @@ import { fullReloadOnRouteModules } from "./vite-plugin-full-reload-routes";
 
 export default defineConfig({
   plugins: [
-    fullReloadOnRouteModules(),
     tailwindcss(),
     reactRouter(),
+    /** Run after RR/Tailwind `hotUpdate` so returning `[]` clears partial client HMR. */
+    fullReloadOnRouteModules(),
   ],
   server: {
     headers: {
