@@ -141,7 +141,7 @@ export default function AccountLogin() {
               type="button"
               disabled={isLoading}
               onClick={() => void signin()}
-              className="rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center gap-2 cursor-pointe px-5 py-2.5 text-sm font-semibold text-amber-50 shadow-sm transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center gap-2 cursor-pointer px-5 py-2.5 text-sm font-semibold text-amber-50 shadow-sm transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               <img src="https://www.intastellarsolutions.com/assets/logos/intastellar-new-planet.svg" alt="Intastellar logo" width={30} height={30} />
               Sign in with Intastellar
