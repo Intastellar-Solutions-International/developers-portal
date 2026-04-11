@@ -328,7 +328,23 @@ export const ptBr: MessageTree = {
   account: {
     layoutTitle: "Conta",
     layoutDescription:
-      "Perfil SSO Intastellar e chaves de API de desenvolvedor.",
+      "Entre com Intastellar ou GitHub, gerencie seu perfil e chaves de API de desenvolvedor.",
+    loginHeading: "Entrar",
+    loginIntro:
+      "Use sua conta Intastellar (SSO) ou sua conta do GitHub para entrar.",
+    loginAriaBusy: "Carregando",
+    loginIntastellarLogoAlt: "Logo da Intastellar",
+    loginSignInIntastellar: "Entrar com Intastellar",
+    loginCheckingSession: "Verificando sessão…",
+    loginSsoNotConfiguredLead: "O SSO não está configurado. Defina",
+    loginSsoNotConfiguredMid: "(e opcionalmente",
+    loginSsoNotConfiguredTail:
+      ") no seu ambiente e reinicie o servidor de desenvolvimento.",
+    loginLegalPrefix: "Ao entrar, você concorda com os",
+    loginLegalTermsLabel: "Termos de serviço",
+    loginLegalBetween: "e a",
+    loginLegalPrivacyLabel: "Política de privacidade",
+    loginLegalSuffix: ".",
     loginGitHubSignIn: "Continuar com GitHub",
     loginGitHubHint:
       "Mesma conta do portal e documentos salvos que com Intastellar após autorizar no GitHub.",

@@ -328,7 +328,23 @@ export const nl: MessageTree = {
   account: {
     layoutTitle: "Account",
     layoutDescription:
-      "Intastellar SSO-profiel en ontwikkelaars-API-sleutels.",
+      "Log in met Intastellar of GitHub, beheer je profiel en ontwikkelaars-API-sleutels.",
+    loginHeading: "Inloggen",
+    loginIntro:
+      "Gebruik je Intastellar-account (SSO) of je GitHub-account om in te loggen.",
+    loginAriaBusy: "Laden",
+    loginIntastellarLogoAlt: "Intastellar-logo",
+    loginSignInIntastellar: "Inloggen met Intastellar",
+    loginCheckingSession: "Sessie controleren…",
+    loginSsoNotConfiguredLead: "SSO is niet geconfigureerd. Stel",
+    loginSsoNotConfiguredMid: "(en optioneel",
+    loginSsoNotConfiguredTail:
+      ") in je omgeving in en start de ontwikkelingsserver opnieuw.",
+    loginLegalPrefix: "Door in te loggen ga je akkoord met de",
+    loginLegalTermsLabel: "servicevoorwaarden",
+    loginLegalBetween: "en het",
+    loginLegalPrivacyLabel: "privacybeleid",
+    loginLegalSuffix: ".",
     loginGitHubSignIn: "Doorgaan met GitHub",
     loginGitHubHint:
       "Zelfde portalaccount en opgeslagen docs als Intastellar na autorisatie op GitHub.",

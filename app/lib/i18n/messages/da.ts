@@ -328,7 +328,23 @@ export const da: MessageTree = {
   account: {
     layoutTitle: "Min Konto",
     layoutDescription:
-      "Intastellar SSO-profil og udvikler-API-nøgler.",
+      "Log ind med Intastellar eller GitHub, administrer din profil og udvikler-API-nøgler.",
+    loginHeading: "Log ind",
+    loginIntro:
+      "Brug din Intastellar-konto (SSO) eller din GitHub-konto til at logge ind.",
+    loginAriaBusy: "Indlæser",
+    loginIntastellarLogoAlt: "Intastellar-logo",
+    loginSignInIntastellar: "Log ind med Intastellar",
+    loginCheckingSession: "Tjekker session…",
+    loginSsoNotConfiguredLead: "SSO er ikke konfigureret. Angiv",
+    loginSsoNotConfiguredMid: "(og eventuelt",
+    loginSsoNotConfiguredTail:
+      ") i dit miljø, og genstart derefter udviklingsserveren.",
+    loginLegalPrefix: "Ved at logge ind accepterer du",
+    loginLegalTermsLabel: "Servicevilkårene",
+    loginLegalBetween: "og",
+    loginLegalPrivacyLabel: "Fortrolighedspolitikken",
+    loginLegalSuffix: ".",
     loginGitHubSignIn: "Fortsæt med GitHub",
     loginGitHubHint:
       "Samme portal-konto og gemte dokumenter som Intastellar, når du har autoriseret på GitHub.",

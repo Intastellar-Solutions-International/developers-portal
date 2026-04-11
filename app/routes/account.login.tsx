@@ -99,10 +99,10 @@ export default function AccountLogin() {
   return (
     <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
       <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
-        Sign in
+        {t("account.loginHeading")}
       </h2>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        Use your Intastellar account (SSO) or GitHub account to sign in.
+        {t("account.loginIntro")}
       </p>
 
       {githubErrorMessage ? (
@@ -118,19 +118,19 @@ export default function AccountLogin() {
         <div
           className="mt-6 h-11 animate-pulse rounded-lg bg-zinc-200 dark:bg-zinc-700"
           aria-busy="true"
-          aria-label="Loading"
+          aria-label={t("account.loginAriaBusy")}
         />
       ) : !configured ? (
         <p className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
-          SSO is not configured. Set{" "}
+          {t("account.loginSsoNotConfiguredLead")}{" "}
           <code className="rounded bg-amber-100/80 px-1 font-mono text-xs dark:bg-amber-900/60">
             VITE_INTASTELLAR_CLIENT_ID
           </code>{" "}
-          (and optionally{" "}
+          {t("account.loginSsoNotConfiguredMid")}{" "}
           <code className="rounded bg-amber-100/80 px-1 font-mono text-xs dark:bg-amber-900/60">
             VITE_INTASTELLAR_APP_NAME
           </code>
-          ) in your environment, then restart the dev server.
+          {t("account.loginSsoNotConfiguredTail")}
         </p>
       ) : (
         <>
@@ -156,22 +156,32 @@ export default function AccountLogin() {
               onClick={() => void signin()}
               className="rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center gap-2 cursor-pointer px-5 py-2.5 text-sm font-semibold dark:text-zinc-50 text-zinc-900 shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60 hover:border-zinc-400 hover:bg-zinc-50 dark:hover:border-zinc-500 dark:hover:bg-zinc-800"
             >
-              <img src="https://www.intastellarsolutions.com/assets/logos/intastellar-new-planet.svg" alt="Intastellar logo" width={30} height={30} />
-              Sign in with Intastellar
+              <img
+                src="https://www.intastellarsolutions.com/assets/logos/intastellar-new-planet.svg"
+                alt={t("account.loginIntastellarLogoAlt")}
+                width={30}
+                height={30}
+              />
+              {isLoading
+                ? t("account.loginCheckingSession")
+                : t("account.loginSignInIntastellar")}
             </button>
           </section>
         </>
       )}
       <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
-        By signing in, you agree to the{" "}
+        {t("account.loginLegalPrefix")}{" "}
         <a href={legalTermsHref} className="text-brand hover:text-brand-hover">
-          Terms of Service
+          {t("account.loginLegalTermsLabel")}
         </a>{" "}
-        and{" "}
-        <a href={legalPrivacyHref} className="text-brand hover:text-brand-hover">
-          Privacy Policy
+        {t("account.loginLegalBetween")}{" "}
+        <a
+          href={legalPrivacyHref}
+          className="text-brand hover:text-brand-hover"
+        >
+          {t("account.loginLegalPrivacyLabel")}
         </a>
-        .
+        {t("account.loginLegalSuffix")}
       </p>
     </section>
   );

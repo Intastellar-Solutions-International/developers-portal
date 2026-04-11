@@ -336,7 +336,23 @@ export const en = {
   account: {
     layoutTitle: "My Account",
     layoutDescription:
-      "Intastellar SSO profile and developer API keys.",
+      "Sign in with Intastellar or GitHub, manage your profile, and developer API keys.",
+    loginHeading: "Sign in",
+    loginIntro:
+      "Use your Intastellar account (SSO) or GitHub account to sign in.",
+    loginAriaBusy: "Loading",
+    loginIntastellarLogoAlt: "Intastellar logo",
+    loginSignInIntastellar: "Sign in with Intastellar",
+    loginCheckingSession: "Checking session…",
+    loginSsoNotConfiguredLead: "SSO is not configured. Set",
+    loginSsoNotConfiguredMid: "(and optionally",
+    loginSsoNotConfiguredTail:
+      ") in your environment, then restart the dev server.",
+    loginLegalPrefix: "By signing in, you agree to the",
+    loginLegalTermsLabel: "Terms of Service",
+    loginLegalBetween: "and",
+    loginLegalPrivacyLabel: "Privacy Policy",
+    loginLegalSuffix: ".",
     loginGitHubSignIn: "Continue with GitHub",
     loginGitHubHint:
       "Same portal account and saved docs as Intastellar after you authorize on GitHub.",

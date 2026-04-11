@@ -330,7 +330,23 @@ export const de: MessageTree = {
   account: {
     layoutTitle: "Mein Konto",
     layoutDescription:
-      "Intastellar-SSO-Profil und Entwickler-API-Schlüssel.",
+      "Mit Intastellar oder GitHub anmelden, Profil verwalten und Entwickler-API-Schlüssel.",
+    loginHeading: "Anmelden",
+    loginIntro:
+      "Melden Sie sich mit Ihrem Intastellar-Konto (SSO) oder Ihrem GitHub-Konto an.",
+    loginAriaBusy: "Wird geladen",
+    loginIntastellarLogoAlt: "Intastellar-Logo",
+    loginSignInIntastellar: "Mit Intastellar anmelden",
+    loginCheckingSession: "Sitzung wird geprüft…",
+    loginSsoNotConfiguredLead: "SSO ist nicht konfiguriert. Setzen Sie",
+    loginSsoNotConfiguredMid: "(und optional",
+    loginSsoNotConfiguredTail:
+      ") in Ihrer Umgebung und starten Sie den Entwicklungsserver neu.",
+    loginLegalPrefix: "Mit der Anmeldung akzeptieren Sie die",
+    loginLegalTermsLabel: "Nutzungsbedingungen",
+    loginLegalBetween: "und die",
+    loginLegalPrivacyLabel: "Datenschutzerklärung",
+    loginLegalSuffix: ".",
     loginGitHubSignIn: "Mit GitHub fortfahren",
     loginGitHubHint:
       "Gleiches Portal-Konto und gespeicherte Docs wie bei Intastellar nach Autorisierung bei GitHub.",
