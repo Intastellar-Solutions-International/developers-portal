@@ -142,7 +142,7 @@ export default function AccountLogin() {
               {error}
             </p>
           ) : null}
-          <section className="flex items-center mt-6 gap-2">
+          <section className="flex items-center flex-col lg:flex-row mt-6 gap-2">
             {githubOAuthConfigured ? (
               <GitHubSignInCta
                 action={githubStartHref}
