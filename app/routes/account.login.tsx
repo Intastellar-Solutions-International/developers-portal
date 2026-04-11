@@ -1,15 +1,12 @@
 import { useEffect } from "react";
-import {
-  Link,
-  useLoaderData,
-  useNavigate,
-  useSearchParams,
-} from "react-router";
+import { useLoaderData, useNavigate, useSearchParams } from "react-router";
 
 import type { Route } from "./+types/account.login";
 import { GitHubSignInCta } from "~/components/github-sign-in-cta";
 import { isGitHubOAuthConfigured } from "~/lib/github-oauth.server";
 import { translatePath } from "~/lib/i18n/messages";
+import { withLocalePrefix } from "~/lib/i18n/localized-path";
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
 import { isSafeInternalRedirect } from "~/lib/safe-redirect-path";
 import { resolveMetaLocale } from "~/lib/seo";
 import { useResolvedRootLoaderData } from "~/lib/use-resolved-root-loader-data";
@@ -22,9 +19,14 @@ export function meta({ matches, location }: Route.MetaArgs) {
   return [{ title: translatePath(locale, "seo.accountLoginTitle") }];
 }
 
-export async function loader(_args: Route.LoaderArgs) {
-  /** Keep in this route’s dehydrated data so the first client paint matches SSR (root loader can lag in `matches` during hydration). */
-  return { githubOAuthConfigured: isGitHubOAuthConfigured() };
+export async function loader({ request }: Route.LoaderArgs) {
+  const locale = resolveLocaleFromRequest(request);
+  return {
+    githubOAuthConfigured: isGitHubOAuthConfigured(),
+    /** From the request URL so SSR and dehydrated client match (avoids `Link` + `useLocalizedHref` client-only attrs). */
+    legalTermsHref: withLocalePrefix("/legal/terms", locale),
+    legalPrivacyHref: withLocalePrefix("/legal/privacy", locale),
+  };
 }
 
 const GITHUB_ERROR_KEYS: Record<string, string> = {
@@ -38,13 +40,12 @@ const GITHUB_ERROR_KEYS: Record<string, string> = {
 };
 
 export default function AccountLogin() {
-  const { githubOAuthConfigured } = useLoaderData<typeof loader>();
+  const { githubOAuthConfigured, legalTermsHref, legalPrivacyHref } =
+    useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTarget = searchParams.get("redirect");
   const profileHref = useLocalizedHref("/account/profile");
-  const termsHref = useLocalizedHref("/legal/terms");
-  const privacyHref = useLocalizedHref("/legal/privacy");
   const { authReady, configured, isLoading, isSignedIn, signin, error } =
     useIntastellarAuth();
   const root = useResolvedRootLoaderData() as RootLoaderData | undefined;
@@ -163,13 +164,13 @@ export default function AccountLogin() {
       )}
       <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
         By signing in, you agree to the{" "}
-        <Link to={termsHref} className="text-brand hover:text-brand-hover">
+        <a href={legalTermsHref} className="text-brand hover:text-brand-hover">
           Terms of Service
-        </Link>{" "}
+        </a>{" "}
         and{" "}
-        <Link to={privacyHref} className="text-brand hover:text-brand-hover">
+        <a href={legalPrivacyHref} className="text-brand hover:text-brand-hover">
           Privacy Policy
-        </Link>
+        </a>
         .
       </p>
     </section>
