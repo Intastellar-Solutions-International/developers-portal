@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 
 import { dismissAppToast, subscribeAppToasts, type AppToastItem } from "~/lib/app-toast";
 
 /**
  * Renders global toasts (success / error). Mount once under the app shell (inside `I18nProvider`).
+ * Subscribes in `useLayoutEffect` so it runs before most route `useEffect` toasts; `app-toast` also
+ * defers pushes until the first subscriber exists.
  */
 export function AppToastViewport() {
   const [toasts, setToasts] = useState<AppToastItem[]>([]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     return subscribeAppToasts((action) => {
       if (action.type === "push") {
-        setToasts((prev) => [...prev, action.item]);
+        setToasts((prev) => [action.item, ...prev]);
       } else {
         setToasts((prev) => prev.filter((t) => t.id !== action.id));
       }
@@ -26,7 +28,7 @@ export function AppToastViewport() {
 
   return (
     <div
-      className="pointer-events-none fixed bottom-0 right-0 z-200 flex max-h-[min(40vh,20rem)] w-full max-w-sm flex-col-reverse gap-2 overflow-y-auto p-4 sm:p-6"
+      className="pointer-events-none fixed right-0 top-[calc(3.75rem+0.5rem)] z-200 flex max-h-[min(40vh,20rem)] w-full max-w-sm flex-col gap-2 overflow-y-auto p-4 sm:p-6"
       aria-live="polite"
       aria-relevant="additions text"
     >

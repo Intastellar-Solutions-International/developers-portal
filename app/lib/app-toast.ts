@@ -13,16 +13,34 @@ type AppToastAction =
   | { type: "remove"; id: number };
 
 const listeners = new Set<ToastListener>();
+
+/** Actions emitted before any viewport subscribed (e.g. route `useEffect` runs before sibling `AppToastViewport`). */
+const deferred: AppToastAction[] = [];
+
 let idSeq = 0;
 
-function emit(action: AppToastAction) {
+function broadcast(action: AppToastAction) {
   for (const l of listeners) {
     l(action);
   }
 }
 
+function dispatch(action: AppToastAction) {
+  if (listeners.size === 0) {
+    deferred.push(action);
+    return;
+  }
+  broadcast(action);
+}
+
 export function subscribeAppToasts(listener: ToastListener): () => void {
   listeners.add(listener);
+  if (deferred.length > 0) {
+    const pending = deferred.splice(0, deferred.length);
+    for (const action of pending) {
+      broadcast(action);
+    }
+  }
   return () => listeners.delete(listener);
 }
 
@@ -36,12 +54,12 @@ export function pushAppToast(
 ): void {
   if (typeof window === "undefined") return;
   const id = ++idSeq;
-  emit({ type: "push", item: { id, variant, message } });
+  dispatch({ type: "push", item: { id, variant, message } });
   window.setTimeout(() => {
-    emit({ type: "remove", id });
+    dispatch({ type: "remove", id });
   }, durationMs);
 }
 
 export function dismissAppToast(id: number): void {
-  emit({ type: "remove", id });
+  dispatch({ type: "remove", id });
 }
