@@ -141,7 +141,7 @@ export default function AccountLogin() {
               type="button"
               disabled={isLoading}
               onClick={() => void signin()}
-              className="rounded-lg cursor-pointer bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg cursor-pointer bg-brand px-5 py-2.5 text-sm font-semibold text-amber-50 shadow-sm transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? "Checking session…" : "Sign in with Intastellar"}
             </button>
