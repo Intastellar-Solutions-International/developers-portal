@@ -328,7 +328,7 @@ export const de: MessageTree = {
       "GitHub-Verknüpfung erfordert MongoDB auf diesem Server.",
   },
   account: {
-    layoutTitle: "Konto",
+    layoutTitle: "Mein Konto",
     layoutDescription:
       "Intastellar-SSO-Profil und Entwickler-API-Schlüssel.",
     loginGitHubSignIn: "Mit GitHub fortfahren",

@@ -334,7 +334,7 @@ export const en = {
       "Linking GitHub requires MongoDB on this server.",
   },
   account: {
-    layoutTitle: "Account",
+    layoutTitle: "My Account",
     layoutDescription:
       "Intastellar SSO profile and developer API keys.",
     loginGitHubSignIn: "Continue with GitHub",

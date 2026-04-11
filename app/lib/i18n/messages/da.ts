@@ -326,7 +326,7 @@ export const da: MessageTree = {
       "GitHub-knytning kræver MongoDB på denne server.",
   },
   account: {
-    layoutTitle: "Konto",
+    layoutTitle: "Min Konto",
     layoutDescription:
       "Intastellar SSO-profil og udvikler-API-nøgler.",
     loginGitHubSignIn: "Fortsæt med GitHub",
