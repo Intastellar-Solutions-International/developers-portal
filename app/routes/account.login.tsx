@@ -130,7 +130,7 @@ export default function AccountLogin() {
               {error}
             </p>
           ) : null}
-          <section className="flex align-center justify-center gap-2">
+          <section className="flex items-center mt-6 gap-2">
             {githubOAuthConfigured ? (
               <GitHubSignInCta
                 action={githubStartHref}
@@ -142,7 +142,7 @@ export default function AccountLogin() {
               type="button"
               disabled={isLoading}
               onClick={() => void signin()}
-              className="mt-6 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg cursor-pointer bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? "Checking session…" : "Sign in with Intastellar"}
             </button>
