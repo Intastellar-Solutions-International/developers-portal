@@ -1,15 +1,16 @@
 /** GitHub “Invertocat” mark — `currentColor` for light/dark buttons. */
 export function GitHubMarkIcon({
-  className = "h-[1.15em] w-[1.15em] min-h-[1.15em] min-w-[1.15em] max-h-5 max-w-5",
+  className = "h-5 w-5",
 }: {
   className?: string;
 }) {
   return (
     <svg
-      className={["block shrink-0", className].filter(Boolean).join(" ")}
+      className={["block shrink-0 overflow-visible", className].filter(Boolean).join(" ")}
       viewBox="0 0 98 96"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
+      focusable="false"
       preserveAspectRatio="xMidYMid meet"
     >
       <path

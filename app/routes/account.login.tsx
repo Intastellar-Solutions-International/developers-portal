@@ -89,8 +89,7 @@ export default function AccountLogin() {
         Sign in
       </h2>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        Use your Intastellar account (SSO). Allow the popup if your browser
-        blocks it.
+        Use your Intastellar account (SSO) or GitHub account to sign in.
       </p>
 
       {githubErrorMessage ? (
