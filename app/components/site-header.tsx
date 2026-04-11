@@ -183,8 +183,7 @@ function SiteHeaderInner({
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const menuTitleId = useId();
-  const { authReady, configured, isLoading, signin, logout, users } =
-    useIntastellarAuth();
+  const { authReady, configured, logout, users } = useIntastellarAuth();
   const { t, locale } = useI18n();
   const lp = (path: string) => withLocalePrefix(path, locale);
   const rootLoaderData = useRouteLoaderData("root") as RootLoaderData | undefined;
@@ -320,14 +319,9 @@ function SiteHeaderInner({
               <ColorSchemeToggle />
             </span>
             {authReady && configured && !showHeaderSession ? (
-              <button
-                type="button"
-                className={headerBtnClass}
-                disabled={isLoading}
-                onClick={() => void signin()}
-              >
-                {isLoading ? "…" : t("nav.signIn")}
-              </button>
+              <Link to={lp("/account/login")} className={headerBtnClass}>
+                {t("nav.signIn")}
+              </Link>
             ) : null}
             {authReady && configured && showHeaderSession && headerAccount ? (
               <>
@@ -427,17 +421,13 @@ function SiteHeaderInner({
             </nav>
             <div className="border-t border-zinc-200 p-3 dark:border-zinc-600/80">
               {authReady && configured && !showHeaderSession ? (
-                <button
-                  type="button"
+                <Link
+                  to={lp("/account/login")}
                   className={mobileHeaderBtnClass}
-                  disabled={isLoading}
-                  onClick={() => {
-                    setMenuOpen(false);
-                    void signin();
-                  }}
+                  onClick={() => setMenuOpen(false)}
                 >
-                  {isLoading ? t("nav.signingIn") : t("nav.signIn")}
-                </button>
+                  {t("nav.signIn")}
+                </Link>
               ) : null}
               {authReady && configured && showHeaderSession && headerAccount ? (
                 <div className="space-y-2">

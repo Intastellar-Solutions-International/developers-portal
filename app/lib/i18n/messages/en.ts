@@ -272,6 +272,7 @@ export const en = {
     saveLoginModalTitle: "Save this page to your profile",
     saveLoginModalClose: "Close",
     saveLoginModalSignInPopup: "Sign in with Intastellar",
+    saveLoginModalSignInGitHub: "Continue with GitHub",
     saveLoginModalOpenLoginPage: "Open sign-in page",
     saveLoginModalOpenProfile: "Open account profile",
   },
@@ -313,11 +314,43 @@ export const en = {
       "Complete a full sign-in so the portal can link your account (visit API keys or reload after signing in) to enable saved docs.",
     savedDocsErrorGeneric: "Could not update saved documentation. Try again.",
     savedDocsErrorInvalid: "That documentation link is not valid.",
+    linkGitHubHeading: "GitHub sign-in",
+    linkGitHubDescription:
+      "Link your GitHub account so you can sign in with GitHub later. Your GitHub profile must show a verified email that matches this portal account (same as Intastellar).",
+    linkGitHubButton: "Link GitHub account",
+    githubLinkedBadge: "GitHub linked as @{{login}}",
+    githubLinkedNotice: "GitHub is now linked to this account.",
+    linkGitHubErrorEmailMismatch:
+      "GitHub’s verified email did not match this account. Use the same verified email on GitHub as on your Intastellar account.",
+    linkGitHubErrorNoVerifiedEmail:
+      "GitHub did not return a verified email. Make sure a public email is set or grant the user:email scope.",
+    linkGitHubErrorGithubTaken:
+      "This GitHub account is already linked to another portal user.",
+    linkGitHubErrorNotFound: "Portal account was not found.",
+    linkGitHubErrorSessionMismatch:
+      "Your session changed during linking. Close other tabs and try again.",
+    linkGitHubErrorInvalid: "Invalid link request. Try again from your profile.",
+    linkGitHubErrorRequiresMongo:
+      "Linking GitHub requires MongoDB on this server.",
   },
   account: {
     layoutTitle: "Account",
     layoutDescription:
       "Intastellar SSO profile and developer API keys.",
+    loginGitHubSignIn: "Continue with GitHub",
+    loginGitHubHint:
+      "Same portal account and saved docs as Intastellar after you authorize on GitHub.",
+    loginGitHubErrorDisabled:
+      "GitHub sign-in is not configured on this server.",
+    loginGitHubErrorDenied: "GitHub authorization was cancelled.",
+    loginGitHubErrorState: "Sign-in state did not match. Try again.",
+    loginGitHubErrorToken: "Could not complete GitHub sign-in. Try again.",
+    loginGitHubErrorUser: "Could not load your GitHub profile. Try again.",
+    loginGitHubErrorUnknown: "GitHub sign-in failed. Try again.",
+    loginGitHubErrorLinkRequiresLogin:
+      "Sign in to the portal first, then link GitHub from your profile.",
+    loginGitHubErrorLinkRequiresMongo:
+      "Linking GitHub requires MongoDB on this server.",
   },
   apiKeys: {
     metaTitle: "API keys · inta.dev",

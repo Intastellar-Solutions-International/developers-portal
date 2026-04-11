@@ -263,6 +263,7 @@ export const nl: MessageTree = {
     saveLoginModalTitle: "Deze pagina in uw profiel opslaan",
     saveLoginModalClose: "Sluiten",
     saveLoginModalSignInPopup: "Inloggen met Intastellar",
+    saveLoginModalSignInGitHub: "Doorgaan met GitHub",
     saveLoginModalOpenLoginPage: "Inlogpagina openen",
     saveLoginModalOpenProfile: "Accountprofiel openen",
   },
@@ -305,11 +306,45 @@ export const nl: MessageTree = {
     savedDocsErrorGeneric:
       "Opgeslagen documentatie bijwerken mislukt. Probeer het opnieuw.",
     savedDocsErrorInvalid: "Die documentatielink is ongeldig.",
+    linkGitHubHeading: "GitHub-inloggen",
+    linkGitHubDescription:
+      "Koppel je GitHub-account om later met GitHub in te loggen. Je GitHub-profiel moet een geverifieerd e-mailadres tonen dat bij dit portalaccount hoort (zelfde als Intastellar).",
+    linkGitHubButton: "GitHub-account koppelen",
+    githubLinkedBadge: "GitHub gekoppeld als @{{login}}",
+    githubLinkedNotice: "GitHub is nu aan dit account gekoppeld.",
+    linkGitHubErrorEmailMismatch:
+      "Het geverifieerde GitHub-e-mailadres hoort niet bij dit account. Gebruik hetzelfde geverifieerde adres op GitHub als bij Intastellar.",
+    linkGitHubErrorNoVerifiedEmail:
+      "GitHub leverde geen geverifieerd e-mailadres. Stel een openbaar adres in of verleen de scope user:email.",
+    linkGitHubErrorGithubTaken:
+      "Dit GitHub-account is al gekoppeld aan een andere portalgebruiker.",
+    linkGitHubErrorNotFound: "Portalaccount niet gevonden.",
+    linkGitHubErrorSessionMismatch:
+      "Je sessie veranderde tijdens het koppelen. Sluit andere tabbladen en probeer opnieuw.",
+    linkGitHubErrorInvalid: "Ongeldig koppelverzoek. Probeer opnieuw via je profiel.",
+    linkGitHubErrorRequiresMongo:
+      "GitHub koppelen vereist MongoDB op deze server.",
   },
   account: {
     layoutTitle: "Account",
     layoutDescription:
       "Intastellar SSO-profiel en ontwikkelaars-API-sleutels.",
+    loginGitHubSignIn: "Doorgaan met GitHub",
+    loginGitHubHint:
+      "Zelfde portalaccount en opgeslagen docs als Intastellar na autorisatie op GitHub.",
+    loginGitHubErrorDisabled:
+      "GitHub-inloggen is op deze server niet geconfigureerd.",
+    loginGitHubErrorDenied: "GitHub-autorisatie geannuleerd.",
+    loginGitHubErrorState: "Aanmeldstatus kwam niet overeen. Probeer opnieuw.",
+    loginGitHubErrorToken:
+      "GitHub-inloggen kon niet worden voltooid. Probeer opnieuw.",
+    loginGitHubErrorUser:
+      "Kon je GitHub-profiel niet laden. Probeer opnieuw.",
+    loginGitHubErrorUnknown: "GitHub-inloggen mislukt. Probeer opnieuw.",
+    loginGitHubErrorLinkRequiresLogin:
+      "Log eerst in op het portal en koppel GitHub daarna via je profiel.",
+    loginGitHubErrorLinkRequiresMongo:
+      "GitHub koppelen vereist MongoDB op deze server.",
   },
   apiKeys: {
     metaTitle: "API-sleutels · inta.dev",

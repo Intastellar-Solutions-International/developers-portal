@@ -264,6 +264,7 @@ export const fr: MessageTree = {
     saveLoginModalTitle: "Enregistrer cette page dans votre profil",
     saveLoginModalClose: "Fermer",
     saveLoginModalSignInPopup: "Se connecter avec Intastellar",
+    saveLoginModalSignInGitHub: "Continuer avec GitHub",
     saveLoginModalOpenLoginPage: "Ouvrir la page de connexion",
     saveLoginModalOpenProfile: "Ouvrir le profil du compte",
   },
@@ -306,11 +307,45 @@ export const fr: MessageTree = {
     savedDocsErrorGeneric:
       "Impossible de mettre à jour la documentation enregistrée. Réessayez.",
     savedDocsErrorInvalid: "Ce lien de documentation n’est pas valide.",
+    linkGitHubHeading: "Connexion GitHub",
+    linkGitHubDescription:
+      "Liez votre compte GitHub pour pouvoir vous connecter avec GitHub ensuite. Votre profil GitHub doit afficher un e-mail vérifié qui correspond à ce compte portail (comme Intastellar).",
+    linkGitHubButton: "Lier le compte GitHub",
+    githubLinkedBadge: "GitHub lié en tant que @{{login}}",
+    githubLinkedNotice: "GitHub est maintenant lié à ce compte.",
+    linkGitHubErrorEmailMismatch:
+      "L’e-mail vérifié GitHub ne correspond pas à ce compte. Utilisez le même e-mail vérifié sur GitHub que sur Intastellar.",
+    linkGitHubErrorNoVerifiedEmail:
+      "GitHub n’a pas renvoyé d’e-mail vérifié. Définissez un e-mail public ou accordez la portée user:email.",
+    linkGitHubErrorGithubTaken:
+      "Ce compte GitHub est déjà lié à un autre utilisateur du portail.",
+    linkGitHubErrorNotFound: "Compte portail introuvable.",
+    linkGitHubErrorSessionMismatch:
+      "Votre session a changé pendant la liaison. Fermez les autres onglets et réessayez.",
+    linkGitHubErrorInvalid: "Demande de liaison invalide. Réessayez depuis votre profil.",
+    linkGitHubErrorRequiresMongo:
+      "La liaison GitHub nécessite MongoDB sur ce serveur.",
   },
   account: {
     layoutTitle: "Compte",
     layoutDescription:
       "Profil SSO Intastellar et clés API développeur.",
+    loginGitHubSignIn: "Continuer avec GitHub",
+    loginGitHubHint:
+      "Même compte portail et docs enregistrés qu’avec Intastellar après autorisation GitHub.",
+    loginGitHubErrorDisabled:
+      "La connexion GitHub n’est pas configurée sur ce serveur.",
+    loginGitHubErrorDenied: "Autorisation GitHub annulée.",
+    loginGitHubErrorState: "État de connexion incorrect. Réessayez.",
+    loginGitHubErrorToken:
+      "Impossible de terminer la connexion GitHub. Réessayez.",
+    loginGitHubErrorUser:
+      "Impossible de charger votre profil GitHub. Réessayez.",
+    loginGitHubErrorUnknown: "Échec de la connexion GitHub. Réessayez.",
+    loginGitHubErrorLinkRequiresLogin:
+      "Connectez-vous d’abord au portail, puis liez GitHub depuis votre profil.",
+    loginGitHubErrorLinkRequiresMongo:
+      "La liaison GitHub nécessite MongoDB sur ce serveur.",
   },
   apiKeys: {
     metaTitle: "Clés API · inta.dev",

@@ -263,6 +263,7 @@ export const da: MessageTree = {
     saveLoginModalTitle: "Gem denne side på din profil",
     saveLoginModalClose: "Luk",
     saveLoginModalSignInPopup: "Log ind med Intastellar",
+    saveLoginModalSignInGitHub: "Fortsæt med GitHub",
     saveLoginModalOpenLoginPage: "Åbn login-siden",
     saveLoginModalOpenProfile: "Åbn kontoprofil",
   },
@@ -305,11 +306,43 @@ export const da: MessageTree = {
     savedDocsErrorGeneric:
       "Kunne ikke opdatere gemt dokumentation. Prøv igen.",
     savedDocsErrorInvalid: "Det dokumentationslink er ikke gyldigt.",
+    linkGitHubHeading: "GitHub-login",
+    linkGitHubDescription:
+      "Knyt din GitHub-konto til, så du senere kan logge ind med GitHub. Din GitHub-profil skal vise en verificeret e-mail, der matcher denne portal-konto (samme som Intastellar).",
+    linkGitHubButton: "Knyt GitHub-konto",
+    githubLinkedBadge: "GitHub knyttet som @{{login}}",
+    githubLinkedNotice: "GitHub er nu knyttet til denne konto.",
+    linkGitHubErrorEmailMismatch:
+      "GitHubs verificerede e-mail matchede ikke denne konto. Brug samme verificerede e-mail på GitHub som på Intastellar.",
+    linkGitHubErrorNoVerifiedEmail:
+      "GitHub returnerede ingen verificeret e-mail. Angiv en offentlig e-mail eller giv user:email-tilladelse.",
+    linkGitHubErrorGithubTaken:
+      "Denne GitHub-konto er allerede knyttet til en anden portalbruger.",
+    linkGitHubErrorNotFound: "Portal-konto blev ikke fundet.",
+    linkGitHubErrorSessionMismatch:
+      "Din session ændrede sig under knytning. Luk andre faner og prøv igen.",
+    linkGitHubErrorInvalid: "Ugyldig knytning. Prøv igen fra din profil.",
+    linkGitHubErrorRequiresMongo:
+      "GitHub-knytning kræver MongoDB på denne server.",
   },
   account: {
     layoutTitle: "Konto",
     layoutDescription:
       "Intastellar SSO-profil og udvikler-API-nøgler.",
+    loginGitHubSignIn: "Fortsæt med GitHub",
+    loginGitHubHint:
+      "Samme portal-konto og gemte dokumenter som Intastellar, når du har autoriseret på GitHub.",
+    loginGitHubErrorDisabled:
+      "GitHub-login er ikke konfigureret på denne server.",
+    loginGitHubErrorDenied: "GitHub-autorisering blev annulleret.",
+    loginGitHubErrorState: "Login-tilstand matchede ikke. Prøv igen.",
+    loginGitHubErrorToken: "GitHub-login kunne ikke fuldføres. Prøv igen.",
+    loginGitHubErrorUser: "Kunne ikke indlæse din GitHub-profil. Prøv igen.",
+    loginGitHubErrorUnknown: "GitHub-login mislykkedes. Prøv igen.",
+    loginGitHubErrorLinkRequiresLogin:
+      "Log ind på portalen først, og knyt derefter GitHub fra din profil.",
+    loginGitHubErrorLinkRequiresMongo:
+      "GitHub-knytning kræver MongoDB på denne server.",
   },
   apiKeys: {
     metaTitle: "API-nøgler · inta.dev",

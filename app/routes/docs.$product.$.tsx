@@ -6,6 +6,7 @@ import {
   useLoaderData,
   useLocation,
   useMatches,
+  useRouteLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/docs.$product.$";
@@ -41,6 +42,7 @@ import { isMongoConfigured } from "~/lib/mongodb.server";
 import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
 import { buildDocPageMeta, resolveMetaLocale } from "~/lib/seo";
 import { getUserAccountById } from "~/lib/user-accounts.server";
+import type { RootLoaderData } from "~/providers/intastellar-auth-provider";
 import { useIntastellarAuth } from "~/providers/intastellar-auth-provider";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
@@ -236,6 +238,7 @@ export default function ProductDocPage() {
   const doc = useResolvedDocSplatLoaderData();
   const bookmarkFetcher = useFetcher<BookmarkActionData>();
   const inta = useIntastellarAuth();
+  const root = useRouteLoaderData("root") as RootLoaderData | undefined;
 
   const { pathname } = useLocation();
   if (doc == null) {
@@ -273,6 +276,7 @@ export default function ProductDocPage() {
             ssoPopupAvailable={inta.configured}
             onSignInPopup={() => void inta.signin()}
             signInPopupLoading={inta.isLoading}
+            githubOAuthAvailable={root?.githubOAuthConfigured === true}
           />
         }
       />

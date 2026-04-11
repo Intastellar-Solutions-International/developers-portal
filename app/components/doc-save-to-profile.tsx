@@ -8,6 +8,7 @@ import type {
   DocProfileSaveVariant,
 } from "~/components/doc-bookmark-types";
 import { DocSaveProfileHeaderIcon } from "~/components/doc-save-profile-header-icon";
+import { GitHubSignInCta } from "~/components/github-sign-in-cta";
 import { useI18n } from "~/providers/i18n-provider";
 
 export type { BookmarkActionData, DocProfileSaveVariant } from "~/components/doc-bookmark-types";
@@ -46,6 +47,7 @@ export function DocSaveBookmarkHeader({
   ssoPopupAvailable,
   onSignInPopup,
   signInPopupLoading,
+  githubOAuthAvailable,
 }: {
   variant: DocProfileSaveVariant;
   message: string | null;
@@ -62,6 +64,8 @@ export function DocSaveBookmarkHeader({
   ssoPopupAvailable: boolean;
   onSignInPopup: () => void;
   signInPopupLoading: boolean;
+  /** From root loader — GitHub OAuth env configured (`/auth/github`). */
+  githubOAuthAvailable: boolean;
 }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
@@ -70,6 +74,7 @@ export function DocSaveBookmarkHeader({
   const returnTo = `${location.pathname}${location.search}${location.hash}`;
   const loginWithRedirect = `${accountLoginHref}?redirect=${encodeURIComponent(returnTo)}`;
   const profileWithRedirect = `${profileFormAction}?redirect=${encodeURIComponent(returnTo)}`;
+  const githubSignInHref = `/auth/github?redirect=${encodeURIComponent(returnTo)}`;
 
   useEffect(() => {
     if (!open) return;
@@ -147,6 +152,13 @@ export function DocSaveBookmarkHeader({
                 >
                   {t("docs.saveLoginModalSignInPopup")}
                 </button>
+              ) : null}
+              {variant === "sign_in" && githubOAuthAvailable ? (
+                <GitHubSignInCta
+                  action={githubSignInHref}
+                  label={t("docs.saveLoginModalSignInGitHub")}
+                  variant="compact"
+                />
               ) : null}
               {variant === "sign_in" ? (
                 <Link
