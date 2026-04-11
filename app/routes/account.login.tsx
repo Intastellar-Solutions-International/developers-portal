@@ -1,8 +1,14 @@
 import { useEffect } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router";
+import {
+  Link,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+} from "react-router";
 
 import type { Route } from "./+types/account.login";
 import { GitHubSignInCta } from "~/components/github-sign-in-cta";
+import { isGitHubOAuthConfigured } from "~/lib/github-oauth.server";
 import { translatePath } from "~/lib/i18n/messages";
 import { isSafeInternalRedirect } from "~/lib/safe-redirect-path";
 import { resolveMetaLocale } from "~/lib/seo";
@@ -16,6 +22,11 @@ export function meta({ matches, location }: Route.MetaArgs) {
   return [{ title: translatePath(locale, "seo.accountLoginTitle") }];
 }
 
+export async function loader(_args: Route.LoaderArgs) {
+  /** Keep in this route’s dehydrated data so the first client paint matches SSR (root loader can lag in `matches` during hydration). */
+  return { githubOAuthConfigured: isGitHubOAuthConfigured() };
+}
+
 const GITHUB_ERROR_KEYS: Record<string, string> = {
   disabled: "account.loginGitHubErrorDisabled",
   denied: "account.loginGitHubErrorDenied",
@@ -27,15 +38,16 @@ const GITHUB_ERROR_KEYS: Record<string, string> = {
 };
 
 export default function AccountLogin() {
+  const { githubOAuthConfigured } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTarget = searchParams.get("redirect");
   const profileHref = useLocalizedHref("/account/profile");
+  const termsHref = useLocalizedHref("/legal/terms");
+  const privacyHref = useLocalizedHref("/legal/privacy");
   const { authReady, configured, isLoading, isSignedIn, signin, error } =
     useIntastellarAuth();
-  /** Matches SSR during hydration (`useRouteLoaderData("root")` can be briefly undefined on nested routes). */
   const root = useResolvedRootLoaderData() as RootLoaderData | undefined;
-  const githubOAuthConfigured = root?.githubOAuthConfigured === true;
   const { t } = useI18n();
 
   const githubErrorCode = searchParams.get("github_error");
@@ -149,8 +161,16 @@ export default function AccountLogin() {
           </section>
         </>
       )}
-      <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-6">
-        By signing in, you agree to the <Link to="/legal/terms" className="text-brand hover:text-brand-hover">Terms of Service</Link> and <Link to="/legal/privacy" className="text-brand hover:text-brand-hover">Privacy Policy</Link>.
+      <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
+        By signing in, you agree to the{" "}
+        <Link to={termsHref} className="text-brand hover:text-brand-hover">
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link to={privacyHref} className="text-brand hover:text-brand-hover">
+          Privacy Policy
+        </Link>
+        .
       </p>
     </section>
   );
