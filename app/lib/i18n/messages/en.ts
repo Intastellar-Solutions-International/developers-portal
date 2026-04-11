@@ -264,6 +264,11 @@ export const en = {
     ql6Hint: "PKCE, callback, token exchange",
     docPageFallbackDescription:
       "{{title}} — Intastellar developer documentation on inta.dev.",
+    saveToProfile: "Save to profile",
+    removeFromProfile: "Remove from profile",
+    saveToProfileHint:
+      "Sign in with a portal session (same account as API keys) to bookmark this page on your profile.",
+    onYourProfile: "This page is on your saved list in Account → Profile.",
   },
   search: {
     inputAria: "Search documentation",
@@ -290,6 +295,19 @@ export const en = {
       "You are signed out. Sign in with your Intastellar account to see your profile here.",
     signInWithIntastellar: "Sign in with Intastellar",
     openSignInPage: "Open sign-in page",
+    intro:
+      "Your developer identity comes from Intastellar Accounts. Use API keys for server credentials, and save documentation pages here for quick access while you build.",
+    manageAccount: "Manage your Intastellar account",
+    savedDocsHeading: "Saved documentation",
+    savedDocsEmpty:
+      "No pages saved yet. Open any guide and use “Save to profile” at the bottom of the page.",
+    savedDocsRemove: "Remove",
+    savedDocsMongoOff:
+      "Saved documentation requires MongoDB on this server. Your session still works for sign-in.",
+    savedDocsNeedAccount:
+      "Complete a full sign-in so the portal can link your account (visit API keys or reload after signing in) to enable saved docs.",
+    savedDocsErrorGeneric: "Could not update saved documentation. Try again.",
+    savedDocsErrorInvalid: "That documentation link is not valid.",
   },
   account: {
     layoutTitle: "Account",

@@ -3,6 +3,15 @@ import { ObjectId } from "mongodb";
 import type { PortalAccountSession } from "./intastellar-portal-session.server";
 import { USER_ACCOUNTS_COLLECTION } from "./mongodb-schema.server";
 import { getCollection } from "./mongodb.server";
+import {
+  clampBookmarkTitle,
+  normalizeSavedDocumentationPath,
+  type SavedDocumentationBookmark,
+} from "./saved-documentation.server";
+
+export type { SavedDocumentationBookmark } from "./saved-documentation.server";
+
+const MAX_SAVED_DOCUMENTATION = 40;
 
 /** Supported external identity providers (extend when adding e.g. Google). */
 export type AuthProviderId = "intastellar" | "github";
@@ -29,6 +38,8 @@ export type UserAccountRecord = {
   primaryEmail?: string;
   displayName?: string;
   avatarUrl?: string;
+  /** Bookmarked docs (`/docs/...` canonical paths). */
+  savedDocumentation?: SavedDocumentationBookmark[];
   identities: UserIdentity[];
   createdAt: Date;
   updatedAt: Date;
@@ -204,4 +215,54 @@ export async function getUserAccountById(
   if (!coll) return null;
   const doc = await coll.findOne({ _id: id });
   return doc;
+}
+
+export async function addSavedDocumentationBookmark(
+  accountId: ObjectId,
+  pathInput: string,
+  titleInput: string,
+): Promise<{ ok: true } | { ok: false; error: "invalid_path" | "not_found" }> {
+  const path = normalizeSavedDocumentationPath(pathInput);
+  if (!path) return { ok: false, error: "invalid_path" };
+  const coll = await getCollection<UserAccountRecord>(USER_ACCOUNTS_COLLECTION);
+  if (!coll) return { ok: false, error: "not_found" };
+
+  const existing = await coll.findOne({ _id: accountId });
+  if (!existing) return { ok: false, error: "not_found" };
+
+  const title = clampBookmarkTitle(titleInput);
+  const now = new Date();
+  const prev = [...(existing.savedDocumentation ?? [])].filter(
+    (b) => b.path !== path,
+  );
+  const entry: SavedDocumentationBookmark = { path, title, savedAt: now };
+  const next = [entry, ...prev].slice(0, MAX_SAVED_DOCUMENTATION);
+
+  await coll.updateOne(
+    { _id: accountId },
+    { $set: { savedDocumentation: next, updatedAt: now } },
+  );
+  return { ok: true };
+}
+
+export async function removeSavedDocumentationBookmark(
+  accountId: ObjectId,
+  pathInput: string,
+): Promise<{ ok: true } | { ok: false; error: "invalid_path" | "not_found" }> {
+  const path = normalizeSavedDocumentationPath(pathInput);
+  if (!path) return { ok: false, error: "invalid_path" };
+  const coll = await getCollection<UserAccountRecord>(USER_ACCOUNTS_COLLECTION);
+  if (!coll) return { ok: false, error: "not_found" };
+
+  const existing = await coll.findOne({ _id: accountId });
+  if (!existing) return { ok: false, error: "not_found" };
+
+  const now = new Date();
+  const next = (existing.savedDocumentation ?? []).filter((b) => b.path !== path);
+
+  await coll.updateOne(
+    { _id: accountId },
+    { $set: { savedDocumentation: next, updatedAt: now } },
+  );
+  return { ok: true };
 }

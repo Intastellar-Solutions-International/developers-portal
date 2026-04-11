@@ -255,6 +255,11 @@ export const ptBr: MessageTree = {
     ql6Hint: "PKCE, callback, troca de token",
     docPageFallbackDescription:
       "{{title}} — Documentação para desenvolvedores Intastellar no inta.dev.",
+    saveToProfile: "Salvar no perfil",
+    removeFromProfile: "Remover do perfil",
+    saveToProfileHint:
+      "Entre com uma sessão do portal (mesma conta das chaves de API) para marcar esta página no seu perfil.",
+    onYourProfile: "Esta página está na sua lista salva em Conta → Perfil.",
   },
   search: {
     inputAria: "Buscar na documentação",
@@ -281,6 +286,20 @@ export const ptBr: MessageTree = {
       "Você não está autenticado. Entre com sua conta Intastellar para ver seu perfil aqui.",
     signInWithIntastellar: "Entrar com Intastellar",
     openSignInPage: "Abrir página de login",
+    intro:
+      "Sua identidade de desenvolvedor vem das Contas Intastellar. Use chaves de API para credenciais de servidor e salve páginas da documentação aqui para acesso rápido enquanto desenvolve.",
+    manageAccount: "Gerenciar sua conta Intastellar",
+    savedDocsHeading: "Documentação salva",
+    savedDocsEmpty:
+      "Nenhuma página salva ainda. Abra um guia e use «Salvar no perfil» no final da página.",
+    savedDocsRemove: "Remover",
+    savedDocsMongoOff:
+      "Documentação salva requer MongoDB neste servidor. O login continua funcionando.",
+    savedDocsNeedAccount:
+      "Conclua o login para o portal vincular sua conta (visite chaves de API ou recarregue após entrar) e ative documentos salvos.",
+    savedDocsErrorGeneric:
+      "Não foi possível atualizar a documentação salva. Tente novamente.",
+    savedDocsErrorInvalid: "Esse link de documentação não é válido.",
   },
   account: {
     layoutTitle: "Conta",

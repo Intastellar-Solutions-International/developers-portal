@@ -255,6 +255,11 @@ export const nl: MessageTree = {
     ql6Hint: "PKCE, callback, token-uitwisseling",
     docPageFallbackDescription:
       "{{title}} — Intastellar-ontwikkelaarsdocumentatie op inta.dev.",
+    saveToProfile: "Opslaan in profiel",
+    removeFromProfile: "Verwijderen uit profiel",
+    saveToProfileHint:
+      "Log in met een portalsessie (zelfde account als API-sleutels) om deze pagina op uw profiel te bewaren.",
+    onYourProfile: "Deze pagina staat op uw opgeslagen lijst onder Account → Profiel.",
   },
   search: {
     inputAria: "Zoek in documentatie",
@@ -281,6 +286,20 @@ export const nl: MessageTree = {
       "U bent uitgelogd. Log in met uw Intastellar-account om hier uw profiel te zien.",
     signInWithIntastellar: "Inloggen met Intastellar",
     openSignInPage: "Inlogpagina openen",
+    intro:
+      "Uw ontwikkelaarsidentiteit komt van Intastellar Accounts. Gebruik API-sleutels voor serverreferenties en sla documentatiepagina’s hier op voor snelle toegang tijdens het bouwen.",
+    manageAccount: "Uw Intastellar-account beheren",
+    savedDocsHeading: "Opgeslagen documentatie",
+    savedDocsEmpty:
+      "Nog geen pagina’s opgeslagen. Open een handleiding en gebruik onderaan «Opslaan in profiel».",
+    savedDocsRemove: "Verwijderen",
+    savedDocsMongoOff:
+      "Opgeslagen documentatie vereist MongoDB op deze server. Inloggen blijft werken.",
+    savedDocsNeedAccount:
+      "Voltooi het inloggen zodat het portaal uw account kan koppelen (bezoek API-sleutels of vernieuw na inloggen) om opgeslagen docs in te schakelen.",
+    savedDocsErrorGeneric:
+      "Opgeslagen documentatie bijwerken mislukt. Probeer het opnieuw.",
+    savedDocsErrorInvalid: "Die documentatielink is ongeldig.",
   },
   account: {
     layoutTitle: "Account",

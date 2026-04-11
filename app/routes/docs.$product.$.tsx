@@ -1,6 +1,11 @@
+import { ObjectId } from "mongodb";
 import { data, redirect, useLoaderData, useLocation } from "react-router";
 
 import type { Route } from "./+types/docs.$product.$";
+import {
+  DocSaveToProfile,
+  type DocProfileSaveVariant,
+} from "~/components/doc-save-to-profile";
 import { DocMeta } from "~/components/doc-meta";
 import { DocPrevNext } from "~/components/doc-prev-next";
 import { DocsBreadcrumbs } from "~/components/docs-breadcrumbs";
@@ -17,10 +22,14 @@ import {
   docsProductSlugFromPathname,
   parseDocSplat,
   parseDocsProductPath,
+  unlocalizedDocPath,
 } from "~/lib/docs-versions";
-import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
-import { buildDocPageMeta, resolveMetaLocale } from "~/lib/seo";
 import { translatePath } from "~/lib/i18n/messages";
+import { resolveLocaleFromRequest } from "~/lib/i18n/resolve-locale.server";
+import { isMongoConfigured } from "~/lib/mongodb.server";
+import { resolvePortalSessionForRequest } from "~/lib/portal-account.server";
+import { buildDocPageMeta, resolveMetaLocale } from "~/lib/seo";
+import { getUserAccountById } from "~/lib/user-accounts.server";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const locale = resolveLocaleFromRequest(request);
@@ -55,7 +64,43 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const isJavascriptTryOutDoc =
     product === "cookie-banner" && docPath === "javascript/try-out";
-  return {
+
+  const canonicalDocPath = unlocalizedDocPath(product, version, docPath);
+  const { account, setCookieHeaders } =
+    await resolvePortalSessionForRequest(request);
+  const mongoConfigured = isMongoConfigured();
+
+  let docProfileSaveVariant: DocProfileSaveVariant = "sign_in";
+  let docProfileSaveMessage: string | null = translatePath(
+    locale,
+    "docs.saveToProfileHint",
+  );
+  let docSavedToProfile = false;
+
+  if (!mongoConfigured) {
+    docProfileSaveVariant = "mongo_off";
+    docProfileSaveMessage = translatePath(locale, "profile.savedDocsMongoOff");
+  } else if (!account?.email) {
+    docProfileSaveVariant = "sign_in";
+    docProfileSaveMessage = translatePath(locale, "docs.saveToProfileHint");
+  } else if (!account.accountId?.trim()) {
+    docProfileSaveVariant = "link_account";
+    docProfileSaveMessage = translatePath(locale, "profile.savedDocsNeedAccount");
+  } else {
+    docProfileSaveVariant = "bookmark";
+    docProfileSaveMessage = null;
+    try {
+      const oid = new ObjectId(account.accountId);
+      const userDoc = await getUserAccountById(oid);
+      docSavedToProfile = (userDoc?.savedDocumentation ?? []).some(
+        (b) => b.path === canonicalDocPath,
+      );
+    } catch {
+      docSavedToProfile = false;
+    }
+  }
+
+  const payload = {
     ...doc,
     prev,
     next,
@@ -69,7 +114,20 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     /** Redundant with isJavascriptTryOutDoc — strings help if a client hydrate quirk drops the boolean. */
     productSlug: product,
     docPath: docPath ?? "",
+    canonicalDocPath,
+    docSavedToProfile,
+    docProfileSaveVariant,
+    docProfileSaveMessage,
   };
+
+  if (setCookieHeaders.length === 0) {
+    return payload;
+  }
+  const headers = new Headers();
+  for (const c of setCookieHeaders) {
+    headers.append("Set-Cookie", c);
+  }
+  return data(payload, { headers });
 }
 
 export function meta({ data, loaderData, location, matches }: Route.MetaArgs) {
@@ -119,6 +177,13 @@ export default function ProductDocPage() {
         previewHostname={doc.previewHostname}
       />
       <RelatedLinks items={doc.related} />
+      <DocSaveToProfile
+        variant={doc.docProfileSaveVariant}
+        message={doc.docProfileSaveMessage}
+        canonicalPath={doc.canonicalDocPath}
+        title={doc.title}
+        initiallySaved={doc.docSavedToProfile}
+      />
       <DocPrevNext prev={doc.prev} next={doc.next} />
       <DocMeta
         lastUpdated={doc.lastUpdated}

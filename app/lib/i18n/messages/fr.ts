@@ -255,6 +255,12 @@ export const fr: MessageTree = {
     ql6Hint: "PKCE, callback, échange de jetons",
     docPageFallbackDescription:
       "{{title}} — Documentation développeur Intastellar sur inta.dev.",
+    saveToProfile: "Enregistrer dans le profil",
+    removeFromProfile: "Retirer du profil",
+    saveToProfileHint:
+      "Connectez-vous avec une session portail (même compte que les clés API) pour ajouter cette page à votre profil.",
+    onYourProfile:
+      "Cette page figure dans vos enregistrements (Compte → Profil).",
   },
   search: {
     inputAria: "Rechercher dans la documentation",
@@ -281,6 +287,20 @@ export const fr: MessageTree = {
       "Vous êtes déconnecté. Connectez-vous avec votre compte Intastellar pour voir votre profil ici.",
     signInWithIntastellar: "Se connecter avec Intastellar",
     openSignInPage: "Ouvrir la page de connexion",
+    intro:
+      "Votre identité développeur provient d’Intastellar Accounts. Utilisez les clés API pour l’authentification serveur et enregistrez ici des pages de documentation pour y accéder rapidement pendant le développement.",
+    manageAccount: "Gérer votre compte Intastellar",
+    savedDocsHeading: "Documentation enregistrée",
+    savedDocsEmpty:
+      "Aucune page enregistrée pour l’instant. Ouvrez un guide et utilisez « Enregistrer dans le profil » en bas de page.",
+    savedDocsRemove: "Retirer",
+    savedDocsMongoOff:
+      "La documentation enregistrée nécessite MongoDB sur ce serveur. La connexion reste disponible.",
+    savedDocsNeedAccount:
+      "Terminez la connexion pour que le portail associe votre compte (visitez les clés API ou rechargez après connexion) et activez les pages enregistrées.",
+    savedDocsErrorGeneric:
+      "Impossible de mettre à jour la documentation enregistrée. Réessayez.",
+    savedDocsErrorInvalid: "Ce lien de documentation n’est pas valide.",
   },
   account: {
     layoutTitle: "Compte",

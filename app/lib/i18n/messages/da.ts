@@ -255,6 +255,11 @@ export const da: MessageTree = {
     ql6Hint: "PKCE, callback, token-udveksling",
     docPageFallbackDescription:
       "{{title}} — Intastellar-udviklerdokumentation på inta.dev.",
+    saveToProfile: "Gem på profil",
+    removeFromProfile: "Fjern fra profil",
+    saveToProfileHint:
+      "Log ind med en portal-session (samme konto som API-nøgler) for at bogmærke denne side på din profil.",
+    onYourProfile: "Denne side er på din gemte liste under Konto → Profil.",
   },
   search: {
     inputAria: "Søg i dokumentationen",
@@ -281,6 +286,20 @@ export const da: MessageTree = {
       "Du er logget ud. Log ind med din Intastellar-konto for at se din profil her.",
     signInWithIntastellar: "Log ind med Intastellar",
     openSignInPage: "Åbn login-siden",
+    intro:
+      "Din udvikleridentitet kommer fra Intastellar Accounts. Brug API-nøgler til serverlegitimation, og gem dokumentsider her for hurtig adgang, mens du bygger.",
+    manageAccount: "Administrer din Intastellar-konto",
+    savedDocsHeading: "Gemt dokumentation",
+    savedDocsEmpty:
+      "Ingen sider gemt endnu. Åbn en vejledning og brug «Gem på profil» nederst på siden.",
+    savedDocsRemove: "Fjern",
+    savedDocsMongoOff:
+      "Gemt dokumentation kræver MongoDB på denne server. Din session virker stadig til login.",
+    savedDocsNeedAccount:
+      "Fuldfør login, så portalen kan knytte din konto (besøg API-nøgler eller genindlæs efter login) for at aktivere gemte dokumenter.",
+    savedDocsErrorGeneric:
+      "Kunne ikke opdatere gemt dokumentation. Prøv igen.",
+    savedDocsErrorInvalid: "Det dokumentationslink er ikke gyldigt.",
   },
   account: {
     layoutTitle: "Konto",

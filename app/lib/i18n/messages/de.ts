@@ -256,6 +256,12 @@ export const de: MessageTree = {
     ql6Hint: "PKCE, Callback, Token-Austausch",
     docPageFallbackDescription:
       "{{title}} — Intastellar-Entwicklerdokumentation auf inta.dev.",
+    saveToProfile: "Im Profil speichern",
+    removeFromProfile: "Aus Profil entfernen",
+    saveToProfileHint:
+      "Melden Sie sich mit einer Portal-Sitzung an (wie bei API-Schlüsseln), um diese Seite in Ihrem Profil zu merken.",
+    onYourProfile:
+      "Diese Seite steht unter Konto → Profil auf Ihrer Merkliste.",
   },
   search: {
     inputAria: "Dokumentation durchsuchen",
@@ -282,6 +288,20 @@ export const de: MessageTree = {
       "Sie sind abgemeldet. Melden Sie sich mit Ihrem Intastellar-Konto an, um Ihr Profil hier zu sehen.",
     signInWithIntastellar: "Mit Intastellar anmelden",
     openSignInPage: "Anmeldeseite öffnen",
+    intro:
+      "Ihre Entwickleridentität kommt von Intastellar Accounts. API-Schlüssel dienen Server-Anmeldedaten; gespeicherte Dokumentation finden Sie hier schnell wieder.",
+    manageAccount: "Intastellar-Konto verwalten",
+    savedDocsHeading: "Gespeicherte Dokumentation",
+    savedDocsEmpty:
+      "Noch keine Seiten gespeichert. Öffnen Sie eine Anleitung und nutzen Sie unten „Im Profil speichern“.",
+    savedDocsRemove: "Entfernen",
+    savedDocsMongoOff:
+      "Gespeicherte Dokumentation erfordert MongoDB auf diesem Server. Die Anmeldung funktioniert weiterhin.",
+    savedDocsNeedAccount:
+      "Vervollständigen Sie die Anmeldung, damit das Portal Ihr Konto verknüpfen kann (API-Schlüssel besuchen oder nach der Anmeldung neu laden).",
+    savedDocsErrorGeneric:
+      "Gespeicherte Dokumentation konnte nicht aktualisiert werden. Bitte erneut versuchen.",
+    savedDocsErrorInvalid: "Dieser Dokumentations-Link ist ungültig.",
   },
   account: {
     layoutTitle: "Konto",
