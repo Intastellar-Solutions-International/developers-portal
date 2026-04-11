@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import {
-  Link,
   useNavigate,
   useRouteLoaderData,
   useSearchParams,
 } from "react-router";
 
 import type { Route } from "./+types/account.login";
+import { GitHubSignInCta } from "~/components/github-sign-in-cta";
 import { isSafeInternalRedirect } from "~/lib/safe-redirect-path";
 import { translatePath } from "~/lib/i18n/messages";
 import { resolveMetaLocale } from "~/lib/seo";
@@ -151,12 +151,11 @@ export default function AccountLogin() {
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
             {t("account.loginGitHubHint")}
           </p>
-          <Link
-            to={githubStartHref}
-            className="mt-4 inline-flex rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:border-zinc-500 dark:hover:bg-zinc-800"
-          >
-            {t("account.loginGitHubSignIn")}
-          </Link>
+          <GitHubSignInCta
+            action={githubStartHref}
+            label={t("account.loginGitHubSignIn")}
+            variant="login"
+          />
         </div>
       ) : null}
     </section>

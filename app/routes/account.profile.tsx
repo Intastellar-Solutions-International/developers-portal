@@ -10,6 +10,7 @@ import {
 import { useEffect } from "react";
 
 import type { Route } from "./+types/account.profile";
+import { GitHubSignInCta } from "~/components/github-sign-in-cta";
 import { isGitHubOAuthConfigured } from "~/lib/github-oauth.server";
 import { getIntastellarClientConfig } from "~/lib/intastellar-config";
 import type { Locale } from "~/lib/i18n/locale";
@@ -418,12 +419,11 @@ export default function AccountProfile() {
                   <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                     {linkGitHubDescription}
                   </p>
-                  <Link
-                    to={linkGithubHref}
-                    className="mt-3 inline-flex rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:border-zinc-500 dark:hover:bg-zinc-800"
-                  >
-                    {linkGitHubButton}
-                  </Link>
+                  <GitHubSignInCta
+                    action={linkGithubHref}
+                    label={linkGitHubButton}
+                    variant="profile"
+                  />
                 </div>
               ) : null}
               <button

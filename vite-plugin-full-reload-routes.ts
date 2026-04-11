@@ -5,18 +5,29 @@ import type { Plugin } from "vite";
  * bundle before the client chunk updates, which makes React throw hydration mismatches
  * after layout edits. Force a full reload when route (or app shell) sources change so
  * HTML and client JS always match.
+ *
+ * Also reload on `app.css` and selected shared components: Tailwind’s CSS HMR often logs
+ * “Failed to reload /app/app.css” after edits; a full reload recovers cleanly. Components
+ * imported only from routes do not live under `routes/`, so route-only matching would miss them.
  */
 export function fullReloadOnRouteModules(): Plugin {
   const norm = (p: string) => p.replace(/\\/g, "/");
 
   const triggersFullReload = (file: string): boolean => {
     const f = norm(file);
+    if (f.endsWith("/app/app.css")) return true;
     if (f.endsWith("/app/routes.ts")) return true;
     if (f.endsWith("/app/root.tsx")) return true;
     if (f.endsWith("/app/react-router.config.ts")) return true;
     if (
       f.includes("/app/components/status-") &&
       /\.(m?[jt]sx?)$/.test(f)
+    ) {
+      return true;
+    }
+    if (
+      f.includes("/app/components/") &&
+      (f.includes("github-sign-in-cta") || f.includes("github-mark-icon"))
     ) {
       return true;
     }
