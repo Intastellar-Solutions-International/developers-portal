@@ -130,7 +130,7 @@ export function DocSaveBookmarkHeader({
       </button>
       {open ? (
         <div
-          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 p-4 sm:items-center"
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 p-4 lg:items-center"
           role="presentation"
           onClick={() => setOpen(false)}
         >
@@ -138,7 +138,7 @@ export function DocSaveBookmarkHeader({
             role="dialog"
             aria-modal="true"
             aria-labelledby="doc-save-modal-title"
-            className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-600 dark:bg-zinc-800"
+            className="w-full max-w-lg rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-600 dark:bg-zinc-800"
             onClick={(e) => e.stopPropagation()}
           >
             <h2
@@ -152,8 +152,8 @@ export function DocSaveBookmarkHeader({
                 {message}
               </p>
             ) : null}
-            <div className="mt-6 flex flex-col gap-4">
-              <div className="flex flex-wrap gap-3 sm:justify-end">
+            <div className="mt-6 flex gap-4">
+              <div className="flex flex-col lg:flex-row gap-3 sm:justify-end">
                 {githubOAuthAvailable ? (
                   <GitHubSignInCta
                     action={githubSignInHref}
@@ -182,27 +182,6 @@ export function DocSaveBookmarkHeader({
                     : t("account.loginSignInIntastellar")}
                 </button>
               </div>
-              <p className="text-center text-sm sm:text-right">
-                <Link
-                  to={loginWithRedirect}
-                  onClick={stashPendingBookmark}
-                  className="font-medium text-brand hover:text-brand-hover"
-                >
-                  {t("docs.saveLoginModalOpenLoginPage")}
-                </Link>
-                {variant === "link_account" ? (
-                  <>
-                    {" · "}
-                    <Link
-                      to={profileWithRedirect}
-                      onClick={stashPendingBookmark}
-                      className="font-medium text-brand hover:text-brand-hover"
-                    >
-                      {t("docs.saveLoginModalOpenProfile")}
-                    </Link>
-                  </>
-                ) : null}
-              </p>
             </div>
           </div>
         </div>
