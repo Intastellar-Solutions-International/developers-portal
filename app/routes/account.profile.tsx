@@ -55,6 +55,8 @@ export default function AccountProfile() {
   const awaitingUserAfterLogin = isSignedIn && !hasValidUser;
   const showSessionLoading = isLoading || awaitingUserAfterLogin;
 
+
+  console.log(users);
   return (
     <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800">
       <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
@@ -138,7 +140,12 @@ export default function AccountProfile() {
               onClick={() => void signin()}
               className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground shadow-sm transition-colors hover:bg-brand-hover disabled:opacity-60"
             >
-              {copy.signInWithIntastellar}
+              {
+                users.length > 0 ? <>
+                  <img src={users[0].image} alt="User avatar" width={20} height={20} />
+                  {copy.signInWithIntastellar}
+                </> : copy.signInWithIntastellar
+              }
             </button>
             <Link
               to={loginHref}
