@@ -68,6 +68,8 @@ function normalizeEmail(email: string): string {
 
 /**
  * Upsert account from Intastellar profile data (SDK-provided user object).
+ * If the user previously signed up with GitHub and the SSO email matches that account, links
+ * Intastellar onto the same document (symmetric with `ensureUserFromGitHub` email matching).
  */
 export async function ensureUserFromIntastellar(
   session: PortalAccountSession,
@@ -93,6 +95,53 @@ export async function ensureUserFromIntastellar(
     }
     await coll.updateOne({ _id: existing._id }, { $set });
     return existing._id;
+  }
+
+  /**
+   * GitHub-first signup: same person later signs in with Intastellar (SSO email matches a verified
+   * GitHub email we stored on a GitHub-only row). Merge Intastellar onto that account instead of
+   * creating a duplicate.
+   */
+  const githubOnlyWithMatchingEmail = await coll.findOne({
+    identities: { $elemMatch: { provider: "github" } },
+    $nor: [{ identities: { $elemMatch: { provider: "intastellar" } } }],
+    $or: [
+      { primaryEmail: subject },
+      {
+        identities: {
+          $elemMatch: { provider: "github", email: subject },
+        },
+      },
+    ],
+  });
+  if (githubOnlyWithMatchingEmail) {
+    const emails = portalAccountEmailSet(githubOnlyWithMatchingEmail);
+    if (emails.has(subject)) {
+      const $set: Record<string, unknown> = {
+        primaryEmail: subject,
+        displayName:
+          session.displayName?.trim() || githubOnlyWithMatchingEmail.displayName,
+        updatedAt: now,
+      };
+      if (session.imageUrl) {
+        $set.avatarUrl = session.imageUrl;
+      }
+      await coll.updateOne(
+        { _id: githubOnlyWithMatchingEmail._id },
+        {
+          $push: {
+            identities: {
+              provider: "intastellar",
+              subject,
+              email: subject,
+              linkedAt: now,
+            },
+          },
+          $set,
+        },
+      );
+      return githubOnlyWithMatchingEmail._id;
+    }
   }
 
   const insertResult = await coll.insertOne({
