@@ -88,7 +88,7 @@ export const en = {
     intastellar: "Intastellar",
     intastellarSolutions: "Intastellar Solutions",
     cookieConsentsProduct: "Cookie consents product",
-    copyright: "© {{year}} Intastellar Solutions. All rights reserved.",
+    copyright: "© {{year}} Intastellar Solutions International. All rights reserved.",
     statusOk: "System status",
     statusDegraded: "Some checks are failing",
   },

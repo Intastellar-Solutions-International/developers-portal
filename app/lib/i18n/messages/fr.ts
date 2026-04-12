@@ -80,7 +80,7 @@ export const fr: MessageTree = {
     intastellar: "Intastellar",
     intastellarSolutions: "Intastellar Solutions",
     cookieConsentsProduct: "Produit cookie consents",
-    copyright: "© {{year}} Intastellar Solutions. Tous droits réservés.",
+    copyright: "© {{year}} Intastellar Solutions International. Tous droits réservés.",
     statusOk: "État du système",
     statusDegraded: "Certaines vérifications échouent",
   },
