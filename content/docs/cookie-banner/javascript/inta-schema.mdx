@@ -4,6 +4,8 @@ description: JSON Schema for the window.INTA configuration object (JavaScript in
 order: 15
 lastUpdated: "2026-04-08"
 related:
+  - title: Experiments
+    href: /docs/cookie-banner/javascript/experiments
   - title: Script lifecycle
     href: /docs/cookie-banner/javascript/script-lifecycle
   - title: Google Consent Mode
@@ -43,60 +45,7 @@ The schema sets `additionalProperties: true` on the root and on `settings`, so *
 
 ## Experiments (A/B testing)
 
-Use `window.INTA.experiment` to split traffic between banner variants. You can run:
-
-- **General A/B tests** for all visitors
-- **Channel-specific tests** by adding a `channel.match` rule (for example `utmSource`)
-
-### Channel-specific example
-
-```html
-<script>
-  window.INTA.experiment = {
-    id: "microsoft-ads-banner-test",
-    channel: {
-      id: "microsoft_ads",
-      label: "Microsoft / Bing Ads",
-      match: {
-        utmSource: ["bing", "microsoft", "msads", "msn"],
-      },
-    },
-    variants: {
-      control: {
-        weight: 50,
-      },
-      variant: {
-        weight: 50,
-        settings: {
-          design: "overlay",
-          color: "#008cb4",
-          textOverridePresetId: "copy-b2b-professional",
-        },
-      },
-    },
-  };
-</script>
-```
-
-### General example
-
-```html
-<script>
-  window.INTA.experiment = {
-    id: "global-banner-test",
-    variants: {
-      control: { weight: 50 },
-      variant: {
-        weight: 50,
-        settings: {
-          design: "overlay",
-          color: "#0f766e",
-        },
-      },
-    },
-  };
-</script>
-```
+For `window.INTA.experiment`, channel targeting, and copy-paste examples, see **[Experiments](/docs/cookie-banner/javascript/experiments)**.
 
 ## Example
 

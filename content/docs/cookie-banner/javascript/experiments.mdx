@@ -1,0 +1,70 @@
+---
+title: Experiments
+description: A/B test the banner with window.INTA.experiment—general splits or channel-specific traffic (e.g. Microsoft Ads via UTM).
+order: 16
+lastUpdated: "2026-05-06"
+related:
+  - title: INTA reference
+    href: /docs/cookie-banner/javascript/inta-schema
+  - title: Get Started
+    href: /docs/cookie-banner/javascript/getting-started
+---
+
+# Experiments (A/B testing)
+
+Use `window.INTA.experiment` to split traffic between banner variants. You can run:
+
+- **General A/B tests** for all visitors
+- **Channel-specific tests** by adding a `channel.match` rule (for example `utmSource`)
+
+The machine-readable shape is described under `experiment` in the [`window.INTA` JSON Schema](/docs/cookie-banner/javascript/inta-schema) and [`/schemas/window-inta.json`](/schemas/window-inta.json).
+
+## Channel-specific example
+
+```html
+<script>
+  window.INTA.experiment = {
+    id: "microsoft-ads-banner-test",
+    channel: {
+      id: "microsoft_ads",
+      label: "Microsoft / Bing Ads",
+      match: {
+        utmSource: ["bing", "microsoft", "msads", "msn"],
+      },
+    },
+    variants: {
+      control: {
+        weight: 50,
+      },
+      variant: {
+        weight: 50,
+        settings: {
+          design: "overlay",
+          color: "#008cb4",
+          textOverridePresetId: "copy-b2b-professional",
+        },
+      },
+    },
+  };
+</script>
+```
+
+## General example
+
+```html
+<script>
+  window.INTA.experiment = {
+    id: "global-banner-test",
+    variants: {
+      control: { weight: 50 },
+      variant: {
+        weight: 50,
+        settings: {
+          design: "overlay",
+          color: "#0f766e",
+        },
+      },
+    },
+  };
+</script>
+```
