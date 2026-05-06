@@ -172,7 +172,6 @@ export function SiteFooter() {
           </div>
         </div>
         <p className="mt-12 border-t border-zinc-200 pt-8 text-center text-xs text-zinc-500 dark:border-zinc-800">
-          <img src="https://www.intastellar-consents.com/assets/icons/intastellar-logo-black.svg" alt="Intastellar logo" className="center mx-auto w-[250px] mb-4 brightness-0 invert-100" />
           {t("footer.copyright", { year })}
         </p>
       </div>

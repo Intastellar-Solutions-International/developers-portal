@@ -26,6 +26,7 @@ Use it with editors, validators, or codegen tools that support JSON Schema Draft
 | Path | Type | Notes |
 | --- | --- | --- |
 | `policy_link` | string (URI) | Privacy policy URL |
+| `experiment` | object | Optional A/B test config (global or channel-specific) |
 | `settings` | object | Banner UI and behaviour |
 | `settings.rootDomain` | string | Root domain |
 | `settings.company` | string | Display name |
@@ -39,6 +40,63 @@ Use it with editors, validators, or codegen tools that support JSON Schema Draft
 | `settings.keepInLocalStorage` | string[] | localStorage keys to keep |
 
 The schema sets `additionalProperties: true` on the root and on `settings`, so **extra keys** your account or version expects are still valid—validate in your pipeline if you need a closed world.
+
+## Experiments (A/B testing)
+
+Use `window.INTA.experiment` to split traffic between banner variants. You can run:
+
+- **General A/B tests** for all visitors
+- **Channel-specific tests** by adding a `channel.match` rule (for example `utmSource`)
+
+### Channel-specific example
+
+```html
+<script>
+  window.INTA.experiment = {
+    id: "microsoft-ads-banner-test",
+    channel: {
+      id: "microsoft_ads",
+      label: "Microsoft / Bing Ads",
+      match: {
+        utmSource: ["bing", "microsoft", "msads", "msn"],
+      },
+    },
+    variants: {
+      control: {
+        weight: 50,
+      },
+      variant: {
+        weight: 50,
+        settings: {
+          design: "overlay",
+          color: "#008cb4",
+          textOverridePresetId: "copy-b2b-professional",
+        },
+      },
+    },
+  };
+</script>
+```
+
+### General example
+
+```html
+<script>
+  window.INTA.experiment = {
+    id: "global-banner-test",
+    variants: {
+      control: { weight: 50 },
+      variant: {
+        weight: 50,
+        settings: {
+          design: "overlay",
+          color: "#0f766e",
+        },
+      },
+    },
+  };
+</script>
+```
 
 ## Example
 

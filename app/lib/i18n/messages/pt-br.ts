@@ -80,7 +80,7 @@ export const ptBr: MessageTree = {
     intastellar: "Intastellar",
     intastellarSolutions: "Intastellar Solutions",
     cookieConsentsProduct: "Produto de consentimento de cookies",
-    copyright: "© {{year}} Intastellar Solutions International. Todos os direitos reservados.",
+    copyright: "© {{year}} Intastellar Solutions. Todos os direitos reservados.",
     statusOk: "Status do sistema",
     statusDegraded: "Algumas verificações estão falhando",
   },

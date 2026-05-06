@@ -10,6 +10,56 @@
       "description": "URL of your privacy policy (HTTPS recommended).",
       "format": "uri"
     },
+    "experiment": {
+      "type": "object",
+      "description": "Optional A/B test configuration with weighted variants; can be scoped to a channel match.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique experiment identifier."
+        },
+        "channel": {
+          "type": "object",
+          "description": "Optional traffic channel matcher for channel-specific experiments.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Channel identifier."
+            },
+            "label": {
+              "type": "string",
+              "description": "Human-friendly channel label."
+            },
+            "match": {
+              "type": "object",
+              "description": "Match rules (for example UTM source values) used to qualify users for this channel."
+            }
+          },
+          "additionalProperties": true
+        },
+        "variants": {
+          "type": "object",
+          "description": "Named experiment variants with traffic weights.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "weight": {
+                "type": "number",
+                "description": "Allocation percentage or weight for this variant."
+              },
+              "settings": {
+                "type": "object",
+                "description": "Optional INTA settings overrides applied for users in this variant."
+              }
+            },
+            "required": ["weight"],
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": ["id", "variants"],
+      "additionalProperties": true
+    },
     "settings": {
       "type": "object",
       "description": "UI and behaviour settings consumed by the banner script.",
