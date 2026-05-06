@@ -3,6 +3,13 @@ title: Referência INTA
 description: Esquema JSON do objeto de configuração window.INTA (integração JavaScript).
 order: 15
 lastUpdated: "2026-04-05"
+related:
+  - title: Experimentos
+    href: /docs/cookie-banner/javascript/experiments
+  - title: Script lifecycle
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
 ---
 
 # `window.INTA` (esquema JSON)
@@ -21,6 +28,7 @@ Use-o com editores, validadores ou ferramentas de codegen que suportem JSON Sche
 | Caminho | Tipo | Notas |
 | --- | --- | --- |
 | `policy_link` | string (URI) | URL da política de privacidade |
+| `experiment` | object | Configuração opcional de testes A/B (global ou por canal) |
 | `settings` | object | UI e comportamento do banner |
 | `settings.rootDomain` | string | Domínio raiz |
 | `settings.company` | string | Nome de exibição |
@@ -34,6 +42,10 @@ Use-o com editores, validadores ou ferramentas de codegen que suportem JSON Sche
 | `settings.keepInLocalStorage` | string[] | Chaves de localStorage a manter |
 
 O esquema define `additionalProperties: true` na raiz e em `settings`, então **chaves extras** que sua conta ou versão esperam continuam válidas — valide no seu pipeline se precisar de um mundo fechado.
+
+## Experimentos (testes A/B)
+
+Para `window.INTA.experiment`, segmentação por canal e exemplos prontos para uso, veja **[Experimentos](/docs/cookie-banner/javascript/experiments)**.
 
 ## Exemplo
 

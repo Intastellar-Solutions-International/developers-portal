@@ -1,0 +1,70 @@
+---
+title: Expérimentations
+description: Tests A/B sur le bandeau avec window.INTA.experiment — répartition générale ou trafic par canal (p. ex. Microsoft Ads via UTM).
+order: 16
+lastUpdated: "2026-05-06"
+related:
+  - title: Référence INTA
+    href: /docs/cookie-banner/javascript/inta-schema
+  - title: Premiers pas
+    href: /docs/cookie-banner/javascript/getting-started
+---
+
+# Expérimentations (tests A/B)
+
+Utilisez `window.INTA.experiment` pour répartir le trafic entre des variantes de bandeau. Vous pouvez lancer :
+
+- **Des tests A/B généraux** pour tous les visiteurs
+- **Des tests par canal** en ajoutant une règle `channel.match` (par exemple `utmSource`)
+
+La forme lisible par machine est décrite sous `experiment` dans la référence [`window.INTA` JSON Schema](/docs/cookie-banner/javascript/inta-schema) et dans [`/schemas/window-inta.json`](/schemas/window-inta.json).
+
+## Exemple canal spécifique
+
+```html
+<script>
+  window.INTA.experiment = {
+    id: "microsoft-ads-banner-test",
+    channel: {
+      id: "microsoft_ads",
+      label: "Microsoft / Bing Ads",
+      match: {
+        utmSource: ["bing", "microsoft", "msads", "msn"],
+      },
+    },
+    variants: {
+      control: {
+        weight: 50,
+      },
+      variant: {
+        weight: 50,
+        settings: {
+          design: "overlay",
+          color: "#008cb4",
+          textOverridePresetId: "copy-b2b-professional",
+        },
+      },
+    },
+  };
+</script>
+```
+
+## Exemple général
+
+```html
+<script>
+  window.INTA.experiment = {
+    id: "global-banner-test",
+    variants: {
+      control: { weight: 50 },
+      variant: {
+        weight: 50,
+        settings: {
+          design: "overlay",
+          color: "#0f766e",
+        },
+      },
+    },
+  };
+</script>
+```

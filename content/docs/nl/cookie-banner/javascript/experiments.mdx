@@ -1,0 +1,70 @@
+---
+title: Experimenten
+description: A/B-test de banner met window.INTA.experiment — algemene verdeling of kanaalspecifiek verkeer (bijv. Microsoft Ads via UTM).
+order: 16
+lastUpdated: "2026-05-06"
+related:
+  - title: INTA-referentie
+    href: /docs/cookie-banner/javascript/inta-schema
+  - title: Aan de slag
+    href: /docs/cookie-banner/javascript/getting-started
+---
+
+# Experimenten (A/B-testen)
+
+Gebruik `window.INTA.experiment` om verkeer tussen banner-varianten te verdelen. U kunt:
+
+- **Algemene A/B-tests** voor alle bezoekers uitvoeren
+- **Kanaalspecifieke tests** door een `channel.match`-regel toe te voegen (bijvoorbeeld `utmSource`)
+
+De machineleesbare structuur staat onder `experiment` in de [`window.INTA` JSON Schema](/docs/cookie-banner/javascript/inta-schema)-referentie en in [`/schemas/window-inta.json`](/schemas/window-inta.json).
+
+## Kanaalspecifiek voorbeeld
+
+```html
+<script>
+  window.INTA.experiment = {
+    id: "microsoft-ads-banner-test",
+    channel: {
+      id: "microsoft_ads",
+      label: "Microsoft / Bing Ads",
+      match: {
+        utmSource: ["bing", "microsoft", "msads", "msn"],
+      },
+    },
+    variants: {
+      control: {
+        weight: 50,
+      },
+      variant: {
+        weight: 50,
+        settings: {
+          design: "overlay",
+          color: "#008cb4",
+          textOverridePresetId: "copy-b2b-professional",
+        },
+      },
+    },
+  };
+</script>
+```
+
+## Algemeen voorbeeld
+
+```html
+<script>
+  window.INTA.experiment = {
+    id: "global-banner-test",
+    variants: {
+      control: { weight: 50 },
+      variant: {
+        weight: 50,
+        settings: {
+          design: "overlay",
+          color: "#0f766e",
+        },
+      },
+    },
+  };
+</script>
+```

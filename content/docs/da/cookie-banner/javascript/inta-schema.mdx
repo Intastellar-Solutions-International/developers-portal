@@ -3,6 +3,13 @@ title: INTA-reference
 description: JSON Schema for konfigurationsobjektet `window.INTA` (JavaScript-integration).
 order: 15
 lastUpdated: "2026-04-05"
+related:
+  - title: Eksperimenter
+    href: /docs/cookie-banner/javascript/experiments
+  - title: Script lifecycle
+    href: /docs/cookie-banner/javascript/script-lifecycle
+  - title: Google Consent Mode
+    href: /docs/cookie-banner/google-consent-mode
 ---
 
 # `window.INTA` (JSON Schema)
@@ -21,6 +28,7 @@ Brug det med editorer, validatorer eller codegen-værktøjer, der understøtter 
 | Sti | Type | Noter |
 | --- | --- | --- |
 | `policy_link` | string (URI) | URL til privatlivspolitik |
+| `experiment` | object | Valgfri A/B-testkonfiguration (global eller kanalspecifik) |
 | `settings` | object | Banner-UI og adfærd |
 | `settings.rootDomain` | string | Rod-domæne |
 | `settings.company` | string | Vist navn |
@@ -34,6 +42,10 @@ Brug det med editorer, validatorer eller codegen-værktøjer, der understøtter 
 | `settings.keepInLocalStorage` | string[] | localStorage-nøgler der skal bevares |
 
 Schemaet sætter `additionalProperties: true` på rod og `settings`, så **ekstra nøgler**, som din konto eller version forventer, stadig er gyldige — valider i din pipeline, hvis du skal have et lukket univers.
+
+## Eksperimenter (A/B-test)
+
+Se **[Eksperimenter](/docs/cookie-banner/javascript/experiments)** for detaljer om `window.INTA.experiment`, kanalmålretning og eksempler.
 
 ## Eksempel
 
