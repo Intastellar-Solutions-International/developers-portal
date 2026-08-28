@@ -1,0 +1,73 @@
+---
+title: OpenAI Ads
+description: OpenAI Ads med Intastellar Consents—native scriptblokering og consent mode-signal i én integration.
+order: 56
+lastUpdated: "2026-08-28"
+related:
+  - title: Integrationsoversigt
+    href: /docs/cookie-banner/integrations-overview
+  - title: Sådan virker det
+    href: /docs/cookie-banner/how-it-works
+  - title: Hurtigstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# OpenAI Ads
+
+Intastellar Consents leverer en **native, todelt integration** med OpenAI Ads, der håndterer både scriptblokering og consent-signalering på motorlaget. Ingen custom JavaScript er nødvendig fra din side — din eksisterende tag-implementering forbliver uændret.
+
+**Integrationskategori:** Annoncering · Native Consent Framework Support  
+**Tags:** Consent mode · Native
+
+## Sådan virker det
+
+### 1 — Scriptblokering (før samtykke)
+
+Intastellar Consents-motoren opsnapper OpenAI Ads-sporingsscriptet, før det indlæses. Indtil besøgende eksplicit accepterer kategorien **marketing**-samtykke, vil scriptet ikke:
+
+- udføres
+- sætte cookies
+- sende konverterings- eller publikumshændelser
+
+Opsnapningen sker på motorlaget. Ingen wrapper-funktion eller manuel `type="text/plain"`-attribut er nødvendig i din HTML.
+
+### 2 — Consent mode-signal
+
+Når Intastellar Consents er aktiv på en side, videresender den besøgendes aktuelle samtykketilstand til **OpenAIs native consent mode API**, uanset om den besøgende har givet samtykke eller ej:
+
+| Besøgendes handling | Signal sendt til OpenAI |
+| --- | --- |
+| Accepteret marketing | Fuldt samtykke givet — tag afsendes og konverteringshændelser kører som forventet |
+| Afvist eller endnu ikke valgt | Afvist/begrænset signal — OpenAI modtager et præcist signal i stedet for ingenting |
+
+At sende et afvist signal frem for intet signal giver OpenAI mulighed for at modellere konverteringsgab, hvilket forbedrer målenøjagtigheden på OpenAI Ads-siden.
+
+### Realtidsopdateringer
+
+Hvis en besøgende ændrer sine samtykkepræferencer — f.eks. frammelder sig efter en indledende accept — videresendes samtykketilstanden til OpenAIs consent mode API **øjeblikkeligt, uden genindlæsning af siden**.
+
+## Forudsætninger
+
+- [Hurtigstart](/docs/cookie-banner/quickstart) gennemført, så `uc.js` kører **før** annoncescripts.
+- Dit OpenAI Ads-tag (eller OpenAI Tag Manager-installation) installeret som normalt — ingen ændringer kræves.
+
+## Hvad forbliver uændret
+
+Din tag-implementering ændres ikke. Intastellar Consents wrapper den på motorlaget:
+
+- For besøgende med samtykke afsendes tagget normalt og konverteringshændelser kører som forventet.
+- For besøgende uden samtykke tilbageholdes tagget, og et afvist signal sendes til OpenAIs consent mode.
+
+## Verificér
+
+- **Før samtykke:** ingen OpenAI Ads-sporingsanmodninger bør afsendes som fulde marketinghændelser.
+- **Efter accept:** tagget afsendes og konverteringshændelser vises som forventet.
+- **Efter frammelding:** anmodninger stopper, og et afvist signal sendes til OpenAIs consent mode i realtid.
+
+## Relateret
+
+- [Sådan virker det](/docs/cookie-banner/how-it-works)
+- [Fejlfinding](/docs/cookie-banner/debugging)
+- [Marketingintegrationskatalog](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsoversigt](/docs/cookie-banner/integrations-overview)

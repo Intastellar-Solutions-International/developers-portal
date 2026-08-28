@@ -116,6 +116,7 @@ function sidebarSectionId(relFromProduct: string): SidebarSectionId {
     n === "segment.mdx" ||
     n === "pinterest.mdx" ||
     n === "shopify.mdx" ||
+    n === "openai-ads.mdx" ||
     n === "integrations-overview.mdx"
   ) {
     return "integrations";

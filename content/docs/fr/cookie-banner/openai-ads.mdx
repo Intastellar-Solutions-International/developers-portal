@@ -1,0 +1,73 @@
+---
+title: OpenAI Ads
+description: OpenAI Ads avec Intastellar Consents—blocage de script natif et signal de mode de consentement en une seule intégration.
+order: 56
+lastUpdated: "2026-08-28"
+related:
+  - title: Vue d'ensemble des intégrations
+    href: /docs/cookie-banner/integrations-overview
+  - title: Fonctionnement
+    href: /docs/cookie-banner/how-it-works
+  - title: Démarrage rapide
+    href: /docs/cookie-banner/quickstart
+---
+
+# OpenAI Ads
+
+Intastellar Consents propose une **intégration native en deux parties** avec OpenAI Ads qui couvre à la fois le blocage de script et la signalisation du consentement au niveau du moteur. Aucun JavaScript personnalisé n'est requis de votre côté — votre implémentation de balise existante reste inchangée.
+
+**Catégorie d'intégration :** Publicité · Support natif du framework de consentement  
+**Tags :** Mode de consentement · Natif
+
+## Comment ça fonctionne
+
+### 1 — Blocage de script (avant consentement)
+
+Le moteur Intastellar Consents intercepte le script de suivi OpenAI Ads avant son chargement. Tant que le visiteur n'a pas explicitement accepté la catégorie de consentement **marketing**, le script ne :
+
+- s'exécute pas
+- n'établit pas de cookies
+- ne déclenche pas d'événements de conversion ou d'audience
+
+L'interception se fait au niveau du moteur. Aucune fonction wrapper ni attribut `type="text/plain"` manuel dans votre HTML n'est nécessaire.
+
+### 2 — Signal de mode de consentement
+
+Une fois Intastellar Consents actif sur une page, il transmet l'état de consentement actuel du visiteur à **l'API native de mode de consentement d'OpenAI**, qu'il ait consenti ou non :
+
+| Action du visiteur | Signal envoyé à OpenAI |
+| --- | --- |
+| Marketing accepté | Consentement complet accordé — la balise se déclenche et les événements de conversion s'exécutent normalement |
+| Refusé ou pas encore choisi | Signal refusé/limité — OpenAI reçoit un signal précis plutôt que le silence |
+
+Envoyer un signal de refus plutôt qu'aucun signal permet à OpenAI de modéliser les lacunes de conversion, ce qui améliore la précision de la mesure côté OpenAI Ads.
+
+### Mises à jour en temps réel
+
+Si un visiteur modifie ses préférences de consentement — par exemple, se désinscrit après un accept initial — l'état de consentement est transmis à l'API de mode de consentement d'OpenAI **immédiatement, sans rechargement de page**.
+
+## Prérequis
+
+- [Démarrage rapide](/docs/cookie-banner/quickstart) complété pour que `uc.js` s'exécute **avant** tout script publicitaire.
+- Votre balise OpenAI Ads (ou déploiement OpenAI Tag Manager) installée normalement — aucune modification requise.
+
+## Ce qui reste inchangé
+
+Votre implémentation de balise ne change pas. Intastellar Consents l'enveloppe au niveau du moteur :
+
+- Pour les visiteurs consentants, la balise se déclenche normalement et les événements de conversion s'exécutent comme prévu.
+- Pour les visiteurs non consentants, la balise est retenue et un signal de refus est transmis au mode de consentement d'OpenAI.
+
+## Vérifier
+
+- **Avant consentement :** aucune requête de suivi OpenAI Ads ne doit se déclencher comme événement marketing complet.
+- **Après acceptation :** la balise se déclenche et les événements de conversion apparaissent comme prévu.
+- **Après désinscription :** les requêtes s'arrêtent et un signal de refus est envoyé au mode de consentement d'OpenAI en temps réel.
+
+## Voir aussi
+
+- [Fonctionnement](/docs/cookie-banner/how-it-works)
+- [Dépannage](/docs/cookie-banner/debugging)
+- [Répertoire des intégrations marketing](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Vue d'ensemble des intégrations](/docs/cookie-banner/integrations-overview)

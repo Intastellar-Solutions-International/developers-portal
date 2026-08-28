@@ -1,0 +1,73 @@
+---
+title: OpenAI Ads
+description: OpenAI Ads mit Intastellar Consents—native Skriptblockierung und Consent-Mode-Signal in einer Integration.
+order: 56
+lastUpdated: "2026-08-28"
+related:
+  - title: Integrationsübersicht
+    href: /docs/cookie-banner/integrations-overview
+  - title: Wie es funktioniert
+    href: /docs/cookie-banner/how-it-works
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# OpenAI Ads
+
+Intastellar Consents liefert eine **native, zweiteilige Integration** mit OpenAI Ads, die sowohl Skriptblockierung als auch Consent-Signalisierung auf Motorebene abdeckt. Kein eigenes JavaScript ist auf Ihrer Seite erforderlich — Ihre bestehende Tag-Implementierung bleibt unverändert.
+
+**Integrationskategorie:** Werbung · Native Consent Framework Support  
+**Tags:** Consent mode · Native
+
+## So funktioniert es
+
+### 1 — Skriptblockierung (vor Einwilligung)
+
+Die Intastellar-Consents-Engine fängt das OpenAI-Ads-Tracking-Skript ab, bevor es geladen wird. Bis der Besucher die Kategorie **Marketing**-Einwilligung ausdrücklich akzeptiert, wird das Skript nicht:
+
+- ausgeführt
+- setzt keine Cookies
+- sendet keine Konversions- oder Zielgruppen-Events
+
+Die Blockierung erfolgt auf Motorebene. Kein Wrapper oder manuelles `type="text/plain"`-Attribut in Ihrem HTML ist erforderlich.
+
+### 2 — Consent-Mode-Signal
+
+Sobald Intastellar Consents auf einer Seite aktiv ist, übermittelt es den aktuellen Einwilligungsstatus des Besuchers an **OpenAIs native Consent-Mode-API**, unabhängig davon, ob der Besucher eingewilligt hat oder nicht:
+
+| Aktion des Besuchers | Signal an OpenAI |
+| --- | --- |
+| Marketing akzeptiert | Vollständige Einwilligung — Tag wird ausgelöst, Konversions-Events laufen wie erwartet |
+| Abgelehnt oder noch nicht gewählt | Abgelehntes/eingeschränktes Signal — OpenAI erhält ein genaues Signal statt Stille |
+
+Das Senden eines Ablehnungssignals statt keines Signals ermöglicht es OpenAI, Konversionslücken zu modellieren, was die Messgenauigkeit auf der OpenAI-Ads-Seite verbessert.
+
+### Echtzeit-Updates
+
+Wenn ein Besucher seine Einwilligungseinstellungen ändert — etwa nach einem anfänglichen Accept ablehnt — wird der Einwilligungsstatus **sofort, ohne Seitenneuladen** an OpenAIs Consent-Mode-API weitergeleitet.
+
+## Voraussetzungen
+
+- [Quickstart](/docs/cookie-banner/quickstart) abgeschlossen, sodass `uc.js` **vor** Anzeigenskripten läuft.
+- Ihr OpenAI-Ads-Tag (oder OpenAI-Tag-Manager-Deployment) wie gewohnt installiert — keine Änderungen erforderlich.
+
+## Was unverändert bleibt
+
+Ihre Tag-Implementierung ändert sich nicht. Intastellar Consents umhüllt sie auf Motorebene:
+
+- Für einwilligende Besucher wird das Tag normal ausgelöst und Konversions-Events laufen wie erwartet.
+- Für nicht einwilligende Besucher wird das Tag zurückgehalten und ein Ablehnungssignal an OpenAIs Consent Mode gesendet.
+
+## Prüfen
+
+- **Vor Einwilligung:** Keine OpenAI-Ads-Tracking-Anfragen sollten als vollständige Marketing-Events ausgelöst werden.
+- **Nach Accept:** Das Tag wird ausgelöst und Konversions-Events erscheinen wie erwartet.
+- **Nach Opt-out:** Anfragen stoppen und ein Ablehnungssignal wird in Echtzeit an OpenAIs Consent Mode gesendet.
+
+## Verwandte Themen
+
+- [Wie es funktioniert](/docs/cookie-banner/how-it-works)
+- [Debugging](/docs/cookie-banner/debugging)
+- [Marketing-Integrationsverzeichnis](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrationsübersicht](/docs/cookie-banner/integrations-overview)

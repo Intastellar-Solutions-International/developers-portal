@@ -1,0 +1,73 @@
+---
+title: OpenAI Ads
+description: OpenAI Ads with Intastellar Consents—native script blocking and consent mode signal in a single integration.
+order: 56
+lastUpdated: "2026-08-28"
+related:
+  - title: Integrations overview
+    href: /docs/cookie-banner/integrations-overview
+  - title: How it works
+    href: /docs/cookie-banner/how-it-works
+  - title: Quickstart
+    href: /docs/cookie-banner/quickstart
+---
+
+# OpenAI Ads
+
+Intastellar Consents ships a **native, two-part integration** with OpenAI Ads that covers both script blocking and consent signalling at the engine level. No custom JavaScript is required on your end — your existing tag implementation stays unchanged.
+
+**Integration category:** Advertising · Native Consent Framework Support  
+**Tags:** Consent mode · Native
+
+## How it works
+
+### 1 — Script blocking (pre-consent)
+
+The Intastellar Consents engine intercepts the OpenAI Ads tracking script before it loads. Until the visitor explicitly accepts the **marketing** consent category, the script does not:
+
+- execute
+- set cookies
+- fire conversion or audience events
+
+The intercept happens at the engine level. No wrapper function or manual `type="text/plain"` attribute is needed in your HTML.
+
+### 2 — Consent mode signal
+
+Once Intastellar Consents is active on a page it passes the visitor's current consent state into **OpenAI's native consent mode API**, regardless of whether the visitor has consented or not:
+
+| Visitor action | Signal sent to OpenAI |
+| --- | --- |
+| Accepted marketing | Full consent granted — tag fires and conversion events run as expected |
+| Declined or not yet chosen | Declined / limited signal — OpenAI receives an accurate signal rather than silence |
+
+Sending a declined signal rather than no signal at all lets OpenAI model conversion gaps, which improves measurement accuracy on the OpenAI Ads side.
+
+### Real-time updates
+
+If a visitor changes their consent preferences — for example, opts out after an initial accept — the consent state is forwarded to OpenAI's consent mode API **immediately, without a page reload**.
+
+## Prerequisites
+
+- [Quickstart](/docs/cookie-banner/quickstart) complete so `uc.js` runs **before** any ad scripts.
+- Your OpenAI Ads tag (or OpenAI Tag Manager deployment) installed as normal — no modifications required.
+
+## What stays the same
+
+Your tag implementation does not change. Intastellar Consents wraps it at the engine level:
+
+- For consenting visitors the tag fires normally and conversion events run as expected.
+- For non-consenting visitors the tag is held and a declined signal is passed to OpenAI's consent mode.
+
+## Verify
+
+- **Before consent:** no OpenAI Ads tracking requests should fire as full marketing events.
+- **After accept:** the tag fires and conversion events appear as expected.
+- **After opt-out:** requests stop and a declined signal is passed to OpenAI's consent mode in real time.
+
+## Related
+
+- [How it works](/docs/cookie-banner/how-it-works)
+- [Debugging](/docs/cookie-banner/debugging)
+- [Marketing integrations directory](https://www.intastellarsolutions.com/solutions/cookie-consents/integrations)
+
+[← Integrations overview](/docs/cookie-banner/integrations-overview)
