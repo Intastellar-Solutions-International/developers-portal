@@ -1,15 +1,132 @@
 ---
 title: Intastellar Analytics
-description: Dashboard reference for Intastellar Analytics—audience, acquisition, ad spend, attribution, conversions, heatmaps, user flow, Search Console, and bot filtering.
+description: Developer documentation for Intastellar Analytics—installation, consent tiers, auto-tracked events, custom event API, form provider integrations, and server-side fields.
 hub_order: 20
-hub_tagline: Privacy-first analytics dashboard — audience, attribution, ad spend, conversions.
+hub_tagline: Privacy-first analytics — install in one line, consent-aware from day one.
 order: 0
 lastUpdated: "2026-08-28"
 ---
 
 # Intastellar Analytics
 
-Intastellar Analytics is a first-party analytics dashboard built around consent awareness. Sessions are split by consent state throughout so you always know which data represents fully consented measurement versus limited or declined visitors.
+Intastellar Analytics is a privacy-first analytics platform built for consent-aware data collection. It tracks visitor behaviour, conversions, and form interactions across two consent tiers: **minimal** (anonymous, no personal data) and **full** (enriched, session-linked). All data stays within your organisation; nothing is sold or shared.
+
+## 1. Installation
+
+Add one script tag to the `<head>` or end of `<body>` of every page you want to track. Replace `YOUR_SITE_KEY` with the key shown in your dashboard under **Settings → Analytics Script**.
+
+```html
+<script
+  src="https://analytics.consentsmanagement.com/api/a"
+  data-site="YOUR_SITE_KEY"
+  async
+  defer
+></script>
+```
+
+Pageviews, form interactions, scroll depth, and rage clicks are tracked automatically from this point.
+
+## 2. How Consent Tiers Work
+
+The embed reads consent state from the Intastellar Consent Solution cookie (`IntastellarConsentSolution`) or from `window.intaCookieConsents` if you manage consent yourself.
+
+| Tier | Trigger | Data collected |
+| --- | --- | --- |
+| **Minimal** | No consent required | Anonymous pageview data only — no session ID, no personal identifiers |
+| **Full** | Visitor grants Statistics consent | Session ID, UTMs, click IDs (`gclid` / `msclkid` / `fbclid`), referrer, screen size, language, timezone, duration, scroll depth, heatmap clicks |
+
+## 3. Auto-Tracked Events
+
+The embed fires the following events automatically. No `window.inta.track` call is needed.
+
+| Event | Trigger | Payload fields |
+| --- | --- | --- |
+| `pageview` | Every page load or SPA navigation | `path`, `title`, `referrer`, `device` |
+| `scroll_depth` | At 25%, 50%, 75%, 90%, 100% scroll | `depth` (percentage) |
+| `rage_click` | 3+ clicks within 500 ms / 30 px radius | `selector`, `id`, `cls`, `tag` |
+| `form_started` | First field focus inside any `<form>` | `formId`, `provider` |
+| `form_submit` | Native form submit event | `formId`, `fields[]`, `fieldCount`, `action` |
+| `form_field_focus` | User moves to a new field (deduped per field per form) | `formId`, `field`, `fieldType` |
+| `form_error` | HTML5 validation failure, network error, or server error (4xx/5xx) | `formId`, `errorType`, `field`, `message` |
+| `video_play` | `<video>` play | `src`, `duration` |
+| `video_pause` | `<video>` pause | `src`, `at` |
+| `video_50pct` | 50% of video watched | `src` |
+| `video_complete` | Video ended | `src`, `duration` |
+| `content_copy` | User copies text (Ctrl+C / Cmd+C) | `length` |
+
+## 4. Custom Events
+
+Send custom events with `window.inta.track`:
+
+```js
+window.inta.track('purchase', {
+  value: 49.99,
+  currency: 'EUR',
+  transactionId: 'order_1234',
+  data: { plan: 'pro' },
+  products: [
+    { id: 'prod_abc', name: 'Pro Plan', price: 49.99, quantity: 1 },
+  ],
+});
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `eventName` | string | Required. Lowercase, snake_case recommended. Max 64 chars. |
+| `options.value` | number | Monetary value (e.g. `49.99`). Used in conversion reporting. |
+| `options.currency` | string | ISO 4217 currency code (`"EUR"`, `"USD"`, `"GBP"`). |
+| `options.transactionId` | string | Deduplication key. Same ID within a session is stored once. |
+| `options.data` | object | Arbitrary key-value metadata. Max 20 keys, 500 chars per value. |
+| `options.products` | array | Product list for e-commerce events. |
+
+## 5. Form Provider Integrations
+
+Third-party form providers are detected automatically via their native `postMessage` events. No extra configuration is needed.
+
+| Provider | Detection mechanism |
+| --- | --- |
+| HubSpot | `window.postMessage` (`hsFormCallback`) |
+| Typeform | `window.postMessage` |
+| Calendly | `window.postMessage` |
+| Tally | `window.postMessage` |
+
+The `provider` field on `form_started` and `form_submit` events reflects which provider was detected, or `"native"` for standard HTML forms.
+
+## 6. Form Error Types
+
+The `errorType` field on `form_error` events takes one of three values:
+
+| Type | When it fires |
+| --- | --- |
+| `validation` | HTML5 validation rejected a field (fires on native `invalid` event) |
+| `server` | HTTP 4xx or 5xx response to a form submission fetch / XHR |
+| `network` | Fetch or XHR failed with no response (offline, DNS failure, etc.) |
+
+## 7. UTM and Click ID Capture
+
+The embed reads the following parameters from the landing page URL on first load and attaches them to the session (full consent tier only).
+
+| Parameter | Source |
+| --- | --- |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | URL query string |
+| `gclid` | Google Ads |
+| `msclkid` | Microsoft Advertising |
+| `fbclid` | Meta Ads |
+
+## 8. Server-Side Fields
+
+The following fields are added server-side to every event record before storage.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `site_id` | UUID | Resolved from your site key |
+| `received_at` | timestamp | UTC, server-side |
+| `consent_level` | `"minimal"` \| `"full"` | Set by the embed |
+| `pathname` | string | URL path without query string |
+| `page_host` | string | Hostname (e.g. `app.yoursite.com`) |
+| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Derived from user-agent |
+| `country_code` | ISO 3166-1 alpha-2 | GeoIP lookup, server-side |
+| `session_id` | string \| null | Full consent only |
 
 ## Dashboard panels
 

@@ -1,54 +1,171 @@
 ---
 title: Intastellar Analytics
-description: Referência do painel Intastellar Analytics—audiência, aquisição, gastos com anúncios, atribuição, conversões, mapas de calor, fluxo de usuário, Search Console e filtragem de bots.
+description: Documentação para desenvolvedores do Intastellar Analytics—instalação, níveis de consentimento, eventos rastreados automaticamente, API de eventos personalizados, integrações de formulários e campos do lado do servidor.
 hub_order: 20
-hub_tagline: Painel de analytics focado em privacidade — audiência, atribuição, gastos com anúncios, conversões.
+hub_tagline: Analytics focado em privacidade — instale em uma linha, ciente do consentimento desde o primeiro dia.
 order: 0
 lastUpdated: "2026-08-28"
 ---
 
 # Intastellar Analytics
 
-O Intastellar Analytics é um painel de analytics próprio construído em torno da consciência de consentimento. As sessões são divididas por estado de consentimento em todas as visualizações, para que você sempre saiba quais dados representam medição totalmente consentida versus visitantes limitados ou que recusaram.
+O Intastellar Analytics é uma plataforma de analytics focada em privacidade, construída para coleta de dados com consciência de consentimento. Ele rastreia o comportamento dos visitantes, conversões e interações com formulários em dois níveis de consentimento: **mínimo** (anônimo, sem dados pessoais) e **completo** (enriquecido, vinculado à sessão). Todos os dados permanecem dentro da sua organização; nada é vendido ou compartilhado.
+
+## 1. Instalação
+
+Adicione uma tag de script ao `<head>` ou ao final de `<body>` de cada página que deseja rastrear. Substitua `YOUR_SITE_KEY` pela chave exibida no seu painel em **Configurações → Analytics Script**.
+
+```html
+<script
+  src="https://analytics.consentsmanagement.com/api/a"
+  data-site="YOUR_SITE_KEY"
+  async
+  defer
+></script>
+```
+
+Visualizações de página, interações com formulários, profundidade de rolagem e rage clicks são rastreados automaticamente a partir deste ponto.
+
+## 2. Como funcionam os níveis de consentimento
+
+O embed lê o estado de consentimento do cookie da Intastellar Consent Solution (`IntastellarConsentSolution`) ou de `window.intaCookieConsents` se você gerenciar o consentimento por conta própria.
+
+| Nível | Gatilho | Dados coletados |
+| --- | --- | --- |
+| **Mínimo** | Não requer consentimento | Apenas dados anônimos de visualização de página — sem ID de sessão, sem identificadores pessoais |
+| **Completo** | Visitante concede consentimento de Estatísticas | ID de sessão, UTMs, IDs de clique (`gclid` / `msclkid` / `fbclid`), referenciador, tamanho de tela, idioma, fuso horário, duração, profundidade de rolagem, cliques de mapa de calor |
+
+## 3. Eventos Rastreados Automaticamente
+
+O embed dispara os seguintes eventos automaticamente. Nenhuma chamada a `window.inta.track` é necessária.
+
+| Evento | Gatilho | Campos do payload |
+| --- | --- | --- |
+| `pageview` | Cada carregamento de página ou navegação SPA | `path`, `title`, `referrer`, `device` |
+| `scroll_depth` | A 25%, 50%, 75%, 90%, 100% de rolagem | `depth` (porcentagem) |
+| `rage_click` | 3+ cliques em 500 ms / raio de 30 px | `selector`, `id`, `cls`, `tag` |
+| `form_started` | Primeiro foco em campo dentro de um `<form>` | `formId`, `provider` |
+| `form_submit` | Evento de envio de formulário nativo | `formId`, `fields[]`, `fieldCount`, `action` |
+| `form_field_focus` | Usuário move para novo campo (deduplicado por campo por formulário) | `formId`, `field`, `fieldType` |
+| `form_error` | Falha de validação HTML5, erro de rede ou erro de servidor (4xx/5xx) | `formId`, `errorType`, `field`, `message` |
+| `video_play` | Reprodução de `<video>` | `src`, `duration` |
+| `video_pause` | Pausa de `<video>` | `src`, `at` |
+| `video_50pct` | 50% do vídeo assistido | `src` |
+| `video_complete` | Vídeo encerrado | `src`, `duration` |
+| `content_copy` | Usuário copia texto (Ctrl+C / Cmd+C) | `length` |
+
+## 4. Eventos Personalizados
+
+Envie eventos personalizados com `window.inta.track`:
+
+```js
+window.inta.track('purchase', {
+  value: 49.99,
+  currency: 'EUR',
+  transactionId: 'order_1234',
+  data: { plan: 'pro' },
+  products: [
+    { id: 'prod_abc', name: 'Pro Plan', price: 49.99, quantity: 1 },
+  ],
+});
+```
+
+| Parâmetro | Tipo | Descrição |
+| --- | --- | --- |
+| `eventName` | string | Obrigatório. Minúsculas, snake_case recomendado. Máx. 64 caracteres. |
+| `options.value` | number | Valor monetário (ex. `49.99`). Usado em relatórios de conversão. |
+| `options.currency` | string | Código de moeda ISO 4217 (`"EUR"`, `"USD"`, `"GBP"`). |
+| `options.transactionId` | string | Chave de deduplicação. O mesmo ID em uma sessão é armazenado uma vez. |
+| `options.data` | object | Metadados de chave-valor arbitrários. Máx. 20 chaves, 500 caracteres por valor. |
+| `options.products` | array | Lista de produtos para eventos de e-commerce. |
+
+## 5. Integrações de Provedores de Formulários
+
+Provedores de formulários de terceiros são detectados automaticamente via seus eventos `postMessage` nativos. Nenhuma configuração extra é necessária.
+
+| Provedor | Mecanismo de detecção |
+| --- | --- |
+| HubSpot | `window.postMessage` (`hsFormCallback`) |
+| Typeform | `window.postMessage` |
+| Calendly | `window.postMessage` |
+| Tally | `window.postMessage` |
+
+O campo `provider` nos eventos `form_started` e `form_submit` reflete qual provedor foi detectado, ou `"native"` para formulários HTML padrão.
+
+## 6. Tipos de Erro de Formulário
+
+O campo `errorType` nos eventos `form_error` assume um de três valores:
+
+| Tipo | Quando é disparado |
+| --- | --- |
+| `validation` | A validação HTML5 rejeitou um campo (dispara no evento nativo `invalid`) |
+| `server` | Resposta HTTP 4xx ou 5xx a um envio de formulário fetch / XHR |
+| `network` | Fetch ou XHR falhou sem resposta (offline, falha de DNS, etc.) |
+
+## 7. Captura de UTM e ID de Clique
+
+O embed lê os seguintes parâmetros da URL da página de destino no primeiro carregamento e os vincula à sessão (apenas nível de consentimento completo).
+
+| Parâmetro | Fonte |
+| --- | --- |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | String de consulta URL |
+| `gclid` | Google Ads |
+| `msclkid` | Microsoft Advertising |
+| `fbclid` | Meta Ads |
+
+## 8. Campos do Lado do Servidor
+
+Os campos a seguir são adicionados do lado do servidor a cada registro de evento antes do armazenamento.
+
+| Campo | Tipo | Notas |
+| --- | --- | --- |
+| `site_id` | UUID | Resolvido a partir da chave do seu site |
+| `received_at` | timestamp | UTC, lado do servidor |
+| `consent_level` | `"minimal"` \| `"full"` | Definido pelo embed |
+| `pathname` | string | Caminho URL sem string de consulta |
+| `page_host` | string | Nome do host (ex. `app.yoursite.com`) |
+| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Derivado do user-agent |
+| `country_code` | ISO 3166-1 alpha-2 | Pesquisa GeoIP, lado do servidor |
+| `session_id` | string \| null | Apenas consentimento completo |
 
 ## Painéis do painel
 
 ### Feed de eventos ao vivo
 
-Um feed contínuo dos últimos 30 minutos de eventos em tempo real. Use-o para confirmar que o rastreamento está funcionando após um deploy ou alteração de configuração de consentimento, sem precisar aguardar relatórios processados em lote.
+Feed contínuo dos últimos 30 minutos em tempo real — para confirmar após deploys ou alterações de consentimento.
 
 ### Audiência
 
-Qualidade de sessão, novos versus recorrentes e divisão por país. As sessões são divididas entre **completas** (com consentimento de marketing) e **recusadas**, para que a visualização de audiência reflita a distribuição real de consentimento em vez de agregar todos os estados de consentimento.
+Qualidade de sessão, novos vs. recorrentes, divisão por país. Sessões divididas em **completas** e **recusadas**.
 
 ### Aquisição
 
-Eventos de atribuição de primeiro contato e próprios. Os dados de aquisição são capturados via mecanismos próprios, portanto **não são afetados por decisões de consentimento** — você obtém dados completos de aquisição independentemente de o visitante ter aceitado ou recusado a categoria de marketing.
+Atribuição de primeiro contato e própria — **não afetada por decisões de consentimento**.
 
 ### Gastos com anúncios
 
-Gastos, cliques, impressões e CPC das plataformas de anúncios conectadas. Os dados são extraídos **diariamente via API** de cada plataforma conectada, para que os valores de gastos cheguem ao painel sem precisar de uploads manuais ou medição baseada em tags.
+Gastos, cliques, impressões e CPC — **extração diária via API** das plataformas conectadas.
 
 ### Atribuição
 
-Custo por canal com os modelos de **primeiro contato** e **último contato** lado a lado. Compare como cada canal se apresenta em cada modelo para entender onde seu orçamento impulsiona a descoberta inicial versus a conversão final.
+Custo por canal com modelos de **primeiro contato** e **último contato** lado a lado.
 
 ### Conversões
 
-Análise de funil mostrando exatamente onde os visitantes abandonam em cada etapa. Cada estágio é rotulado para que você possa identificar o ponto específico no funil onde a queda é mais alta e agir sobre isso.
+Análise de funil mostrando exatamente onde os visitantes abandonam em cada etapa.
 
 ### Mapa de calor
 
-Mapas de calor de cliques e rolagem por página. Mostra onde os visitantes interagem e até onde rolam, permitindo validar o posicionamento de CTAs e decisões de layout de página com dados reais de comportamento.
+Mapas de calor de cliques e rolagem por página.
 
 ### Fluxo de usuário
 
-Um diagrama de Sankey dos caminhos que os visitantes percorrem pelo seu site — pontos de entrada, páginas intermediárias e pontos de saída. Use-o para identificar caminhos de navegação inesperados e páginas que funcionam como becos sem saída.
+Diagrama de Sankey dos caminhos dos visitantes — entradas, páginas intermediárias, saídas.
 
 ### Search Console
 
-Dados do Google Search Console extraídos diretamente para o painel: cliques, impressões, CTR, posição média e principais consultas por página. Nenhum login separado no Search Console é necessário para a revisão diária.
+Dados do Google Search Console no painel: cliques, impressões, CTR, posição, principais consultas.
 
 ### Bots
 
-O tráfego de rastreadores é automaticamente separado do tráfego real de visitantes e excluído de todos os outros painéis. O painel de bots divide a atividade de rastreadores por categoria — **ferramentas de busca** e **agregadores de dados** — para que você possa ver o que está rastreando seu site sem inflar suas métricas de usuários reais.
+Tráfego de rastreadores separado automaticamente e dividido por categoria — **ferramentas de busca** e **agregadores de dados**.

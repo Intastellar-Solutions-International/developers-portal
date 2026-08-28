@@ -1,54 +1,171 @@
 ---
 title: Intastellar Analytics
-description: Dashboardreferentie voor Intastellar Analytics—publiek, acquisitie, advertentie-uitgaven, attributie, conversies, heatmaps, gebruikersflow, Search Console en botfiltering.
+description: Ontwikkelaarsdocumentatie voor Intastellar Analytics—installatie, toestemmingsniveaus, automatisch bijgehouden events, aangepaste event-API, formulierintergraties en server-side velden.
 hub_order: 20
-hub_tagline: Privacyvriendelijk analyticsdashboard — publiek, attributie, advertentie-uitgaven, conversies.
+hub_tagline: Privacyvriendelijke analytics — installeer in één regel, toestemmingsbewust vanaf dag één.
 order: 0
 lastUpdated: "2026-08-28"
 ---
 
 # Intastellar Analytics
 
-Intastellar Analytics is een first-party analyticsdashboard gebouwd rond toestemmingsbewustzijn. Sessies worden in alle weergaven opgesplitst naar toestemmingsstatus, zodat u altijd weet welke data volledig toestemmende meting vertegenwoordigt versus beperkte of geweigerde bezoekers.
+Intastellar Analytics is een privacyvriendelijk analyticplatform gebouwd voor toestemmingsbewuste gegevensverzameling. Het volgt bezoekersgedrag, conversies en formulierinteracties op twee toestemmingsniveaus: **minimaal** (anoniem, geen persoonsgegevens) en **volledig** (verrijkt, sessiegebonden). Alle gegevens blijven binnen uw organisatie; niets wordt verkocht of gedeeld.
+
+## 1. Installatie
+
+Voeg één script-tag toe aan de `<head>` of het einde van `<body>` van elke pagina die u wilt bijhouden. Vervang `YOUR_SITE_KEY` door de sleutel in uw dashboard onder **Instellingen → Analytics Script**.
+
+```html
+<script
+  src="https://analytics.consentsmanagement.com/api/a"
+  data-site="YOUR_SITE_KEY"
+  async
+  defer
+></script>
+```
+
+Paginaweergaven, formulierinteracties, scrolldiepte en rage clicks worden vanaf dit punt automatisch bijgehouden.
+
+## 2. Hoe toestemmingsniveaus werken
+
+De embed leest de toestemmingsstatus uit de Intastellar Consent Solution-cookie (`IntastellarConsentSolution`) of uit `window.intaCookieConsents` als u zelf toestemming beheert.
+
+| Niveau | Trigger | Verzamelde gegevens |
+| --- | --- | --- |
+| **Minimaal** | Geen toestemming vereist | Alleen anonieme paginaweergavedata — geen sessie-ID, geen persoonlijke identificatoren |
+| **Volledig** | Bezoeker verleent Statistieken-toestemming | Sessie-ID, UTM's, klik-ID's (`gclid` / `msclkid` / `fbclid`), referrer, schermgrootte, taal, tijdzone, duur, scrolldiepte, heatmap-klikken |
+
+## 3. Automatisch bijgehouden events
+
+De embed stuurt de volgende events automatisch. Geen `window.inta.track`-aanroep is nodig.
+
+| Event | Trigger | Payload-velden |
+| --- | --- | --- |
+| `pageview` | Elke paginalading of SPA-navigatie | `path`, `title`, `referrer`, `device` |
+| `scroll_depth` | Bij 25%, 50%, 75%, 90%, 100% scroll | `depth` (percentage) |
+| `rage_click` | 3+ klikken binnen 500 ms / 30 px radius | `selector`, `id`, `cls`, `tag` |
+| `form_started` | Eerste veldfocus in een `<form>` | `formId`, `provider` |
+| `form_submit` | Natief formulier submit-event | `formId`, `fields[]`, `fieldCount`, `action` |
+| `form_field_focus` | Gebruiker gaat naar nieuw veld (gededupliceerd per veld per formulier) | `formId`, `field`, `fieldType` |
+| `form_error` | HTML5-validatiefout, netwerkfout of serverfout (4xx/5xx) | `formId`, `errorType`, `field`, `message` |
+| `video_play` | `<video>` afspelen | `src`, `duration` |
+| `video_pause` | `<video>` pauzeren | `src`, `at` |
+| `video_50pct` | 50% van video bekeken | `src` |
+| `video_complete` | Video beëindigd | `src`, `duration` |
+| `content_copy` | Gebruiker kopieert tekst (Ctrl+C / Cmd+C) | `length` |
+
+## 4. Aangepaste events
+
+Stuur aangepaste events met `window.inta.track`:
+
+```js
+window.inta.track('purchase', {
+  value: 49.99,
+  currency: 'EUR',
+  transactionId: 'order_1234',
+  data: { plan: 'pro' },
+  products: [
+    { id: 'prod_abc', name: 'Pro Plan', price: 49.99, quantity: 1 },
+  ],
+});
+```
+
+| Parameter | Type | Beschrijving |
+| --- | --- | --- |
+| `eventName` | string | Verplicht. Kleine letters, snake_case aanbevolen. Max 64 tekens. |
+| `options.value` | number | Monetaire waarde (bijv. `49.99`). Gebruikt in conversierapportage. |
+| `options.currency` | string | ISO 4217-valutacode (`"EUR"`, `"USD"`, `"GBP"`). |
+| `options.transactionId` | string | Deduplicatiesleutel. Zelfde ID binnen een sessie wordt eenmaal opgeslagen. |
+| `options.data` | object | Willekeurige sleutel-waarde-metadata. Max 20 sleutels, 500 tekens per waarde. |
+| `options.products` | array | Productlijst voor e-commerce events. |
+
+## 5. Formulieraanbieder-integraties
+
+Externe formulieraanbieders worden automatisch gedetecteerd via hun native `postMessage`-events. Geen extra configuratie nodig.
+
+| Aanbieder | Detectiemechanisme |
+| --- | --- |
+| HubSpot | `window.postMessage` (`hsFormCallback`) |
+| Typeform | `window.postMessage` |
+| Calendly | `window.postMessage` |
+| Tally | `window.postMessage` |
+
+Het `provider`-veld op `form_started`- en `form_submit`-events geeft de gedetecteerde aanbieder weer, of `"native"` voor standaard HTML-formulieren.
+
+## 6. Formulierfouttypes
+
+Het `errorType`-veld op `form_error`-events neemt een van drie waarden aan:
+
+| Type | Wanneer het vuurt |
+| --- | --- |
+| `validation` | HTML5-validatie wees een veld af (vuurt bij native `invalid`-event) |
+| `server` | HTTP 4xx of 5xx respons op een formulierindieningsfetch / XHR |
+| `network` | Fetch of XHR mislukt zonder respons (offline, DNS-fout, etc.) |
+
+## 7. UTM- en klik-ID-vastlegging
+
+De embed leest de volgende parameters uit de URL van de landingspagina bij eerste lading en koppelt ze aan de sessie (alleen volledig toestemmingsniveau).
+
+| Parameter | Bron |
+| --- | --- |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | URL-querystring |
+| `gclid` | Google Ads |
+| `msclkid` | Microsoft Advertising |
+| `fbclid` | Meta Ads |
+
+## 8. Server-side velden
+
+De volgende velden worden server-side aan elk eventrecord toegevoegd vóór opslag.
+
+| Veld | Type | Opmerkingen |
+| --- | --- | --- |
+| `site_id` | UUID | Opgelost uit uw sitesleutel |
+| `received_at` | timestamp | UTC, server-side |
+| `consent_level` | `"minimal"` \| `"full"` | Ingesteld door de embed |
+| `pathname` | string | URL-pad zonder querystring |
+| `page_host` | string | Hostnaam (bijv. `app.yoursite.com`) |
+| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Afgeleid van user-agent |
+| `country_code` | ISO 3166-1 alpha-2 | GeoIP-zoekopdracht, server-side |
+| `session_id` | string \| null | Alleen volledig toestemming |
 
 ## Dashboardpanelen
 
 ### Live gebeurtenisfeed
 
-Een doorlopende feed van de laatste 30 minuten aan gebeurtenissen in realtime. Gebruik het om te bevestigen dat tracking werkt na een deployment of wijziging van de toestemmingsconfiguratie, zonder te wachten op batchverwerkte rapporten.
+Doorlopende feed van de laatste 30 minuten in realtime — ter bevestiging na deployments of toestemmingswijzigingen.
 
 ### Publiek
 
-Sessiekwaliteit, nieuw versus terugkerend en landsoverzicht. Sessies worden opgesplitst in **volledige** (marketing-toestemmende) en **geweigerde** sessies, zodat de publieksweergave de werkelijke toestemmingsverdeling weerspiegelt in plaats van te aggregeren over toestemmingsstatussen heen.
+Sessiekwaliteit, nieuw vs. terugkerend, landsoverzicht. Sessies opgesplitst in **volledige** en **geweigerde**.
 
 ### Acquisitie
 
-Eerste-contactpunt en first-party attributiegebeurtenissen. Acquisitiedata worden vastgelegd via first-party mechanismen, zodat ze **niet worden beïnvloed door toestemmingsbeslissingen** — u krijgt volledige acquisitiedata, ongeacht of een bezoeker de marketingcategorie heeft geaccepteerd of geweigerd.
+Eerste-contactpunt en first-party events — **niet beïnvloed door toestemmingsbeslissingen**.
 
 ### Advertentie-uitgaven
 
-Uitgaven, klikken, vertoningen en CPC van verbonden advertentieplatforms. Data worden **dagelijks via API** opgehaald van elk verbonden platform, zodat uitgavencijfers in het dashboard terechtkomen zonder handmatige uploads of op tags gebaseerde meting.
+Uitgaven, klikken, vertoningen en CPC — **dagelijks via API** opgehaald van verbonden platforms.
 
 ### Attributie
 
-Kosten per kanaal met zowel **eerste-contactpunt** als **laatste-contactpunt** modellen naast elkaar. Vergelijk hoe elk kanaal eruitziet onder elk model om te begrijpen waar uw budget initiële ontdekking versus definitieve conversie stimuleert.
+Kanaalkosten met **eerste-contactpunt** en **laatste-contactpunt** modellen naast elkaar.
 
 ### Conversies
 
-Trechteranalyse die precies laat zien waar bezoekers bij elke stap afhaken. Elke stap is gelabeld zodat u het specifieke punt in de trechter kunt identificeren waar uitval het hoogst is en er actie op kunt ondernemen.
+Trechteranalyse met exact uitvalpunt per stap.
 
 ### Heatmap
 
-Klik- en scrollheatmaps per pagina. Toont waar bezoekers interacteren en hoe ver ze scrollen, zodat u CTA-plaatsing en pagina-indelingsbeslissingen kunt valideren met echte gedragsdata.
+Klik- en scrollheatmaps per pagina.
 
 ### Gebruikersflow
 
-Een Sankey-diagram van de paden die bezoekers door uw site nemen — ingangspunten, tussenpagina's en uitgangspunten. Gebruik het om onverwachte navigatiepaden en pagina's die als doodlopende straten fungeren te identificeren.
+Sankey-diagram van bezoekerssessies — ingangspunten, tussenpagina's, uitgangspunten.
 
 ### Search Console
 
-Google Search Console-data rechtstreeks in het dashboard: klikken, vertoningen, CTR, gemiddelde positie en topzoekopdrachten per pagina. Geen aparte Search Console-aanmelding nodig voor dagelijkse controle.
+Google Search Console-data in het dashboard: klikken, vertoningen, CTR, positie, topzoekopdrachten.
 
 ### Bots
 
-Crawlerverkeer wordt automatisch gescheiden van echt bezoekersverkeer en uitgesloten van alle andere panelen. Het botpanel splitst crawleractiviteit uit naar categorie — **zoektools** en **dataaggregators** — zodat u kunt zien wat uw site crawlt zonder dat het uw echte gebruikersmetrics opblaast.
+Crawlerverkeer automatisch gescheiden en uitgesplitst naar categorie — **zoektools** en **dataaggregators**.

@@ -1,54 +1,171 @@
 ---
 title: Intastellar Analytics
-description: Dashboard-Referenz für Intastellar Analytics—Zielgruppe, Akquise, Anzeigenausgaben, Attribution, Konversionen, Heatmaps, Benutzerfluss, Search Console und Bot-Filterung.
+description: Entwicklerdokumentation für Intastellar Analytics—Installation, Einwilligungsstufen, automatisch getrackte Events, benutzerdefinierte Event-API, Formular-Integrationen und serverseitige Felder.
 hub_order: 20
-hub_tagline: Datenschutzfreundliches Analytics-Dashboard — Zielgruppe, Attribution, Anzeigenausgaben, Konversionen.
+hub_tagline: Datenschutzfreundliches Analytics — in einer Zeile installiert, einwilligungsbewusst von Tag eins.
 order: 0
 lastUpdated: "2026-08-28"
 ---
 
 # Intastellar Analytics
 
-Intastellar Analytics ist ein First-Party-Analytics-Dashboard, das auf Einwilligungsbewusstsein aufgebaut ist. Sitzungen werden in allen Ansichten nach Einwilligungsstatus aufgeteilt, sodass Sie stets wissen, welche Daten vollständig eingewilligte Messungen im Vergleich zu eingeschränkten oder abgelehnten Besuchern repräsentieren.
+Intastellar Analytics ist eine datenschutzfreundliche Analytics-Plattform für einwilligungsbewusste Datenerfassung. Sie verfolgt Besucherverhalten, Konversionen und Formularinteraktionen auf zwei Einwilligungsstufen: **minimal** (anonym, keine personenbezogenen Daten) und **vollständig** (angereichert, sitzungsgebunden). Alle Daten verbleiben in Ihrer Organisation; nichts wird verkauft oder weitergegeben.
+
+## 1. Installation
+
+Fügen Sie ein einzelnes Script-Tag im `<head>` oder am Ende von `<body>` jeder Seite ein, die Sie tracken möchten. Ersetzen Sie `YOUR_SITE_KEY` mit dem Schlüssel aus Ihrem Dashboard unter **Einstellungen → Analytics Script**.
+
+```html
+<script
+  src="https://analytics.consentsmanagement.com/api/a"
+  data-site="YOUR_SITE_KEY"
+  async
+  defer
+></script>
+```
+
+Seitenaufrufe, Formularinteraktionen, Scrolltiefe und Rage-Clicks werden ab sofort automatisch getrackt.
+
+## 2. Einwilligungsstufen
+
+Das Embed liest den Einwilligungsstatus aus dem Intastellar-Consent-Solution-Cookie (`IntastellarConsentSolution`) oder aus `window.intaCookieConsents`, wenn Sie die Einwilligung selbst verwalten.
+
+| Stufe | Auslöser | Erfasste Daten |
+| --- | --- | --- |
+| **Minimal** | Keine Einwilligung erforderlich | Nur anonyme Seitenaufrufdaten — keine Sitzungs-ID, keine persönlichen Kennungen |
+| **Vollständig** | Besucher erteilt Statistik-Einwilligung | Sitzungs-ID, UTMs, Klick-IDs (`gclid` / `msclkid` / `fbclid`), Referrer, Bildschirmgröße, Sprache, Zeitzone, Dauer, Scrolltiefe, Heatmap-Klicks |
+
+## 3. Automatisch getrackte Events
+
+Das Embed sendet folgende Events automatisch. Kein `window.inta.track`-Aufruf ist erforderlich.
+
+| Event | Auslöser | Payload-Felder |
+| --- | --- | --- |
+| `pageview` | Jeder Seitenaufruf oder SPA-Navigation | `path`, `title`, `referrer`, `device` |
+| `scroll_depth` | Bei 25%, 50%, 75%, 90%, 100% Scroll | `depth` (Prozent) |
+| `rage_click` | 3+ Klicks innerhalb 500 ms / 30 px Radius | `selector`, `id`, `cls`, `tag` |
+| `form_started` | Erstes Feldfokus innerhalb eines `<form>` | `formId`, `provider` |
+| `form_submit` | Natives Formular-Submit-Event | `formId`, `fields[]`, `fieldCount`, `action` |
+| `form_field_focus` | Benutzer wechselt zu neuem Feld (dedupliziert pro Feld pro Formular) | `formId`, `field`, `fieldType` |
+| `form_error` | HTML5-Validierungsfehler, Netzwerkfehler oder Serverfehler (4xx/5xx) | `formId`, `errorType`, `field`, `message` |
+| `video_play` | `<video>` Wiedergabe | `src`, `duration` |
+| `video_pause` | `<video>` Pause | `src`, `at` |
+| `video_50pct` | 50% des Videos angesehen | `src` |
+| `video_complete` | Video beendet | `src`, `duration` |
+| `content_copy` | Benutzer kopiert Text (Ctrl+C / Cmd+C) | `length` |
+
+## 4. Benutzerdefinierte Events
+
+Senden Sie benutzerdefinierte Events mit `window.inta.track`:
+
+```js
+window.inta.track('purchase', {
+  value: 49.99,
+  currency: 'EUR',
+  transactionId: 'order_1234',
+  data: { plan: 'pro' },
+  products: [
+    { id: 'prod_abc', name: 'Pro Plan', price: 49.99, quantity: 1 },
+  ],
+});
+```
+
+| Parameter | Typ | Beschreibung |
+| --- | --- | --- |
+| `eventName` | string | Pflichtfeld. Kleinbuchstaben, snake_case empfohlen. Max. 64 Zeichen. |
+| `options.value` | number | Geldwert (z.B. `49.99`). Wird in der Konversionsberichterstattung verwendet. |
+| `options.currency` | string | ISO-4217-Währungscode (`"EUR"`, `"USD"`, `"GBP"`). |
+| `options.transactionId` | string | Deduplizierungsschlüssel. Gleiche ID innerhalb einer Sitzung wird einmal gespeichert. |
+| `options.data` | object | Beliebige Schlüssel-Wert-Metadaten. Max. 20 Schlüssel, 500 Zeichen pro Wert. |
+| `options.products` | array | Produktliste für E-Commerce-Events. |
+
+## 5. Formularanbieter-Integrationen
+
+Drittanbieter-Formularanbieter werden automatisch über ihre nativen `postMessage`-Events erkannt. Keine zusätzliche Konfiguration erforderlich.
+
+| Anbieter | Erkennungsmechanismus |
+| --- | --- |
+| HubSpot | `window.postMessage` (`hsFormCallback`) |
+| Typeform | `window.postMessage` |
+| Calendly | `window.postMessage` |
+| Tally | `window.postMessage` |
+
+Das `provider`-Feld bei `form_started`- und `form_submit`-Events zeigt den erkannten Anbieter oder `"native"` für Standard-HTML-Formulare.
+
+## 6. Formularfehlertypen
+
+Das `errorType`-Feld bei `form_error`-Events nimmt einen von drei Werten an:
+
+| Typ | Wann ausgelöst |
+| --- | --- |
+| `validation` | HTML5-Validierung hat ein Feld abgelehnt (wird beim nativen `invalid`-Event ausgelöst) |
+| `server` | HTTP 4xx oder 5xx Antwort auf eine Formularübermittlung per fetch / XHR |
+| `network` | Fetch oder XHR ohne Antwort fehlgeschlagen (offline, DNS-Fehler usw.) |
+
+## 7. UTM- und Klick-ID-Erfassung
+
+Das Embed liest folgende Parameter aus der URL der Landingpage beim ersten Aufruf und verknüpft sie mit der Sitzung (nur vollständige Einwilligungsstufe).
+
+| Parameter | Quelle |
+| --- | --- |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | URL-Abfragestring |
+| `gclid` | Google Ads |
+| `msclkid` | Microsoft Advertising |
+| `fbclid` | Meta Ads |
+
+## 8. Serverseitige Felder
+
+Die folgenden Felder werden serverseitig jedem Ereignisdatensatz vor der Speicherung hinzugefügt.
+
+| Feld | Typ | Hinweise |
+| --- | --- | --- |
+| `site_id` | UUID | Wird aus Ihrem Site-Key aufgelöst |
+| `received_at` | timestamp | UTC, serverseitig |
+| `consent_level` | `"minimal"` \| `"full"` | Vom Embed gesetzt |
+| `pathname` | string | URL-Pfad ohne Abfragestring |
+| `page_host` | string | Hostname (z.B. `app.yoursite.com`) |
+| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Aus User-Agent abgeleitet |
+| `country_code` | ISO 3166-1 alpha-2 | GeoIP-Abfrage, serverseitig |
+| `session_id` | string \| null | Nur vollständige Einwilligung |
 
 ## Dashboard-Panels
 
 ### Live-Ereignis-Feed
 
-Ein rollierender Feed der letzten 30 Minuten an Ereignissen in Echtzeit. Nutzen Sie ihn, um nach einem Deployment oder einer Änderung der Einwilligungskonfiguration zu bestätigen, dass das Tracking funktioniert – ohne auf Batch-Berichte warten zu müssen.
+Rollierender Feed der letzten 30 Minuten in Echtzeit — zum Bestätigen nach Deployments oder Einwilligungsänderungen.
 
 ### Zielgruppe
 
-Sitzungsqualität, neu vs. wiederkehrend und Länderaufschlüsselung. Sitzungen werden in **vollständige** (Marketing-eingewilligte) und **abgelehnte** aufgeteilt, sodass die Zielgruppenansicht die reale Einwilligungsverteilung widerspiegelt, anstatt über Einwilligungsstatus hinweg zu aggregieren.
+Sitzungsqualität, neu vs. wiederkehrend, Länderaufschlüsselung. Sitzungen aufgeteilt in **vollständige** und **abgelehnte**.
 
 ### Akquise
 
-Erst-Kontakt- und First-Party-Attributionsereignisse. Akquisedaten werden über First-Party-Mechanismen erfasst und sind daher **nicht von Einwilligungsentscheidungen betroffen** — Sie erhalten vollständige Akquisedaten, unabhängig davon, ob ein Besucher die Marketing-Kategorie akzeptiert oder abgelehnt hat.
+Erst-Kontakt- und First-Party-Events — **nicht von Einwilligungsentscheidungen betroffen**.
 
 ### Anzeigenausgaben
 
-Ausgaben, Klicks, Impressionen und CPC von verbundenen Anzeigenplattformen. Daten werden täglich über **API** von jeder verbundenen Plattform abgerufen, sodass Ausgabenzahlen im Dashboard landen, ohne manuelle Uploads oder tagbasierte Messungen zu erfordern.
+Ausgaben, Klicks, Impressionen und CPC — täglicher **API-Abruf** von verbundenen Plattformen.
 
 ### Attribution
 
-Kosten pro Kanal mit **Erst-Kontakt-** und **Letzt-Kontakt-**Modellen nebeneinander. Vergleichen Sie, wie jeder Kanal unter jedem Modell aussieht, um zu verstehen, wo Ihr Budget die anfängliche Entdeckung versus die abschließende Konversion antreibt.
+Kanalkosten mit **Erst-Kontakt-** und **Letzt-Kontakt-**Modellen nebeneinander.
 
 ### Konversionen
 
-Trichteranalyse, die genau zeigt, wo Besucher bei jedem Schritt abspringen. Jede Stufe ist beschriftet, sodass Sie den spezifischen Punkt im Trichter identifizieren können, an dem der Abbruch am höchsten ist, und entsprechend handeln können.
+Trichteranalyse mit genauer Absprungstelle pro Schritt.
 
 ### Heatmap
 
-Klick- und Scroll-Heatmaps pro Seite. Zeigt, wo Besucher interagieren und wie weit sie scrollen, sodass Sie CTA-Platzierung und Seitenlayout-Entscheidungen anhand realer Verhaltensdaten validieren können.
+Klick- und Scroll-Heatmaps pro Seite.
 
 ### Benutzerfluss
 
-Ein Sankey-Diagramm der Pfade, die Besucher durch Ihre Website nehmen — Einstiegspunkte, Zwischenseiten und Ausstiegspunkte. Nutzen Sie es, um unerwartete Navigationspfade und Seiten zu identifizieren, die als Sackgassen fungieren.
+Sankey-Diagramm der Besucherpfade — Einstieg, Zwischenseiten, Ausstieg.
 
 ### Search Console
 
-Google-Search-Console-Daten direkt ins Dashboard gezogen: Klicks, Impressionen, CTR, durchschnittliche Position und Top-Suchanfragen pro Seite. Für die tägliche Überprüfung ist kein separater Search-Console-Login erforderlich.
+Google-Search-Console-Daten direkt im Dashboard: Klicks, Impressionen, CTR, Position, Top-Suchanfragen.
 
 ### Bots
 
-Crawler-Traffic wird automatisch von echtem Besuchertraffic getrennt und aus allen anderen Panels ausgeschlossen. Das Bot-Panel schlüsselt Crawler-Aktivitäten nach Kategorie auf — **Suchwerkzeuge** und **Datenaggreggatoren** — sodass Sie sehen können, was Ihre Website crawlt, ohne dass es Ihre echten Benutzermetriken aufbläht.
+Crawler-Traffic automatisch getrennt und nach Kategorie aufgeteilt — **Suchwerkzeuge** und **Datenaggreggatoren**.
