@@ -1,0 +1,149 @@
+---
+title: Troubleshooting
+description: Diagnostic steps for common Intastellar Analytics issues — events not appearing, consent tier not updating, form provider not detected, and network request failures.
+order: 9
+lastUpdated: "2026-09-06"
+---
+
+# Troubleshooting
+
+## Events not appearing in the Live event feed
+
+### 1. Confirm the script is loading
+
+Open DevTools → **Network**, filter by `analytics.consentsmanagement.com`, and reload the page. You should see a request to `/api/a` (the script) and subsequent `POST` requests to the collection endpoint.
+
+If the script request is missing:
+
+- Check that the `<script>` tag is present in the page's HTML source (not injected by another script that may be blocked).
+- Ensure the `data-site` attribute is set and matches the site key shown in **Dashboard → Settings → Site Key**.
+
+### 2. Check for an ad blocker or content filter
+
+The collection endpoint (`analytics.consentsmanagement.com`) is a first-party analytics domain, but aggressive ad blockers may still block it. Test in a browser profile with no extensions.
+
+### 3. Verify the site key
+
+The `data-site` attribute on the script tag must match exactly — it is case-sensitive. A wrong key causes the endpoint to reject events with a `403` response visible in the Network tab.
+
+### 4. Check event timing relative to consent
+
+Events at minimal tier are sent immediately. Events at full tier require the Statistics category to be granted. If you are testing full-tier fields and seeing only minimal-tier data, see [Consent tier not updating](#consent-tier-not-updating) below.
+
+---
+
+## Consent tier not updating
+
+### 1. Check `window.intaCookieConsents`
+
+Open DevTools → **Console** and run:
+
+```js
+window.intaCookieConsents
+```
+
+If this returns `undefined`, the CMP has not set it before the analytics embed runs. Ensure your CMP sets `window.intaCookieConsents` synchronously in a `<script>` block before the embed `<script>` tag.
+
+### 2. Check the `IntastellarConsentSolution` cookie
+
+If you use Intastellar Consents, open DevTools → **Application → Cookies** and look for `IntastellarConsentSolution`. Inspect its value — the `statisticCookies` field determines the tier. If the cookie is absent, the visitor has not yet interacted with the consent banner.
+
+### 3. Changing consent mid-session
+
+The embed reads consent state on each event fire, not only on page load. After accepting consent in the banner:
+
+1. Trigger a new event (navigate to another page, scroll, or fire a custom event via `window.inta.track()`).
+2. Check the Live event feed — the new event should appear with full-tier fields.
+
+If consent is accepted but full-tier fields are still missing, run `window.intaCookieConsents` in console to confirm the value was updated by your CMP after acceptance.
+
+---
+
+## Form provider not detected
+
+### 1. Check `postMessage` events
+
+Open DevTools → **Console** and run before submitting the form:
+
+```js
+window.addEventListener('message', (e) => console.log(e.data));
+```
+
+Submit or interact with the form and look for messages from the provider. If no messages appear, the embedded form is not dispatching `postMessage` events — this can happen with outdated embed codes or forms loaded in sandboxed iframes.
+
+### 2. Verify the embed code
+
+Provider detection relies on `postMessage` events dispatched by the provider's own script. Ensure you are using the provider's standard embed code, not a plain `<iframe src="...">` without the provider's JavaScript wrapper.
+
+Affected scenarios:
+- HubSpot: must use the `hs-script.js` embed, not just a raw `<iframe>`
+- Typeform: must use the Typeform embed snippet, not just an `<iframe>`
+- Calendly: must include Calendly's embed script
+
+### 3. Fall back to manual tracking
+
+For forms that are not auto-detected, fire events manually:
+
+```js
+// On form focus
+window.inta.track('form_started', { data: { formId: 'contact-form' } });
+
+// On successful submission
+window.inta.track('form_submit', { data: { formId: 'contact-form' } });
+```
+
+See [Custom events](/docs/analytics/v1/custom-events) for the full `window.inta.track()` API.
+
+---
+
+## Pageviews missing on SPA navigations
+
+The embed patches `pushState` and `replaceState` to detect SPA navigations. If your framework performs navigation before the embed script has finished initialising, the first navigation may be missed.
+
+### Fix: fire pageview manually on route change
+
+```js
+// In your router's navigation callback
+window.inta = window.inta || {};
+window.inta.track = window.inta.track || function() {
+  (window.inta._q = window.inta._q || []).push(arguments);
+};
+// Fire on each route change
+window.inta.track('pageview');
+```
+
+For hash-based routing (`/#/path`) without `pushState`, manual pageview tracking is required because the embed only patches History API methods, not `hashchange`.
+
+---
+
+## Network requests failing
+
+### CORS errors
+
+The collection endpoint does not require credentials and accepts requests from any origin. If you see CORS errors, confirm:
+
+- You are not modifying `fetch` or `XMLHttpRequest` in a way that adds custom headers (e.g. `Authorization`) to the collection request, which would trigger a preflight.
+- The request URL is `https://analytics.consentsmanagement.com/api/a` — requests to any other path will return a `404`.
+
+### Events queued but not sent
+
+If `window.inta._q` has queued events but no `POST` requests appear in the Network tab, the embed script may not have loaded. Check the Network tab for the initial script request and confirm it returned a `200`.
+
+---
+
+## Dashboard shows data but events are delayed
+
+Events typically appear in the Live event feed within 2–5 seconds of being fired. Delays beyond 30 seconds indicate a network issue between the client and the collection endpoint.
+
+Aggregated panels (Audience, Acquisition, Conversions) update on a 15-minute cycle, not in real time. If the Live feed shows new events but aggregated counts have not updated, wait up to 15 minutes and refresh the dashboard.
+
+---
+
+## Still need help?
+
+Contact [support@intastellar.eu](mailto:support@intastellar.eu) with:
+
+1. Your site key (from Dashboard → Settings → Site Key)
+2. The URL where the issue occurs
+3. A screenshot of the Network tab showing the relevant requests
+4. The output of `window.intaCookieConsents` from the browser console

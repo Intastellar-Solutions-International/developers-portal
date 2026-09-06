@@ -1,0 +1,61 @@
+---
+title: Form provider integrations
+description: How Intastellar Analytics detects HubSpot, Typeform, Calendly, and Tally forms automatically, the provider field, and the three form_error types.
+order: 13
+lastUpdated: "2026-09-06"
+---
+
+# Form provider integrations
+
+Intastellar Analytics detects third-party form providers automatically via their native `postMessage` events. No extra configuration or SDK is needed — embed the third-party form as you normally would and the analytics embed handles detection.
+
+## Supported providers
+
+| Provider | Detection mechanism | Notes |
+| --- | --- | --- |
+| HubSpot | `window.postMessage` with type `hsFormCallback` | Fires on HubSpot's Embedded Forms script (`hs-script.js`). Includes multi-step form progression. |
+| Typeform | `window.postMessage` with type `form-ready`, `form-submit`, `form-close` | Works for embedded Typeform iframes. Submit fires when Typeform reports the final answer. |
+| Calendly | `window.postMessage` with type `calendly.event_type_viewed`, `calendly.event_scheduled` | `event_scheduled` maps to `form_submit` in the analytics stream. |
+| Tally | `window.postMessage` with type `TallyFormSubmit` | Works for embedded Tally forms. |
+
+### The `provider` field
+
+The `form_started`, `form_submit`, and `form_error` events all include a `provider` field that reflects which system was detected:
+
+| Value | Meaning |
+| --- | --- |
+| `"hubspot"` | HubSpot Embedded Form |
+| `"typeform"` | Typeform embedded iframe |
+| `"calendly"` | Calendly embedded widget |
+| `"tally"` | Tally embedded form |
+| `"native"` | Standard HTML `<form>` element |
+
+If a page has both a native form and an embedded third-party form, the embed tracks them independently using separate `formId` values.
+
+## Form error types
+
+The `errorType` field on `form_error` events takes one of three values:
+
+| Type | When it fires | `field` value |
+| --- | --- | --- |
+| `validation` | HTML5 `invalid` event fires on a form field — browser or custom validation rejected the input | Name of the failing field, e.g. `"email"` |
+| `server` | The form's fetch or XHR submission received an HTTP 4xx or 5xx response | `""` (error is at the request level, not a specific field) |
+| `network` | The form's fetch or XHR failed with no response (offline, DNS failure, timeout, CORS block) | `""` |
+
+### Using form_error to improve conversion
+
+Aggregate `form_error` events by `errorType` and `field` to identify where visitors fail most often:
+
+- High `validation` errors on `email` → the field label or input type may be unclear.
+- High `server` errors → a backend endpoint is returning errors for legitimate submissions; check server logs.
+- High `network` errors → visitors may be on flaky connections, or a third-party form endpoint has availability issues.
+
+## How the embed attaches to third-party forms
+
+Detection relies entirely on `postMessage` events dispatched by the third-party form script — the embed does not read the iframe DOM or intercept network requests. This means:
+
+- Detection works regardless of cross-origin iframe restrictions.
+- If a provider changes their `postMessage` event format in an update, detection may stop working until the analytics embed is updated.
+- Forms loaded via `<iframe>` with a `src` that does not send `postMessage` events (for example, a plain HTML page in an iframe) are not auto-detected.
+
+For forms that are not auto-detected, use [`window.inta.track()`](/docs/analytics/v1/custom-events) to fire `form_started`, `form_submit`, and `form_error` events manually.

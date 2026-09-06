@@ -1,171 +1,33 @@
 ---
 title: Intastellar Analytics
-description: Developer documentation for Intastellar Analytics—installation, consent tiers, auto-tracked events, custom event API, form provider integrations, and server-side fields.
+description: Privacy-first analytics — pageviews, form interactions, rage clicks, e-commerce funnels, and SEO data in one consent-aware embed.
 hub_order: 20
 hub_tagline: Privacy-first analytics — install in one line, consent-aware from day one.
 order: 0
-lastUpdated: "2026-08-28"
+lastUpdated: "2026-09-06"
 ---
 
 # Intastellar Analytics
 
-Intastellar Analytics is a privacy-first analytics platform built for consent-aware data collection. It tracks visitor behaviour, conversions, and form interactions across two consent tiers: **minimal** (anonymous, no personal data) and **full** (enriched, session-linked). All data stays within your organisation; nothing is sold or shared.
+Intastellar Analytics is a privacy-first analytics platform built for consent-aware data collection. It tracks visitor behaviour, conversions, and form interactions across two consent tiers — **minimal** (anonymous) and **full** (session-linked) — without sending data to third parties.
 
-## 1. Installation
+One script tag is all the installation required. Pageviews, scroll depth, rage clicks, form interactions, and video events are tracked automatically. Custom events and the full e-commerce event API let you instrument any conversion you care about.
 
-Add one script tag to the `<head>` or end of `<body>` of every page you want to track. Replace `YOUR_SITE_KEY` with the key shown in your dashboard under **Settings → Analytics Script**.
+## In this section
 
-```html
-<script
-  src="https://analytics.consentsmanagement.com/api/a"
-  data-site="YOUR_SITE_KEY"
-  async
-  defer
-></script>
-```
+### Getting started
+- [Getting started](/docs/analytics/v1/getting-started) — script tag, site key, and first-event verification
+- [Consent tiers & privacy](/docs/analytics/v1/consent-tiers) — what each consent tier collects, how the embed reads consent state
+- [Troubleshooting](/docs/analytics/v1/troubleshooting) — events not appearing, consent not switching, form providers not detected
 
-Pageviews, form interactions, scroll depth, and rage clicks are tracked automatically from this point.
+### Event reference
+- [Auto-tracked events](/docs/analytics/v1/auto-tracked-events) — full payload reference for every event the embed fires automatically
+- [Custom events](/docs/analytics/v1/custom-events) — `window.inta.track()` API and parameter reference
+- [Standard e-commerce events](/docs/analytics/v1/ecommerce-events) — checkout funnel and standalone e-commerce event signatures
 
-## 2. How Consent Tiers Work
+### Integrations & server fields
+- [Form provider integrations](/docs/analytics/v1/form-integrations) — HubSpot, Typeform, Calendly, Tally detection and form error types
+- [Server-side fields & attribution](/docs/analytics/v1/server-side-fields) — UTM capture, click IDs, and all server-appended fields
 
-The embed reads consent state from the Intastellar Consent Solution cookie (`IntastellarConsentSolution`) or from `window.intaCookieConsents` if you manage consent yourself.
-
-| Tier | Trigger | Data collected |
-| --- | --- | --- |
-| **Minimal** | No consent required | Anonymous pageview data only — no session ID, no personal identifiers |
-| **Full** | Visitor grants Statistics consent | Session ID, UTMs, click IDs (`gclid` / `msclkid` / `fbclid`), referrer, screen size, language, timezone, duration, scroll depth, heatmap clicks |
-
-## 3. Auto-Tracked Events
-
-The embed fires the following events automatically. No `window.inta.track` call is needed.
-
-| Event | Trigger | Payload fields |
-| --- | --- | --- |
-| `pageview` | Every page load or SPA navigation | `path`, `title`, `referrer`, `device` |
-| `scroll_depth` | At 25%, 50%, 75%, 90%, 100% scroll | `depth` (percentage) |
-| `rage_click` | 3+ clicks within 500 ms / 30 px radius | `selector`, `id`, `cls`, `tag` |
-| `form_started` | First field focus inside any `<form>` | `formId`, `provider` |
-| `form_submit` | Native form submit event | `formId`, `fields[]`, `fieldCount`, `action` |
-| `form_field_focus` | User moves to a new field (deduped per field per form) | `formId`, `field`, `fieldType` |
-| `form_error` | HTML5 validation failure, network error, or server error (4xx/5xx) | `formId`, `errorType`, `field`, `message` |
-| `video_play` | `<video>` play | `src`, `duration` |
-| `video_pause` | `<video>` pause | `src`, `at` |
-| `video_50pct` | 50% of video watched | `src` |
-| `video_complete` | Video ended | `src`, `duration` |
-| `content_copy` | User copies text (Ctrl+C / Cmd+C) | `length` |
-
-## 4. Custom Events
-
-Send custom events with `window.inta.track`:
-
-```js
-window.inta.track('purchase', {
-  value: 49.99,
-  currency: 'EUR',
-  transactionId: 'order_1234',
-  data: { plan: 'pro' },
-  products: [
-    { id: 'prod_abc', name: 'Pro Plan', price: 49.99, quantity: 1 },
-  ],
-});
-```
-
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `eventName` | string | Required. Lowercase, snake_case recommended. Max 64 chars. |
-| `options.value` | number | Monetary value (e.g. `49.99`). Used in conversion reporting. |
-| `options.currency` | string | ISO 4217 currency code (`"EUR"`, `"USD"`, `"GBP"`). |
-| `options.transactionId` | string | Deduplication key. Same ID within a session is stored once. |
-| `options.data` | object | Arbitrary key-value metadata. Max 20 keys, 500 chars per value. |
-| `options.products` | array | Product list for e-commerce events. |
-
-## 5. Form Provider Integrations
-
-Third-party form providers are detected automatically via their native `postMessage` events. No extra configuration is needed.
-
-| Provider | Detection mechanism |
-| --- | --- |
-| HubSpot | `window.postMessage` (`hsFormCallback`) |
-| Typeform | `window.postMessage` |
-| Calendly | `window.postMessage` |
-| Tally | `window.postMessage` |
-
-The `provider` field on `form_started` and `form_submit` events reflects which provider was detected, or `"native"` for standard HTML forms.
-
-## 6. Form Error Types
-
-The `errorType` field on `form_error` events takes one of three values:
-
-| Type | When it fires |
-| --- | --- |
-| `validation` | HTML5 validation rejected a field (fires on native `invalid` event) |
-| `server` | HTTP 4xx or 5xx response to a form submission fetch / XHR |
-| `network` | Fetch or XHR failed with no response (offline, DNS failure, etc.) |
-
-## 7. UTM and Click ID Capture
-
-The embed reads the following parameters from the landing page URL on first load and attaches them to the session (full consent tier only).
-
-| Parameter | Source |
-| --- | --- |
-| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | URL query string |
-| `gclid` | Google Ads |
-| `msclkid` | Microsoft Advertising |
-| `fbclid` | Meta Ads |
-
-## 8. Server-Side Fields
-
-The following fields are added server-side to every event record before storage.
-
-| Field | Type | Notes |
-| --- | --- | --- |
-| `site_id` | UUID | Resolved from your site key |
-| `received_at` | timestamp | UTC, server-side |
-| `consent_level` | `"minimal"` \| `"full"` | Set by the embed |
-| `pathname` | string | URL path without query string |
-| `page_host` | string | Hostname (e.g. `app.yoursite.com`) |
-| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Derived from user-agent |
-| `country_code` | ISO 3166-1 alpha-2 | GeoIP lookup, server-side |
-| `session_id` | string \| null | Full consent only |
-
-## Dashboard panels
-
-### Live event feed
-
-A rolling feed showing the last 30 minutes of events in real time. Use it to confirm that tracking is working after a deployment or consent configuration change without waiting for batch-processed reports.
-
-### Audience
-
-Session quality, new versus returning, and country breakdown. Sessions are split between **full** (marketing-consented) and **declined** so the audience view reflects real consent distribution rather than aggregating across consent states.
-
-### Acquisition
-
-First-touch and first-party attribution events. Acquisition data is captured via first-party mechanisms, so it is **not affected by consent decisions** — you get complete acquisition data regardless of whether a visitor accepted or declined the marketing category.
-
-### Ad Spend
-
-Spend, clicks, impressions, and CPC from connected ad platforms. Data is pulled **daily via API** from each connected platform, so spend figures land in the dashboard without requiring manual uploads or tag-based measurement.
-
-### Attribution
-
-Per-channel cost with both **first-touch** and **last-touch** models side by side. Compare how each channel looks under each model to understand where your budget drives initial discovery versus final conversion.
-
-### Conversions
-
-Funnel analysis showing exactly where visitors drop off at each step. Each stage is labelled so you can identify the specific point in the funnel where drop-off is highest and act on it.
-
-### Heatmap
-
-Click and scroll heatmaps by page. Shows where visitors interact and how far they scroll, letting you validate CTA placement and page layout decisions against real behaviour data.
-
-### User Flow
-
-A Sankey diagram of the paths visitors take through your site — entry points, intermediate pages, and exit points. Use it to identify unexpected navigation paths and pages that act as dead ends.
-
-### Search Console
-
-Google Search Console data pulled directly into the dashboard: clicks, impressions, CTR, average position, and top queries by page. No separate login to Search Console is needed for day-to-day review.
-
-### Bots
-
-Crawler traffic is automatically separated from real visitor traffic and excluded from all other panels. The bot panel breaks down crawler activity by category — **search tools** and **data aggregators** — so you can audit what is crawling your site without it inflating real-user metrics.
+### Dashboard
+- [Dashboard guide](/docs/analytics/v1/dashboard) — Live event feed, Audience, Acquisition, Ad Spend, Attribution, Conversions, Heatmap, User Flow, Search Console, Bots

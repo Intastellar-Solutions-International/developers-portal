@@ -1,0 +1,111 @@
+---
+title: Custom events
+description: Send custom events with window.inta.track() — parameter reference, naming rules, and examples for conversion and e-commerce tracking.
+order: 11
+lastUpdated: "2026-09-06"
+---
+
+# Custom events
+
+Call `window.inta.track()` to send any event that the embed does not fire automatically. Custom events appear in the Live event feed and the Conversions panel alongside auto-tracked events.
+
+## Basic usage
+
+```js
+window.inta.track('signup_complete', {
+  value: 0,
+  data: { plan: 'pro', trial: true },
+});
+```
+
+The first argument is the event name. The second argument is an options object — all properties are optional.
+
+## Full API signature
+
+```js
+window.inta.track(eventName, options);
+```
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `eventName` | string | Yes | Event name. Lowercase snake_case recommended. Max 64 characters. Must match `/^[a-zA-Z][a-zA-Z0-9_]{0,63}$/`. |
+| `options.value` | number | No | Monetary value, e.g. `49.99`. Used in the Conversions panel for revenue reporting. |
+| `options.currency` | string | No | ISO 4217 code: `"EUR"`, `"USD"`, `"GBP"`, etc. Defaults to the site's configured currency if omitted. |
+| `options.transactionId` | string | No | Deduplication key. Events with the same `transactionId` within a session are stored only once. Max 128 characters. |
+| `options.data` | object | No | Arbitrary key-value metadata. Max 20 keys; values must be strings, numbers, or booleans; max 500 characters per value. |
+| `options.products` | array | No | Product list for e-commerce events. See [Standard e-commerce events](/docs/analytics/v1/ecommerce-events) for the full product object schema. |
+
+## Examples
+
+### Tracking a sign-up
+
+```js
+window.inta.track('signup_complete', {
+  data: { plan: 'pro', trial: true },
+});
+```
+
+### Tracking a purchase with revenue
+
+```js
+window.inta.track('purchase', {
+  value: 99.00,
+  currency: 'EUR',
+  transactionId: 'order_9871',
+  products: [
+    { id: 'plan_pro', name: 'Pro Plan', price: 99.00, quantity: 1 },
+  ],
+});
+```
+
+### Tracking a content engagement event
+
+```js
+window.inta.track('demo_watched', {
+  data: { videoId: 'intro-v2', completedPct: 80 },
+});
+```
+
+### Tracking a quote request
+
+```js
+window.inta.track('quote_requested', {
+  data: { industry: 'retail', companySize: '50-200' },
+});
+```
+
+## Consent and field gating
+
+Custom events fire at whichever consent tier is active when the call is made. The `products` and `value` fields are only stored when the visitor has granted full consent (Statistics category). The `data` object and `eventName` are stored at both tiers.
+
+See [Consent tiers & privacy](/docs/analytics/v1/consent-tiers) for how consent state is read and how to integrate with your own CMP.
+
+## Queuing before the script loads
+
+`window.inta.track` is safe to call before the embed script finishes loading — the embed installs a queue on `window.inta` during page parse so any calls made before the script is ready are replayed once it initialises.
+
+```html
+<head>
+  <!-- Safe to call immediately -->
+  <script>
+    window.inta = window.inta || { track: function() {
+      (window.inta._q = window.inta._q || []).push(arguments);
+    }};
+    window.inta.track('page_variant', { data: { variant: 'B' } });
+  </script>
+
+  <!-- Embed loads asynchronously -->
+  <script
+    src="https://analytics.consentsmanagement.com/api/a"
+    data-site="YOUR_SITE_KEY"
+    async defer
+  ></script>
+</head>
+```
+
+## Event naming rules
+
+- Use lowercase snake_case: `add_to_cart`, not `AddToCart` or `addToCart`.
+- Start with a letter; digits and underscores are allowed after the first character.
+- Maximum 64 characters.
+- Avoid colliding with auto-tracked event names (`pageview`, `scroll_depth`, `rage_click`, `form_started`, `form_submit`, `form_field_focus`, `form_error`, `video_play`, `video_pause`, `video_50pct`, `video_complete`, `content_copy`). Calling `window.inta.track('pageview')` will create a duplicate alongside the auto-tracked one.

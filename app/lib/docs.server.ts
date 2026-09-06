@@ -96,7 +96,10 @@ function sidebarSectionId(relFromProduct: string): SidebarSectionId {
     n === "quickstart.mdx" ||
     n === "how-it-works.mdx" ||
     n === "core-concepts.mdx" ||
-    n === "debugging.mdx"
+    n === "debugging.mdx" ||
+    n === "getting-started.mdx" ||
+    n === "consent-tiers.mdx" ||
+    n === "troubleshooting.mdx"
   ) {
     return "overview";
   }

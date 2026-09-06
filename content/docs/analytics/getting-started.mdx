@@ -1,0 +1,70 @@
+---
+title: Getting started
+description: Install Intastellar Analytics in one script tag and start collecting pageviews, rage clicks, scroll depth, and form interactions immediately.
+order: 1
+lastUpdated: "2026-09-06"
+---
+
+# Getting started
+
+## Add the script tag
+
+Paste the following into the `<head>` of every page you want to track. Replace `YOUR_SITE_KEY` with the key from your dashboard under **Settings → Analytics Script**.
+
+```html
+<script
+  src="https://analytics.consentsmanagement.com/api/a"
+  data-site="YOUR_SITE_KEY"
+  async
+  defer
+></script>
+```
+
+The script loads asynchronously and does not block page rendering.
+
+## Finding your site key
+
+1. Sign in to the Intastellar dashboard.
+2. Go to **Settings → Analytics Script**.
+3. Copy the value of the `data-site` attribute shown there.
+
+Each site key is unique to one domain. Run separate sites for staging and production to keep data clean.
+
+## What starts tracking immediately
+
+Once the script tag is on the page, these events fire with no further configuration:
+
+| Event | Trigger |
+| --- | --- |
+| `pageview` | Every page load or SPA navigation |
+| `scroll_depth` | At 25 %, 50 %, 75 %, 90 %, and 100 % scroll |
+| `rage_click` | Three or more clicks within 500 ms / 30 px radius |
+| `form_started` | First field focus inside any `<form>` element |
+| `form_submit` | Native form submit event |
+| `form_field_focus` | Visitor moves to a new field (deduped per field per form) |
+| `form_error` | HTML5 validation failure, network error, or server 4xx / 5xx |
+| `video_play` | `<video>` play event |
+| `video_pause` | `<video>` pause event |
+| `video_50pct` | 50 % of video duration reached |
+| `video_complete` | Video ended |
+| `content_copy` | Visitor copies text (Ctrl+C / Cmd+C) |
+
+See [Auto-tracked events](/docs/analytics/v1/auto-tracked-events) for the complete payload reference for each event.
+
+## Verifying the installation
+
+Open the **Live event feed** in your dashboard. Within a few seconds of loading a tracked page you should see a `pageview` event appear.
+
+If nothing appears:
+
+1. Open your browser DevTools → Network tab and confirm a request to `analytics.consentsmanagement.com/api/a` completes with HTTP 2xx.
+2. Check that the `data-site` attribute exactly matches your site key (no extra spaces or quotes).
+3. Check that no browser extension, ad blocker, or Content Security Policy rule is blocking the request.
+
+See [Troubleshooting](/docs/analytics/v1/troubleshooting) for a full diagnostic checklist.
+
+## Consent and privacy
+
+The embed reads consent state from the Intastellar Consents cookie automatically — no extra wiring is needed when you already use Intastellar Consents. At minimal consent, only anonymous pageview data is collected. At full consent (Statistics category granted), session IDs, UTM parameters, and conversion data are included.
+
+See [Consent tiers & privacy](/docs/analytics/v1/consent-tiers) for the complete breakdown.

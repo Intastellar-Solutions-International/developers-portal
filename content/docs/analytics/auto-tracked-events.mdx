@@ -1,0 +1,163 @@
+---
+title: Auto-tracked events
+description: Complete payload reference for every event Intastellar Analytics fires automatically — pageview, scroll depth, rage click, form events, video events, and content copy.
+order: 10
+lastUpdated: "2026-09-06"
+---
+
+# Auto-tracked events
+
+The following events fire automatically once the embed is installed. No `window.inta.track()` call is needed. Events marked **Full consent only** are still fired at minimal consent but the listed fields are omitted — see [Consent tiers & privacy](/docs/analytics/v1/consent-tiers) for details.
+
+---
+
+## pageview
+
+Fires on every page load and on SPA navigations where the URL changes (detected via the History API).
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `path` | string | URL path, e.g. `/blog/my-post` |
+| `title` | string | `document.title` at fire time |
+| `referrer` | string | Referrer domain, or `""` if direct |
+| `device` | string | `"desktop"` / `"mobile"` / `"tablet"` |
+
+**Notes:** SPA detection uses a `pushState` / `replaceState` patch applied when the script loads. If your framework uses hash routing (`/#/path`) without `pushState`, pageviews may not fire on navigation — use `window.inta.track('pageview')` manually in that case.
+
+---
+
+## scroll_depth
+
+Fires once per threshold per page load. Thresholds are 25 %, 50 %, 75 %, 90 %, and 100 %. Each threshold fires at most once regardless of back-and-forth scrolling.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `depth` | number | Scroll threshold reached: `25`, `50`, `75`, `90`, or `100` |
+
+**Consent:** Full consent required. At minimal tier this event is fired but `depth` is omitted from storage.
+
+---
+
+## rage_click
+
+Fires when a visitor clicks in the same area three or more times within 500 ms. The detection radius is 30 px.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `selector` | string | CSS selector of the clicked element, e.g. `"button.submit"` |
+| `id` | string | Element `id` attribute, or `""` if none |
+| `cls` | string | Space-separated class list of the element |
+| `tag` | string | Tag name, e.g. `"button"`, `"div"` |
+
+**Notes:** Rage clicks are strong signals that a UI element is not responding as visitors expect — either it looks clickable but isn't, or it has a slow feedback delay. Monitor this event alongside the Heatmap panel to pinpoint affected elements.
+
+---
+
+## form_started
+
+Fires on the first `focus` event inside a `<form>` element. Fires at most once per form per page load.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `formId` | string | The form's `id` attribute, or an auto-generated fallback identifier |
+| `provider` | string | `"hubspot"`, `"typeform"`, `"calendly"`, `"tally"`, or `"native"` |
+
+**Notes:** `provider` reflects the detected form system. See [Form provider integrations](/docs/analytics/v1/form-integrations) for detection mechanics.
+
+---
+
+## form_submit
+
+Fires on the native `submit` event of a `<form>` element.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `formId` | string | Form identifier (same as `form_started`) |
+| `fields` | string[] | Array of field names submitted |
+| `fieldCount` | number | Total number of fields in the form |
+| `action` | string | The form's `action` URL, or `""` for same-page submissions |
+| `provider` | string | Detected provider (same values as `form_started`) |
+
+**Notes:** Field values are never collected, only field names. Password inputs and inputs with `autocomplete="cc-number"` are excluded from `fields` even if present.
+
+---
+
+## form_field_focus
+
+Fires when a visitor moves focus to a new field within a form. Deduplicated per field per form — focusing the same field multiple times fires only once.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `formId` | string | Form identifier |
+| `field` | string | Field `name` or `id` attribute |
+| `fieldType` | string | Input `type`, e.g. `"text"`, `"email"`, `"select"` |
+
+**Notes:** Use this event in combination with `form_error` to map which fields cause the most friction — fields with many `form_field_focus` events and subsequent `form_error` events are candidates for improved validation copy or input hints.
+
+---
+
+## form_error
+
+Fires when a form submission encounters a validation failure, server error, or network error. See [Form provider integrations](/docs/analytics/v1/form-integrations) for the three `errorType` values.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `formId` | string | Form identifier |
+| `errorType` | string | `"validation"`, `"server"`, or `"network"` |
+| `field` | string | The field that failed validation, or `""` for non-field errors |
+| `message` | string | Validation message text, or HTTP status as string for server errors |
+
+---
+
+## video_play
+
+Fires when a `<video>` element's `play` event fires.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `src` | string | The `src` attribute of the video element |
+| `duration` | number | Total video duration in seconds |
+
+---
+
+## video_pause
+
+Fires when a `<video>` element's `pause` event fires.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `src` | string | Video `src` attribute |
+| `at` | number | Playback position at pause time, in seconds |
+
+---
+
+## video_50pct
+
+Fires once when the video's `currentTime` crosses 50 % of its total duration. Fires at most once per video element per page load.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `src` | string | Video `src` attribute |
+
+---
+
+## video_complete
+
+Fires when the `ended` event fires on a `<video>` element.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `src` | string | Video `src` attribute |
+| `duration` | number | Total video duration in seconds |
+
+---
+
+## content_copy
+
+Fires when the visitor triggers a copy action (Ctrl+C, Cmd+C, or context-menu Copy) that results in text being placed in the clipboard.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `length` | number | Number of characters copied |
+
+**Notes:** The copied text itself is never collected, only the character count. Use this event to detect documentation or price scraping patterns, or to confirm that copy-to-clipboard UI affordances are being used.

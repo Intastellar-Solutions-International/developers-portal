@@ -278,7 +278,7 @@ export function Welcome() {
               <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
             </span>
             <div className="pointer-events-none -mx-2 mt-4 flex justify-center opacity-90">
-              <DecoConsents className="h-28 w-full max-w-[200px]" />
+              <DecoConsents className="h-28 w-full max-w-50" />
             </div>
           </Link>
 
@@ -297,7 +297,7 @@ export function Welcome() {
               <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
             </span>
             <div className="pointer-events-none -mx-2 mt-4 flex justify-center opacity-90">
-              <DecoAnalytics className="h-28 w-full max-w-[200px]" />
+              <DecoAnalytics className="h-28 w-full max-w-50" />
             </div>
           </Link>
 
@@ -316,7 +316,7 @@ export function Welcome() {
               <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
             </span>
             <div className="pointer-events-none -mx-2 mt-4 flex justify-center opacity-90">
-              <DecoAccounts className="h-28 w-full max-w-[200px]" />
+              <DecoAccounts className="h-28 w-full max-w-50" />
             </div>
           </Link>
 
@@ -335,7 +335,7 @@ export function Welcome() {
               <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
             </span>
             <div className="pointer-events-none -mx-2 mt-4 flex justify-center opacity-90">
-              <DecoPlatform className="h-28 w-full max-w-[200px]" />
+              <DecoPlatform className="h-28 w-full max-w-50" />
             </div>
           </Link>
         </div>

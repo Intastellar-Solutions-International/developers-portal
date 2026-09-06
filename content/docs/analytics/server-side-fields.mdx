@@ -1,0 +1,67 @@
+---
+title: Server-side fields & attribution
+description: Complete reference for all fields appended server-side to every event — site metadata, device fields, geo, UTM parameters, and click IDs.
+order: 14
+lastUpdated: "2026-09-06"
+---
+
+# Server-side fields & attribution
+
+Every event sent to Intastellar Analytics is enriched server-side before it is stored. Some fields are derived from the request itself (IP address, user-agent), others are read from the URL on first load (UTM parameters, click IDs). None of these require any additional code in your embed.
+
+## Server-appended fields
+
+These fields are added to every event record regardless of consent tier.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `site_id` | UUID | Resolved from your `data-site` key. Used to scope all queries to your dashboard. |
+| `received_at` | timestamp | UTC server time when the event was received. Not the client-side fire time. |
+| `consent_level` | `"minimal"` \| `"full"` | Set by the embed and stored verbatim. |
+| `pathname` | string | URL path without query string or fragment, e.g. `/products/shoes`. |
+| `page_host` | string | Hostname only, e.g. `app.yoursite.com`. No port or protocol. |
+| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Derived from the request user-agent. The raw user-agent string is discarded and never stored. |
+| `country_code` | string | ISO 3166-1 alpha-2 code resolved via GeoIP, e.g. `"DE"`, `"US"`. The IP address used for this lookup is discarded immediately after resolution and is not stored. |
+
+## Session field (full consent only)
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `session_id` | string \| null | A server-generated identifier that groups events from the same visitor session. Only set when `consent_level` is `"full"`. Always `null` at minimal tier. |
+
+## UTM parameters (full consent only)
+
+UTM parameters are read from the landing page URL on the first pageview of a session. They are attached to all subsequent events in that session. Requires full consent.
+
+| Field | URL parameter | Example |
+| --- | --- | --- |
+| `utm_source` | `utm_source` | `"google"`, `"newsletter"` |
+| `utm_medium` | `utm_medium` | `"cpc"`, `"email"` |
+| `utm_campaign` | `utm_campaign` | `"summer-sale-2026"` |
+| `utm_content` | `utm_content` | `"banner-a"` |
+
+UTM values are stored as-is from the URL. Normalise to lowercase in your campaign parameters if you want consistent grouping in the Acquisition panel.
+
+## Click IDs (full consent only)
+
+Click IDs are read from the landing page URL alongside UTM parameters. They identify the specific ad click that brought the visitor to your site.
+
+| Field | Source | Ad platform |
+| --- | --- | --- |
+| `gclid` | `gclid` URL parameter | Google Ads |
+| `msclkid` | `msclkid` URL parameter | Microsoft Advertising / Bing Ads |
+| `fbclid` | `fbclid` URL parameter | Meta Ads (Facebook / Instagram) |
+
+Click IDs are stored only when the corresponding URL parameter is present on the landing page URL. They are not inferred or synthesised.
+
+## First-party capture and browser tracking prevention
+
+UTM parameters and click IDs are read and stored server-side using first-party mechanisms. They are not dependent on third-party cookies, browser fingerprinting, or the deprecated `document.referrer` chain. This means:
+
+- Safari ITP and Firefox ETP do not affect UTM capture.
+- Acquisition data is complete regardless of whether the visitor has accepted the Statistics consent category (the *capture* is first-party; the *storage* in the session record requires full consent).
+- If a visitor lands without UTM parameters but navigates from a page that had them, the original UTM values are preserved for the session.
+
+## Relationship to the Acquisition panel
+
+The [Acquisition panel](/docs/analytics/v1/dashboard#acquisition) in the dashboard shows first-touch attribution by default, using the UTM source and medium from the first session. Click IDs feed into the [Attribution panel](/docs/analytics/v1/dashboard#attribution), where both first-touch and last-touch models are compared side by side.

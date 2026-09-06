@@ -1,0 +1,63 @@
+---
+title: Consent tiers & privacy
+description: How Intastellar Analytics reads consent state, what data each tier collects, and how to integrate with your own consent management platform.
+order: 2
+lastUpdated: "2026-09-06"
+---
+
+# Consent tiers & privacy
+
+Intastellar Analytics collects data across two consent tiers. The embed reads consent state at event fire time and applies the appropriate collection level automatically — no additional code is required when you use Intastellar Consents.
+
+## The two tiers
+
+| Tier | When it applies | Data collected |
+| --- | --- | --- |
+| **Minimal** | No consent required — active for all visitors from first load | Anonymous page path, page title, referrer domain, device category. No personal identifiers, no session ID, no cookies written. |
+| **Full** | Visitor grants the Statistics / Analytics consent category | Everything in Minimal, plus: session ID, UTM parameters, click IDs (`gclid` / `msclkid` / `fbclid`), referrer chain, screen resolution, browser language, timezone offset, session duration, scroll percentages, heatmap click coordinates. |
+
+## How consent state is read
+
+The embed checks consent state on every event — not only on page load. If a visitor accepts consent during a session, subsequent events immediately move to the full tier without requiring a page reload.
+
+Consent state is resolved from two sources, checked in this order:
+
+1. **`window.intaCookieConsents`** — if you manage consent with your own CMP and set this object before the analytics script runs, the embed reads from it directly.
+2. **`IntastellarConsentSolution` cookie** — the cookie written by [Intastellar Consents](/docs/cookie-banner/v1). If both sources are present, `window.intaCookieConsents` takes precedence.
+
+### Using your own CMP
+
+If you do not use Intastellar Consents, expose the following object before the analytics embed runs:
+
+```js
+window.intaCookieConsents = {
+  statisticCookies: true,   // true = full tier, false or absent = minimal tier
+};
+```
+
+Update this object when the visitor changes their consent choice and the embed will pick up the new state on the next event.
+
+## Fields gated by consent tier
+
+The following fields are collected only at the full tier. They are omitted entirely from event records at minimal consent.
+
+| Field | Full tier only |
+| --- | --- |
+| `session_id` | ✓ |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | ✓ |
+| `gclid`, `msclkid`, `fbclid` | ✓ |
+| `products[]` and `value` on custom / e-commerce events | ✓ |
+| Heatmap click coordinates | ✓ |
+| Scroll depth percentages (25 % / 50 % / 75 % / 90 % / 100 %) | ✓ |
+
+## What is never collected
+
+Regardless of consent tier, the following are never collected or stored:
+
+- Raw IP address (GeoIP resolves to `country_code` server-side; the IP is discarded immediately)
+- Raw user-agent string (only the derived `device_type` — `"desktop"` / `"mobile"` / `"tablet"` — is stored)
+- Passwords, payment details, or any form field values flagged as `type="password"` or `autocomplete="cc-number"`
+
+## Minimal tier and cookies
+
+At minimal consent the embed writes no cookies and makes no reads or writes to `localStorage`. The only outbound data is the anonymous event payload sent to the collection endpoint.

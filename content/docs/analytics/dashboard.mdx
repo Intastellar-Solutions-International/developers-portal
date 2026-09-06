@@ -1,0 +1,154 @@
+---
+title: Dashboard guide
+description: A panel-by-panel walkthrough of the Intastellar Analytics dashboard — what each panel shows, which consent tier is required, and how to use filters and date ranges.
+order: 15
+lastUpdated: "2026-09-06"
+---
+
+# Dashboard guide
+
+The Intastellar Analytics dashboard is available at [analytics.consentsmanagement.com](https://analytics.consentsmanagement.com). After signing in, select a site from the site switcher in the top navigation to see its panels.
+
+## Date range and filters
+
+The global date range picker in the top bar applies to all panels simultaneously. The default view is the past 30 days. Use the Compare toggle to overlay the previous equivalent period.
+
+The **Filters** bar beneath the date range lets you segment data by:
+
+- `Path` — restrict all panels to a specific page path or path prefix
+- `Country` — filter by ISO country code
+- `Device` — `desktop`, `mobile`, or `tablet`
+- `UTM source` / `UTM medium` / `UTM campaign` — segment by acquisition channel (requires full consent data)
+- `Event name` — useful in the Conversions and Heatmap panels
+
+Filters combine with AND logic. A filtered view can be bookmarked — the filter state is encoded in the URL.
+
+---
+
+## Live event feed
+
+**Consent required:** Minimal and above
+
+A real-time stream of incoming events, updated as events arrive. Each row shows:
+
+- Event name
+- Page path
+- Country code
+- Device type
+- Time of receipt (UTC)
+
+Use the event filter above the feed to show only a specific event name. The feed retains the last 500 events received regardless of the filter.
+
+---
+
+## Audience
+
+**Consent required:** Minimal and above
+
+Shows aggregate visitor counts and pageview volume. Panels:
+
+- **Unique pages** — distinct `pathname` values in the selected period
+- **Pageviews** — total `pageview` events
+- **Visits** — sessions grouped by `session_id` (requires full consent; shows estimated visits at minimal tier)
+- **Bounce rate** — sessions with a single pageview
+- **Avg. time on site** — average session duration; requires full consent
+
+The time-series chart at the top of this panel breaks down pageviews by day (or hour for ranges under 48 hours).
+
+---
+
+## Acquisition
+
+**Consent required:** Full consent (UTM fields)
+
+Shows where your traffic comes from, grouped by UTM source and medium. The table lists sources ranked by visits, with columns for pageviews, bounce rate, and average session duration.
+
+Attribution model: **first-touch** — the UTM parameters from the first session are credited regardless of subsequent visits.
+
+If a session has no UTM parameters, it appears in the `direct` row. Sessions where the referrer header is present but no UTM is set are grouped as `organic`.
+
+---
+
+## Ad Spend
+
+**Consent required:** Full consent (click IDs)
+
+Connects ad click data (`gclid`, `msclkid`, `fbclid`) to conversion events so you can see cost-per-conversion by platform. To populate this panel, connect your ad accounts via **Settings → Ad Integrations**.
+
+The panel shows:
+- Impressions, clicks, and spend (from the ad platform API)
+- Conversions attributed to click IDs (from Analytics events)
+- CPC and cost-per-conversion
+
+Data in this panel depends on the ad platform's reporting API and may lag by up to 24 hours.
+
+---
+
+## Attribution
+
+**Consent required:** Full consent (click IDs and UTM fields)
+
+Compares **first-touch** and **last-touch** attribution models side by side for a selected conversion event. Use the conversion event picker at the top of the panel to choose which event counts as a conversion.
+
+The Sankey chart on the right shows the path from acquisition source to conversion, including intermediate touchpoints within the same session.
+
+---
+
+## Conversions
+
+**Consent required:** Minimal and above (event names only); Full consent for revenue and product data
+
+Lists all conversion events with counts and, where present, total revenue. Custom events sent via `window.inta.track()` with a `value` field appear here automatically.
+
+Click any event name to see a breakdown by path, source, device, and date. The **funnel builder** (top-right) lets you chain events into a funnel and see the drop-off at each step.
+
+---
+
+## Heatmap
+
+**Consent required:** Full consent (click coordinates)
+
+Overlays a click-density heatmap onto a live render of any page on your site. Select the page from the path dropdown, then use the **Desktop / Mobile / Tablet** toggle to switch device views.
+
+The `rage_click` filter highlights areas with a high ratio of rage-click events to total clicks — useful for identifying unresponsive or misleading UI elements.
+
+Heatmap data is based on the `rage_click` event and native click events recorded with coordinates. Click coordinates are stored only at full consent.
+
+---
+
+## User Flow
+
+**Consent required:** Full consent
+
+A Sankey-style diagram showing the most common paths visitors take through your site. The starting node can be any page or event.
+
+Use the **Max depth** control (1–5 steps) to see how far flows extend before drop-off. Each node shows the count of sessions passing through it. Click a node to filter the diagram to sessions that reached that page or event.
+
+---
+
+## Search Console
+
+**Consent required:** Minimal and above
+
+Shows Google Search performance data alongside your Analytics pageview data for the same pages. Requires a Google Search Console property connected via **Settings → Integrations → Google Search Console**.
+
+Columns:
+- Impressions
+- Clicks
+- Average position
+- Click-through rate (CTR)
+- Pageviews (from Analytics)
+
+Use this panel to find pages with high impressions and low CTR — those are candidates for title and meta-description improvements.
+
+---
+
+## Bots
+
+**Consent required:** Minimal and above
+
+Shows traffic identified as automated — crawlers, headless browsers, and synthetic monitors. This traffic is automatically excluded from all other panels.
+
+The panel lists the top bot user-agents by request count and the paths they target most. Verified bots (Googlebot, Bingbot) are listed separately from unverified automation.
+
+If a bot is misclassified (a known monitoring tool appearing in Bots), you can add it to your allowlist in **Settings → Bot Allowlist** to have its events counted in the main panels.
