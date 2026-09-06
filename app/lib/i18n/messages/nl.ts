@@ -57,6 +57,7 @@ export const nl: MessageTree = {
     changelogTitle: "Consents en Sign-In — npm- en GitHub-releases",
     documentation: "Documentatie",
     intastellarConsents: "Intastellar Consents",
+    intastellarAnalytics: "Intastellar Analytics",
     profile: "Profiel",
   },
   footer: {
@@ -65,6 +66,7 @@ export const nl: MessageTree = {
     documentation: "Documentatie",
     allDocs: "Alle documentatie",
     intastellarConsents: "Intastellar Consents",
+    intastellarAnalytics: "Intastellar Analytics",
     accountsSignIn: "Accounts — Inloggen",
     searchDocs: "Zoek in documentatie",
     platform: "Platform",

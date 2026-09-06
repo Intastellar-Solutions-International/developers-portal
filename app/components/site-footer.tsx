@@ -20,6 +20,7 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
   const vCb = getDefaultVersionSlug("cookie-banner");
   const vAcc = getDefaultVersionSlug("accounts-sign-in");
+  const vAna = getDefaultVersionSlug("analytics");
 
   return (
     <footer
@@ -54,6 +55,14 @@ export function SiteFooter() {
                   className={linkClass}
                 >
                   {t("footer.intastellarConsents")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to={docHref(locale, "analytics", vAna)}
+                  className={linkClass}
+                >
+                  {t("footer.intastellarAnalytics")}
                 </Link>
               </li>
               <li>

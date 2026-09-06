@@ -12,7 +12,7 @@ const DOCS_ROOT = path.join(process.cwd(), "content", "docs");
 const OUT = path.join(process.cwd(), "public", "search-index.json");
 
 /** Top-level locale folders under content/docs — not product slugs (see docs.server.ts). */
-const LOCALE_ROOT_DIRS = new Set(["de", "da", "fr", "nl"]);
+const LOCALE_ROOT_DIRS = new Set(["de", "da", "fr", "nl", "pt-br"]);
 
 /** Keep in sync with app/lib/docs-versions.ts default version for each product. */
 const SEARCH_INDEX_VERSION = "v1";
@@ -66,8 +66,8 @@ async function main() {
       const description =
         typeof data.description === "string" ? data.description : "";
       const text = content
-        .replace(/```[\s\S]*?```/g, " ")
-        .replace(/[#>*_`[\]()|-]/g, " ")
+        .replace(/^```\w*$/gm, "")
+        .replace(/[#>*`[\]()|-]/g, " ")
         .replace(/\s+/g, " ")
         .trim()
         .slice(0, 8000);

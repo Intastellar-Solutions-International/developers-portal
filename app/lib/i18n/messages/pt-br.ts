@@ -57,6 +57,7 @@ export const ptBr: MessageTree = {
     changelogTitle: "Consents e Sign-In — releases npm e GitHub",
     documentation: "Documentação",
     intastellarConsents: "Intastellar Consents",
+    intastellarAnalytics: "Intastellar Analytics",
     profile: "Perfil",
   },
   footer: {
@@ -65,6 +66,7 @@ export const ptBr: MessageTree = {
     documentation: "Documentação",
     allDocs: "Toda a documentação",
     intastellarConsents: "Intastellar Consents",
+    intastellarAnalytics: "Intastellar Analytics",
     accountsSignIn: "Accounts — Entrar",
     searchDocs: "Buscar na documentação",
     platform: "Plataforma",

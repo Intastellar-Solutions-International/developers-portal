@@ -10,6 +10,7 @@ import type {
 import {
   fetchGithubChangelog,
   fetchNpmPackageVersions,
+  markdownToHtml,
 } from "~/lib/changelog.server";
 import { formatDateMedium } from "~/lib/format-datetime";
 import { translatePath } from "~/lib/i18n/messages";
@@ -29,16 +30,36 @@ export async function loader(_: Route.LoaderArgs) {
   const signinNpmPackage = (
     process.env.SIGNIN_NPM_PACKAGE ?? SIGNIN_NPM_PACKAGE
   ).trim();
+  const analyticsRepo = (process.env.ANALYTICS_CHANGELOG_GITHUB_REPO ?? "").trim();
 
-  const [consents, signinGithub, signinNpm] = await Promise.all([
+  const [consentsRaw, signinGithubRaw, analyticsRaw, signinNpm] = await Promise.all([
     fetchGithubChangelog(consentsRepo),
     fetchGithubChangelog(signinRepo),
+    analyticsRepo ? fetchGithubChangelog(analyticsRepo) : Promise.resolve<GithubChangelogResult>({ entries: [], repo: "", error: null }),
     fetchNpmPackageVersions(signinNpmPackage),
+  ]);
+
+  const renderEntries = async (result: GithubChangelogResult) => ({
+    ...result,
+    entries: await Promise.all(
+      result.entries.map(async (e) => ({
+        ...e,
+        renderedBody: e.body ? await markdownToHtml(e.body) : "",
+      })),
+    ),
+  });
+
+  const [consents, signinGithub, analytics] = await Promise.all([
+    renderEntries(consentsRaw),
+    renderEntries(signinGithubRaw),
+    renderEntries(analyticsRaw),
   ]);
 
   return {
     consents,
     signinGithub,
+    analytics,
+    analyticsRepoConfigured: Boolean(analyticsRepo),
     signinNpm,
   };
 }
@@ -59,14 +80,14 @@ function formatDate(iso: string | null) {
   return formatDateMedium(iso);
 }
 
-type Platform = "consents" | "signin";
+type Platform = "consents" | "signin" | "analytics";
 type SigninSource = "npm" | "github";
 
 function changelogHref(platform: Platform, signinSource?: SigninSource) {
   if (platform === "consents") return "/changelog";
   const sp = new URLSearchParams();
-  sp.set("platform", "signin");
-  if (signinSource === "github") sp.set("source", "github");
+  sp.set("platform", platform);
+  if (platform === "signin" && signinSource === "github") sp.set("source", "github");
   return `/changelog?${sp.toString()}`;
 }
 
@@ -125,7 +146,7 @@ function GithubEntryList({
   );
 }
 
-function GithubEntry({ e }: { e: ChangelogEntry }) {
+function GithubEntry({ e }: { e: ChangelogEntry & { renderedBody?: string } }) {
   return (
     <li className="border-b border-zinc-200 pb-10 dark:border-zinc-700">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -149,16 +170,11 @@ function GithubEntry({ e }: { e: ChangelogEntry }) {
           ) : null}
         </span>
       </div>
-      {e.body ? (
-        <div className="mt-4 space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
-          {e.body.split("\n").map((line, i) =>
-            line.trim() === "" ? (
-              <br key={i} />
-            ) : (
-              <p key={i}>{line}</p>
-            ),
-          )}
-        </div>
+      {e.renderedBody ? (
+        <div
+          className="prose prose-sm prose-zinc mt-4 max-w-none dark:prose-invert"
+          dangerouslySetInnerHTML={{ __html: e.renderedBody }}
+        />
       ) : e.source === "tag" ? (
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
           No GitHub release notes for this tag—open the link to compare on
@@ -224,10 +240,11 @@ function NpmEntryList({ data }: { data: NpmChangelogResult }) {
 }
 
 export default function ChangelogPage() {
-  const { consents, signinGithub, signinNpm } = useLoaderData<typeof loader>();
+  const { consents, signinGithub, analytics, analyticsRepoConfigured, signinNpm } = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
+  const rawPlatform = searchParams.get("platform");
   const platform: Platform =
-    searchParams.get("platform") === "signin" ? "signin" : "consents";
+    rawPlatform === "signin" ? "signin" : rawPlatform === "analytics" ? "analytics" : "consents";
   const signinSource: SigninSource =
     searchParams.get("source") === "github" ? "github" : "npm";
 
@@ -249,6 +266,12 @@ export default function ChangelogPage() {
           className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tabClass(platform === "consents")}`}
         >
           Intastellar Consents
+        </Link>
+        <Link
+          to={changelogHref("analytics")}
+          className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tabClass(platform === "analytics")}`}
+        >
+          Intastellar Analytics
         </Link>
         <Link
           to={changelogHref(
@@ -273,6 +296,26 @@ export default function ChangelogPage() {
             data={consents}
             emptyHint="No releases or tags returned for this repository."
           />
+        </section>
+      ) : platform === "analytics" ? (
+        <section className="mt-10" aria-labelledby="analytics-heading">
+          <h2
+            id="analytics-heading"
+            className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
+          >
+            Intastellar Analytics
+          </h2>
+          {analyticsRepoConfigured ? (
+            <GithubEntryList
+              data={analytics}
+              emptyHint="No releases or tags returned for this repository."
+            />
+          ) : (
+            <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+              GitHub release notes for Intastellar Analytics are not yet configured.
+              Set the <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">ANALYTICS_CHANGELOG_GITHUB_REPO</code> environment variable to enable this tab.
+            </p>
+          )}
         </section>
       ) : (
         <section className="mt-10" aria-labelledby="signin-heading">

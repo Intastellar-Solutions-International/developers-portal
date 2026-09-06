@@ -1,3 +1,21 @@
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkRehype from "remark-rehype";
+import { toHtml } from "hast-util-to-html";
+
+/** Converts GitHub release markdown to safe HTML for dangerouslySetInnerHTML. */
+export async function markdownToHtml(markdown: string): Promise<string> {
+  const processor = unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkRehype, { allowDangerousHtml: true });
+  const mdast = processor.parse(markdown);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hast = await processor.run(mdast);
+  return toHtml(hast as Parameters<typeof toHtml>[0], { allowDangerousHtml: true });
+}
+
 /** GitHub releases / tags (Consents + Sign-In repo). */
 export type ChangelogEntry = {
   tag: string;

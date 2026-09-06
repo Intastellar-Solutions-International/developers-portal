@@ -220,6 +220,11 @@ function SiteHeaderInner({
     "cookie-banner",
     getDefaultVersionSlug("cookie-banner"),
   );
+  const analyticsDocsHref = docHref(
+    locale,
+    "analytics",
+    getDefaultVersionSlug("analytics"),
+  );
 
   useEffect(() => {
     setMenuOpen(false);
@@ -404,6 +409,13 @@ function SiteHeaderInner({
                 onClick={() => setMenuOpen(false)}
               >
                 {t("nav.intastellarConsents")}
+              </NavLink>
+              <NavLink
+                to={analyticsDocsHref}
+                className={mobileNavLinkClass}
+                onClick={() => setMenuOpen(false)}
+              >
+                {t("nav.intastellarAnalytics")}
               </NavLink>
               <NavLink
                 to={lp("/account/profile")}

@@ -65,6 +65,7 @@ export const en = {
     changelogTitle: "Consents & Sign-In — npm and GitHub releases",
     documentation: "Documentation",
     intastellarConsents: "Intastellar Consents",
+    intastellarAnalytics: "Intastellar Analytics",
     profile: "Profile",
   },
   footer: {
@@ -73,6 +74,7 @@ export const en = {
     documentation: "Documentation",
     allDocs: "All docs",
     intastellarConsents: "Intastellar Consents",
+    intastellarAnalytics: "Intastellar Analytics",
     accountsSignIn: "Accounts — Sign in",
     searchDocs: "Search docs",
     platform: "Platform",

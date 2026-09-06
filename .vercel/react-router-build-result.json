@@ -21,6 +21,11 @@
       "routes/api.status.notify.unsubscribe": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.status.uptime": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.status.uptime-badge": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.indexnow.publish": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/indexnow-well-known": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.github.callback": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.github": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/indexnow-key": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/search": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/auth.logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -236,6 +241,51 @@
           "runtime": "nodejs"
         }
       },
+      "routes/api.indexnow.publish": {
+        "id": "routes/api.indexnow.publish",
+        "parentId": "root",
+        "file": "app/routes/api.indexnow.publish.tsx",
+        "path": "api/indexnow/publish",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/indexnow-well-known": {
+        "id": "routes/indexnow-well-known",
+        "parentId": "root",
+        "file": "app/routes/indexnow-well-known.tsx",
+        "path": ".well-known/indexnow/:indexnowWellKey",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.github.callback": {
+        "id": "routes/auth.github.callback",
+        "parentId": "root",
+        "file": "app/routes/auth.github.callback.tsx",
+        "path": "auth/github/callback",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.github": {
+        "id": "routes/auth.github",
+        "parentId": "root",
+        "file": "app/routes/auth.github.tsx",
+        "path": "auth/github",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/indexnow-key": {
+        "id": "routes/indexnow-key",
+        "parentId": "root",
+        "file": "app/routes/indexnow-key.tsx",
+        "path": ":indexnowKey",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
       "routes/home": {
         "id": "routes/home",
         "parentId": "root",
@@ -374,16 +424,16 @@
           "runtime": "nodejs"
         }
       },
-      "routes/account": {
-        "id": "routes/account",
+      "routes/account.layout": {
+        "id": "routes/account.layout",
         "parentId": "root",
-        "file": "app/routes/account.tsx",
+        "file": "app/routes/account.layout.tsx",
         "path": "account",
         "config": {}
       },
       "routes/account._index": {
         "id": "routes/account._index",
-        "parentId": "routes/account",
+        "parentId": "routes/account.layout",
         "file": "app/routes/account._index.tsx",
         "index": true,
         "config": {
@@ -392,7 +442,7 @@
       },
       "routes/account.login": {
         "id": "routes/account.login",
-        "parentId": "routes/account",
+        "parentId": "routes/account.layout",
         "file": "app/routes/account.login.tsx",
         "path": "login",
         "config": {
@@ -401,7 +451,7 @@
       },
       "routes/account.profile": {
         "id": "routes/account.profile",
-        "parentId": "routes/account",
+        "parentId": "routes/account.layout",
         "file": "app/routes/account.profile.tsx",
         "path": "profile",
         "config": {
@@ -410,7 +460,7 @@
       },
       "routes/account.api-keys": {
         "id": "routes/account.api-keys",
-        "parentId": "routes/account",
+        "parentId": "routes/account.layout",
         "file": "app/routes/account.api-keys.tsx",
         "path": "api-keys",
         "config": {
@@ -565,16 +615,16 @@
           "runtime": "nodejs"
         }
       },
-      "routes/account__de": {
-        "id": "routes/account__de",
+      "routes/account.layout__de": {
+        "id": "routes/account.layout__de",
         "parentId": "root",
-        "file": "app/routes/account.tsx",
+        "file": "app/routes/account.layout.tsx",
         "path": "de/account",
         "config": {}
       },
       "routes/account._index__de": {
         "id": "routes/account._index__de",
-        "parentId": "routes/account__de",
+        "parentId": "routes/account.layout__de",
         "file": "app/routes/account._index.tsx",
         "index": true,
         "config": {
@@ -583,7 +633,7 @@
       },
       "routes/account.login__de": {
         "id": "routes/account.login__de",
-        "parentId": "routes/account__de",
+        "parentId": "routes/account.layout__de",
         "file": "app/routes/account.login.tsx",
         "path": "login",
         "config": {
@@ -592,7 +642,7 @@
       },
       "routes/account.profile__de": {
         "id": "routes/account.profile__de",
-        "parentId": "routes/account__de",
+        "parentId": "routes/account.layout__de",
         "file": "app/routes/account.profile.tsx",
         "path": "profile",
         "config": {
@@ -601,7 +651,7 @@
       },
       "routes/account.api-keys__de": {
         "id": "routes/account.api-keys__de",
-        "parentId": "routes/account__de",
+        "parentId": "routes/account.layout__de",
         "file": "app/routes/account.api-keys.tsx",
         "path": "api-keys",
         "config": {
@@ -756,16 +806,16 @@
           "runtime": "nodejs"
         }
       },
-      "routes/account__da": {
-        "id": "routes/account__da",
+      "routes/account.layout__da": {
+        "id": "routes/account.layout__da",
         "parentId": "root",
-        "file": "app/routes/account.tsx",
+        "file": "app/routes/account.layout.tsx",
         "path": "da/account",
         "config": {}
       },
       "routes/account._index__da": {
         "id": "routes/account._index__da",
-        "parentId": "routes/account__da",
+        "parentId": "routes/account.layout__da",
         "file": "app/routes/account._index.tsx",
         "index": true,
         "config": {
@@ -774,7 +824,7 @@
       },
       "routes/account.login__da": {
         "id": "routes/account.login__da",
-        "parentId": "routes/account__da",
+        "parentId": "routes/account.layout__da",
         "file": "app/routes/account.login.tsx",
         "path": "login",
         "config": {
@@ -783,7 +833,7 @@
       },
       "routes/account.profile__da": {
         "id": "routes/account.profile__da",
-        "parentId": "routes/account__da",
+        "parentId": "routes/account.layout__da",
         "file": "app/routes/account.profile.tsx",
         "path": "profile",
         "config": {
@@ -792,7 +842,7 @@
       },
       "routes/account.api-keys__da": {
         "id": "routes/account.api-keys__da",
-        "parentId": "routes/account__da",
+        "parentId": "routes/account.layout__da",
         "file": "app/routes/account.api-keys.tsx",
         "path": "api-keys",
         "config": {
@@ -947,16 +997,16 @@
           "runtime": "nodejs"
         }
       },
-      "routes/account__fr": {
-        "id": "routes/account__fr",
+      "routes/account.layout__fr": {
+        "id": "routes/account.layout__fr",
         "parentId": "root",
-        "file": "app/routes/account.tsx",
+        "file": "app/routes/account.layout.tsx",
         "path": "fr/account",
         "config": {}
       },
       "routes/account._index__fr": {
         "id": "routes/account._index__fr",
-        "parentId": "routes/account__fr",
+        "parentId": "routes/account.layout__fr",
         "file": "app/routes/account._index.tsx",
         "index": true,
         "config": {
@@ -965,7 +1015,7 @@
       },
       "routes/account.login__fr": {
         "id": "routes/account.login__fr",
-        "parentId": "routes/account__fr",
+        "parentId": "routes/account.layout__fr",
         "file": "app/routes/account.login.tsx",
         "path": "login",
         "config": {
@@ -974,7 +1024,7 @@
       },
       "routes/account.profile__fr": {
         "id": "routes/account.profile__fr",
-        "parentId": "routes/account__fr",
+        "parentId": "routes/account.layout__fr",
         "file": "app/routes/account.profile.tsx",
         "path": "profile",
         "config": {
@@ -983,7 +1033,7 @@
       },
       "routes/account.api-keys__fr": {
         "id": "routes/account.api-keys__fr",
-        "parentId": "routes/account__fr",
+        "parentId": "routes/account.layout__fr",
         "file": "app/routes/account.api-keys.tsx",
         "path": "api-keys",
         "config": {
@@ -1138,16 +1188,16 @@
           "runtime": "nodejs"
         }
       },
-      "routes/account__nl": {
-        "id": "routes/account__nl",
+      "routes/account.layout__nl": {
+        "id": "routes/account.layout__nl",
         "parentId": "root",
-        "file": "app/routes/account.tsx",
+        "file": "app/routes/account.layout.tsx",
         "path": "nl/account",
         "config": {}
       },
       "routes/account._index__nl": {
         "id": "routes/account._index__nl",
-        "parentId": "routes/account__nl",
+        "parentId": "routes/account.layout__nl",
         "file": "app/routes/account._index.tsx",
         "index": true,
         "config": {
@@ -1156,7 +1206,7 @@
       },
       "routes/account.login__nl": {
         "id": "routes/account.login__nl",
-        "parentId": "routes/account__nl",
+        "parentId": "routes/account.layout__nl",
         "file": "app/routes/account.login.tsx",
         "path": "login",
         "config": {
@@ -1165,7 +1215,7 @@
       },
       "routes/account.profile__nl": {
         "id": "routes/account.profile__nl",
-        "parentId": "routes/account__nl",
+        "parentId": "routes/account.layout__nl",
         "file": "app/routes/account.profile.tsx",
         "path": "profile",
         "config": {
@@ -1174,7 +1224,7 @@
       },
       "routes/account.api-keys__nl": {
         "id": "routes/account.api-keys__nl",
-        "parentId": "routes/account__nl",
+        "parentId": "routes/account.layout__nl",
         "file": "app/routes/account.api-keys.tsx",
         "path": "api-keys",
         "config": {
@@ -1329,16 +1379,16 @@
           "runtime": "nodejs"
         }
       },
-      "routes/account__pt-br": {
-        "id": "routes/account__pt-br",
+      "routes/account.layout__pt-br": {
+        "id": "routes/account.layout__pt-br",
         "parentId": "root",
-        "file": "app/routes/account.tsx",
+        "file": "app/routes/account.layout.tsx",
         "path": "pt-br/account",
         "config": {}
       },
       "routes/account._index__pt-br": {
         "id": "routes/account._index__pt-br",
-        "parentId": "routes/account__pt-br",
+        "parentId": "routes/account.layout__pt-br",
         "file": "app/routes/account._index.tsx",
         "index": true,
         "config": {
@@ -1347,7 +1397,7 @@
       },
       "routes/account.login__pt-br": {
         "id": "routes/account.login__pt-br",
-        "parentId": "routes/account__pt-br",
+        "parentId": "routes/account.layout__pt-br",
         "file": "app/routes/account.login.tsx",
         "path": "login",
         "config": {
@@ -1356,7 +1406,7 @@
       },
       "routes/account.profile__pt-br": {
         "id": "routes/account.profile__pt-br",
-        "parentId": "routes/account__pt-br",
+        "parentId": "routes/account.layout__pt-br",
         "file": "app/routes/account.profile.tsx",
         "path": "profile",
         "config": {
@@ -1365,7 +1415,7 @@
       },
       "routes/account.api-keys__pt-br": {
         "id": "routes/account.api-keys__pt-br",
-        "parentId": "routes/account__pt-br",
+        "parentId": "routes/account.layout__pt-br",
         "file": "app/routes/account.api-keys.tsx",
         "path": "api-keys",
         "config": {
@@ -1469,6 +1519,36 @@
         "file": "routes/api.status.uptime-badge.tsx",
         "path": "api/status/uptime/badge"
       },
+      "routes/api.indexnow.publish": {
+        "id": "routes/api.indexnow.publish",
+        "parentId": "root",
+        "file": "routes/api.indexnow.publish.tsx",
+        "path": "api/indexnow/publish"
+      },
+      "routes/indexnow-well-known": {
+        "id": "routes/indexnow-well-known",
+        "parentId": "root",
+        "file": "routes/indexnow-well-known.tsx",
+        "path": ".well-known/indexnow/:indexnowWellKey"
+      },
+      "routes/auth.github.callback": {
+        "id": "routes/auth.github.callback",
+        "parentId": "root",
+        "file": "routes/auth.github.callback.tsx",
+        "path": "auth/github/callback"
+      },
+      "routes/auth.github": {
+        "id": "routes/auth.github",
+        "parentId": "root",
+        "file": "routes/auth.github.tsx",
+        "path": "auth/github"
+      },
+      "routes/indexnow-key": {
+        "id": "routes/indexnow-key",
+        "parentId": "root",
+        "file": "routes/indexnow-key.tsx",
+        "path": ":indexnowKey"
+      },
       "routes/home": {
         "id": "routes/home",
         "parentId": "root",
@@ -1565,33 +1645,33 @@
         "file": "routes/docs.$product.$.tsx",
         "path": "*"
       },
-      "routes/account": {
-        "id": "routes/account",
+      "routes/account.layout": {
+        "id": "routes/account.layout",
         "parentId": "root",
-        "file": "routes/account.tsx",
+        "file": "routes/account.layout.tsx",
         "path": "account"
       },
       "routes/account._index": {
         "id": "routes/account._index",
-        "parentId": "routes/account",
+        "parentId": "routes/account.layout",
         "file": "routes/account._index.tsx",
         "index": true
       },
       "routes/account.login": {
         "id": "routes/account.login",
-        "parentId": "routes/account",
+        "parentId": "routes/account.layout",
         "file": "routes/account.login.tsx",
         "path": "login"
       },
       "routes/account.profile": {
         "id": "routes/account.profile",
-        "parentId": "routes/account",
+        "parentId": "routes/account.layout",
         "file": "routes/account.profile.tsx",
         "path": "profile"
       },
       "routes/account.api-keys": {
         "id": "routes/account.api-keys",
-        "parentId": "routes/account",
+        "parentId": "routes/account.layout",
         "file": "routes/account.api-keys.tsx",
         "path": "api-keys"
       },
@@ -1698,33 +1778,33 @@
         "file": "routes/docs.$product.$.tsx",
         "path": "*"
       },
-      "routes/account__de": {
-        "id": "routes/account__de",
+      "routes/account.layout__de": {
+        "id": "routes/account.layout__de",
         "parentId": "root",
-        "file": "routes/account.tsx",
+        "file": "routes/account.layout.tsx",
         "path": "de/account"
       },
       "routes/account._index__de": {
         "id": "routes/account._index__de",
-        "parentId": "routes/account__de",
+        "parentId": "routes/account.layout__de",
         "file": "routes/account._index.tsx",
         "index": true
       },
       "routes/account.login__de": {
         "id": "routes/account.login__de",
-        "parentId": "routes/account__de",
+        "parentId": "routes/account.layout__de",
         "file": "routes/account.login.tsx",
         "path": "login"
       },
       "routes/account.profile__de": {
         "id": "routes/account.profile__de",
-        "parentId": "routes/account__de",
+        "parentId": "routes/account.layout__de",
         "file": "routes/account.profile.tsx",
         "path": "profile"
       },
       "routes/account.api-keys__de": {
         "id": "routes/account.api-keys__de",
-        "parentId": "routes/account__de",
+        "parentId": "routes/account.layout__de",
         "file": "routes/account.api-keys.tsx",
         "path": "api-keys"
       },
@@ -1831,33 +1911,33 @@
         "file": "routes/docs.$product.$.tsx",
         "path": "*"
       },
-      "routes/account__da": {
-        "id": "routes/account__da",
+      "routes/account.layout__da": {
+        "id": "routes/account.layout__da",
         "parentId": "root",
-        "file": "routes/account.tsx",
+        "file": "routes/account.layout.tsx",
         "path": "da/account"
       },
       "routes/account._index__da": {
         "id": "routes/account._index__da",
-        "parentId": "routes/account__da",
+        "parentId": "routes/account.layout__da",
         "file": "routes/account._index.tsx",
         "index": true
       },
       "routes/account.login__da": {
         "id": "routes/account.login__da",
-        "parentId": "routes/account__da",
+        "parentId": "routes/account.layout__da",
         "file": "routes/account.login.tsx",
         "path": "login"
       },
       "routes/account.profile__da": {
         "id": "routes/account.profile__da",
-        "parentId": "routes/account__da",
+        "parentId": "routes/account.layout__da",
         "file": "routes/account.profile.tsx",
         "path": "profile"
       },
       "routes/account.api-keys__da": {
         "id": "routes/account.api-keys__da",
-        "parentId": "routes/account__da",
+        "parentId": "routes/account.layout__da",
         "file": "routes/account.api-keys.tsx",
         "path": "api-keys"
       },
@@ -1964,33 +2044,33 @@
         "file": "routes/docs.$product.$.tsx",
         "path": "*"
       },
-      "routes/account__fr": {
-        "id": "routes/account__fr",
+      "routes/account.layout__fr": {
+        "id": "routes/account.layout__fr",
         "parentId": "root",
-        "file": "routes/account.tsx",
+        "file": "routes/account.layout.tsx",
         "path": "fr/account"
       },
       "routes/account._index__fr": {
         "id": "routes/account._index__fr",
-        "parentId": "routes/account__fr",
+        "parentId": "routes/account.layout__fr",
         "file": "routes/account._index.tsx",
         "index": true
       },
       "routes/account.login__fr": {
         "id": "routes/account.login__fr",
-        "parentId": "routes/account__fr",
+        "parentId": "routes/account.layout__fr",
         "file": "routes/account.login.tsx",
         "path": "login"
       },
       "routes/account.profile__fr": {
         "id": "routes/account.profile__fr",
-        "parentId": "routes/account__fr",
+        "parentId": "routes/account.layout__fr",
         "file": "routes/account.profile.tsx",
         "path": "profile"
       },
       "routes/account.api-keys__fr": {
         "id": "routes/account.api-keys__fr",
-        "parentId": "routes/account__fr",
+        "parentId": "routes/account.layout__fr",
         "file": "routes/account.api-keys.tsx",
         "path": "api-keys"
       },
@@ -2097,33 +2177,33 @@
         "file": "routes/docs.$product.$.tsx",
         "path": "*"
       },
-      "routes/account__nl": {
-        "id": "routes/account__nl",
+      "routes/account.layout__nl": {
+        "id": "routes/account.layout__nl",
         "parentId": "root",
-        "file": "routes/account.tsx",
+        "file": "routes/account.layout.tsx",
         "path": "nl/account"
       },
       "routes/account._index__nl": {
         "id": "routes/account._index__nl",
-        "parentId": "routes/account__nl",
+        "parentId": "routes/account.layout__nl",
         "file": "routes/account._index.tsx",
         "index": true
       },
       "routes/account.login__nl": {
         "id": "routes/account.login__nl",
-        "parentId": "routes/account__nl",
+        "parentId": "routes/account.layout__nl",
         "file": "routes/account.login.tsx",
         "path": "login"
       },
       "routes/account.profile__nl": {
         "id": "routes/account.profile__nl",
-        "parentId": "routes/account__nl",
+        "parentId": "routes/account.layout__nl",
         "file": "routes/account.profile.tsx",
         "path": "profile"
       },
       "routes/account.api-keys__nl": {
         "id": "routes/account.api-keys__nl",
-        "parentId": "routes/account__nl",
+        "parentId": "routes/account.layout__nl",
         "file": "routes/account.api-keys.tsx",
         "path": "api-keys"
       },
@@ -2230,33 +2310,33 @@
         "file": "routes/docs.$product.$.tsx",
         "path": "*"
       },
-      "routes/account__pt-br": {
-        "id": "routes/account__pt-br",
+      "routes/account.layout__pt-br": {
+        "id": "routes/account.layout__pt-br",
         "parentId": "root",
-        "file": "routes/account.tsx",
+        "file": "routes/account.layout.tsx",
         "path": "pt-br/account"
       },
       "routes/account._index__pt-br": {
         "id": "routes/account._index__pt-br",
-        "parentId": "routes/account__pt-br",
+        "parentId": "routes/account.layout__pt-br",
         "file": "routes/account._index.tsx",
         "index": true
       },
       "routes/account.login__pt-br": {
         "id": "routes/account.login__pt-br",
-        "parentId": "routes/account__pt-br",
+        "parentId": "routes/account.layout__pt-br",
         "file": "routes/account.login.tsx",
         "path": "login"
       },
       "routes/account.profile__pt-br": {
         "id": "routes/account.profile__pt-br",
-        "parentId": "routes/account__pt-br",
+        "parentId": "routes/account.layout__pt-br",
         "file": "routes/account.profile.tsx",
         "path": "profile"
       },
       "routes/account.api-keys__pt-br": {
         "id": "routes/account.api-keys__pt-br",
-        "parentId": "routes/account__pt-br",
+        "parentId": "routes/account.layout__pt-br",
         "file": "routes/account.api-keys.tsx",
         "path": "api-keys"
       },
@@ -2324,6 +2404,26 @@
           {
             "file": "routes/api.status.uptime-badge.tsx",
             "path": "api/status/uptime/badge"
+          },
+          {
+            "file": "routes/api.indexnow.publish.tsx",
+            "path": "api/indexnow/publish"
+          },
+          {
+            "file": "routes/indexnow-well-known.tsx",
+            "path": ".well-known/indexnow/:indexnowWellKey"
+          },
+          {
+            "file": "routes/auth.github.callback.tsx",
+            "path": "auth/github/callback"
+          },
+          {
+            "file": "routes/auth.github.tsx",
+            "path": "auth/github"
+          },
+          {
+            "file": "routes/indexnow-key.tsx",
+            "path": ":indexnowKey"
           },
           {
             "file": "routes/home.tsx",
@@ -2396,7 +2496,7 @@
             ]
           },
           {
-            "file": "routes/account.tsx",
+            "file": "routes/account.layout.tsx",
             "children": [
               {
                 "file": "routes/account._index.tsx",
@@ -2509,7 +2609,7 @@
             "id": "routes/docs.layout__de"
           },
           {
-            "file": "routes/account.tsx",
+            "file": "routes/account.layout.tsx",
             "children": [
               {
                 "file": "routes/account._index.tsx",
@@ -2533,7 +2633,7 @@
               }
             ],
             "path": "de/account",
-            "id": "routes/account__de"
+            "id": "routes/account.layout__de"
           },
           {
             "file": "routes/$.tsx",
@@ -2628,7 +2728,7 @@
             "id": "routes/docs.layout__da"
           },
           {
-            "file": "routes/account.tsx",
+            "file": "routes/account.layout.tsx",
             "children": [
               {
                 "file": "routes/account._index.tsx",
@@ -2652,7 +2752,7 @@
               }
             ],
             "path": "da/account",
-            "id": "routes/account__da"
+            "id": "routes/account.layout__da"
           },
           {
             "file": "routes/$.tsx",
@@ -2747,7 +2847,7 @@
             "id": "routes/docs.layout__fr"
           },
           {
-            "file": "routes/account.tsx",
+            "file": "routes/account.layout.tsx",
             "children": [
               {
                 "file": "routes/account._index.tsx",
@@ -2771,7 +2871,7 @@
               }
             ],
             "path": "fr/account",
-            "id": "routes/account__fr"
+            "id": "routes/account.layout__fr"
           },
           {
             "file": "routes/$.tsx",
@@ -2866,7 +2966,7 @@
             "id": "routes/docs.layout__nl"
           },
           {
-            "file": "routes/account.tsx",
+            "file": "routes/account.layout.tsx",
             "children": [
               {
                 "file": "routes/account._index.tsx",
@@ -2890,7 +2990,7 @@
               }
             ],
             "path": "nl/account",
-            "id": "routes/account__nl"
+            "id": "routes/account.layout__nl"
           },
           {
             "file": "routes/$.tsx",
@@ -2985,7 +3085,7 @@
             "id": "routes/docs.layout__pt-br"
           },
           {
-            "file": "routes/account.tsx",
+            "file": "routes/account.layout.tsx",
             "children": [
               {
                 "file": "routes/account._index.tsx",
@@ -3009,7 +3109,7 @@
               }
             ],
             "path": "pt-br/account",
-            "id": "routes/account__pt-br"
+            "id": "routes/account.layout__pt-br"
           },
           {
             "file": "routes/$.tsx",
