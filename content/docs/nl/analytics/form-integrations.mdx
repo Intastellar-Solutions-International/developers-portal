@@ -1,0 +1,45 @@
+---
+title: Formulieraanbiederintegraties
+description: Hoe Intastellar Analytics HubSpot, Typeform, Calendly en Tally-formulieren automatisch detecteert, het provider-veld en de drie form_error-typen.
+order: 13
+lastUpdated: "2026-09-06"
+---
+
+# Formulieraanbiederintegraties
+
+Intastellar Analytics detecteert externe formulieraanbieders automatisch via hun native `postMessage`-events. Geen extra configuratie of SDK is nodig — integreer het externe formulier zoals gewoonlijk en het analytics-embed verzorgt de detectie.
+
+## Ondersteunde aanbieders
+
+| Aanbieder | Detectiemechanisme | Opmerkingen |
+| --- | --- | --- |
+| HubSpot | `window.postMessage` met type `hsFormCallback` | Activeerd op HubSpots Embedded Forms-script (`hs-script.js`). Bevat progressie voor multi-step formulieren. |
+| Typeform | `window.postMessage` met type `form-ready`, `form-submit`, `form-close` | Werkt voor ingesloten Typeform-iframes. Submit activeerd wanneer Typeform het definitieve antwoord rapporteert. |
+| Calendly | `window.postMessage` met type `calendly.event_type_viewed`, `calendly.event_scheduled` | `event_scheduled` wordt gemapt naar `form_submit` in de analytics-stroom. |
+| Tally | `window.postMessage` met type `TallyFormSubmit` | Werkt voor ingesloten Tally-formulieren. |
+
+### Het `provider`-veld
+
+De events `form_started`, `form_submit` en `form_error` bevatten allemaal een `provider`-veld dat aangeeft welk systeem werd gedetecteerd:
+
+| Waarde | Betekenis |
+| --- | --- |
+| `"hubspot"` | HubSpot Embedded Form |
+| `"typeform"` | Ingesloten Typeform-iframe |
+| `"calendly"` | Ingesloten Calendly-widget |
+| `"tally"` | Ingesloten Tally-formulier |
+| `"native"` | Standaard HTML-`<form>`-element |
+
+## Formulierfouttypes
+
+Het `errorType`-veld op `form_error`-events neemt een van drie waarden aan:
+
+| Type | Wanneer het activeerd | `field`-waarde |
+| --- | --- | --- |
+| `validation` | HTML5 `invalid`-event activeert op een formulierveld — browser- of aangepaste validatie wees de invoer af | Naam van het falende veld, bijv. `"email"` |
+| `server` | De fetch of XHR-indiening van het formulier ontving een HTTP 4xx- of 5xx-reactie | `""` (fout is op verzoeksniveau, niet een specifiek veld) |
+| `network` | De fetch of XHR van het formulier faalde zonder reactie (offline, DNS-fout, timeout, CORS-blokkering) | `""` |
+
+## Handmatige fallback
+
+Voor formulieren die niet automatisch worden gedetecteerd, gebruik [`window.inta.track()`](/docs/analytics/v1/custom-events) om handmatig `form_started`, `form_submit` en `form_error`-events te versturen.

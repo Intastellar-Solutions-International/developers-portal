@@ -1,0 +1,45 @@
+---
+title: Integrações de provedores de formulários
+description: Como o Intastellar Analytics detecta automaticamente formulários HubSpot, Typeform, Calendly e Tally, o campo provider e os três tipos de form_error.
+order: 13
+lastUpdated: "2026-09-06"
+---
+
+# Integrações de provedores de formulários
+
+O Intastellar Analytics detecta provedores de formulários de terceiros automaticamente via seus eventos `postMessage` nativos. Nenhuma configuração extra ou SDK é necessário — incorpore o formulário de terceiros normalmente e o embed de analytics cuida da detecção.
+
+## Provedores suportados
+
+| Provedor | Mecanismo de detecção | Notas |
+| --- | --- | --- |
+| HubSpot | `window.postMessage` com tipo `hsFormCallback` | Dispara no script Embedded Forms do HubSpot (`hs-script.js`). Inclui progressão de formulários multi-etapas. |
+| Typeform | `window.postMessage` com tipo `form-ready`, `form-submit`, `form-close` | Funciona para iframes Typeform incorporados. Submit dispara quando o Typeform reporta a resposta final. |
+| Calendly | `window.postMessage` com tipo `calendly.event_type_viewed`, `calendly.event_scheduled` | `event_scheduled` é mapeado para `form_submit` no fluxo de analytics. |
+| Tally | `window.postMessage` com tipo `TallyFormSubmit` | Funciona para formulários Tally incorporados. |
+
+### O campo `provider`
+
+Os eventos `form_started`, `form_submit` e `form_error` incluem um campo `provider` que reflete qual sistema foi detectado:
+
+| Valor | Significado |
+| --- | --- |
+| `"hubspot"` | Formulário Embedded do HubSpot |
+| `"typeform"` | iFrame incorporado do Typeform |
+| `"calendly"` | Widget incorporado do Calendly |
+| `"tally"` | Formulário incorporado do Tally |
+| `"native"` | Elemento HTML `<form>` padrão |
+
+## Tipos de erros de formulário
+
+O campo `errorType` nos eventos `form_error` assume um de três valores:
+
+| Tipo | Quando dispara | Valor de `field` |
+| --- | --- | --- |
+| `validation` | O evento HTML5 `invalid` dispara em um campo de formulário — a validação do navegador ou personalizada rejeitou a entrada | Nome do campo que falhou, ex. `"email"` |
+| `server` | O envio fetch ou XHR do formulário recebeu uma resposta HTTP 4xx ou 5xx | `""` (erro está no nível da requisição, não em um campo específico) |
+| `network` | O fetch ou XHR do formulário falhou sem resposta (offline, falha de DNS, timeout, bloqueio CORS) | `""` |
+
+## Rastreamento manual como alternativa
+
+Para formulários não detectados automaticamente, use [`window.inta.track()`](/docs/analytics/v1/custom-events) para disparar manualmente os eventos `form_started`, `form_submit` e `form_error`.

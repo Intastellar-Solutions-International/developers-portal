@@ -1,0 +1,98 @@
+---
+title: Guia do painel
+description: Um guia painel a painel do painel do Intastellar Analytics — o que cada painel mostra, qual nível de consentimento é necessário e como usar filtros e intervalos de datas.
+order: 15
+lastUpdated: "2026-09-06"
+---
+
+# Guia do painel
+
+O painel do Intastellar Analytics está disponível em [analytics.consentsmanagement.com](https://analytics.consentsmanagement.com). Faça login e selecione um site no seletor de sites na navegação superior para ver seus painéis.
+
+## Intervalo de datas e filtros
+
+O seletor global de intervalo de datas na barra superior se aplica a todos os painéis simultaneamente. A visualização padrão são os últimos 30 dias. Use o botão Comparar para sobrepor o período equivalente anterior.
+
+A barra de **Filtros** permite segmentar os dados por: `Caminho`, `País`, `Dispositivo`, `UTM fonte` / `UTM meio` / `UTM campanha`, `Nome do evento`.
+
+Os filtros se combinam com lógica AND. Uma visualização filtrada pode ser marcada como favorito — o estado dos filtros é codificado na URL.
+
+---
+
+## Feed de eventos ao vivo
+
+**Consentimento necessário:** Mínimo e acima
+
+Um fluxo em tempo real de eventos recebidos, atualizado conforme os eventos chegam. Cada linha mostra nome do evento, caminho da página, código do país, tipo de dispositivo e horário de recebimento (UTC).
+
+---
+
+## Audiência
+
+**Consentimento necessário:** Mínimo e acima
+
+Mostra contagens agregadas de visitantes e volume de visualizações de página. Painéis: páginas únicas, visualizações de página, visitas, taxa de rejeição e tempo médio no site.
+
+---
+
+## Aquisição
+
+**Consentimento necessário:** Consentimento completo (campos UTM)
+
+Mostra de onde vem seu tráfego, agrupado por fonte UTM e meio. Modelo de atribuição: **primeiro contato**.
+
+---
+
+## Gastos com anúncios
+
+**Consentimento necessário:** Consentimento completo (IDs de clique)
+
+Conecta dados de cliques em anúncios (`gclid`, `msclkid`, `fbclid`) a eventos de conversão. Requer a conexão de suas contas de anúncios via **Configurações → Integrações de anúncios**.
+
+---
+
+## Atribuição
+
+**Consentimento necessário:** Consentimento completo (IDs de clique e campos UTM)
+
+Compara os modelos de atribuição de **primeiro contato** e **último contato** lado a lado para um evento de conversão selecionado.
+
+---
+
+## Conversões
+
+**Consentimento necessário:** Mínimo e acima (apenas nomes de eventos); Consentimento completo para dados de receita e produtos
+
+Lista todos os eventos de conversão com contagens e, quando presentes, receita total. O **construtor de funil** (canto superior direito) permite encadear eventos em um funil.
+
+---
+
+## Mapa de calor
+
+**Consentimento necessário:** Consentimento completo (coordenadas de cliques)
+
+Sobrepõe um mapa de calor de densidade de cliques em uma renderização ao vivo de qualquer página do seu site. O filtro `rage_click` destaca áreas com alta proporção de rage clicks.
+
+---
+
+## Fluxo de usuário
+
+**Consentimento necessário:** Consentimento completo
+
+Um diagrama estilo Sankey mostrando os caminhos mais comuns que os visitantes percorrem pelo seu site.
+
+---
+
+## Search Console
+
+**Consentimento necessário:** Mínimo e acima
+
+Mostra dados de desempenho do Google Search ao lado dos dados de visualizações de página do Analytics. Requer uma propriedade do Google Search Console conectada via **Configurações → Integrações → Google Search Console**.
+
+---
+
+## Bots
+
+**Consentimento necessário:** Mínimo e acima
+
+Mostra tráfego identificado como automatizado — crawlers, navegadores headless e monitores sintéticos. Este tráfego é automaticamente excluído de todos os outros painéis.

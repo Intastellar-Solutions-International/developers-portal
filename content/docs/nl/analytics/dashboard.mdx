@@ -1,0 +1,98 @@
+---
+title: Dashboardgids
+description: Een paneel-voor-paneel rondleiding door het Intastellar Analytics-dashboard — wat elk paneel toont, welk toestemmingsniveau vereist is, en hoe filters en datumbereiken te gebruiken.
+order: 15
+lastUpdated: "2026-09-06"
+---
+
+# Dashboardgids
+
+Het Intastellar Analytics-dashboard is beschikbaar op [analytics.consentsmanagement.com](https://analytics.consentsmanagement.com). Log in en selecteer een site uit de site-wisselaar in de bovenste navigatie om de panelen te zien.
+
+## Datumbereik en filters
+
+De globale datumbereikselectie in de bovenste balk is van toepassing op alle panelen tegelijk. De standaardweergave is de afgelopen 30 dagen. Gebruik de Vergelijk-schakelaar om de vorige equivalente periode te overlappen.
+
+De **Filters**-balk maakt segmentatie mogelijk op: `Pad`, `Land`, `Apparaat`, `UTM-bron` / `UTM-medium` / `UTM-campagne`, `Eventnaam`.
+
+Filters worden gecombineerd met AND-logica. Een gefilterde weergave kan worden gemarkeerd — de filterstatus is gecodeerd in de URL.
+
+---
+
+## Live gebeurtenisfeed
+
+**Vereiste toestemming:** Minimaal en hoger
+
+Een realtime stroom van inkomende events, bijgewerkt terwijl events binnenkomen. Elke rij toont eventnaam, paginapad, landcode, apparaattype en ontvangstijd (UTC).
+
+---
+
+## Publiek
+
+**Vereiste toestemming:** Minimaal en hoger
+
+Toont geaggregeerde bezoekersaantallen en paginaweergavevolume. Panelen: unieke pagina's, paginaweergaven, bezoeken, bouncepercentage en gemiddelde tijd op de site.
+
+---
+
+## Acquisitie
+
+**Vereiste toestemming:** Volledige toestemming (UTM-velden)
+
+Toont waar uw verkeer vandaan komt, gegroepeerd op UTM-bron en -medium. Attributiemodel: **first-touch**.
+
+---
+
+## Advertentie-uitgaven
+
+**Vereiste toestemming:** Volledige toestemming (klik-ID's)
+
+Verbindt advertentieklik-data (`gclid`, `msclkid`, `fbclid`) met conversie-events. Vereist verbinding van uw advertentieaccounts via **Instellingen → Advertentie-integraties**.
+
+---
+
+## Attributie
+
+**Vereiste toestemming:** Volledige toestemming (klik-ID's en UTM-velden)
+
+Vergelijkt **first-touch** en **last-touch** attributiemodellen naast elkaar voor een geselecteerd conversie-event.
+
+---
+
+## Conversies
+
+**Vereiste toestemming:** Minimaal en hoger (alleen eventnamen); Volledige toestemming voor omzet- en productdata
+
+Geeft alle conversie-events weer met aantallen en, waar aanwezig, totale omzet. De **funnel-bouwer** (rechtsboven) laat u events koppelen in een funnel.
+
+---
+
+## Heatmap
+
+**Vereiste toestemming:** Volledige toestemming (klikcoördinaten)
+
+Toont een klik-dichtheidsheatmap over een live render van een pagina op uw site. Het `rage_click`-filter markeert gebieden met een hoge rage-click-ratio.
+
+---
+
+## Gebruikersflow
+
+**Vereiste toestemming:** Volledige toestemming
+
+Een Sankey-stijldiagram dat de meest voorkomende paden toont die bezoekers door uw site nemen.
+
+---
+
+## Search Console
+
+**Vereiste toestemming:** Minimaal en hoger
+
+Toont Google Search-prestatiedata naast uw Analytics-paginaweergavedata. Vereist een Google Search Console-eigenschap verbonden via **Instellingen → Integraties → Google Search Console**.
+
+---
+
+## Bots
+
+**Vereiste toestemming:** Minimaal en hoger
+
+Toont verkeer dat is geïdentificeerd als geautomatiseerd — crawlers, headless browsers en synthetische monitors. Dit verkeer wordt automatisch uitgesloten van alle andere panelen.

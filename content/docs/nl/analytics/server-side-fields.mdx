@@ -1,0 +1,53 @@
+---
+title: Server-side velden & attributie
+description: Volledige referentie voor alle velden die server-side aan elk event worden toegevoegd — site-metadata, apparaatvelden, geo, UTM-parameters en klik-ID's.
+order: 14
+lastUpdated: "2026-09-06"
+---
+
+# Server-side velden & attributie
+
+Elk event dat naar Intastellar Analytics wordt gestuurd, wordt server-side verrijkt voordat het wordt opgeslagen. Sommige velden worden afgeleid van de verzoek zelf (IP-adres, user-agent), andere worden gelezen uit de URL bij de eerste lading (UTM-parameters, klik-ID's). Geen van deze vereist extra code in uw embed.
+
+## Server-toegevoegde velden
+
+Deze velden worden toegevoegd aan elk eventrecord ongeacht het toestemmingsniveau.
+
+| Veld | Type | Opmerkingen |
+| --- | --- | --- |
+| `site_id` | UUID | Opgelost uit uw `data-site`-sleutel. Gebruikt om alle queries tot uw dashboard te beperken. |
+| `received_at` | timestamp | UTC-servertijd wanneer het event werd ontvangen. Niet de clientzijdige verzendtijd. |
+| `consent_level` | `"minimal"` \| `"full"` | Ingesteld door het embed en woordelijk opgeslagen. |
+| `pathname` | string | URL-pad zonder querystring of fragment, bijv. `/producten/schoenen`. |
+| `page_host` | string | Alleen hostnaam, bijv. `app.uwsite.nl`. Geen poort of protocol. |
+| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Afgeleid van het verzoek-user-agent. De ruwe user-agent-string wordt weggegooid en nooit opgeslagen. |
+| `country_code` | string | ISO 3166-1 alpha-2-code opgelost via GeoIP, bijv. `"DE"`, `"NL"`. Het IP-adres wordt onmiddellijk na oplossing weggegooid. |
+
+## Sessieveld (alleen volledig toestemmingsniveau)
+
+| Veld | Type | Opmerkingen |
+| --- | --- | --- |
+| `session_id` | string \| null | Een server-gegenereerde identificator die events van dezelfde bezoekersessie groepeert. Alleen ingesteld wanneer `consent_level` `"full"` is. Altijd `null` op minimaal niveau. |
+
+## UTM-parameters (alleen volledig toestemmingsniveau)
+
+UTM-parameters worden gelezen uit de landingspagina-URL bij de eerste paginaweergave van een sessie. Ze worden gekoppeld aan alle volgende events in die sessie.
+
+| Veld | URL-parameter | Voorbeeld |
+| --- | --- | --- |
+| `utm_source` | `utm_source` | `"google"`, `"nieuwsbrief"` |
+| `utm_medium` | `utm_medium` | `"cpc"`, `"email"` |
+| `utm_campaign` | `utm_campaign` | `"zomersale-2026"` |
+| `utm_content` | `utm_content` | `"banner-a"` |
+
+## Klik-ID's (alleen volledig toestemmingsniveau)
+
+| Veld | Bron | Advertentieplatform |
+| --- | --- | --- |
+| `gclid` | `gclid` URL-parameter | Google Ads |
+| `msclkid` | `msclkid` URL-parameter | Microsoft Advertising / Bing Ads |
+| `fbclid` | `fbclid` URL-parameter | Meta Ads (Facebook / Instagram) |
+
+## Relatie met het Acquisitie-paneel
+
+Het [Acquisitie-paneel](/docs/analytics/v1/dashboard#acquisition) toont standaard first-touch attributie. Klik-ID's voeden het [Attributie-paneel](/docs/analytics/v1/dashboard#attribution), waar eerste-touch- en laatste-touch-modellen naast elkaar worden vergeleken.

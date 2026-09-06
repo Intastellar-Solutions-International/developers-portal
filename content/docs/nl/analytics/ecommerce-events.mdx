@@ -1,0 +1,162 @@
+---
+title: Standaard e-commerce events
+description: Referentie voor alle standaard e-commerce events die worden ondersteund door Intastellar Analytics — checkout-funnel-events en zelfstandige events met volledige intaAnalytics.track()-handtekeningen en velddefinities.
+order: 12
+lastUpdated: "2026-09-06"
+---
+
+# Standaard e-commerce events
+
+Intastellar Analytics ondersteunt twee groepen e-commerce events:
+
+- **Checkout-funnel-events** ondersteunen de Checkout Funnel-visualisatie in het dashboard wanneer twee of meer funnel-stappen zijn geregistreerd. Elke stap wordt afzonderlijk bijgehouden terwijl bezoekers door het aankooptraject gaan.
+- **Zelfstandige e-commerce events** worden afzonderlijk bijgehouden en gerapporteerd — ze maken geen deel uit van de funnel-visualisatie.
+
+Registreer deze events eenmalig in het dashboard onder **Events & Tracking** voordat u ze verstuurt. Bij registratie wijst u elk event een naam en een soort toe — de soort bepaalt hoe het event wordt gecategoriseerd en gevisualiseerd. De onderstaande voorbeelden gebruiken de soortnaam als eventnaam, wat de aanbevolen conventie is.
+
+## Checkout-funnel-events
+
+Verstuur deze events op volgorde terwijl bezoekers door uw checkout-proces gaan.
+
+| Soort | Verstuur wanneer… |
+| --- | --- |
+| `view_item` | Een productdetailpagina wordt weergegeven |
+| `add_to_cart` | Een product wordt aan het winkelwagentje toegevoegd |
+| `view_basket` | De winkelwagentjespagina wordt bekeken |
+| `begin_checkout` | De bezoeker start het afrekenen |
+| `checkout` | Het afrekenformulier wordt ingediend |
+| `payment_info` | Betalingsgegevens worden ingevoerd |
+| `purchase` | Orderbevestiging wordt getoond |
+
+### view_item
+
+```js
+intaAnalytics.track('view_item', {
+  products: [{ id: 'SKU-001', name: 'Blauw T-Shirt', price: 29.99, category: 'Kleding', variant: 'M / Blauw' }],
+  currency: 'EUR',
+});
+```
+
+### add_to_cart
+
+```js
+intaAnalytics.track('add_to_cart', {
+  products: [{ id: 'SKU-001', name: 'Blauw T-Shirt', price: 29.99, quantity: 1, category: 'Kleding', variant: 'M / Blauw' }],
+  currency: 'EUR',
+});
+```
+
+### view_basket
+
+Geen productvelden vereist — verstuur bij elke weergave van de winkelwagentjespagina.
+
+```js
+intaAnalytics.track('view_basket');
+```
+
+### begin_checkout
+
+```js
+intaAnalytics.track('begin_checkout');
+```
+
+### checkout
+
+```js
+intaAnalytics.track('checkout');
+```
+
+### payment_info
+
+```js
+intaAnalytics.track('payment_info', {
+  value: 49.99,
+  currency: 'EUR',
+  data: { paymentMethod: 'credit_card' },
+});
+```
+
+### purchase
+
+```js
+intaAnalytics.track('purchase', {
+  transactionId: 'ORDER-123',
+  value: 49.99,
+  currency: 'EUR',
+  products: [
+    { id: 'SKU-001', name: 'Blauw T-Shirt', price: 29.99, quantity: 1, category: 'Kleding', variant: 'M / Blauw' },
+    { id: 'SKU-002', name: 'Zwarte Jeans',  price: 19.99, quantity: 1, category: 'Kleding', variant: '32 / Zwart' },
+  ],
+});
+```
+
+## Zelfstandige e-commerce events
+
+| Soort | Verstuur wanneer… |
+| --- | --- |
+| `remove_from_cart` | Een product uit het winkelwagentje wordt verwijderd |
+| `wishlist_add` | Een product wordt opgeslagen in een verlanglijst |
+| `refund` | Een retour of terugbetaling wordt verwerkt |
+| `apply_coupon` | Een kortingscode wordt succesvol toegepast |
+
+### remove_from_cart
+
+```js
+intaAnalytics.track('remove_from_cart', {
+  products: [{ id: 'SKU-001', name: 'Blauw T-Shirt', price: 29.99, quantity: 1, category: 'Kleding', variant: 'M / Blauw' }],
+  currency: 'EUR',
+});
+```
+
+### wishlist_add
+
+```js
+intaAnalytics.track('wishlist_add', {
+  products: [{ id: 'SKU-001', name: 'Blauw T-Shirt', price: 29.99, category: 'Kleding', variant: 'M / Blauw' }],
+  currency: 'EUR',
+});
+```
+
+### refund
+
+```js
+intaAnalytics.track('refund', {
+  transactionId: 'ORDER-123',
+  value: 29.99,
+  currency: 'EUR',
+  products: [{ id: 'SKU-001', name: 'Blauw T-Shirt', price: 29.99, quantity: 1, category: 'Kleding' }],
+});
+```
+
+### apply_coupon
+
+```js
+intaAnalytics.track('apply_coupon', {
+  value: 10.00,
+  currency: 'EUR',
+  data: { coupon: 'SUMMER20' },
+});
+```
+
+## Veldreferentie
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `products` | object[] | Productlijst — gebruikt in `view_item`, `add_to_cart`, `remove_from_cart`, `wishlist_add`, `refund` en `purchase` |
+| `products[].id` | string | Product-SKU of database-ID |
+| `products[].name` | string | Weergavenaam |
+| `products[].price` | number | Stukprijs |
+| `products[].quantity` | number | Standaard `1` als weggelaten |
+| `products[].category` | string | Productcategorie |
+| `products[].variant` | string | Maat, kleur of andere variant |
+| `value` | number | Bestelling-, terugbetalings- of kortingsbedrag |
+| `currency` | string | ISO 4217-code, bijv. `'EUR'` |
+| `transactionId` | string | Bestelling-ID — dedupliceert herhaalde activeringen binnen een sessie |
+| `data` | object | Willekeurige extra velden (kortingscode, betaalmethode, etc.) |
+
+## Opmerkingen
+
+- **Eventnamen worden in het dashboard ingesteld.** Het eerste argument voor `intaAnalytics.track()` moet overeenkomen met de geregistreerde naam onder **Events & Tracking**.
+- **`transactionId` voorkomt dubbeltelling.** Bij `purchase` zorgt het meegeven van `transactionId` ervoor dat slechts één aankoop per sessie wordt geregistreerd.
+- **`data`-velden zijn opvraagbaar.** Waarden in `data` worden opgeslagen zoals ze zijn en zijn beschikbaar in de aangepaste event-verkenner van het dashboard.
+- **Toestemming bepaalt veldopslag.** Alle events worden verstuurd bij minimale toestemming, maar `products` en `value` worden alleen opgeslagen wanneer de bezoeker `statisticCookies`-toestemming heeft verleend.
