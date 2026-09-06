@@ -11,7 +11,7 @@ export const da: MessageTree = {
     searchDescription: "Søg i Intastellar-udviklerdokumentationen.",
     changelogTitle: "Ændringslog · inta.dev",
     changelogDescription:
-      "Versionshistorik for Intastellar Consents (GitHub) og Intastellar Sign-In (npm + GitHub).",
+      "Versionshistorik for Intastellar Consents, Intastellar Analytics og Intastellar Sign-In.",
     legalIndexTitle: "Juridisk · inta.dev",
     legalIndexDescription:
       "Juridiske oplysninger om inta.dev: privatliv, vilkår og links til Intastellar Solutions-politikker og DPA.",
@@ -54,7 +54,7 @@ export const da: MessageTree = {
     opensNewTab: "(åbner i nyt faneblad)",
     logoHomeTitle: "Intastellar Developers — forsiden",
     changelog: "Ændringslog",
-    changelogTitle: "Consents og Sign-In — npm- og GitHub-udgivelser",
+    changelogTitle: "Consents, Analytics og Sign-In — npm- og GitHub-udgivelser",
     documentation: "Dokumentation",
     intastellarConsents: "Intastellar Consents",
     intastellarAnalytics: "Intastellar Analytics",
@@ -100,6 +100,10 @@ export const da: MessageTree = {
     cardConsentsBody:
       "Cookie-banner, CMP og consent-API’er til web, WordPress, GTM, Shopify med mere.",
     cardConsentsCta: "Åbn dokumentation",
+    cardAnalyticsTitle: "Intastellar Analytics",
+    cardAnalyticsBody:
+      "Sidevisninger, rage-klik, rulledybde, e-handelstragthændelser og SEO-indsigt — nul serveropsætning.",
+    cardAnalyticsCta: "Åbn dokumentation",
     cardAccountsTitle: "Intastellar Accounts",
     cardAccountsBody:
       "React SDK på inta.dev, OAuth-lignende flows, PKCE, sessioner og sikkerhedsmønstre til dine apps og websites.",
@@ -113,7 +117,7 @@ export const da: MessageTree = {
     signInPortal: "Log ind på portalen",
     bandTitle: "Kom hurtigere videre med søgning og udgivelser",
     bandBody:
-      "Spring til enhver side med fuldtekstsøgning, følg produktopdateringer på ændringsloggen (Consents og Intastellar Sign-In), og hold API-nøgler ét sted, når du er logget ind.",
+      "Spring til enhver side med fuldtekstsøgning, følg produktopdateringer på ændringsloggen og hold API-nøgler ét sted, når du er logget ind.",
     openSearch: "Åbn søgning",
     changelog: "Ændringslog",
     apiKeys: "API-nøgler",
@@ -255,6 +259,10 @@ export const da: MessageTree = {
     ql5Hint: "Registrer klient, SDK vs. manuelt OAuth, flows",
     ql6Label: "Accounts — authorization code-flow",
     ql6Hint: "PKCE, callback, token-udveksling",
+    copyCode: "Kopiér kode",
+    copied: "Kopieret",
+    copyFailed: "Mislykkedes",
+    onThisPage: "På denne side",
     docPageFallbackDescription:
       "{{title}} — Intastellar-udviklerdokumentation på inta.dev.",
     saveToProfile: "Gem på profil",

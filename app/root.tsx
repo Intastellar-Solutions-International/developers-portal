@@ -75,6 +75,51 @@ import "./app.css";
 
 const colorSchemeBootScript = `(function(){try{var k=${JSON.stringify(COLOR_SCHEME_STORAGE_KEY)};var v=localStorage.getItem(k);var d=v==="dark"||(v!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
 
+const intaConsentBootScript =
+  `window.INTA=${JSON.stringify({
+    policy_link: "https://intastellar.eu/legal/privacy",
+    settings: {
+      rootDomain: "intastellar.eu",
+      company: "Intastellar Solutions, International",
+      color: "rgb(163, 133, 64)",
+      language: "auto",
+      gtagId: "G-86T4LDB766",
+      arrange: "rtl",
+      design: "bannerV2",
+      logo: "https://www.intastellarsolutions.com/assets/logos/intastellar-new-planet.svg",
+      requiredCookies: [
+        {
+          cookie: "inta_acc",
+          domain: "intastellar.eu",
+          provider: "Intastellar Solutions",
+          type: "functional",
+          purpose: "This cookie is used to store the user's session token.",
+        },
+        {
+          cookie: "inta_state",
+          domain: "intastellar.eu",
+          provider: "Intastellar Solutions",
+          type: "functional",
+          purpose: "This cookie is used to store the user's state.",
+        },
+      ],
+      keepInLocalStorage: [
+        "intastellar_token",
+        "domains",
+        "globals",
+        "organisation",
+        "platform",
+        "subscription",
+      ],
+      partnerDomain: [
+        "intastellarsolutions.com",
+        "intastellarconsents.com",
+        "inta.dev",
+        "intastellaraccounts.com",
+      ],
+    },
+  })};`;
+
 const LegacyBannerLayoutContext = createContext<boolean>(false);
 
 function useRootHtmlIsDark(): boolean {
@@ -176,6 +221,8 @@ export const links: Route.LinksFunction = () => [
     crossOrigin: "anonymous",
   },
   { rel: "preconnect", href: "https://www.intastellarsolutions.com" },
+  { rel: "preconnect", href: "https://consents.cdn.intastellarsolutions.com" },
+  { rel: "preconnect", href: "https://analytics.consentsmanagement.com" },
   { rel: "preconnect", href: "https://www.intastellar-consents.com" },
   { rel: "preconnect", href: "https://www.intastellaraccounts.com" },
   { rel: "preconnect", href: "https://apis.intastellaraccounts.com" },
@@ -400,6 +447,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script
           // Apply stored / OS theme before paint (keeps Tailwind `dark:` in sync).
           dangerouslySetInnerHTML={{ __html: colorSchemeBootScript }}
+        />
+        {/* Intastellar Consents — must load before analytics tags so consent mode applies */}
+        <script dangerouslySetInnerHTML={{ __html: intaConsentBootScript }} />
+        <script src="https://consents.cdn.intastellarsolutions.com/uc.js" />
+        {/* Intastellar Analytics tracker */}
+        <script
+          src="https://analytics.consentsmanagement.com/api/a"
+          data-site="ZlfluvGdSLTTZd6Z"
+          async
+          defer
         />
         <Meta />
         <Links />

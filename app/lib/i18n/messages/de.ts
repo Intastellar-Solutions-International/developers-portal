@@ -11,7 +11,7 @@ export const de: MessageTree = {
     searchDescription: "Intastellar-Entwicklerdokumentation durchsuchen.",
     changelogTitle: "Changelog · inta.dev",
     changelogDescription:
-      "Versionsverlauf für Intastellar Consents (GitHub) und Intastellar Sign-In (npm + GitHub).",
+      "Versionsverlauf für Intastellar Consents, Intastellar Analytics und Intastellar Sign-In.",
     legalIndexTitle: "Rechtliches · inta.dev",
     legalIndexDescription:
       "Rechtliche Informationen zu inta.dev: Datenschutz, Nutzungsbedingungen und Links zu Richtlinien sowie DPA von Intastellar Solutions.",
@@ -54,7 +54,7 @@ export const de: MessageTree = {
     opensNewTab: "(öffnet neues Fenster)",
     logoHomeTitle: "Intastellar Developers — Startseite",
     changelog: "Änderungsprotokoll",
-    changelogTitle: "Consents & Sign-In — npm- und GitHub-Releases",
+    changelogTitle: "Consents, Analytics & Sign-In — npm- und GitHub-Releases",
     documentation: "Dokumentation",
     intastellarConsents: "Intastellar Consents",
     intastellarAnalytics: "Intastellar Analytics",
@@ -101,6 +101,10 @@ export const de: MessageTree = {
     cardConsentsBody:
       "Cookie-Banner, CMP und Consent-APIs für Web, WordPress, GTM, Shopify und mehr.",
     cardConsentsCta: "Dokumentation öffnen",
+    cardAnalyticsTitle: "Intastellar Analytics",
+    cardAnalyticsBody:
+      "Seitenaufrufe, Rage-Clicks, Scrolltiefe, E-Commerce-Funnel-Ereignisse und SEO-Einblicke — ohne serverseitiges Setup.",
+    cardAnalyticsCta: "Dokumentation öffnen",
     cardAccountsTitle: "Intastellar Accounts",
     cardAccountsBody:
       "React-SDK auf inta.dev, OAuth-ähnliche Flows, PKCE, Sitzungen und Sicherheitsmuster für Ihre Apps und Websites.",
@@ -114,7 +118,7 @@ export const de: MessageTree = {
     signInPortal: "Am Portal anmelden",
     bandTitle: "Schneller mit Suche & Releases",
     bandBody:
-      "Springen Sie mit Volltextsuche zu jeder Seite, verfolgen Sie Produktupdates im Änderungsprotokoll (Consents und Intastellar Sign-In) und verwalten Sie API-Schlüssel an einem Ort nach der Anmeldung.",
+      "Springen Sie mit Volltextsuche zu jeder Seite, verfolgen Sie Produktupdates im Änderungsprotokoll und verwalten Sie API-Schlüssel an einem Ort nach der Anmeldung.",
     openSearch: "Suche öffnen",
     changelog: "Änderungsprotokoll",
     apiKeys: "API-Schlüssel",
@@ -256,6 +260,10 @@ export const de: MessageTree = {
     ql5Hint: "Client registrieren, SDK vs. manuelles OAuth, Flows",
     ql6Label: "Accounts — Authorization-Code-Flow",
     ql6Hint: "PKCE, Callback, Token-Austausch",
+    copyCode: "Code kopieren",
+    copied: "Kopiert",
+    copyFailed: "Fehlgeschlagen",
+    onThisPage: "Auf dieser Seite",
     docPageFallbackDescription:
       "{{title}} — Intastellar-Entwicklerdokumentation auf inta.dev.",
     saveToProfile: "Im Profil speichern",

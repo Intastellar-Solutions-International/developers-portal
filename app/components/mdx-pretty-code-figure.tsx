@@ -8,6 +8,8 @@ import {
   type MouseEvent,
 } from "react";
 
+import { useI18n } from "~/providers/i18n-provider";
+
 async function copyToClipboard(text: string): Promise<boolean> {
   if (text.length === 0) return false;
 
@@ -64,6 +66,7 @@ function ClipboardIcon({ className }: { className?: string }) {
 }
 
 function CopyCodeControl({ getText }: { getText: () => string }) {
+  const { t } = useI18n();
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
 
   const onClick = useCallback(
@@ -79,7 +82,11 @@ function CopyCodeControl({ getText }: { getText: () => string }) {
   );
 
   const label =
-    state === "copied" ? "Copied" : state === "failed" ? "Failed" : "Copy code";
+    state === "copied"
+      ? t("docs.copied")
+      : state === "failed"
+        ? t("docs.copyFailed")
+        : t("docs.copyCode");
 
   return (
     <button

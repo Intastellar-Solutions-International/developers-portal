@@ -51,7 +51,15 @@ export function SearchPanel({
   }, [autoFocus]);
 
   const results = useMemo(() => searchDocuments(q, documents), [q, documents]);
-  const defaultPreview = useMemo(() => documents.slice(0, 12), [documents]);
+  const defaultPreview = useMemo(() => {
+    // Show locale-appropriate docs first. For non-English locales, prefer docs
+    // whose href starts with /{locale}/docs/; fall back to English docs for any
+    // unfilled slots (since the index currently only contains English content).
+    const localePrefix = locale !== "en" ? `/${locale}/docs/` : "/docs/";
+    const primary = documents.filter((d) => d.href.startsWith(localePrefix));
+    const secondary = documents.filter((d) => !d.href.startsWith(localePrefix));
+    return [...primary, ...secondary].slice(0, 12);
+  }, [documents, locale]);
   const list = useMemo(
     () => (q.trim() ? results : defaultPreview),
     [q, results, defaultPreview],

@@ -134,6 +134,33 @@ function DecoAccounts({ className }: { className?: string }) {
   );
 }
 
+function DecoAnalytics({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 200 120"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <rect x="18" y="76" width="22" height="32" rx="3" className="fill-emerald-400/45 dark:fill-emerald-400/30" />
+      <rect x="50" y="58" width="22" height="50" rx="3" className="fill-emerald-500/55 dark:fill-emerald-400/45" />
+      <rect x="82" y="38" width="22" height="70" rx="3" className="fill-emerald-500/65 dark:fill-emerald-400/55" />
+      <rect x="114" y="48" width="22" height="60" rx="3" className="fill-emerald-500/55 dark:fill-emerald-400/45" />
+      <rect x="146" y="24" width="22" height="84" rx="3" className="fill-emerald-600/50 dark:fill-emerald-400/60" />
+      <path
+        d="M29 72 L61 54 L93 34 L125 44 L157 20"
+        className="stroke-emerald-500/65 dark:stroke-emerald-300/55"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="29" cy="72" r="3.5" className="fill-emerald-500/80 dark:fill-emerald-300/70" />
+      <circle cx="157" cy="20" r="3.5" className="fill-emerald-500/80 dark:fill-emerald-300/70" />
+    </svg>
+  );
+}
+
 function DecoPlatform({ className }: { className?: string }) {
   return (
     <svg
@@ -174,9 +201,11 @@ export function Welcome() {
   const lp = (path: string) => withLocalePrefix(path, locale);
   const vCb = getDefaultVersionSlug("cookie-banner");
   const vAcc = getDefaultVersionSlug("accounts-sign-in");
+  const vAna = getDefaultVersionSlug("analytics");
 
   const consentsHome = docHref(locale, "cookie-banner", vCb);
   const accountsHome = docHref(locale, "accounts-sign-in", vAcc);
+  const analyticsHome = docHref(locale, "analytics", vAna);
   const jsStart = docHref(
     locale,
     "cookie-banner",
@@ -233,7 +262,7 @@ export function Welcome() {
 
       {/* Featured cards */}
       <section className="mx-auto max-w-6xl px-4 py-14 sm:py-16">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             to={consentsHome}
             className="group relative flex flex-col overflow-hidden rounded-2xl border border-sky-200/80 bg-linear-to-b from-sky-50 to-sky-100/50 p-6 shadow-sm transition-shadow hover:shadow-md dark:border-sky-900/50 dark:from-sky-950/40 dark:to-sky-950/20 dark:hover:border-sky-800/60"
@@ -250,6 +279,25 @@ export function Welcome() {
             </span>
             <div className="pointer-events-none -mx-2 mt-4 flex justify-center opacity-90">
               <DecoConsents className="h-28 w-full max-w-[200px]" />
+            </div>
+          </Link>
+
+          <Link
+            to={analyticsHome}
+            className="group relative flex flex-col overflow-hidden rounded-2xl border border-emerald-200/80 bg-linear-to-b from-emerald-50 to-emerald-100/50 p-6 shadow-sm transition-shadow hover:shadow-md dark:border-emerald-900/50 dark:from-emerald-950/40 dark:to-emerald-950/20 dark:hover:border-emerald-800/60"
+          >
+            <h2 className="text-lg font-semibold text-emerald-900 dark:text-emerald-200">
+              {t("home.cardAnalyticsTitle")}
+            </h2>
+            <p className="mt-2 flex-1 text-sm leading-relaxed text-emerald-950/70 dark:text-emerald-100/70">
+              {t("home.cardAnalyticsBody")}
+            </p>
+            <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+              {t("home.cardAnalyticsCta")}
+              <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
+            </span>
+            <div className="pointer-events-none -mx-2 mt-4 flex justify-center opacity-90">
+              <DecoAnalytics className="h-28 w-full max-w-[200px]" />
             </div>
           </Link>
 

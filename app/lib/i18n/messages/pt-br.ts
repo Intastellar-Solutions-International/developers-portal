@@ -11,7 +11,7 @@ export const ptBr: MessageTree = {
     searchDescription: "Buscar na documentação para desenvolvedores Intastellar.",
     changelogTitle: "Changelog · inta.dev",
     changelogDescription:
-      "Histórico de versões do Intastellar Consents (GitHub) e Intastellar Sign-In (npm + GitHub).",
+      "Histórico de versões do Intastellar Consents, Intastellar Analytics e Intastellar Sign-In.",
     legalIndexTitle: "Jurídico · inta.dev",
     legalIndexDescription:
       "Informações jurídicas do inta.dev: privacidade, termos e links para políticas da Intastellar Solutions e DPA.",
@@ -54,7 +54,7 @@ export const ptBr: MessageTree = {
     opensNewTab: "(abre em nova aba)",
     logoHomeTitle: "Intastellar Developers — início",
     changelog: "Changelog",
-    changelogTitle: "Consents e Sign-In — releases npm e GitHub",
+    changelogTitle: "Consents, Analytics e Sign-In — releases npm e GitHub",
     documentation: "Documentação",
     intastellarConsents: "Intastellar Consents",
     intastellarAnalytics: "Intastellar Analytics",
@@ -100,6 +100,10 @@ export const ptBr: MessageTree = {
     cardConsentsBody:
       "Banner de cookies, CMP e APIs de consentimento para web, WordPress, GTM, Shopify e mais.",
     cardConsentsCta: "Abrir documentação",
+    cardAnalyticsTitle: "Intastellar Analytics",
+    cardAnalyticsBody:
+      "Visualizações de página, rage clicks, profundidade de rolagem, eventos de funil e-commerce e insights de SEO — sem configuração no servidor.",
+    cardAnalyticsCta: "Abrir documentação",
     cardAccountsTitle: "Intastellar Accounts",
     cardAccountsBody:
       "SDK React no inta.dev, fluxos estilo OAuth, PKCE, sessões e padrões de segurança para seus apps e sites.",
@@ -113,7 +117,7 @@ export const ptBr: MessageTree = {
     signInPortal: "Entrar no portal",
     bandTitle: "Vá mais rápido com busca e releases",
     bandBody:
-      "Acesse qualquer página com busca em texto integral, acompanhe atualizações no changelog (Consents e Intastellar Sign-In) e mantenha as chaves de API em um só lugar após entrar.",
+      "Acesse qualquer página com busca em texto integral, acompanhe atualizações no changelog e mantenha as chaves de API em um só lugar após entrar.",
     openSearch: "Abrir busca",
     changelog: "Changelog",
     apiKeys: "Chaves de API",
@@ -255,6 +259,10 @@ export const ptBr: MessageTree = {
     ql5Hint: "Registrar cliente, SDK vs OAuth manual, fluxos",
     ql6Label: "Accounts — Fluxo authorization code",
     ql6Hint: "PKCE, callback, troca de token",
+    copyCode: "Copiar código",
+    copied: "Copiado",
+    copyFailed: "Falhou",
+    onThisPage: "Nesta página",
     docPageFallbackDescription:
       "{{title}} — Documentação para desenvolvedores Intastellar no inta.dev.",
     saveToProfile: "Salvar no perfil",

@@ -19,7 +19,7 @@ export const en = {
     searchDescription: "Search Intastellar developer documentation.",
     changelogTitle: "Changelog · inta.dev",
     changelogDescription:
-      "Version history for Intastellar Consents (GitHub) and Intastellar Sign-In (npm + GitHub).",
+      "Version history for Intastellar Consents, Intastellar Analytics, and Intastellar Sign-In.",
     legalIndexTitle: "Legal · inta.dev",
     legalIndexDescription:
       "Legal information for inta.dev: privacy, terms, and links to Intastellar Solutions policies and DPA.",
@@ -62,7 +62,7 @@ export const en = {
     opensNewTab: "(opens in new tab)",
     logoHomeTitle: "Intastellar Developers — home",
     changelog: "Changelog",
-    changelogTitle: "Consents & Sign-In — npm and GitHub releases",
+    changelogTitle: "Consents, Analytics & Sign-In — npm and GitHub releases",
     documentation: "Documentation",
     intastellarConsents: "Intastellar Consents",
     intastellarAnalytics: "Intastellar Analytics",
@@ -109,6 +109,10 @@ export const en = {
     cardConsentsBody:
       "Cookie banner, CMP, and consent APIs for the web, WordPress, GTM, Shopify, and more.",
     cardConsentsCta: "Open documentation",
+    cardAnalyticsTitle: "Intastellar Analytics",
+    cardAnalyticsBody:
+      "Pageviews, rage clicks, scroll depth, e-commerce funnel events, and SEO insights — zero server-side setup.",
+    cardAnalyticsCta: "Open documentation",
     cardAccountsTitle: "Intastellar Accounts",
     cardAccountsBody:
       "React SDK on inta.dev, OAuth-style flows, PKCE, sessions, and security patterns for your apps and sites.",
@@ -122,7 +126,7 @@ export const en = {
     signInPortal: "Sign in to the portal",
     bandTitle: "Move faster with search & releases",
     bandBody:
-      "Jump to any page with full-text search, follow product updates on the changelog (Consents and Intastellar Sign-In), and keep API keys in one place after you sign in.",
+      "Jump to any page with full-text search, follow product updates on the changelog, and keep API keys in one place after you sign in.",
     openSearch: "Open search",
     changelog: "Changelog",
     apiKeys: "API keys",
@@ -264,6 +268,10 @@ export const en = {
     ql5Hint: "Register client, SDK vs manual OAuth, flows",
     ql6Label: "Accounts — Auth code flow",
     ql6Hint: "PKCE, callback, token exchange",
+    copyCode: "Copy code",
+    copied: "Copied",
+    copyFailed: "Failed",
+    onThisPage: "On this page",
     docPageFallbackDescription:
       "{{title}} — Intastellar developer documentation on inta.dev.",
     saveToProfile: "Save to profile",

@@ -11,7 +11,7 @@ export const nl: MessageTree = {
     searchDescription: "Zoek in de Intastellar-ontwikkelaarsdocumentatie.",
     changelogTitle: "Changelog · inta.dev",
     changelogDescription:
-      "Versiegeschiedenis voor Intastellar Consents (GitHub) en Intastellar Sign-In (npm + GitHub).",
+      "Versiegeschiedenis voor Intastellar Consents, Intastellar Analytics en Intastellar Sign-In.",
     legalIndexTitle: "Juridisch · inta.dev",
     legalIndexDescription:
       "Juridische informatie over inta.dev: privacy, voorwaarden en links naar beleid en DPA van Intastellar Solutions.",
@@ -54,7 +54,7 @@ export const nl: MessageTree = {
     opensNewTab: "(opent nieuw tabblad)",
     logoHomeTitle: "Intastellar Developers — start",
     changelog: "Changelog",
-    changelogTitle: "Consents en Sign-In — npm- en GitHub-releases",
+    changelogTitle: "Consents, Analytics en Sign-In — npm- en GitHub-releases",
     documentation: "Documentatie",
     intastellarConsents: "Intastellar Consents",
     intastellarAnalytics: "Intastellar Analytics",
@@ -100,6 +100,10 @@ export const nl: MessageTree = {
     cardConsentsBody:
       "Cookiebanner, CMP en consent-API’s voor web, WordPress, GTM, Shopify en meer.",
     cardConsentsCta: "Documentatie openen",
+    cardAnalyticsTitle: "Intastellar Analytics",
+    cardAnalyticsBody:
+      "Paginaweergaven, rage-clicks, scrolldiepte, e-commerce trechtergebeurtenissen en SEO-inzichten — geen serverinstallatie vereist.",
+    cardAnalyticsCta: "Documentatie openen",
     cardAccountsTitle: "Intastellar Accounts",
     cardAccountsBody:
       "React-SDK op inta.dev, OAuth-achtige flows, PKCE, sessies en beveiligingspatronen voor uw apps en sites.",
@@ -113,7 +117,7 @@ export const nl: MessageTree = {
     signInPortal: "Inloggen op het portaal",
     bandTitle: "Sneller werken met zoeken en releases",
     bandBody:
-      "Ga naar elke pagina met full-text search, volg productupdates op de changelog (Consents en Intastellar Sign-In), en houd API-sleutels op één plek na inloggen.",
+      "Ga naar elke pagina met full-text search, volg productupdates op de changelog en houd API-sleutels op één plek na inloggen.",
     openSearch: "Zoeken openen",
     changelog: "Changelog",
     apiKeys: "API-sleutels",
@@ -255,6 +259,10 @@ export const nl: MessageTree = {
     ql5Hint: "Client registreren, SDK vs. handmatige OAuth, flows",
     ql6Label: "Accounts — Authorization code-flow",
     ql6Hint: "PKCE, callback, token-uitwisseling",
+    copyCode: "Code kopiëren",
+    copied: "Gekopieerd",
+    copyFailed: "Mislukt",
+    onThisPage: "Op deze pagina",
     docPageFallbackDescription:
       "{{title}} — Intastellar-ontwikkelaarsdocumentatie op inta.dev.",
     saveToProfile: "Opslaan in profiel",

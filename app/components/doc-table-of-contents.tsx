@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 
 import { useDocHeadings } from "~/hooks/use-doc-headings";
+import { useI18n } from "~/providers/i18n-provider";
 
 /** Collapsible in-page TOC for viewports below `xl` (sidebar is `lg`; TOC desktop is `xl`). */
 export function DocTableOfContentsMobile() {
+  const { t } = useI18n();
   const headings = useDocHeadings();
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState("");
@@ -60,7 +62,7 @@ export function DocTableOfContentsMobile() {
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
       >
-        On this page
+        {t("docs.onThisPage")}
         <span className="text-zinc-500" aria-hidden>
           {open ? "▾" : "▸"}
         </span>
@@ -92,6 +94,7 @@ export function DocTableOfContentsMobile() {
 
 /** Sticky in-page TOC with scroll-spy; reads h2/h3 ids from the rendered MDX article. */
 export function DocTableOfContents() {
+  const { t } = useI18n();
   const headings = useDocHeadings();
   const [activeId, setActiveId] = useState("");
 
@@ -140,9 +143,9 @@ export function DocTableOfContents() {
 
   return (
     <aside className="hidden w-54 shrink-0 xl:block">
-      <nav className="sticky top-24 space-y-3" aria-label="On this page">
+      <nav className="sticky top-24 space-y-3" aria-label={t("docs.onThisPage")}>
         <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          On this page
+          {t("docs.onThisPage")}
         </p>
         <ul className="space-y-0.5 border-l border-zinc-200 dark:border-zinc-700">
           {headings.map((h) => (

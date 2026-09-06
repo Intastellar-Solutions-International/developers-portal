@@ -11,7 +11,7 @@ export const fr: MessageTree = {
     searchDescription: "Rechercher dans la documentation développeur Intastellar.",
     changelogTitle: "Journal des versions · inta.dev",
     changelogDescription:
-      "Historique des versions pour Intastellar Consents (GitHub) et Intastellar Sign-In (npm + GitHub).",
+      "Historique des versions pour Intastellar Consents, Intastellar Analytics et Intastellar Sign-In.",
     legalIndexTitle: "Mentions légales · inta.dev",
     legalIndexDescription:
       "Informations juridiques pour inta.dev : confidentialité, conditions et liens vers les politiques Intastellar Solutions et le DPA.",
@@ -54,7 +54,7 @@ export const fr: MessageTree = {
     opensNewTab: "(ouvre un nouvel onglet)",
     logoHomeTitle: "Intastellar Developers — accueil",
     changelog: "Journal des modifications",
-    changelogTitle: "Consents et Sign-In — versions npm et GitHub",
+    changelogTitle: "Consents, Analytics et Sign-In — versions npm et GitHub",
     documentation: "Documentation",
     intastellarConsents: "Intastellar Consents",
     intastellarAnalytics: "Intastellar Analytics",
@@ -100,6 +100,10 @@ export const fr: MessageTree = {
     cardConsentsBody:
       "Bannière cookies, CMP et API de consentement pour le web, WordPress, GTM, Shopify, etc.",
     cardConsentsCta: "Ouvrir la documentation",
+    cardAnalyticsTitle: "Intastellar Analytics",
+    cardAnalyticsBody:
+      "Pages vues, rage clicks, profondeur de défilement, événements e-commerce et insights SEO — aucun setup côté serveur.",
+    cardAnalyticsCta: "Ouvrir la documentation",
     cardAccountsTitle: "Intastellar Accounts",
     cardAccountsBody:
       "SDK React sur inta.dev, flux de type OAuth, PKCE, sessions et modèles de sécurité pour vos apps et sites.",
@@ -113,7 +117,7 @@ export const fr: MessageTree = {
     signInPortal: "Se connecter au portail",
     bandTitle: "Gagnez du temps avec la recherche et les versions",
     bandBody:
-      "Accédez à n’importe quelle page par recherche plein texte, suivez les mises à jour sur le changelog (Consents et Intastellar Sign-In), et centralisez vos clés API après connexion.",
+      "Accédez à n’importe quelle page par recherche plein texte, suivez les mises à jour sur le changelog et centralisez vos clés API après connexion.",
     openSearch: "Ouvrir la recherche",
     changelog: "Journal des modifications",
     apiKeys: "Clés API",
@@ -255,6 +259,10 @@ export const fr: MessageTree = {
     ql5Hint: "Enregistrer le client, SDK vs OAuth manuel, flux",
     ql6Label: "Accounts — Flux authorization code",
     ql6Hint: "PKCE, callback, échange de jetons",
+    copyCode: "Copier le code",
+    copied: "Copié",
+    copyFailed: "Échec",
+    onThisPage: "Sur cette page",
     docPageFallbackDescription:
       "{{title}} — Documentation développeur Intastellar sur inta.dev.",
     saveToProfile: "Enregistrer dans le profil",
