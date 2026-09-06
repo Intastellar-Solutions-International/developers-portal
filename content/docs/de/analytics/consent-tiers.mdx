@@ -1,0 +1,63 @@
+---
+title: Einwilligungsstufen & Datenschutz
+description: Wie Intastellar Analytics den Einwilligungsstatus liest, was jede Stufe erfasst und wie man mit der eigenen Consent-Management-Plattform integriert.
+order: 2
+lastUpdated: "2026-09-06"
+---
+
+# Einwilligungsstufen & Datenschutz
+
+Intastellar Analytics erfasst Daten auf zwei Einwilligungsstufen. Das Embed liest den Einwilligungsstatus zum Zeitpunkt jedes Events und wendet automatisch das entsprechende Erfassungsniveau an — kein zusätzlicher Code ist erforderlich, wenn Sie Intastellar Consents verwenden.
+
+## Die zwei Stufen
+
+| Stufe | Wann sie gilt | Erfasste Daten |
+| --- | --- | --- |
+| **Minimal** | Keine Einwilligung erforderlich — aktiv für alle Besucher ab dem ersten Aufruf | Anonymer Seitenpfad, Seitentitel, Referrer-Domain, Gerätekategorie. Keine persönlichen Kennungen, keine Sitzungs-ID, keine Cookies werden geschrieben. |
+| **Vollständig** | Besucher erteilt die Statistik / Analytics-Einwilligung | Alles aus Minimal, plus: Sitzungs-ID, UTM-Parameter, Klick-IDs (`gclid` / `msclkid` / `fbclid`), Referrer-Kette, Bildschirmauflösung, Browser-Sprache, Zeitzonenversatz, Sitzungsdauer, Scroll-Prozentsätze, Heatmap-Klickkoordinaten. |
+
+## Wie der Einwilligungsstatus gelesen wird
+
+Das Embed prüft den Einwilligungsstatus bei jedem Event — nicht nur beim Seitenaufruf. Wenn ein Besucher während einer Sitzung die Einwilligung erteilt, werden nachfolgende Events sofort auf die vollständige Stufe umgestellt, ohne dass ein Seitenneuaufruf erforderlich ist.
+
+Der Einwilligungsstatus wird aus zwei Quellen ermittelt, die in dieser Reihenfolge geprüft werden:
+
+1. **`window.intaCookieConsents`** — wenn Sie die Einwilligung mit Ihrer eigenen CMP verwalten und dieses Objekt setzen, bevor das Analytics-Script läuft, liest das Embed direkt daraus.
+2. **`IntastellarConsentSolution`-Cookie** — der Cookie, der von [Intastellar Consents](/docs/cookie-banner/v1) geschrieben wird. Wenn beide Quellen vorhanden sind, hat `window.intaCookieConsents` Vorrang.
+
+### Eigene CMP verwenden
+
+Wenn Sie Intastellar Consents nicht verwenden, stellen Sie folgendes Objekt bereit, bevor das Analytics-Embed läuft:
+
+```js
+window.intaCookieConsents = {
+  statisticCookies: true,   // true = vollständige Stufe, false oder nicht vorhanden = minimale Stufe
+};
+```
+
+Aktualisieren Sie dieses Objekt, wenn der Besucher seine Einwilligungsentscheidung ändert, und das Embed übernimmt den neuen Status beim nächsten Event.
+
+## Felder nach Einwilligungsstufe
+
+Die folgenden Felder werden nur auf der vollständigen Stufe erfasst. Bei minimaler Einwilligung werden sie vollständig aus den Event-Datensätzen weggelassen.
+
+| Feld | Nur vollständige Stufe |
+| --- | --- |
+| `session_id` | ✓ |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | ✓ |
+| `gclid`, `msclkid`, `fbclid` | ✓ |
+| `products[]` und `value` bei benutzerdefinierten / E-Commerce-Events | ✓ |
+| Heatmap-Klickkoordinaten | ✓ |
+| Scroll-Tiefen-Prozentwerte (25 % / 50 % / 75 % / 90 % / 100 %) | ✓ |
+
+## Was niemals erfasst wird
+
+Unabhängig von der Einwilligungsstufe wird Folgendes niemals erfasst oder gespeichert:
+
+- Rohe IP-Adresse (GeoIP löst serverseitig zu `country_code` auf; die IP wird sofort verworfen)
+- Roher User-Agent-String (nur der abgeleitete `device_type` — `"desktop"` / `"mobile"` / `"tablet"` — wird gespeichert)
+- Passwörter, Zahlungsdetails oder Formularfeld-Werte, die als `type="password"` oder `autocomplete="cc-number"` markiert sind
+
+## Minimale Stufe und Cookies
+
+Bei minimaler Einwilligung schreibt das Embed keine Cookies und führt keine Lese- oder Schreibvorgänge in `localStorage` durch. Die einzigen ausgehenden Daten sind der anonyme Event-Payload, der an den Sammlungsendpunkt gesendet wird.

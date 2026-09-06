@@ -1,0 +1,138 @@
+---
+title: Fejlfinding
+description: Diagnostiske trin for almindelige Intastellar Analytics-problemer — hændelser vises ikke, samtykkeniveau opdateres ikke, formularudbyder ikke registreret og netværksfejl.
+order: 9
+lastUpdated: "2026-09-06"
+---
+
+# Fejlfinding
+
+## Hændelser vises ikke i Live hændelsesfeed
+
+### 1. Bekræft at scriptet indlæses
+
+Åbn DevTools → **Netværk**, filtrer efter `analytics.consentsmanagement.com`, og genindlæs siden. Du bør se en forespørgsel til `/api/a` (scriptet) og efterfølgende `POST`-forespørgsler til indsamlingsendpointet.
+
+Hvis scriptforespørgslen mangler:
+
+- Kontrollér, at `<script>`-tagget er til stede i sidens HTML-kilde (ikke indsat af et andet script, der kan være blokeret).
+- Sørg for, at `data-site`-attributten er sat og svarer til webstedsnøglen vist i **Dashboard → Indstillinger → Webstedsnøgle**.
+
+### 2. Kontrollér for annoncebloker eller indholdsfilter
+
+Indsamlingsendpointet (`analytics.consentsmanagement.com`) er et first-party analytics-domæne, men aggressive annonceblokkere kan stadig blokere det. Test i en browserprofil uden udvidelser.
+
+### 3. Verificér webstedsnøglen
+
+`data-site`-attributten på script-tagget skal matche præcist — den skelner mellem store og små bogstaver. En forkert nøgle får endpointet til at afvise hændelser med en `403`-svar synlig i Netværksfanen.
+
+### 4. Kontrollér hændelsestiming i forhold til samtykke
+
+Hændelser på minimalt niveau sendes straks. Hændelser på fuldt niveau kræver, at Statistik-kategorien er tildelt. Hvis du tester felter på fuldt niveau og kun ser data på minimalt niveau, se [Samtykkeniveau opdateres ikke](#samtykkeniveau-opdateres-ikke) nedenfor.
+
+---
+
+## Samtykkeniveau opdateres ikke
+
+### 1. Kontrollér `window.intaCookieConsents`
+
+Åbn DevTools → **Konsol** og kør:
+
+```js
+window.intaCookieConsents
+```
+
+Hvis dette returnerer `undefined`, har CMP'en ikke sat det, inden analytics-embedet kører. Sørg for, at din CMP sætter `window.intaCookieConsents` synkront i en `<script>`-blok inden embed `<script>`-tagget.
+
+### 2. Kontrollér `IntastellarConsentSolution`-cookien
+
+Hvis du bruger Intastellar Consents, åbn DevTools → **Applikation → Cookies** og kig efter `IntastellarConsentSolution`. Inspicér dens værdi — feltet `statisticCookies` bestemmer niveauet. Hvis cookien er fraværende, har den besøgende endnu ikke interageret med samtykkebanneret.
+
+### 3. Ændring af samtykke midt i en session
+
+Embedet læser samtykkestatus ved hvert hændelsesskud, ikke kun ved sideindlæsning. Efter at have accepteret samtykke i banneret:
+
+1. Udløs en ny hændelse (naviger til en anden side, scroll, eller send en tilpasset hændelse via `window.inta.track()`).
+2. Kontrollér Live hændelsesfeed — den nye hændelse bør vises med felter på fuldt niveau.
+
+Hvis samtykke er accepteret, men felter på fuldt niveau stadig mangler, kør `window.intaCookieConsents` i konsollen for at bekræfte, at værdien blev opdateret af din CMP efter accept.
+
+---
+
+## Formularudbyder registreres ikke
+
+### 1. Kontrollér `postMessage`-hændelser
+
+Åbn DevTools → **Konsol** og kør dette, inden formularen indsendes:
+
+```js
+window.addEventListener('message', (e) => console.log(e.data));
+```
+
+Indsend eller interagér med formularen og se efter meddelelser fra udbyderen. Hvis der ikke vises nogen meddelelser, afsender den indlejrede formular ikke `postMessage`-hændelser — dette kan ske med forældede indlejringskoder eller formularer indlæst i sandboxede iframes.
+
+### 2. Verificér indlejringskoden
+
+Udbyderdetektion afhænger af `postMessage`-hændelser afsendt af udbyderens eget script. Sørg for, at du bruger udbyderens standard-indlejringskode, ikke en ren `<iframe src="...">` uden udbyderens JavaScript-indpakning.
+
+### 3. Brug manuel sporing som fallback
+
+For formularer, der ikke auto-registreres, send hændelser manuelt:
+
+```js
+// Ved formularfokus
+window.inta.track('form_started', { data: { formId: 'kontaktformular' } });
+
+// Ved vellykket indsendelse
+window.inta.track('form_submit', { data: { formId: 'kontaktformular' } });
+```
+
+Se [Tilpassede hændelser](/docs/analytics/v1/custom-events) for den fulde `window.inta.track()` API.
+
+---
+
+## Sidevisninger mangler ved SPA-navigationer
+
+Embedet patcher `pushState` og `replaceState` for at registrere SPA-navigationer. Hvis din ramme udfører navigation, inden embed-scriptet er færdigt med at initialisere, kan den første navigation gå glip af.
+
+For hash-baseret routing (`/#/sti`) uden `pushState` er manuel sidevisningssporing påkrævet.
+
+```js
+// I din routers navigationscallback
+window.inta = window.inta || {};
+window.inta.track = window.inta.track || function() {
+  (window.inta._q = window.inta._q || []).push(arguments);
+};
+window.inta.track('pageview');
+```
+
+---
+
+## Netværksforespørgsler fejler
+
+### CORS-fejl
+
+Indsamlingsendpointet kræver ikke legitimationsoplysninger og accepterer forespørgsler fra alle oprindelser. Hvis du ser CORS-fejl, bekræft at du ikke ændrer `fetch` eller `XMLHttpRequest` på en måde, der tilføjer brugerdefinerede headere til indsamlingsforespørgslen.
+
+### Hændelser i kø men sendes ikke
+
+Hvis `window.inta._q` har hændelser i kø, men ingen `POST`-forespørgsler vises i Netværksfanen, er embed-scriptet muligvis ikke indlæst. Kontrollér Netværksfanen for den første scriptforespørgsel og bekræft, at den returnerede `200`.
+
+---
+
+## Dashboard viser data, men hændelser er forsinkede
+
+Hændelser vises typisk i Live hændelsesfeed inden for 2–5 sekunder efter afsendelse. Forsinkelser ud over 30 sekunder indikerer et netværksproblem.
+
+Aggregerede paneler (Publikum, Erhvervelse, Konverteringer) opdateres på en 15-minutters cyklus, ikke i realtid.
+
+---
+
+## Har du stadig brug for hjælp?
+
+Kontakt [support@intastellar.eu](mailto:support@intastellar.eu) med:
+
+1. Din webstedsnøgle (fra Dashboard → Indstillinger → Webstedsnøgle)
+2. URL'en, hvor problemet opstår
+3. Et skærmbillede af Netværksfanen med de relevante forespørgsler
+4. Outputtet af `window.intaCookieConsents` fra browserkonsollen

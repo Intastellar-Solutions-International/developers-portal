@@ -1,0 +1,111 @@
+---
+title: Tilpassede hændelser
+description: Send tilpassede hændelser med window.inta.track() — parameterreference, navngivningsregler og eksempler på konverterings- og e-handelssporing.
+order: 11
+lastUpdated: "2026-09-06"
+---
+
+# Tilpassede hændelser
+
+Kald `window.inta.track()` for at sende enhver hændelse, som embedet ikke sender automatisk. Tilpassede hændelser vises i Live hændelsesfeed og Konverteringspanelet sammen med automatisk sporede hændelser.
+
+## Grundlæggende brug
+
+```js
+window.inta.track('signup_complete', {
+  value: 0,
+  data: { plan: 'pro', trial: true },
+});
+```
+
+Det første argument er hændelsesnavnet. Det andet argument er et options-objekt — alle egenskaber er valgfrie.
+
+## Fuld API-signatur
+
+```js
+window.inta.track(eventName, options);
+```
+
+| Parameter | Type | Påkrævet | Beskrivelse |
+| --- | --- | --- | --- |
+| `eventName` | string | Ja | Hændelsesnavn. Små bogstaver, snake_case anbefales. Maks. 64 tegn. Skal matche `/^[a-zA-Z][a-zA-Z0-9_]{0,63}$/`. |
+| `options.value` | number | Nej | Pengeværdi, f.eks. `49.99`. Bruges i Konverteringspanelet til omsætningsrapportering. |
+| `options.currency` | string | Nej | ISO 4217-kode: `"EUR"`, `"USD"`, `"GBP"` osv. Standarder til webstedets konfigurerede valuta hvis udeladt. |
+| `options.transactionId` | string | Nej | Deduplikationsnøgle. Hændelser med samme `transactionId` inden for en session gemmes kun én gang. Maks. 128 tegn. |
+| `options.data` | object | Nej | Vilkårlige nøgle-værdi-metadata. Maks. 20 nøgler; værdier skal være strings, tal eller booleans; maks. 500 tegn pr. værdi. |
+| `options.products` | array | Nej | Produktliste til e-handelshændelser. Se [Standard e-handelshændelser](/docs/analytics/v1/ecommerce-events) for det fulde produktobjektskema. |
+
+## Eksempler
+
+### Sporing af en tilmelding
+
+```js
+window.inta.track('signup_complete', {
+  data: { plan: 'pro', trial: true },
+});
+```
+
+### Sporing af et køb med omsætning
+
+```js
+window.inta.track('purchase', {
+  value: 99.00,
+  currency: 'EUR',
+  transactionId: 'order_9871',
+  products: [
+    { id: 'plan_pro', name: 'Pro Plan', price: 99.00, quantity: 1 },
+  ],
+});
+```
+
+### Sporing af en indholdsengage mentshændelse
+
+```js
+window.inta.track('demo_watched', {
+  data: { videoId: 'intro-v2', completedPct: 80 },
+});
+```
+
+### Sporing af en tilbudsanmodning
+
+```js
+window.inta.track('quote_requested', {
+  data: { industry: 'retail', companySize: '50-200' },
+});
+```
+
+## Samtykke og feltbegrænsning
+
+Tilpassede hændelser sendes på det samtykkeniveau, der er aktivt, når kaldet foretages. Felterne `products` og `value` gemmes kun, når den besøgende har givet fuldt samtykke (Statistik-kategori). Objektet `data` og `eventName` gemmes på begge niveauer.
+
+Se [Samtykkeniveauer og privatliv](/docs/analytics/v1/consent-tiers) for, hvordan samtykkestatus læses, og hvordan du integrerer med din egen CMP.
+
+## Kø inden scriptet indlæses
+
+`window.inta.track` er sikker at kalde, inden embed-scriptet er færdigt med at indlæse — embedet installerer en kø på `window.inta` under sideindlæsning, så alle kald foretaget inden scriptet er klar, afspilles igen, når det initialiseres.
+
+```html
+<head>
+  <!-- Sikkert at kalde straks -->
+  <script>
+    window.inta = window.inta || { track: function() {
+      (window.inta._q = window.inta._q || []).push(arguments);
+    }};
+    window.inta.track('page_variant', { data: { variant: 'B' } });
+  </script>
+
+  <!-- Embed indlæses asynkront -->
+  <script
+    src="https://analytics.consentsmanagement.com/api/a"
+    data-site="DIN_WEBSTEDSNØGLE"
+    async defer
+  ></script>
+</head>
+```
+
+## Navngivningsregler for hændelser
+
+- Brug lowercase snake_case: `add_to_cart`, ikke `AddToCart` eller `addToCart`.
+- Start med et bogstav; cifre og underscores er tilladt efter det første tegn.
+- Maks. 64 tegn.
+- Undgå at kollidere med automatisk sporede hændelsesnavne (`pageview`, `scroll_depth`, `rage_click`, `form_started`, `form_submit`, `form_field_focus`, `form_error`, `video_play`, `video_pause`, `video_50pct`, `video_complete`, `content_copy`).

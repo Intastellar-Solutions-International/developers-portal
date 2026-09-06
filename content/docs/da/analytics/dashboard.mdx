@@ -1,0 +1,98 @@
+---
+title: Dashboardguide
+description: En panel-for-panel gennemgang af Intastellar Analytics-dashboardet — hvad hvert panel viser, hvilket samtykkeniveau der kræves, og hvordan man bruger filtre og datointerval.
+order: 15
+lastUpdated: "2026-09-06"
+---
+
+# Dashboardguide
+
+Intastellar Analytics-dashboardet er tilgængeligt på [analytics.consentsmanagement.com](https://analytics.consentsmanagement.com). Log ind og vælg et websted fra webstedsomskifteren i den øverste navigation for at se dets paneler.
+
+## Datointerval og filtre
+
+Det globale datointervalpanelet øverst gælder alle paneler samtidig. Standardvisningen er de seneste 30 dage. Brug Sammenlign-knappen til at overlejre den forrige tilsvarende periode.
+
+**Filtre**-bjælken giver mulighed for at segmentere data efter: `Sti`, `Land`, `Enhed`, `UTM-kilde` / `UTM-medium` / `UTM-kampagne`, `Hændelsesnavn`.
+
+Filtre kombineres med AND-logik. En filtreret visning kan bogmærkes — filterstatus er kodet i URL'en.
+
+---
+
+## Live hændelsesfeed
+
+**Krævet samtykke:** Minimal og derover
+
+En realtidsstrøm af indkommende hændelser, opdateret efterhånden som hændelser ankommer. Hver række viser hændelsesnavn, sidesti, landekode, enhedstype og modtagelsestid (UTC).
+
+---
+
+## Publikum
+
+**Krævet samtykke:** Minimal og derover
+
+Viser aggregerede besøgstal og sidevisningsvolumen. Paneler: unikke sider, sidevisninger, besøg, afvisningsprocent og gns. tid på webstedet.
+
+---
+
+## Erhvervelse
+
+**Krævet samtykke:** Fuldt samtykke (UTM-felter)
+
+Viser, hvorfra din trafik kommer, grupperet efter UTM-kilde og -medium. Attributionsmodel: **first-touch**.
+
+---
+
+## Annonceforbrug
+
+**Krævet samtykke:** Fuldt samtykke (klik-ID'er)
+
+Forbinder annonceklik-data (`gclid`, `msclkid`, `fbclid`) med konverteringshændelser. Kræver tilslutning af dine annoncekonti via **Indstillinger → Annonceintegrationer**.
+
+---
+
+## Attribution
+
+**Krævet samtykke:** Fuldt samtykke (klik-ID'er og UTM-felter)
+
+Sammenligner **first-touch** og **last-touch** attributionsmodeller side om side for en valgt konverteringshændelse.
+
+---
+
+## Konverteringer
+
+**Krævet samtykke:** Minimal og derover (kun hændelsesnavne); Fuldt samtykke for omsætning og produktdata
+
+Lister alle konverteringshændelser med antal og, hvor de er til stede, samlet omsætning. **Funnel-bygger** (øverst til højre) lader dig kæde hændelser i en funnel og se frafald ved hvert trin.
+
+---
+
+## Varmekort
+
+**Krævet samtykke:** Fuldt samtykke (klikkoordinater)
+
+Viser et klik-densitetsvarmekort ovenpå en live gengivelse af en side på dit websted. `rage_click`-filteret fremhæver områder med høj rage-click-andel.
+
+---
+
+## Brugerflow
+
+**Krævet samtykke:** Fuldt samtykke
+
+Et Sankey-stildiagram, der viser de mest almindelige stier besøgende tager gennem dit websted.
+
+---
+
+## Search Console
+
+**Krævet samtykke:** Minimal og derover
+
+Viser Google Search-performancedata ved siden af dine Analytics-sidevisningsdata. Kræver en Google Search Console-ejendom tilsluttet via **Indstillinger → Integrationer → Google Search Console**.
+
+---
+
+## Bots
+
+**Krævet samtykke:** Minimal og derover
+
+Viser trafik identificeret som automatiseret — crawlere, headless-browsere og syntetiske monitorer. Denne trafik udelukkes automatisk fra alle andre paneler.

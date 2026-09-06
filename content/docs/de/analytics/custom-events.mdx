@@ -1,0 +1,111 @@
+---
+title: Benutzerdefinierte Events
+description: Benutzerdefinierte Events mit window.inta.track() senden — Parameter-Referenz, Namensgebungsregeln und Beispiele für Konversions- und E-Commerce-Tracking.
+order: 11
+lastUpdated: "2026-09-06"
+---
+
+# Benutzerdefinierte Events
+
+Rufen Sie `window.inta.track()` auf, um ein beliebiges Event zu senden, das das Embed nicht automatisch sendet. Benutzerdefinierte Events erscheinen im Live-Event-Feed und im Konversionen-Panel neben automatisch getrackten Events.
+
+## Grundlegende Verwendung
+
+```js
+window.inta.track('signup_complete', {
+  value: 0,
+  data: { plan: 'pro', trial: true },
+});
+```
+
+Das erste Argument ist der Event-Name. Das zweite Argument ist ein Options-Objekt — alle Eigenschaften sind optional.
+
+## Vollständige API-Signatur
+
+```js
+window.inta.track(eventName, options);
+```
+
+| Parameter | Typ | Erforderlich | Beschreibung |
+| --- | --- | --- | --- |
+| `eventName` | string | Ja | Event-Name. Kleinschreibung, snake_case empfohlen. Max. 64 Zeichen. Muss `/^[a-zA-Z][a-zA-Z0-9_]{0,63}$/` entsprechen. |
+| `options.value` | number | Nein | Geldwert, z.B. `49.99`. Wird im Konversionen-Panel für Umsatzberichte verwendet. |
+| `options.currency` | string | Nein | ISO 4217-Code: `"EUR"`, `"USD"`, `"GBP"` etc. Standard ist die konfigurierte Site-Währung wenn weggelassen. |
+| `options.transactionId` | string | Nein | Deduplizierungsschlüssel. Events mit derselben `transactionId` innerhalb einer Sitzung werden nur einmal gespeichert. Max. 128 Zeichen. |
+| `options.data` | object | Nein | Beliebige Schlüssel-Wert-Metadaten. Max. 20 Schlüssel; Werte müssen Strings, Zahlen oder Booleans sein; max. 500 Zeichen pro Wert. |
+| `options.products` | array | Nein | Produktliste für E-Commerce-Events. Siehe [Standard-E-Commerce-Events](/docs/analytics/v1/ecommerce-events) für das vollständige Produktobjektschema. |
+
+## Beispiele
+
+### Eine Registrierung tracken
+
+```js
+window.inta.track('signup_complete', {
+  data: { plan: 'pro', trial: true },
+});
+```
+
+### Einen Kauf mit Umsatz tracken
+
+```js
+window.inta.track('purchase', {
+  value: 99.00,
+  currency: 'EUR',
+  transactionId: 'order_9871',
+  products: [
+    { id: 'plan_pro', name: 'Pro Plan', price: 99.00, quantity: 1 },
+  ],
+});
+```
+
+### Ein Content-Engagement-Event tracken
+
+```js
+window.inta.track('demo_watched', {
+  data: { videoId: 'intro-v2', completedPct: 80 },
+});
+```
+
+### Eine Angebotsanfrage tracken
+
+```js
+window.inta.track('quote_requested', {
+  data: { industry: 'retail', companySize: '50-200' },
+});
+```
+
+## Einwilligung und Feldbeschränkung
+
+Benutzerdefinierte Events werden auf der Einwilligungsstufe gesendet, die aktiv ist, wenn der Aufruf erfolgt. Die Felder `products` und `value` werden nur gespeichert, wenn der Besucher vollständige Einwilligung erteilt hat (Statistik-Kategorie). Das `data`-Objekt und `eventName` werden auf beiden Stufen gespeichert.
+
+Siehe [Einwilligungsstufen & Datenschutz](/docs/analytics/v1/consent-tiers).
+
+## In der Warteschlange vor dem Script-Laden
+
+`window.inta.track` kann sicher aufgerufen werden, bevor das Embed-Script fertig geladen ist — das Embed installiert eine Warteschlange auf `window.inta` beim Seitenparse, sodass alle Aufrufe vor der Script-Bereitschaft nach der Initialisierung erneut abgespielt werden.
+
+```html
+<head>
+  <!-- Sicher sofort aufzurufen -->
+  <script>
+    window.inta = window.inta || { track: function() {
+      (window.inta._q = window.inta._q || []).push(arguments);
+    }};
+    window.inta.track('page_variant', { data: { variant: 'B' } });
+  </script>
+
+  <!-- Embed wird asynchron geladen -->
+  <script
+    src="https://analytics.consentsmanagement.com/api/a"
+    data-site="IHR_SITE_KEY"
+    async defer
+  ></script>
+</head>
+```
+
+## Event-Namensgebungsregeln
+
+- Verwenden Sie Kleinschreibung mit snake_case: `add_to_cart`, nicht `AddToCart` oder `addToCart`.
+- Beginnen Sie mit einem Buchstaben; Ziffern und Unterstriche sind nach dem ersten Zeichen erlaubt.
+- Maximal 64 Zeichen.
+- Vermeiden Sie Kollisionen mit automatisch getrackten Event-Namen (`pageview`, `scroll_depth`, `rage_click`, `form_started`, `form_submit`, `form_field_focus`, `form_error`, `video_play`, `video_pause`, `video_50pct`, `video_complete`, `content_copy`).

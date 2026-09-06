@@ -1,0 +1,164 @@
+---
+title: Standard e-handelshændelser
+description: Reference for alle standard e-handelshændelser understøttet af Intastellar Analytics — checkout-funnel-hændelser og selvstændige hændelser med fulde intaAnalytics.track()-signaturer og feltdefinitioner.
+order: 12
+lastUpdated: "2026-09-06"
+---
+
+# Standard e-handelshændelser
+
+Intastellar Analytics understøtter to grupper af e-handelshændelser:
+
+- **Checkout-funnel-hændelser** driver Checkout-Funnel-visualiseringen i dashboardet, når to eller flere funnel-trin er registreret. Hvert trin spores individuelt, efterhånden som besøgende bevæger sig gennem købsrejsen.
+- **Selvstændige e-handelshændelser** spores og rapporteres individuelt — de er ikke en del af funnel-visualiseringen.
+
+Før du sender nogen af disse hændelser, skal du registrere dem én gang i dashboardet under **Events & Tracking**. Når du registrerer, tildeler du hver hændelse et navn og en type — typen bestemmer, hvordan hændelsen kategoriseres og visualiseres. Eksemplerne nedenfor bruger typenavnet som hændelsesnavn, hvilket er den anbefalede konvention.
+
+## Checkout-funnel-hændelser
+
+Send disse hændelser i rækkefølge, efterhånden som besøgende skrider frem gennem dit checkout-flow.
+
+| Type | Send når… |
+| --- | --- |
+| `view_item` | En produktdetaljeside gengives |
+| `add_to_cart` | Et produkt tilføjes til kurven |
+| `view_basket` | Kurv-/indkøbskurvsiden vises |
+| `begin_checkout` | Den besøgende starter checkout |
+| `checkout` | Checkout-formularen indsendes |
+| `payment_info` | Betalingsoplysninger indgives |
+| `purchase` | Ordrebekræftelse vises |
+
+### view_item
+
+```js
+intaAnalytics.track('view_item', {
+  products: [{ id: 'SKU-001', name: 'Blå T-Shirt', price: 29.99, category: 'Tøj', variant: 'M / Blå' }],
+  currency: 'EUR',
+});
+```
+
+### add_to_cart
+
+```js
+intaAnalytics.track('add_to_cart', {
+  products: [{ id: 'SKU-001', name: 'Blå T-Shirt', price: 29.99, quantity: 1, category: 'Tøj', variant: 'M / Blå' }],
+  currency: 'EUR',
+});
+```
+
+### view_basket
+
+Ingen produktfelter er påkrævet — send ved hver gengivelse af kurvside.
+
+```js
+intaAnalytics.track('view_basket');
+```
+
+### begin_checkout
+
+```js
+intaAnalytics.track('begin_checkout');
+```
+
+### checkout
+
+```js
+intaAnalytics.track('checkout');
+```
+
+### payment_info
+
+```js
+intaAnalytics.track('payment_info', {
+  value: 49.99,
+  currency: 'EUR',
+  data: { paymentMethod: 'credit_card' },
+});
+```
+
+### purchase
+
+```js
+intaAnalytics.track('purchase', {
+  transactionId: 'ORDER-123',
+  value: 49.99,
+  currency: 'EUR',
+  products: [
+    { id: 'SKU-001', name: 'Blå T-Shirt', price: 29.99, quantity: 1, category: 'Tøj', variant: 'M / Blå' },
+    { id: 'SKU-002', name: 'Sorte Jeans',  price: 19.99, quantity: 1, category: 'Tøj', variant: '32 / Sort' },
+  ],
+});
+```
+
+## Selvstændige e-handelshændelser
+
+Disse hændelser spores og rapporteres individuelt — de bidrager ikke til funnel-visualiseringen.
+
+| Type | Send når… |
+| --- | --- |
+| `remove_from_cart` | Et produkt fjernes fra kurven |
+| `wishlist_add` | Et produkt gemmes til en ønskeliste |
+| `refund` | En returnering eller refundering behandles |
+| `apply_coupon` | En rabatkode bruges succesfuldt |
+
+### remove_from_cart
+
+```js
+intaAnalytics.track('remove_from_cart', {
+  products: [{ id: 'SKU-001', name: 'Blå T-Shirt', price: 29.99, quantity: 1, category: 'Tøj', variant: 'M / Blå' }],
+  currency: 'EUR',
+});
+```
+
+### wishlist_add
+
+```js
+intaAnalytics.track('wishlist_add', {
+  products: [{ id: 'SKU-001', name: 'Blå T-Shirt', price: 29.99, category: 'Tøj', variant: 'M / Blå' }],
+  currency: 'EUR',
+});
+```
+
+### refund
+
+```js
+intaAnalytics.track('refund', {
+  transactionId: 'ORDER-123',
+  value: 29.99,
+  currency: 'EUR',
+  products: [{ id: 'SKU-001', name: 'Blå T-Shirt', price: 29.99, quantity: 1, category: 'Tøj' }],
+});
+```
+
+### apply_coupon
+
+```js
+intaAnalytics.track('apply_coupon', {
+  value: 10.00,
+  currency: 'EUR',
+  data: { coupon: 'SUMMER20' },
+});
+```
+
+## Feltreferencer
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `products` | object[] | Produktliste — bruges i `view_item`, `add_to_cart`, `remove_from_cart`, `wishlist_add`, `refund` og `purchase` |
+| `products[].id` | string | Produkt-SKU eller database-ID |
+| `products[].name` | string | Visningsnavn |
+| `products[].price` | number | Enhedspris |
+| `products[].quantity` | number | Standarder til `1` hvis udeladt |
+| `products[].category` | string | Produktkategori |
+| `products[].variant` | string | Størrelse, farve eller anden variant |
+| `value` | number | Ordre-, refunderings- eller rabatbeløb |
+| `currency` | string | ISO 4217-kode, f.eks. `'EUR'` |
+| `transactionId` | string | Ordre-ID — deduplificerer gentagne afsendelser inden for en session |
+| `data` | object | Vilkårlige ekstra felter (rabatkode, betalingsmetode osv.) |
+
+## Bemærkninger
+
+- **Hændelsesnavne angives i dashboardet.** Det første argument til `intaAnalytics.track()` skal matche det navn, du registrerede under **Events & Tracking**.
+- **`transactionId` forhindrer dobbelt tælling.** Ved `purchase` sikrer angivelse af `transactionId`, at hvis bekræftelsessiden genindlæses, registreres kun ét køb pr. session.
+- **`data`-felter kan forespørges.** Værdier inde i `data` gemmes som de er og er tilgængelige i dashboardets brugerdefinerede event-explorer.
+- **Samtykke styrer feltlagring.** Alle hændelser sendes ved minimalt samtykke, men `products` og `value` gemmes kun, når den besøgende har givet `statisticCookies`-samtykke.

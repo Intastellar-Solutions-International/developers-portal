@@ -1,0 +1,70 @@
+---
+title: Primeiros passos
+description: Instale o Intastellar Analytics com uma tag de script e comece imediatamente a coletar visualizações de página, rage clicks, profundidade de rolagem e interações com formulários.
+order: 1
+lastUpdated: "2026-09-06"
+---
+
+# Primeiros passos
+
+## Adicionar a tag de script
+
+Cole o seguinte no `<head>` de cada página que deseja rastrear. Substitua `YOUR_SITE_KEY` pela chave do seu painel em **Configurações → Analytics Script**.
+
+```html
+<script
+  src="https://analytics.consentsmanagement.com/api/a"
+  data-site="YOUR_SITE_KEY"
+  async
+  defer
+></script>
+```
+
+O script carrega de forma assíncrona e não bloqueia a renderização da página.
+
+## Encontrar sua chave do site
+
+1. Faça login no painel do Intastellar.
+2. Vá para **Configurações → Analytics Script**.
+3. Copie o valor do atributo `data-site` mostrado ali.
+
+Cada chave do site é única para um domínio. Use sites separados para staging e produção para manter os dados limpos.
+
+## O que começa a ser rastreado imediatamente
+
+Assim que a tag de script estiver na página, estes eventos são disparados sem nenhuma configuração adicional:
+
+| Evento | Gatilho |
+| --- | --- |
+| `pageview` | Cada carregamento de página ou navegação SPA |
+| `scroll_depth` | A 25 %, 50 %, 75 %, 90 % e 100 % de rolagem |
+| `rage_click` | Três ou mais cliques em 500 ms / raio de 30 px |
+| `form_started` | Primeiro foco em campo dentro de qualquer elemento `<form>` |
+| `form_submit` | Evento de envio de formulário nativo |
+| `form_field_focus` | Visitante move para novo campo (deduplicado por campo por formulário) |
+| `form_error` | Falha de validação HTML5, erro de rede ou servidor 4xx / 5xx |
+| `video_play` | Evento play de `<video>` |
+| `video_pause` | Evento pause de `<video>` |
+| `video_50pct` | 50 % da duração do vídeo atingido |
+| `video_complete` | Vídeo encerrado |
+| `content_copy` | Visitante copia texto (Ctrl+C / Cmd+C) |
+
+Consulte [Eventos rastreados automaticamente](/docs/analytics/v1/auto-tracked-events) para a referência completa de payload de cada evento.
+
+## Verificar a instalação
+
+Abra o **Feed de eventos ao vivo** no seu painel. Dentro de alguns segundos após carregar uma página rastreada, um evento `pageview` deve aparecer.
+
+Se nada aparecer:
+
+1. Abra o DevTools do navegador → aba Rede e confirme que uma requisição para `analytics.consentsmanagement.com/api/a` é concluída com HTTP 2xx.
+2. Verifique se o atributo `data-site` corresponde exatamente à sua chave do site (sem espaços ou aspas extras).
+3. Verifique se nenhuma extensão do navegador, bloqueador de anúncios ou regra de Content Security Policy está bloqueando a requisição.
+
+Consulte [Solução de problemas](/docs/analytics/v1/troubleshooting) para uma lista de verificação de diagnóstico completa.
+
+## Consentimento e privacidade
+
+O embed lê o estado de consentimento do cookie do Intastellar Consents automaticamente — nenhuma configuração extra é necessária se você já usa o Intastellar Consents. Com consentimento mínimo, apenas dados anônimos de visualização de página são coletados. Com consentimento completo (categoria Estatísticas concedida), IDs de sessão, parâmetros UTM e dados de conversão são incluídos.
+
+Consulte [Níveis de consentimento e privacidade](/docs/analytics/v1/consent-tiers) para a análise completa.

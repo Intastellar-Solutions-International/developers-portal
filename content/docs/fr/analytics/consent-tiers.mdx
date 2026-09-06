@@ -1,0 +1,63 @@
+---
+title: Niveaux de consentement & confidentialité
+description: Comment Intastellar Analytics lit l'état du consentement, ce que chaque niveau collecte et comment intégrer votre propre plateforme de gestion du consentement.
+order: 2
+lastUpdated: "2026-09-06"
+---
+
+# Niveaux de consentement & confidentialité
+
+Intastellar Analytics collecte des données sur deux niveaux de consentement. L'embed lit l'état du consentement à chaque déclenchement d'événement et applique automatiquement le niveau de collecte approprié — aucun code supplémentaire n'est nécessaire lorsque vous utilisez Intastellar Consents.
+
+## Les deux niveaux
+
+| Niveau | Quand il s'applique | Données collectées |
+| --- | --- | --- |
+| **Minimal** | Aucun consentement requis — actif pour tous les visiteurs dès le premier chargement | Chemin de page anonyme, titre de page, domaine référent, catégorie d'appareil. Pas d'identifiants personnels, pas d'ID de session, aucun cookie écrit. |
+| **Complet** | Le visiteur accorde le consentement Statistiques / Analytics | Tout ce que le niveau Minimal collecte, plus : ID de session, paramètres UTM, ID de clic (`gclid` / `msclkid` / `fbclid`), chaîne de référent, résolution d'écran, langue du navigateur, décalage de fuseau horaire, durée de session, pourcentages de défilement, coordonnées de clics de heatmap. |
+
+## Comment l'état du consentement est lu
+
+L'embed vérifie l'état du consentement à chaque événement — pas uniquement au chargement de la page. Si un visiteur accepte le consentement pendant une session, les événements suivants passent immédiatement au niveau complet sans nécessiter de rechargement de page.
+
+L'état du consentement est résolu depuis deux sources, vérifiées dans cet ordre :
+
+1. **`window.intaCookieConsents`** — si vous gérez le consentement avec votre propre CMP et définissez cet objet avant l'exécution du script analytics, l'embed le lit directement.
+2. **Cookie `IntastellarConsentSolution`** — le cookie écrit par [Intastellar Consents](/docs/cookie-banner/v1). Si les deux sources sont présentes, `window.intaCookieConsents` a la priorité.
+
+### Utiliser votre propre CMP
+
+Si vous n'utilisez pas Intastellar Consents, exposez l'objet suivant avant l'exécution de l'embed analytics :
+
+```js
+window.intaCookieConsents = {
+  statisticCookies: true,   // true = niveau complet, false ou absent = niveau minimal
+};
+```
+
+Mettez à jour cet objet lorsque le visiteur change son choix de consentement et l'embed récupérera le nouvel état au prochain événement.
+
+## Champs limités par niveau de consentement
+
+Les champs suivants ne sont collectés qu'au niveau complet. Ils sont entièrement omis des enregistrements d'événements au consentement minimal.
+
+| Champ | Niveau complet uniquement |
+| --- | --- |
+| `session_id` | ✓ |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | ✓ |
+| `gclid`, `msclkid`, `fbclid` | ✓ |
+| `products[]` et `value` sur les événements personnalisés / e-commerce | ✓ |
+| Coordonnées de clics de heatmap | ✓ |
+| Pourcentages de profondeur de défilement (25 % / 50 % / 75 % / 90 % / 100 %) | ✓ |
+
+## Ce qui n'est jamais collecté
+
+Quel que soit le niveau de consentement, les éléments suivants ne sont jamais collectés ni stockés :
+
+- Adresse IP brute (GeoIP résout côté serveur vers `country_code` ; l'IP est immédiatement supprimée)
+- Chaîne user-agent brute (seul le `device_type` dérivé — `"desktop"` / `"mobile"` / `"tablet"` — est stocké)
+- Mots de passe, données de paiement ou valeurs de champs de formulaire marqués `type="password"` ou `autocomplete="cc-number"`
+
+## Niveau minimal et cookies
+
+Au consentement minimal, l'embed n'écrit aucun cookie et n'effectue aucune lecture ou écriture dans `localStorage`. Les seules données sortantes sont le payload d'événement anonyme envoyé au point de terminaison de collecte.

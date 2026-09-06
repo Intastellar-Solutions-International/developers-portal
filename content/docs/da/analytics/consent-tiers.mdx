@@ -1,0 +1,63 @@
+---
+title: Samtykkeniveauer og privatliv
+description: Hvordan Intastellar Analytics læser samtykkestatus, hvad hvert niveau indsamler, og hvordan man integrerer med sin egen samtykkehåndteringsplatform.
+order: 2
+lastUpdated: "2026-09-06"
+---
+
+# Samtykkeniveauer og privatliv
+
+Intastellar Analytics indsamler data på to samtykkeniveauer. Embedet læser samtykkestatus på tidspunktet for hændelsesafsendelse og anvender automatisk det passende indsamlingsniveau — ingen yderligere kode er nødvendig, når du bruger Intastellar Consents.
+
+## De to niveauer
+
+| Niveau | Hvornår det gælder | Indsamlede data |
+| --- | --- | --- |
+| **Minimal** | Kræver ikke samtykke — aktiv for alle besøgende fra første indlæsning | Anonym sidesti, sidetitel, referrerdomæne, enhedskategori. Ingen personidentifikatorer, ingen session-ID, ingen cookies skrevet. |
+| **Fuld** | Besøgende giver Statistik / Analytics samtykke | Alt fra Minimal, plus: session-ID, UTM-parametre, klik-ID'er (`gclid` / `msclkid` / `fbclid`), referrerkæde, skærmopløsning, browsersprog, tidszonesforskydning, sessionsvarighed, scrollprocenter, heatmap-klikkordinater. |
+
+## Sådan læses samtykkestatus
+
+Embedet kontrollerer samtykkestatus ved hver hændelse — ikke kun ved sideindlæsning. Hvis en besøgende accepterer samtykke under en session, flyttes efterfølgende hændelser straks til det fulde niveau uden at kræve en sideopdatering.
+
+Samtykkestatus afgøres fra to kilder, tjekket i denne rækkefølge:
+
+1. **`window.intaCookieConsents`** — hvis du administrerer samtykke med din egen CMP og sætter dette objekt, før analytics-scriptet kører, læser embedet direkte herfra.
+2. **`IntastellarConsentSolution`-cookie** — cookien skrevet af [Intastellar Consents](/docs/cookie-banner/v1). Hvis begge kilder er til stede, har `window.intaCookieConsents` prioritet.
+
+### Brug af din egen CMP
+
+Hvis du ikke bruger Intastellar Consents, skal du eksponere følgende objekt, inden analytics-embedet kører:
+
+```js
+window.intaCookieConsents = {
+  statisticCookies: true,   // true = fuld niveau, false eller fraværende = minimalt niveau
+};
+```
+
+Opdater dette objekt, når den besøgende ændrer sit samtykkevalg, og embedet vil hente den nye status ved den næste hændelse.
+
+## Felter begrænset af samtykkeniveau
+
+Følgende felter indsamles kun på det fulde niveau. De udelades helt fra hændelsesposter ved minimalt samtykke.
+
+| Felt | Kun fuld niveau |
+| --- | --- |
+| `session_id` | ✓ |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | ✓ |
+| `gclid`, `msclkid`, `fbclid` | ✓ |
+| `products[]` og `value` på tilpassede / e-handelshændelser | ✓ |
+| Heatmap-klikkordinater | ✓ |
+| Scrolldybdeprocenter (25 % / 50 % / 75 % / 90 % / 100 %) | ✓ |
+
+## Hvad der aldrig indsamles
+
+Uanset samtykkeniveau indsamles eller gemmes følgende aldrig:
+
+- Rå IP-adresse (GeoIP opløser til `country_code` serversidigt; IP'en kasseres straks)
+- Rå user-agent-streng (kun den afledte `device_type` — `"desktop"` / `"mobile"` / `"tablet"` — gemmes)
+- Adgangskoder, betalingsoplysninger eller feltværdier markeret som `type="password"` eller `autocomplete="cc-number"`
+
+## Minimalt niveau og cookies
+
+På minimalt samtykke skriver embedet ingen cookies og foretager ingen læsning eller skrivning til `localStorage`. De eneste udgående data er den anonyme hændelsespayload, der sendes til indsamlingsendpointet.

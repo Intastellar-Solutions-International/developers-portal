@@ -1,0 +1,111 @@
+---
+title: Eventos personalizados
+description: Enviar eventos personalizados com window.inta.track() — referência de parâmetros, regras de nomenclatura e exemplos para rastreamento de conversões e e-commerce.
+order: 11
+lastUpdated: "2026-09-06"
+---
+
+# Eventos personalizados
+
+Chame `window.inta.track()` para enviar qualquer evento que o embed não dispara automaticamente. Eventos personalizados aparecem no Feed de eventos ao vivo e no painel de Conversões ao lado dos eventos rastreados automaticamente.
+
+## Uso básico
+
+```js
+window.inta.track('signup_complete', {
+  value: 0,
+  data: { plan: 'pro', trial: true },
+});
+```
+
+O primeiro argumento é o nome do evento. O segundo é um objeto de opções — todas as propriedades são opcionais.
+
+## Assinatura completa da API
+
+```js
+window.inta.track(eventName, options);
+```
+
+| Parâmetro | Tipo | Obrigatório | Descrição |
+| --- | --- | --- | --- |
+| `eventName` | string | Sim | Nome do evento. Minúsculas, snake_case recomendado. Máx. 64 caracteres. Deve corresponder a `/^[a-zA-Z][a-zA-Z0-9_]{0,63}$/`. |
+| `options.value` | number | Não | Valor monetário, ex. `49.99`. Usado no painel de Conversões para relatórios de receita. |
+| `options.currency` | string | Não | Código ISO 4217: `"EUR"`, `"USD"`, `"GBP"`, etc. Padrão para a moeda configurada do site se omitido. |
+| `options.transactionId` | string | Não | Chave de deduplicação. Eventos com o mesmo `transactionId` dentro de uma sessão são armazenados apenas uma vez. Máx. 128 caracteres. |
+| `options.data` | object | Não | Metadados de chave-valor arbitrários. Máx. 20 chaves; os valores devem ser strings, números ou booleanos; máx. 500 caracteres por valor. |
+| `options.products` | array | Não | Lista de produtos para eventos de e-commerce. Consulte [Eventos de e-commerce padrão](/docs/analytics/v1/ecommerce-events) para o esquema completo do objeto de produto. |
+
+## Exemplos
+
+### Rastrear um cadastro
+
+```js
+window.inta.track('signup_complete', {
+  data: { plan: 'pro', trial: true },
+});
+```
+
+### Rastrear uma compra com receita
+
+```js
+window.inta.track('purchase', {
+  value: 99.00,
+  currency: 'EUR',
+  transactionId: 'order_9871',
+  products: [
+    { id: 'plan_pro', name: 'Pro Plan', price: 99.00, quantity: 1 },
+  ],
+});
+```
+
+### Rastrear um evento de engajamento de conteúdo
+
+```js
+window.inta.track('demo_watched', {
+  data: { videoId: 'intro-v2', completedPct: 80 },
+});
+```
+
+### Rastrear uma solicitação de orçamento
+
+```js
+window.inta.track('quote_requested', {
+  data: { industry: 'retail', companySize: '50-200' },
+});
+```
+
+## Consentimento e restrição de campos
+
+Eventos personalizados são disparados no nível de consentimento ativo no momento da chamada. Os campos `products` e `value` só são armazenados quando o visitante concedeu consentimento completo (categoria Estatísticas). O objeto `data` e `eventName` são armazenados em ambos os níveis.
+
+Consulte [Níveis de consentimento e privacidade](/docs/analytics/v1/consent-tiers).
+
+## Enfileiramento antes do script carregar
+
+`window.inta.track` é seguro para chamar antes que o script embed termine de carregar — o embed instala uma fila em `window.inta` durante a análise da página para que todas as chamadas feitas antes do script estar pronto sejam repetidas após a inicialização.
+
+```html
+<head>
+  <!-- Seguro chamar imediatamente -->
+  <script>
+    window.inta = window.inta || { track: function() {
+      (window.inta._q = window.inta._q || []).push(arguments);
+    }};
+    window.inta.track('page_variant', { data: { variant: 'B' } });
+  </script>
+
+  <!-- O embed carrega de forma assíncrona -->
+  <script
+    src="https://analytics.consentsmanagement.com/api/a"
+    data-site="SUA_CHAVE_DO_SITE"
+    async defer
+  ></script>
+</head>
+```
+
+## Regras de nomenclatura de eventos
+
+- Use minúsculas em snake_case: `add_to_cart`, não `AddToCart` ou `addToCart`.
+- Comece com uma letra; dígitos e underscores são permitidos após o primeiro caractere.
+- Máximo 64 caracteres.
+- Evite colisões com nomes de eventos rastreados automaticamente (`pageview`, `scroll_depth`, `rage_click`, `form_started`, `form_submit`, `form_field_focus`, `form_error`, `video_play`, `video_pause`, `video_50pct`, `video_complete`, `content_copy`).

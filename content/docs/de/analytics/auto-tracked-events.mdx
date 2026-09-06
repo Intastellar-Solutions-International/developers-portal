@@ -1,0 +1,155 @@
+---
+title: Automatisch getrackte Events
+description: Vollständige Payload-Referenz für alle Events, die Intastellar Analytics automatisch sendet — Seitenaufruf, Scrolltiefe, Rage Click, Formular-Events, Video-Events und Inhalts-Kopieren.
+order: 10
+lastUpdated: "2026-09-06"
+---
+
+# Automatisch getrackte Events
+
+Die folgenden Events werden automatisch gesendet, sobald das Embed installiert ist. Kein `window.inta.track()`-Aufruf ist erforderlich. Events mit dem Vermerk **Nur vollständige Einwilligung** werden auch bei minimaler Einwilligung gesendet, aber die aufgeführten Felder werden weggelassen — siehe [Einwilligungsstufen & Datenschutz](/docs/analytics/v1/consent-tiers) für Details.
+
+---
+
+## pageview
+
+Wird bei jedem Seitenaufruf und bei SPA-Navigationen ausgelöst, bei denen sich die URL ändert (erkannt über die History API).
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `path` | string | URL-Pfad, z.B. `/blog/mein-beitrag` |
+| `title` | string | `document.title` zum Zeitpunkt des Auslösens |
+| `referrer` | string | Referrer-Domain, oder `""` bei direktem Aufruf |
+| `device` | string | `"desktop"` / `"mobile"` / `"tablet"` |
+
+**Hinweise:** SPA-Erkennung verwendet einen `pushState` / `replaceState`-Patch. Wenn Ihr Framework Hash-Routing (`/#/pfad`) ohne `pushState` verwendet, werden Seitenaufrufe bei der Navigation möglicherweise nicht gesendet — verwenden Sie in diesem Fall manuell `window.inta.track('pageview')`.
+
+---
+
+## scroll_depth
+
+Wird einmal pro Schwellenwert pro Seitenaufruf ausgelöst. Schwellenwerte sind 25 %, 50 %, 75 %, 90 % und 100 %. Jeder Schwellenwert wird höchstens einmal ausgelöst.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `depth` | number | Erreichter Scroll-Schwellenwert: `25`, `50`, `75`, `90` oder `100` |
+
+**Einwilligung:** Nur vollständige Einwilligung. Bei minimaler Stufe wird dieses Event gesendet, aber `depth` wird nicht gespeichert.
+
+---
+
+## rage_click
+
+Wird ausgelöst, wenn ein Besucher drei oder mehr Mal im selben Bereich innerhalb von 500 ms klickt. Der Erkennungsradius beträgt 30 px.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `selector` | string | CSS-Selektor des geklickten Elements, z.B. `"button.submit"` |
+| `id` | string | `id`-Attribut des Elements, oder `""` wenn keins vorhanden |
+| `cls` | string | Leerzeichen-getrennte Klassenliste des Elements |
+| `tag` | string | Tag-Name, z.B. `"button"`, `"div"` |
+
+---
+
+## form_started
+
+Wird beim ersten `focus`-Event innerhalb eines `<form>`-Elements ausgelöst. Höchstens einmal pro Formular pro Seitenaufruf.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `formId` | string | Das `id`-Attribut des Formulars, oder ein auto-generierter Fallback-Bezeichner |
+| `provider` | string | `"hubspot"`, `"typeform"`, `"calendly"`, `"tally"` oder `"native"` |
+
+---
+
+## form_submit
+
+Wird beim nativen `submit`-Event eines `<form>`-Elements ausgelöst.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `formId` | string | Formular-Bezeichner (wie bei `form_started`) |
+| `fields` | string[] | Array der eingereichten Feldnamen |
+| `fieldCount` | number | Gesamtanzahl der Felder im Formular |
+| `action` | string | Die `action`-URL des Formulars, oder `""` für Same-Page-Einreichungen |
+| `provider` | string | Erkannter Anbieter (gleiche Werte wie `form_started`) |
+
+---
+
+## form_field_focus
+
+Wird ausgelöst, wenn ein Besucher den Fokus auf ein neues Feld in einem Formular setzt. Dedupliziert pro Feld pro Formular.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `formId` | string | Formular-Bezeichner |
+| `field` | string | `name`- oder `id`-Attribut des Felds |
+| `fieldType` | string | Input-`type`, z.B. `"text"`, `"email"`, `"select"` |
+
+---
+
+## form_error
+
+Wird ausgelöst, wenn eine Formulareinreichung auf einen Validierungsfehler, Serverfehler oder Netzwerkfehler trifft.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `formId` | string | Formular-Bezeichner |
+| `errorType` | string | `"validation"`, `"server"` oder `"network"` |
+| `field` | string | Das Feld, das die Validierung nicht bestanden hat, oder `""` bei nicht-feldbezogenen Fehlern |
+| `message` | string | Validierungsnachricht oder HTTP-Status als String bei Serverfehlern |
+
+---
+
+## video_play
+
+Wird ausgelöst, wenn das `play`-Event eines `<video>`-Elements ausgelöst wird.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `src` | string | Das `src`-Attribut des Videoelements |
+| `duration` | number | Gesamte Videodauer in Sekunden |
+
+---
+
+## video_pause
+
+Wird ausgelöst, wenn das `pause`-Event eines `<video>`-Elements ausgelöst wird.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `src` | string | Video `src`-Attribut |
+| `at` | number | Wiedergabeposition zum Zeitpunkt der Pause, in Sekunden |
+
+---
+
+## video_50pct
+
+Wird einmal ausgelöst, wenn `currentTime` des Videos 50 % der Gesamtdauer überschreitet. Höchstens einmal pro Videoelement pro Seitenaufruf.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `src` | string | Video `src`-Attribut |
+
+---
+
+## video_complete
+
+Wird ausgelöst, wenn das `ended`-Event eines `<video>`-Elements ausgelöst wird.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `src` | string | Video `src`-Attribut |
+| `duration` | number | Gesamte Videodauer in Sekunden |
+
+---
+
+## content_copy
+
+Wird ausgelöst, wenn der Besucher eine Kopieraktion (Strg+C, Cmd+C oder Kontextmenü Kopieren) auslöst, die dazu führt, dass Text in die Zwischenablage gelegt wird.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `length` | number | Anzahl der kopierten Zeichen |
+
+**Hinweise:** Der kopierte Text wird niemals erfasst, nur die Zeichenanzahl.

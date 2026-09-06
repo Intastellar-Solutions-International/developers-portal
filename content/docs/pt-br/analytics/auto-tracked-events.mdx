@@ -1,0 +1,157 @@
+---
+title: Eventos rastreados automaticamente
+description: Referência completa de payload para todos os eventos que o Intastellar Analytics dispara automaticamente — visualização de página, profundidade de rolagem, rage click, eventos de formulário, eventos de vídeo e cópia de conteúdo.
+order: 10
+lastUpdated: "2026-09-06"
+---
+
+# Eventos rastreados automaticamente
+
+Os seguintes eventos são disparados automaticamente assim que o embed é instalado. Nenhuma chamada a `window.inta.track()` é necessária. Eventos marcados como **Apenas consentimento completo** ainda são disparados no consentimento mínimo, mas os campos listados são omitidos — consulte [Níveis de consentimento e privacidade](/docs/analytics/v1/consent-tiers) para detalhes.
+
+---
+
+## pageview
+
+Disparado em cada carregamento de página e em navegações SPA onde a URL muda (detectado via History API).
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `path` | string | Caminho URL, ex. `/blog/meu-artigo` |
+| `title` | string | `document.title` no momento do disparo |
+| `referrer` | string | Domínio referenciador, ou `""` se direto |
+| `device` | string | `"desktop"` / `"mobile"` / `"tablet"` |
+
+**Notas:** A detecção SPA usa um patch `pushState` / `replaceState`. Se seu framework usa roteamento por hash (`/#/caminho`) sem `pushState`, visualizações de página podem não ser disparadas na navegação — use `window.inta.track('pageview')` manualmente nesse caso.
+
+---
+
+## scroll_depth
+
+Disparado uma vez por limite por carregamento de página. Os limites são 25 %, 50 %, 75 %, 90 % e 100 %. Cada limite dispara no máximo uma vez.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `depth` | number | Limite de rolagem atingido: `25`, `50`, `75`, `90` ou `100` |
+
+**Consentimento:** Consentimento completo necessário. No nível mínimo, este evento é disparado mas `depth` é omitido do armazenamento.
+
+---
+
+## rage_click
+
+Disparado quando um visitante clica na mesma área três ou mais vezes em 500 ms. O raio de detecção é de 30 px.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `selector` | string | Seletor CSS do elemento clicado, ex. `"button.submit"` |
+| `id` | string | Atributo `id` do elemento, ou `""` se nenhum |
+| `cls` | string | Lista de classes do elemento separadas por espaço |
+| `tag` | string | Nome da tag, ex. `"button"`, `"div"` |
+
+---
+
+## form_started
+
+Disparado no primeiro evento `focus` dentro de um elemento `<form>`. Disparado no máximo uma vez por formulário por carregamento de página.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `formId` | string | O atributo `id` do formulário, ou um identificador de fallback gerado automaticamente |
+| `provider` | string | `"hubspot"`, `"typeform"`, `"calendly"`, `"tally"` ou `"native"` |
+
+---
+
+## form_submit
+
+Disparado no evento nativo `submit` de um elemento `<form>`.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `formId` | string | Identificador do formulário (mesmo que `form_started`) |
+| `fields` | string[] | Array de nomes de campos enviados |
+| `fieldCount` | number | Número total de campos no formulário |
+| `action` | string | A URL `action` do formulário, ou `""` para envios na mesma página |
+| `provider` | string | Provedor detectado (mesmos valores que `form_started`) |
+
+**Notas:** Valores de campos nunca são coletados, apenas nomes de campos. Inputs de senha e inputs com `autocomplete="cc-number"` são excluídos de `fields`.
+
+---
+
+## form_field_focus
+
+Disparado quando um visitante move o foco para um novo campo dentro de um formulário. Deduplicado por campo por formulário.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `formId` | string | Identificador do formulário |
+| `field` | string | Atributo `name` ou `id` do campo |
+| `fieldType` | string | `type` do input, ex. `"text"`, `"email"`, `"select"` |
+
+---
+
+## form_error
+
+Disparado quando o envio de um formulário encontra uma falha de validação, erro de servidor ou erro de rede.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `formId` | string | Identificador do formulário |
+| `errorType` | string | `"validation"`, `"server"` ou `"network"` |
+| `field` | string | O campo que falhou na validação, ou `""` para erros não relacionados a campos |
+| `message` | string | Texto da mensagem de validação, ou status HTTP como string para erros de servidor |
+
+---
+
+## video_play
+
+Disparado quando o evento `play` de um elemento `<video>` ocorre.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `src` | string | O atributo `src` do elemento de vídeo |
+| `duration` | number | Duração total do vídeo em segundos |
+
+---
+
+## video_pause
+
+Disparado quando o evento `pause` de um elemento `<video>` ocorre.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `src` | string | Atributo `src` do vídeo |
+| `at` | number | Posição de reprodução no momento da pausa, em segundos |
+
+---
+
+## video_50pct
+
+Disparado uma vez quando `currentTime` do vídeo cruza 50 % de sua duração total. Disparado no máximo uma vez por elemento de vídeo por carregamento de página.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `src` | string | Atributo `src` do vídeo |
+
+---
+
+## video_complete
+
+Disparado quando o evento `ended` ocorre em um elemento `<video>`.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `src` | string | Atributo `src` do vídeo |
+| `duration` | number | Duração total do vídeo em segundos |
+
+---
+
+## content_copy
+
+Disparado quando o visitante aciona uma ação de cópia (Ctrl+C, Cmd+C, ou Copiar do menu de contexto) que resulta em texto sendo colocado na área de transferência.
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `length` | number | Número de caracteres copiados |
+
+**Notas:** O texto copiado nunca é coletado, apenas o número de caracteres.

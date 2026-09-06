@@ -1,171 +1,33 @@
 ---
 title: Intastellar Analytics
-description: Udviklerdokumentation for Intastellar Analytics—installation, samtykkeniveauer, automatisk sporede hændelser, tilpasset hændelses-API, formularintegrationer og serversidefelter.
+description: Privatlivsorienteret analytics — sidevisninger, formularinteraktioner, rage clicks, e-handelsfunnel og SEO-data i ét samtykkebevidst embed.
 hub_order: 20
 hub_tagline: Privatlivsorienteret analytics — installer på én linje, samtykkebevidst fra dag ét.
 order: 0
-lastUpdated: "2026-08-28"
+lastUpdated: "2026-09-06"
 ---
 
 # Intastellar Analytics
 
-Intastellar Analytics er en privatlivsorienteret analyticplatform bygget til samtykkebevidst dataindsamling. Den sporer besøgendes adfærd, konverteringer og formularinteraktioner på tværs af to samtykkeniveauer: **minimal** (anonym, ingen persondata) og **fuld** (beriget, session-tilknyttet). Alle data forbliver inden for din organisation; intet sælges eller deles.
+Intastellar Analytics er en privatlivsorienteret analyticplatform bygget til samtykkebevidst dataindsamling. Den sporer besøgendes adfærd, konverteringer og formularinteraktioner på tværs af to samtykkeniveauer — **minimal** (anonym) og **fuld** (session-tilknyttet) — uden at sende data til tredjeparter.
 
-## 1. Installation
+Ét script-tag er alt installationen kræver. Sidevisninger, scrolldybde, rage clicks, formularinteraktioner og videohændelser spores automatisk. Tilpassede hændelser og den fulde e-handels-event-API giver dig mulighed for at instrumentere enhver konvertering, der er vigtig for dig.
 
-Tilføj ét script-tag til `<head>` eller slutningen af `<body>` på hver side, du vil spore. Erstat `YOUR_SITE_KEY` med nøglen vist i dit dashboard under **Indstillinger → Analytics Script**.
+## I dette afsnit
 
-```html
-<script
-  src="https://analytics.consentsmanagement.com/api/a"
-  data-site="YOUR_SITE_KEY"
-  async
-  defer
-></script>
-```
+### Kom i gang
+- [Kom i gang](/docs/analytics/v1/getting-started) — script-tag, webstedsnøgle og verifikation af første hændelse
+- [Samtykkeniveauer og privatliv](/docs/analytics/v1/consent-tiers) — hvad hvert samtykkeniveau indsamler, hvordan embedet læser samtykkestatus
+- [Fejlfinding](/docs/analytics/v1/troubleshooting) — hændelser vises ikke, samtykke skifter ikke, formularudbydere registreres ikke
 
-Sidevisninger, formularinteraktioner, scrolldybde og rage-klik spores automatisk herfra.
+### Hændelsesreference
+- [Automatisk sporede hændelser](/docs/analytics/v1/auto-tracked-events) — fuld payload-reference for alle hændelser embedet sender automatisk
+- [Tilpassede hændelser](/docs/analytics/v1/custom-events) — `window.inta.track()` API og parameterreference
+- [Standard e-handelshændelser](/docs/analytics/v1/ecommerce-events) — checkout-funnel og selvstændige e-handels-event-signaturer
 
-## 2. Sådan fungerer samtykkeniveauer
+### Integrationer og serverfelter
+- [Formularudbyderintegrationer](/docs/analytics/v1/form-integrations) — HubSpot, Typeform, Calendly, Tally-registrering og formularfejltyper
+- [Serverside-felter og attribution](/docs/analytics/v1/server-side-fields) — UTM-registrering, klik-ID'er og alle server-tilføjede felter
 
-Indlejringen læser samtykketilstanden fra Intastellar Consent Solution-cookien (`IntastellarConsentSolution`) eller fra `window.intaCookieConsents`, hvis du selv håndterer samtykke.
-
-| Niveau | Udløser | Indsamlede data |
-| --- | --- | --- |
-| **Minimal** | Kræver ikke samtykke | Kun anonyme sidevisningsdata — ingen session-ID, ingen personidentifikatorer |
-| **Fuld** | Besøgende giver Statistik-samtykke | Session-ID, UTM'er, klik-ID'er (`gclid` / `msclkid` / `fbclid`), referrer, skærmstørrelse, sprog, tidszone, varighed, scrolldybde, varmekort-klik |
-
-## 3. Automatisk sporede hændelser
-
-Indlejringen sender følgende hændelser automatisk. Intet `window.inta.track`-kald er nødvendigt.
-
-| Hændelse | Udløser | Payload-felter |
-| --- | --- | --- |
-| `pageview` | Hver sideindlæsning eller SPA-navigation | `path`, `title`, `referrer`, `device` |
-| `scroll_depth` | Ved 25%, 50%, 75%, 90%, 100% scroll | `depth` (procent) |
-| `rage_click` | 3+ klik inden for 500 ms / 30 px radius | `selector`, `id`, `cls`, `tag` |
-| `form_started` | Første feltfokus inde i et `<form>` | `formId`, `provider` |
-| `form_submit` | Nativ form submit-hændelse | `formId`, `fields[]`, `fieldCount`, `action` |
-| `form_field_focus` | Bruger skifter til nyt felt (dedupleret pr. felt pr. formular) | `formId`, `field`, `fieldType` |
-| `form_error` | HTML5-valideringsfejl, netværksfejl eller serverfejl (4xx/5xx) | `formId`, `errorType`, `field`, `message` |
-| `video_play` | `<video>` afspilning | `src`, `duration` |
-| `video_pause` | `<video>` pause | `src`, `at` |
-| `video_50pct` | 50% af video set | `src` |
-| `video_complete` | Video sluttede | `src`, `duration` |
-| `content_copy` | Bruger kopierer tekst (Ctrl+C / Cmd+C) | `length` |
-
-## 4. Tilpassede hændelser
-
-Send tilpassede hændelser med `window.inta.track`:
-
-```js
-window.inta.track('purchase', {
-  value: 49.99,
-  currency: 'EUR',
-  transactionId: 'order_1234',
-  data: { plan: 'pro' },
-  products: [
-    { id: 'prod_abc', name: 'Pro Plan', price: 49.99, quantity: 1 },
-  ],
-});
-```
-
-| Parameter | Type | Beskrivelse |
-| --- | --- | --- |
-| `eventName` | string | Påkrævet. Små bogstaver, snake_case anbefales. Maks. 64 tegn. |
-| `options.value` | number | Pengeværdi (f.eks. `49.99`). Bruges i konverteringsrapportering. |
-| `options.currency` | string | ISO 4217-valutakode (`"EUR"`, `"USD"`, `"GBP"`). |
-| `options.transactionId` | string | Deduplikationsnøgle. Samme ID inden for en session gemmes én gang. |
-| `options.data` | object | Vilkårlige nøgle-værdi-metadata. Maks. 20 nøgler, 500 tegn pr. værdi. |
-| `options.products` | array | Produktliste til e-handelshændelser. |
-
-## 5. Formularudbyderintergrationer
-
-Tredjeparts formularudbydere registreres automatisk via deres native `postMessage`-hændelser. Ingen ekstra konfiguration er nødvendig.
-
-| Udbyder | Registreringsmekanisme |
-| --- | --- |
-| HubSpot | `window.postMessage` (`hsFormCallback`) |
-| Typeform | `window.postMessage` |
-| Calendly | `window.postMessage` |
-| Tally | `window.postMessage` |
-
-`provider`-feltet på `form_started`- og `form_submit`-hændelser angiver, hvilken udbyder der blev registreret, eller `"native"` for standard HTML-formularer.
-
-## 6. Formularfejltyper
-
-`errorType`-feltet på `form_error`-hændelser antager én af tre værdier:
-
-| Type | Hvornår den udløses |
-| --- | --- |
-| `validation` | HTML5-validering afviste et felt (udløses ved nativ `invalid`-hændelse) |
-| `server` | HTTP 4xx eller 5xx-svar på en formularindsendelse via fetch / XHR |
-| `network` | Fetch eller XHR fejlede uden svar (offline, DNS-fejl osv.) |
-
-## 7. UTM- og klik-ID-registrering
-
-Indlejringen læser følgende parametre fra landingssidernes URL ved første indlæsning og knytter dem til sessionen (kun fuldt samtykkeniveau).
-
-| Parameter | Kilde |
-| --- | --- |
-| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | URL-forespørgselsstreng |
-| `gclid` | Google Ads |
-| `msclkid` | Microsoft Advertising |
-| `fbclid` | Meta Ads |
-
-## 8. Serverside-felter
-
-Følgende felter tilføjes serverside til hver hændelsespost inden lagring.
-
-| Felt | Type | Bemærkninger |
-| --- | --- | --- |
-| `site_id` | UUID | Løses ud fra din webstedsnøgle |
-| `received_at` | timestamp | UTC, serverside |
-| `consent_level` | `"minimal"` \| `"full"` | Sat af indlejringen |
-| `pathname` | string | URL-sti uden forespørgselsstreng |
-| `page_host` | string | Værtsnavn (f.eks. `app.yoursite.com`) |
-| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Afledt fra user-agent |
-| `country_code` | ISO 3166-1 alpha-2 | GeoIP-opslag, serverside |
-| `session_id` | string \| null | Kun fuldt samtykke |
-
-## Dashboardpaneler
-
-### Live hændelsesfeed
-
-Et rullende feed med de seneste 30 minutters hændelser i realtid. Brug det til at bekræfte, at sporing fungerer efter en deployment eller ændring af samtykke-konfiguration.
-
-### Publikum
-
-Sessionskvalitet, ny versus tilbagevendende og landefordeling. Sessioner er opdelt i **fulde** og **afviste**, så publikumsvisningen afspejler den reelle samtykkfordeling.
-
-### Erhvervelse
-
-Første-touch og førstepartsattributionshændelser — **ikke påvirket af samtykkebeslutninger**.
-
-### Annonceforbrug
-
-Forbrug, klik, eksponeringer og CPC fra tilsluttede annonceplaforme. Data hentes **dagligt via API**.
-
-### Attribution
-
-Pr.-kanal-omkostning med **første-touch** og **sidste-touch**-modeller side om side.
-
-### Konverteringer
-
-Tragtanalyse, der viser præcis, hvor besøgende falder fra i hvert trin.
-
-### Varmekort
-
-Klik- og scrollvarmekort pr. side.
-
-### Brugerflow
-
-Et Sankey-diagram over besøgendes stier — indgangspunkter, mellemsider og udgangspunkter.
-
-### Search Console
-
-Google Search Console-data i dashboardet: klik, eksponeringer, CTR, gennemsnitlig position og topforespørgsler pr. side.
-
-### Bots
-
-Crawlertrafik adskilt automatisk fra rigtig besøgstrafik og opdelt efter kategori — **søgeværktøjer** og **dataaggregatorer**.
+### Dashboard
+- [Dashboardguide](/docs/analytics/v1/dashboard) — Live hændelsesfeed, Publikum, Erhvervelse, Annonceforbrug, Attribution, Konverteringer, Varmekort, Brugerflow, Search Console, Bots

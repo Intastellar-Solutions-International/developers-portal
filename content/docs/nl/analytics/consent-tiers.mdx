@@ -1,0 +1,63 @@
+---
+title: Toestemmingsniveaus & privacy
+description: Hoe Intastellar Analytics toestemmingsstatus leest, wat elk niveau verzamelt en hoe te integreren met uw eigen toestemmingsbeheerplatform.
+order: 2
+lastUpdated: "2026-09-06"
+---
+
+# Toestemmingsniveaus & privacy
+
+Intastellar Analytics verzamelt gegevens op twee toestemmingsniveaus. Het embed leest de toestemmingsstatus op het moment van elk event en past automatisch het juiste verzamelingsniveau toe — geen extra code nodig als u Intastellar Consents gebruikt.
+
+## De twee niveaus
+
+| Niveau | Wanneer het van toepassing is | Verzamelde gegevens |
+| --- | --- | --- |
+| **Minimaal** | Geen toestemming vereist — actief voor alle bezoekers vanaf de eerste lading | Anoniem paginapad, paginatitel, referrerdomein, apparaatcategorie. Geen persoonlijke identificatoren, geen sessie-ID, geen cookies geschreven. |
+| **Volledig** | Bezoeker verleent Statistieken / Analytics toestemming | Alles uit Minimaal, plus: sessie-ID, UTM-parameters, klik-ID's (`gclid` / `msclkid` / `fbclid`), referrerketen, schermresolutie, browsertaal, tijdzoneoffset, sessieduur, scrollpercentages, heatmap-klikcoördinaten. |
+
+## Hoe toestemmingsstatus wordt gelezen
+
+Het embed controleert toestemmingsstatus bij elk event — niet alleen bij het laden van de pagina. Als een bezoeker toestemming verleent tijdens een sessie, worden volgende events onmiddellijk naar het volledige niveau verplaatst zonder dat een paginarefresh nodig is.
+
+Toestemmingsstatus wordt opgelost vanuit twee bronnen, gecontroleerd in deze volgorde:
+
+1. **`window.intaCookieConsents`** — als u toestemming beheert met uw eigen CMP en dit object instelt voordat het analytics-script wordt uitgevoerd, leest het embed er direct van.
+2. **`IntastellarConsentSolution`-cookie** — de cookie geschreven door [Intastellar Consents](/docs/cookie-banner/v1). Als beide bronnen aanwezig zijn, heeft `window.intaCookieConsents` prioriteit.
+
+### Uw eigen CMP gebruiken
+
+Als u geen Intastellar Consents gebruikt, maak dan het volgende object beschikbaar voordat het analytics-embed wordt uitgevoerd:
+
+```js
+window.intaCookieConsents = {
+  statisticCookies: true,   // true = volledig niveau, false of afwezig = minimaal niveau
+};
+```
+
+Werk dit object bij wanneer de bezoeker hun toestemmingskeuze wijzigt en het embed haalt de nieuwe status op bij het volgende event.
+
+## Velden beperkt door toestemmingsniveau
+
+De volgende velden worden alleen verzameld op het volledige niveau. Ze worden volledig weggelaten uit eventrecords bij minimale toestemming.
+
+| Veld | Alleen volledig niveau |
+| --- | --- |
+| `session_id` | ✓ |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | ✓ |
+| `gclid`, `msclkid`, `fbclid` | ✓ |
+| `products[]` en `value` op aangepaste / e-commerce events | ✓ |
+| Heatmap-klikcoördinaten | ✓ |
+| Scrolldieptepercentages (25 % / 50 % / 75 % / 90 % / 100 %) | ✓ |
+
+## Wat nooit wordt verzameld
+
+Ongeacht toestemmingsniveau wordt het volgende nooit verzameld of opgeslagen:
+
+- Ruw IP-adres (GeoIP lost server-side op naar `country_code`; het IP wordt onmiddellijk weggegooid)
+- Ruwe user-agent-string (alleen het afleide `device_type` — `"desktop"` / `"mobile"` / `"tablet"` — wordt opgeslagen)
+- Wachtwoorden, betalingsgegevens of formulierveldwaarden gemarkeerd als `type="password"` of `autocomplete="cc-number"`
+
+## Minimaal niveau en cookies
+
+Bij minimale toestemming schrijft het embed geen cookies en voert het geen lees- of schrijfbewerkingen uit in `localStorage`. De enige uitgaande gegevens zijn de anonieme event-payload die naar het verzamelingseindpunt wordt gestuurd.

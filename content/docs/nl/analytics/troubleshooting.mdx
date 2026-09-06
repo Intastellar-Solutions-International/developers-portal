@@ -1,0 +1,119 @@
+---
+title: Problemen oplossen
+description: Diagnostische stappen voor veelvoorkomende Intastellar Analytics-problemen — events verschijnen niet, toestemmingsniveau wordt niet bijgewerkt, formulieraanbieder niet gedetecteerd en netwerkfouten.
+order: 9
+lastUpdated: "2026-09-06"
+---
+
+# Problemen oplossen
+
+## Events verschijnen niet in de Live gebeurtenisfeed
+
+### 1. Bevestig dat het script wordt geladen
+
+Open DevTools → **Netwerk**, filter op `analytics.consentsmanagement.com` en laad de pagina opnieuw. U zou een verzoek naar `/api/a` (het script) en opvolgende `POST`-verzoeken naar het verzamelingseindpunt moeten zien.
+
+Als het scriptverzoek ontbreekt:
+
+- Controleer of de `<script>`-tag aanwezig is in de HTML-broncode van de pagina (niet ingevoegd door een ander script dat geblokkeerd kan zijn).
+- Zorg ervoor dat het `data-site`-attribuut is ingesteld en overeenkomt met de sitesleutel weergegeven in **Dashboard → Instellingen → Sitesleutel**.
+
+### 2. Controleer op adblocker of inhoudsfilter
+
+Het verzamelingseindpunt (`analytics.consentsmanagement.com`) is een first-party analytics-domein, maar agressieve adblockers kunnen het toch blokkeren. Test in een browserprofiel zonder extensies.
+
+### 3. Verifieer de sitesleutel
+
+Het `data-site`-attribuut op de script-tag moet exact overeenkomen — het is hoofdlettergevoelig. Een verkeerde sleutel zorgt ervoor dat het eindpunt events afwijst met een `403`-reactie zichtbaar in het Netwerktabblad.
+
+### 4. Controleer event-timing ten opzichte van toestemming
+
+Events op minimaal niveau worden onmiddellijk verzonden. Events op volledig niveau vereisen dat de Statistieken-categorie is verleend. Als u velden op volledig niveau test en alleen data op minimaal niveau ziet, zie [Toestemmingsniveau wordt niet bijgewerkt](#toestemmingsniveau-wordt-niet-bijgewerkt) hieronder.
+
+---
+
+## Toestemmingsniveau wordt niet bijgewerkt
+
+### 1. Controleer `window.intaCookieConsents`
+
+Open DevTools → **Console** en voer uit:
+
+```js
+window.intaCookieConsents
+```
+
+Als dit `undefined` retourneert, heeft de CMP het niet ingesteld voordat het analytics-embed wordt uitgevoerd. Zorg ervoor dat uw CMP `window.intaCookieConsents` synchroon instelt in een `<script>`-blok vóór de embed `<script>`-tag.
+
+### 2. Controleer de `IntastellarConsentSolution`-cookie
+
+Als u Intastellar Consents gebruikt, open DevTools → **Toepassing → Cookies** en zoek naar `IntastellarConsentSolution`. Inspecteer de waarde — het veld `statisticCookies` bepaalt het niveau. Als de cookie afwezig is, heeft de bezoeker nog niet geïnterageerd met de toestemmingsbanner.
+
+### 3. Toestemming wijzigen midden in een sessie
+
+Het embed leest toestemmingsstatus bij elk event-trigger, niet alleen bij het laden van de pagina. Nadat toestemming is geaccepteerd in de banner:
+
+1. Activeer een nieuw event (navigeer naar een andere pagina, scroll, of stuur een aangepast event via `window.inta.track()`).
+2. Controleer de Live gebeurtenisfeed — het nieuwe event zou moeten verschijnen met velden op volledig niveau.
+
+---
+
+## Formulieraanbieder niet gedetecteerd
+
+### 1. Controleer `postMessage`-events
+
+Open DevTools → **Console** en voer dit uit voordat u het formulier indient:
+
+```js
+window.addEventListener('message', (e) => console.log(e.data));
+```
+
+Dien het formulier in of interageer ermee en zoek naar berichten van de aanbieder.
+
+### 2. Verifieer de insluitcode
+
+Aanbiedersdetectie is afhankelijk van `postMessage`-events verzonden door het eigen script van de aanbieder. Zorg ervoor dat u de standaard insluitcode van de aanbieder gebruikt, niet alleen een pure `<iframe src="...">` zonder de JavaScript-wrapper van de aanbieder.
+
+### 3. Gebruik handmatige tracking als fallback
+
+Voor formulieren die niet automatisch worden gedetecteerd, stuur events handmatig:
+
+```js
+// Bij formulierfocus
+window.inta.track('form_started', { data: { formId: 'contactformulier' } });
+
+// Bij geslaagde indiening
+window.inta.track('form_submit', { data: { formId: 'contactformulier' } });
+```
+
+Zie [Aangepaste events](/docs/analytics/v1/custom-events) voor de volledige `window.inta.track()` API.
+
+---
+
+## Paginaweergaven ontbreken bij SPA-navigaties
+
+Het embed patcht `pushState` en `replaceState` om SPA-navigaties te detecteren. Voor hash-gebaseerde routing (`/#/pad`) zonder `pushState` is handmatige paginaweergave-tracking vereist.
+
+```js
+window.inta = window.inta || {};
+window.inta.track = window.inta.track || function() {
+  (window.inta._q = window.inta._q || []).push(arguments);
+};
+window.inta.track('pageview');
+```
+
+---
+
+## Dashboard toont data maar events zijn vertraagd
+
+Events verschijnen doorgaans binnen 2–5 seconden in de Live feed. Geaggregeerde panelen (Publiek, Acquisitie, Conversies) worden bijgewerkt in een cyclus van 15 minuten, niet in realtime.
+
+---
+
+## Nog hulp nodig?
+
+Neem contact op met [support@intastellar.eu](mailto:support@intastellar.eu) met:
+
+1. Uw sitesleutel (van Dashboard → Instellingen → Sitesleutel)
+2. De URL waar het probleem optreedt
+3. Een screenshot van het Netwerktabblad met de relevante verzoeken
+4. De uitvoer van `window.intaCookieConsents` vanuit de browserconsole

@@ -1,0 +1,155 @@
+---
+title: Automatisch bijgehouden events
+description: Volledige payload-referentie voor alle events die Intastellar Analytics automatisch verstuurt — paginaweergave, scrolldiepte, rage click, formulierevents, video-events en inhoud kopiëren.
+order: 10
+lastUpdated: "2026-09-06"
+---
+
+# Automatisch bijgehouden events
+
+De volgende events worden automatisch verstuurd zodra het embed is geïnstalleerd. Geen `window.inta.track()`-aanroep is nodig. Events gemarkeerd met **Alleen volledig toestemmingsniveau** worden toch verstuurd bij minimale toestemming, maar de vermelde velden worden weggelaten — zie [Toestemmingsniveaus & privacy](/docs/analytics/v1/consent-tiers) voor details.
+
+---
+
+## pageview
+
+Wordt verstuurd bij elke paginalading en bij SPA-navigaties waarbij de URL verandert (gedetecteerd via de History API).
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `path` | string | URL-pad, bijv. `/blog/mijn-artikel` |
+| `title` | string | `document.title` op het moment van versturen |
+| `referrer` | string | Referrerdomein, of `""` bij direct |
+| `device` | string | `"desktop"` / `"mobile"` / `"tablet"` |
+
+**Opmerkingen:** SPA-detectie gebruikt een `pushState` / `replaceState`-patch. Als uw framework hash-routing (`/#/pad`) gebruikt zonder `pushState`, worden paginaweergaven mogelijk niet verstuurd bij navigatie — gebruik in dat geval handmatig `window.inta.track('pageview')`.
+
+---
+
+## scroll_depth
+
+Wordt eenmaal per drempel per paginalading verstuurd. Drempels zijn 25 %, 50 %, 75 %, 90 % en 100 %. Elke drempel wordt hoogstens eenmaal verstuurd.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `depth` | number | Bereikte scrolldrempel: `25`, `50`, `75`, `90` of `100` |
+
+**Toestemming:** Volledig toestemmingsniveau vereist. Bij minimaal niveau wordt dit event verstuurd maar `depth` wordt weggelaten uit opslag.
+
+---
+
+## rage_click
+
+Wordt verstuurd wanneer een bezoeker drie of meer keer in hetzelfde gebied klikt binnen 500 ms. De detectieradius is 30 px.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `selector` | string | CSS-selector van het geklekte element, bijv. `"button.submit"` |
+| `id` | string | `id`-attribuut van het element, of `""` als geen |
+| `cls` | string | Spatie-gescheiden klassenlijst van het element |
+| `tag` | string | Tag-naam, bijv. `"button"`, `"div"` |
+
+---
+
+## form_started
+
+Wordt verstuurd bij het eerste `focus`-event binnen een `<form>`-element. Hoogstens eenmaal per formulier per paginalading.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `formId` | string | Het `id`-attribuut van het formulier, of een auto-gegenereerde fallback-identificator |
+| `provider` | string | `"hubspot"`, `"typeform"`, `"calendly"`, `"tally"` of `"native"` |
+
+---
+
+## form_submit
+
+Wordt verstuurd bij het native `submit`-event van een `<form>`-element.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `formId` | string | Formulieridentificator (zelfde als `form_started`) |
+| `fields` | string[] | Array van ingediende veldnamen |
+| `fieldCount` | number | Totaal aantal velden in het formulier |
+| `action` | string | De `action`-URL van het formulier, of `""` voor same-page indieningen |
+| `provider` | string | Gedetecteerde aanbieder (zelfde waarden als `form_started`) |
+
+---
+
+## form_field_focus
+
+Wordt verstuurd wanneer een bezoeker de focus naar een nieuw veld in een formulier verplaatst. Gededupliceerd per veld per formulier.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `formId` | string | Formulieridentificator |
+| `field` | string | `name`- of `id`-attribuut van het veld |
+| `fieldType` | string | Input-`type`, bijv. `"text"`, `"email"`, `"select"` |
+
+---
+
+## form_error
+
+Wordt verstuurd wanneer een formulierindiening een validatiefout, serverfout of netwerkfout tegenkomt.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `formId` | string | Formulieridentificator |
+| `errorType` | string | `"validation"`, `"server"` of `"network"` |
+| `field` | string | Het veld dat de validatie niet doorstond, of `""` voor niet-veldfouten |
+| `message` | string | Validatiebericht of HTTP-status als string bij serverfouten |
+
+---
+
+## video_play
+
+Wordt verstuurd wanneer het `play`-event van een `<video>`-element plaatsvindt.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `src` | string | Het `src`-attribuut van het video-element |
+| `duration` | number | Totale videoduur in seconden |
+
+---
+
+## video_pause
+
+Wordt verstuurd wanneer het `pause`-event van een `<video>`-element plaatsvindt.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `src` | string | Video `src`-attribuut |
+| `at` | number | Afspeelpositie op het moment van pauzeren, in seconden |
+
+---
+
+## video_50pct
+
+Wordt eenmaal verstuurd wanneer `currentTime` van de video 50 % van de totale duur overschrijdt. Hoogstens eenmaal per video-element per paginalading.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `src` | string | Video `src`-attribuut |
+
+---
+
+## video_complete
+
+Wordt verstuurd wanneer het `ended`-event op een `<video>`-element plaatsvindt.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `src` | string | Video `src`-attribuut |
+| `duration` | number | Totale videoduur in seconden |
+
+---
+
+## content_copy
+
+Wordt verstuurd wanneer de bezoeker een kopieeractie (Ctrl+C, Cmd+C of contextmenu Kopiëren) uitvoert die resulteert in tekst in het klembord.
+
+| Veld | Type | Beschrijving |
+| --- | --- | --- |
+| `length` | number | Aantal gekopieerde tekens |
+
+**Opmerkingen:** De gekopieerde tekst wordt nooit verzameld, alleen het aantal tekens.

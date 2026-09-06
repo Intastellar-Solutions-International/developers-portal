@@ -1,0 +1,159 @@
+---
+title: Automatisk sporede hændelser
+description: Komplet payload-reference for alle hændelser Intastellar Analytics sender automatisk — sidevisning, scrolldybde, rage click, formularhændelser, videohændelser og indholdskopi.
+order: 10
+lastUpdated: "2026-09-06"
+---
+
+# Automatisk sporede hændelser
+
+Følgende hændelser sendes automatisk, når embedet er installeret. Intet `window.inta.track()`-kald er nødvendigt. Hændelser markeret **Kræver fuldt samtykke** sendes stadig ved minimalt samtykke, men de angivne felter udelades — se [Samtykkeniveauer og privatliv](/docs/analytics/v1/consent-tiers) for detaljer.
+
+---
+
+## pageview
+
+Sendes ved hver sideindlæsning og ved SPA-navigationer, hvor URL'en ændres (registreret via History API).
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `path` | string | URL-sti, f.eks. `/blog/mit-indlæg` |
+| `title` | string | `document.title` på afsendelsestidspunktet |
+| `referrer` | string | Referrerdomæne, eller `""` ved direkte |
+| `device` | string | `"desktop"` / `"mobile"` / `"tablet"` |
+
+**Bemærkninger:** SPA-registrering bruger en `pushState` / `replaceState`-patch. Hvis din ramme bruger hash-routing (`/#/sti`) uden `pushState`, kan sidevisninger ikke sendes ved navigation — brug `window.inta.track('pageview')` manuelt i det tilfælde.
+
+---
+
+## scroll_depth
+
+Sendes én gang pr. tærskel pr. sideindlæsning. Tærskler er 25 %, 50 %, 75 %, 90 % og 100 %. Hver tærskel sendes højst én gang uanset frem-og-tilbage-scrolling.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `depth` | number | Scrolltærskel nået: `25`, `50`, `75`, `90` eller `100` |
+
+**Samtykke:** Kræver fuldt samtykke. Ved minimalt niveau sendes denne hændelse, men `depth` udelades fra lagring.
+
+---
+
+## rage_click
+
+Sendes når en besøgende klikker i samme område tre eller flere gange inden for 500 ms. Registreringsradius er 30 px.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `selector` | string | CSS-selektor for det klikkede element, f.eks. `"button.submit"` |
+| `id` | string | Elementets `id`-attribut, eller `""` hvis ingen |
+| `cls` | string | Mellemrumssepareret klasseliste for elementet |
+| `tag` | string | Tag-navn, f.eks. `"button"`, `"div"` |
+
+**Bemærkninger:** Rage clicks er stærke signaler om, at et UI-element ikke reagerer som besøgende forventer. Brug denne hændelse sammen med Varmekort-panelet til at lokalisere problematiske elementer.
+
+---
+
+## form_started
+
+Sendes ved den første `focus`-hændelse inden for et `<form>`-element. Sendes højst én gang pr. formular pr. sideindlæsning.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `formId` | string | Formularens `id`-attribut, eller et auto-genereret fallback-id |
+| `provider` | string | `"hubspot"`, `"typeform"`, `"calendly"`, `"tally"` eller `"native"` |
+
+---
+
+## form_submit
+
+Sendes ved den native `submit`-hændelse på et `<form>`-element.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `formId` | string | Formular-id (samme som `form_started`) |
+| `fields` | string[] | Array af indsendte feltnavne |
+| `fieldCount` | number | Samlet antal felter i formularen |
+| `action` | string | Formularens `action`-URL, eller `""` for same-page indsendelser |
+| `provider` | string | Registreret udbyder (samme værdier som `form_started`) |
+
+**Bemærkninger:** Feltværdier indsamles aldrig, kun feltnavne. Password-inputs og inputs med `autocomplete="cc-number"` udelades fra `fields` selv om de er til stede.
+
+---
+
+## form_field_focus
+
+Sendes når en besøgende flytter fokus til et nyt felt i en formular. Dedupleret pr. felt pr. formular — at fokusere det samme felt flere gange sender kun én hændelse.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `formId` | string | Formular-id |
+| `field` | string | Feltets `name`- eller `id`-attribut |
+| `fieldType` | string | Input-`type`, f.eks. `"text"`, `"email"`, `"select"` |
+
+---
+
+## form_error
+
+Sendes når en formularindsendelse møder en valideringsfejl, serverfejl eller netværksfejl.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `formId` | string | Formular-id |
+| `errorType` | string | `"validation"`, `"server"` eller `"network"` |
+| `field` | string | Det felt, der fejlede validering, eller `""` for ikke-feltfejl |
+| `message` | string | Valideringsbesked eller HTTP-status som streng ved serverfejl |
+
+---
+
+## video_play
+
+Sendes når en `<video>`-elements `play`-hændelse sendes.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `src` | string | `src`-attributten på videoelementet |
+| `duration` | number | Samlet videovarighed i sekunder |
+
+---
+
+## video_pause
+
+Sendes når en `<video>`-elements `pause`-hændelse sendes.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `src` | string | Video `src`-attribut |
+| `at` | number | Afspilningsposition ved pause-tidspunktet, i sekunder |
+
+---
+
+## video_50pct
+
+Sendes én gang, når videoens `currentTime` krydser 50 % af dens samlede varighed. Sendes højst én gang pr. videoelement pr. sideindlæsning.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `src` | string | Video `src`-attribut |
+
+---
+
+## video_complete
+
+Sendes når `ended`-hændelsen sendes på et `<video>`-element.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `src` | string | Video `src`-attribut |
+| `duration` | number | Samlet videovarighed i sekunder |
+
+---
+
+## content_copy
+
+Sendes når den besøgende udløser en kopi-handling (Ctrl+C, Cmd+C eller kontekstmenu Kopiér), der resulterer i, at tekst placeres i udklipsholderen.
+
+| Felt | Type | Beskrivelse |
+| --- | --- | --- |
+| `length` | number | Antal kopierede tegn |
+
+**Bemærkninger:** Den kopierede tekst indsamles aldrig, kun tegnantallet. Brug denne hændelse til at registrere dokumentations- eller prisscrapingmønstre, eller til at bekræfte, at kopiér-til-udklipsholder-UI bruges.

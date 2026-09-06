@@ -1,0 +1,70 @@
+---
+title: Kom i gang
+description: Installer Intastellar Analytics med ét script-tag og begynd straks at indsamle sidevisninger, rage clicks, scrolldybde og formularinteraktioner.
+order: 1
+lastUpdated: "2026-09-06"
+---
+
+# Kom i gang
+
+## Tilføj script-tagget
+
+Indsæt følgende i `<head>` på alle sider, du vil spore. Erstat `YOUR_SITE_KEY` med nøglen fra dit dashboard under **Indstillinger → Analytics Script**.
+
+```html
+<script
+  src="https://analytics.consentsmanagement.com/api/a"
+  data-site="YOUR_SITE_KEY"
+  async
+  defer
+></script>
+```
+
+Scriptet indlæses asynkront og blokerer ikke sideindlæsningen.
+
+## Find din webstedsnøgle
+
+1. Log ind på Intastellar-dashboardet.
+2. Gå til **Indstillinger → Analytics Script**.
+3. Kopiér værdien af `data-site`-attributten, der vises der.
+
+Hver webstedsnøgle er unik for ét domæne. Kør separate websteder for staging og produktion for at holde data adskilt.
+
+## Hvad begynder at blive sporet med det samme
+
+Når script-tagget er på siden, sendes disse hændelser uden yderligere konfiguration:
+
+| Hændelse | Udløser |
+| --- | --- |
+| `pageview` | Hver sideindlæsning eller SPA-navigation |
+| `scroll_depth` | Ved 25 %, 50 %, 75 %, 90 % og 100 % scroll |
+| `rage_click` | Tre eller flere klik inden for 500 ms / 30 px radius |
+| `form_started` | Første feltfokus inde i et `<form>`-element |
+| `form_submit` | Nativ form submit-hændelse |
+| `form_field_focus` | Besøgende skifter til nyt felt (dedupleret pr. felt pr. formular) |
+| `form_error` | HTML5-valideringsfejl, netværksfejl eller server 4xx / 5xx |
+| `video_play` | `<video>` play-hændelse |
+| `video_pause` | `<video>` pause-hændelse |
+| `video_50pct` | 50 % af videovarighed nået |
+| `video_complete` | Video sluttede |
+| `content_copy` | Besøgende kopierer tekst (Ctrl+C / Cmd+C) |
+
+Se [Automatisk sporede hændelser](/docs/analytics/v1/auto-tracked-events) for den komplette payload-reference for hver hændelse.
+
+## Verifikation af installationen
+
+Åbn **Live hændelsesfeed** i dit dashboard. Inden for få sekunder efter indlæsning af en sporet side bør du se en `pageview`-hændelse dukke op.
+
+Hvis intet vises:
+
+1. Åbn browserens DevTools → Netværksfanen og bekræft, at en forespørgsel til `analytics.consentsmanagement.com/api/a` gennemføres med HTTP 2xx.
+2. Kontrollér, at `data-site`-attributten præcist matcher din webstedsnøgle (ingen ekstra mellemrum eller anførselstegn).
+3. Kontrollér, at ingen browserudvidelse, annoncebloker eller Content Security Policy-regel blokerer forespørgslen.
+
+Se [Fejlfinding](/docs/analytics/v1/troubleshooting) for en fuld diagnostisk tjekliste.
+
+## Samtykke og privatliv
+
+Embedet læser samtykkestatus fra Intastellar Consents-cookien automatisk — ingen ekstra kabling er nødvendig, når du allerede bruger Intastellar Consents. Ved minimalt samtykke indsamles kun anonyme sidevisningsdata. Ved fuldt samtykke (Statistik-kategori godkendt) inkluderes session-ID'er, UTM-parametre og konverteringsdata.
+
+Se [Samtykkeniveauer og privatliv](/docs/analytics/v1/consent-tiers) for den komplette oversigt.

@@ -1,0 +1,157 @@
+---
+title: Événements automatiquement suivis
+description: Référence complète des payloads pour tous les événements qu'Intastellar Analytics envoie automatiquement — page vue, profondeur de défilement, rage click, événements formulaires, événements vidéo et copie de contenu.
+order: 10
+lastUpdated: "2026-09-06"
+---
+
+# Événements automatiquement suivis
+
+Les événements suivants sont envoyés automatiquement une fois l'embed installé. Aucun appel à `window.inta.track()` n'est nécessaire. Les événements marqués **Consentement complet uniquement** sont quand même déclenchés au consentement minimal, mais les champs indiqués sont omis — consultez [Niveaux de consentement & confidentialité](/docs/analytics/v1/consent-tiers) pour les détails.
+
+---
+
+## pageview
+
+Se déclenche à chaque chargement de page et lors des navigations SPA où l'URL change (détecté via l'History API).
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `path` | string | Chemin URL, ex. `/blog/mon-article` |
+| `title` | string | `document.title` au moment du déclenchement |
+| `referrer` | string | Domaine référent, ou `""` si direct |
+| `device` | string | `"desktop"` / `"mobile"` / `"tablet"` |
+
+**Notes :** La détection SPA utilise un patch `pushState` / `replaceState`. Si votre framework utilise le routage par hash (`/#/chemin`) sans `pushState`, les pages vues peuvent ne pas se déclencher lors de la navigation — utilisez `window.inta.track('pageview')` manuellement dans ce cas.
+
+---
+
+## scroll_depth
+
+Se déclenche une fois par seuil par chargement de page. Les seuils sont 25 %, 50 %, 75 %, 90 % et 100 %. Chaque seuil se déclenche au maximum une fois.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `depth` | number | Seuil de défilement atteint : `25`, `50`, `75`, `90` ou `100` |
+
+**Consentement :** Consentement complet requis. Au niveau minimal, cet événement est déclenché mais `depth` est omis du stockage.
+
+---
+
+## rage_click
+
+Se déclenche quand un visiteur clique dans le même endroit trois fois ou plus dans 500 ms. Le rayon de détection est de 30 px.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `selector` | string | Sélecteur CSS de l'élément cliqué, ex. `"button.submit"` |
+| `id` | string | Attribut `id` de l'élément, ou `""` si absent |
+| `cls` | string | Liste de classes de l'élément séparées par des espaces |
+| `tag` | string | Nom du tag, ex. `"button"`, `"div"` |
+
+---
+
+## form_started
+
+Se déclenche au premier événement `focus` dans un élément `<form>`. Se déclenche au maximum une fois par formulaire par chargement de page.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `formId` | string | L'attribut `id` du formulaire, ou un identifiant de repli généré automatiquement |
+| `provider` | string | `"hubspot"`, `"typeform"`, `"calendly"`, `"tally"` ou `"native"` |
+
+---
+
+## form_submit
+
+Se déclenche sur l'événement natif `submit` d'un élément `<form>`.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `formId` | string | Identifiant du formulaire (même que `form_started`) |
+| `fields` | string[] | Tableau des noms de champs soumis |
+| `fieldCount` | number | Nombre total de champs dans le formulaire |
+| `action` | string | L'URL `action` du formulaire, ou `""` pour les soumissions sur la même page |
+| `provider` | string | Fournisseur détecté (mêmes valeurs que `form_started`) |
+
+**Notes :** Les valeurs des champs ne sont jamais collectées, uniquement les noms. Les inputs de type mot de passe et ceux avec `autocomplete="cc-number"` sont exclus de `fields`.
+
+---
+
+## form_field_focus
+
+Se déclenche quand un visiteur déplace le focus vers un nouveau champ dans un formulaire. Dédupliqué par champ par formulaire.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `formId` | string | Identifiant du formulaire |
+| `field` | string | Attribut `name` ou `id` du champ |
+| `fieldType` | string | `type` de l'input, ex. `"text"`, `"email"`, `"select"` |
+
+---
+
+## form_error
+
+Se déclenche quand la soumission d'un formulaire rencontre une erreur de validation, de serveur ou de réseau.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `formId` | string | Identifiant du formulaire |
+| `errorType` | string | `"validation"`, `"server"` ou `"network"` |
+| `field` | string | Le champ ayant échoué la validation, ou `""` pour les erreurs non liées à un champ |
+| `message` | string | Texte du message de validation, ou statut HTTP en string pour les erreurs serveur |
+
+---
+
+## video_play
+
+Se déclenche quand l'événement `play` d'un élément `<video>` se produit.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `src` | string | L'attribut `src` de l'élément vidéo |
+| `duration` | number | Durée totale de la vidéo en secondes |
+
+---
+
+## video_pause
+
+Se déclenche quand l'événement `pause` d'un élément `<video>` se produit.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `src` | string | Attribut `src` de la vidéo |
+| `at` | number | Position de lecture au moment de la pause, en secondes |
+
+---
+
+## video_50pct
+
+Se déclenche une fois quand `currentTime` de la vidéo dépasse 50 % de sa durée totale. Se déclenche au maximum une fois par élément vidéo par chargement de page.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `src` | string | Attribut `src` de la vidéo |
+
+---
+
+## video_complete
+
+Se déclenche quand l'événement `ended` d'un élément `<video>` se produit.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `src` | string | Attribut `src` de la vidéo |
+| `duration` | number | Durée totale de la vidéo en secondes |
+
+---
+
+## content_copy
+
+Se déclenche quand le visiteur effectue une action de copie (Ctrl+C, Cmd+C ou Copier du menu contextuel) qui résulte en du texte dans le presse-papiers.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `length` | number | Nombre de caractères copiés |
+
+**Notes :** Le texte copié n'est jamais collecté, uniquement le nombre de caractères.

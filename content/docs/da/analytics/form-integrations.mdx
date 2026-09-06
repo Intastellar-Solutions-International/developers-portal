@@ -1,0 +1,45 @@
+---
+title: Formularudbyderintegrationer
+description: Hvordan Intastellar Analytics automatisk registrerer HubSpot, Typeform, Calendly og Tally-formularer, provider-feltet og de tre form_error-typer.
+order: 13
+lastUpdated: "2026-09-06"
+---
+
+# Formularudbyderintegrationer
+
+Intastellar Analytics registrerer tredjeparts formularudbydere automatisk via deres native `postMessage`-hændelser. Ingen ekstra konfiguration eller SDK er nødvendig — integrer tredjepartsformularen som normalt og analytics-embedet håndterer registreringen.
+
+## Understøttede udbydere
+
+| Udbyder | Registreringsmekanisme | Bemærkninger |
+| --- | --- | --- |
+| HubSpot | `window.postMessage` med type `hsFormCallback` | Sendes på HubSpots Embedded Forms-script (`hs-script.js`). Inkluderer progression i multi-step-formularer. |
+| Typeform | `window.postMessage` med type `form-ready`, `form-submit`, `form-close` | Fungerer for indlejrede Typeform-iframes. Submit sendes når Typeform rapporterer det endelige svar. |
+| Calendly | `window.postMessage` med type `calendly.event_type_viewed`, `calendly.event_scheduled` | `event_scheduled` mappes til `form_submit` i analytics-strømmen. |
+| Tally | `window.postMessage` med type `TallyFormSubmit` | Fungerer for indlejrede Tally-formularer. |
+
+### `provider`-feltet
+
+Hændelserne `form_started`, `form_submit` og `form_error` inkluderer alle et `provider`-felt, der afspejler hvilken udbyder der blev registreret:
+
+| Værdi | Betydning |
+| --- | --- |
+| `"hubspot"` | HubSpot Embedded Form |
+| `"typeform"` | Typeform indlejret iframe |
+| `"calendly"` | Calendly indlejret widget |
+| `"tally"` | Tally indlejret formular |
+| `"native"` | Standard HTML `<form>`-element |
+
+## Formularfejltyper
+
+`errorType`-feltet på `form_error`-hændelser tager en af tre værdier:
+
+| Type | Hvornår det sendes | `field`-værdi |
+| --- | --- | --- |
+| `validation` | HTML5 `invalid`-hændelsen sendes på et formularfelt — browser- eller tilpasset validering afviste inputtet | Navn på det fejlende felt, f.eks. `"email"` |
+| `server` | Formularens fetch eller XHR-indsendelse modtog et HTTP 4xx eller 5xx-svar | `""` (fejl er på forespørgselsniveau, ikke et specifikt felt) |
+| `network` | Formularens fetch eller XHR fejlede uden svar (offline, DNS-fejl, timeout, CORS-blokering) | `""` |
+
+## Manuelt fallback
+
+For formularer der ikke auto-registreres, brug [`window.inta.track()`](/docs/analytics/v1/custom-events) til manuelt at sende `form_started`, `form_submit` og `form_error`-hændelser.

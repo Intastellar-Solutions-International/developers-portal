@@ -1,0 +1,119 @@
+---
+title: Dépannage
+description: Étapes de diagnostic pour les problèmes courants d'Intastellar Analytics — événements absents, niveau de consentement ne changeant pas, fournisseur de formulaire non détecté et erreurs réseau.
+order: 9
+lastUpdated: "2026-09-06"
+---
+
+# Dépannage
+
+## Les événements n'apparaissent pas dans le flux d'événements en direct
+
+### 1. Confirmer que le script se charge
+
+Ouvrez DevTools → **Réseau**, filtrez par `analytics.consentsmanagement.com` et rechargez la page. Vous devriez voir une requête vers `/api/a` (le script) et des requêtes `POST` ultérieures vers le point de terminaison de collecte.
+
+Si la requête de script est absente :
+
+- Vérifiez que la balise `<script>` est présente dans le code source HTML de la page (non injectée par un autre script qui pourrait être bloqué).
+- Assurez-vous que l'attribut `data-site` est défini et correspond à la clé de site affichée dans **Tableau de bord → Paramètres → Clé de site**.
+
+### 2. Vérifier la présence d'un bloqueur de publicités ou d'un filtre de contenu
+
+Le point de terminaison de collecte (`analytics.consentsmanagement.com`) est un domaine analytics first-party, mais les bloqueurs de publicités agressifs peuvent quand même le bloquer. Testez dans un profil de navigateur sans extensions.
+
+### 3. Vérifier la clé de site
+
+L'attribut `data-site` sur la balise script doit correspondre exactement — il est sensible à la casse. Une mauvaise clé provoque le rejet des événements par le point de terminaison avec une réponse `403` visible dans l'onglet Réseau.
+
+### 4. Vérifier le timing des événements par rapport au consentement
+
+Les événements au niveau minimal sont envoyés immédiatement. Les événements au niveau complet nécessitent que la catégorie Statistiques soit accordée. Si vous testez des champs de niveau complet et ne voyez que des données de niveau minimal, consultez [Niveau de consentement ne se met pas à jour](#niveau-de-consentement-ne-se-met-pas-à-jour) ci-dessous.
+
+---
+
+## Le niveau de consentement ne se met pas à jour
+
+### 1. Vérifier `window.intaCookieConsents`
+
+Ouvrez DevTools → **Console** et exécutez :
+
+```js
+window.intaCookieConsents
+```
+
+Si cela renvoie `undefined`, le CMP ne l'a pas défini avant l'exécution de l'embed analytics. Assurez-vous que votre CMP définit `window.intaCookieConsents` de façon synchrone dans un bloc `<script>` avant la balise `<script>` de l'embed.
+
+### 2. Vérifier le cookie `IntastellarConsentSolution`
+
+Si vous utilisez Intastellar Consents, ouvrez DevTools → **Application → Cookies** et cherchez `IntastellarConsentSolution`. Inspectez sa valeur — le champ `statisticCookies` détermine le niveau. Si le cookie est absent, le visiteur n'a pas encore interagi avec la bannière de consentement.
+
+### 3. Changer le consentement en cours de session
+
+L'embed lit l'état du consentement à chaque déclenchement d'événement, pas uniquement au chargement de la page. Après avoir accepté le consentement dans la bannière :
+
+1. Déclenchez un nouvel événement (naviguez vers une autre page, faites défiler ou déclenchez un événement personnalisé via `window.inta.track()`).
+2. Vérifiez le flux d'événements en direct — le nouvel événement devrait apparaître avec des champs de niveau complet.
+
+---
+
+## Fournisseur de formulaire non détecté
+
+### 1. Vérifier les événements `postMessage`
+
+Ouvrez DevTools → **Console** et exécutez ceci avant de soumettre le formulaire :
+
+```js
+window.addEventListener('message', (e) => console.log(e.data));
+```
+
+Soumettez ou interagissez avec le formulaire et cherchez les messages du fournisseur.
+
+### 2. Vérifier le code d'intégration
+
+La détection du fournisseur repose sur les événements `postMessage` envoyés par le propre script du fournisseur. Assurez-vous d'utiliser le code d'intégration standard du fournisseur, pas un simple `<iframe src="...">` sans le wrapper JavaScript du fournisseur.
+
+### 3. Revenir au suivi manuel
+
+Pour les formulaires non détectés automatiquement, déclenchez les événements manuellement :
+
+```js
+// Au focus du formulaire
+window.inta.track('form_started', { data: { formId: 'formulaire-contact' } });
+
+// À la soumission réussie
+window.inta.track('form_submit', { data: { formId: 'formulaire-contact' } });
+```
+
+Consultez [Événements personnalisés](/docs/analytics/v1/custom-events) pour l'API complète `window.inta.track()`.
+
+---
+
+## Pages vues manquantes lors des navigations SPA
+
+L'embed corrige `pushState` et `replaceState` pour détecter les navigations SPA. Pour le routage basé sur le hash (`/#/chemin`) sans `pushState`, le suivi manuel des pages vues est nécessaire.
+
+```js
+window.inta = window.inta || {};
+window.inta.track = window.inta.track || function() {
+  (window.inta._q = window.inta._q || []).push(arguments);
+};
+window.inta.track('pageview');
+```
+
+---
+
+## Le tableau de bord affiche des données mais les événements sont retardés
+
+Les événements apparaissent généralement dans le flux en direct dans les 2 à 5 secondes. Les panneaux agrégés (Audience, Acquisition, Conversions) sont mis à jour toutes les 15 minutes, pas en temps réel.
+
+---
+
+## Besoin d'aide supplémentaire ?
+
+Contactez [support@intastellar.eu](mailto:support@intastellar.eu) avec :
+
+1. Votre clé de site (depuis Tableau de bord → Paramètres → Clé de site)
+2. L'URL où le problème se produit
+3. Une capture d'écran de l'onglet Réseau montrant les requêtes concernées
+4. La sortie de `window.intaCookieConsents` depuis la console du navigateur

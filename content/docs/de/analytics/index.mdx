@@ -1,171 +1,33 @@
 ---
 title: Intastellar Analytics
-description: Entwicklerdokumentation für Intastellar Analytics—Installation, Einwilligungsstufen, automatisch getrackte Events, benutzerdefinierte Event-API, Formular-Integrationen und serverseitige Felder.
+description: Datenschutzfreundliches Analytics — Seitenaufrufe, Formularinteraktionen, Rage Clicks, E-Commerce-Funnel und SEO-Daten in einem einwilligungsbewussten Embed.
 hub_order: 20
 hub_tagline: Datenschutzfreundliches Analytics — in einer Zeile installiert, einwilligungsbewusst von Tag eins.
 order: 0
-lastUpdated: "2026-08-28"
+lastUpdated: "2026-09-06"
 ---
 
 # Intastellar Analytics
 
-Intastellar Analytics ist eine datenschutzfreundliche Analytics-Plattform für einwilligungsbewusste Datenerfassung. Sie verfolgt Besucherverhalten, Konversionen und Formularinteraktionen auf zwei Einwilligungsstufen: **minimal** (anonym, keine personenbezogenen Daten) und **vollständig** (angereichert, sitzungsgebunden). Alle Daten verbleiben in Ihrer Organisation; nichts wird verkauft oder weitergegeben.
+Intastellar Analytics ist eine datenschutzfreundliche Analytics-Plattform für einwilligungsbewusste Datenerfassung. Sie verfolgt Besucherverhalten, Konversionen und Formularinteraktionen auf zwei Einwilligungsstufen — **minimal** (anonym) und **vollständig** (sitzungsgebunden) — ohne Daten an Dritte zu senden.
 
-## 1. Installation
+Ein einzelnes Script-Tag ist die gesamte Installation. Seitenaufrufe, Scrolltiefe, Rage Clicks, Formularinteraktionen und Video-Events werden automatisch getrackt. Benutzerdefinierte Events und die vollständige E-Commerce-Event-API ermöglichen es Ihnen, jede Konversion zu instrumentieren, die Ihnen wichtig ist.
 
-Fügen Sie ein einzelnes Script-Tag im `<head>` oder am Ende von `<body>` jeder Seite ein, die Sie tracken möchten. Ersetzen Sie `YOUR_SITE_KEY` mit dem Schlüssel aus Ihrem Dashboard unter **Einstellungen → Analytics Script**.
+## In diesem Abschnitt
 
-```html
-<script
-  src="https://analytics.consentsmanagement.com/api/a"
-  data-site="YOUR_SITE_KEY"
-  async
-  defer
-></script>
-```
+### Erste Schritte
+- [Erste Schritte](/docs/analytics/v1/getting-started) — Script-Tag, Site-Key und Verifikation des ersten Events
+- [Einwilligungsstufen & Datenschutz](/docs/analytics/v1/consent-tiers) — was jede Einwilligungsstufe erfasst, wie das Embed den Einwilligungsstatus liest
+- [Fehlerbehebung](/docs/analytics/v1/troubleshooting) — Events erscheinen nicht, Einwilligung wechselt nicht, Formularanbieter nicht erkannt
 
-Seitenaufrufe, Formularinteraktionen, Scrolltiefe und Rage-Clicks werden ab sofort automatisch getrackt.
+### Event-Referenz
+- [Automatisch getrackte Events](/docs/analytics/v1/auto-tracked-events) — vollständige Payload-Referenz für alle Events, die das Embed automatisch sendet
+- [Benutzerdefinierte Events](/docs/analytics/v1/custom-events) — `window.inta.track()` API und Parameter-Referenz
+- [Standard-E-Commerce-Events](/docs/analytics/v1/ecommerce-events) — Checkout-Funnel und eigenständige E-Commerce-Event-Signaturen
 
-## 2. Einwilligungsstufen
+### Integrationen & Server-Felder
+- [Formularanbieter-Integrationen](/docs/analytics/v1/form-integrations) — HubSpot, Typeform, Calendly, Tally-Erkennung und Formularfehlertypen
+- [Serverseitige Felder & Attribution](/docs/analytics/v1/server-side-fields) — UTM-Erfassung, Klick-IDs und alle server-seitig angehängten Felder
 
-Das Embed liest den Einwilligungsstatus aus dem Intastellar-Consent-Solution-Cookie (`IntastellarConsentSolution`) oder aus `window.intaCookieConsents`, wenn Sie die Einwilligung selbst verwalten.
-
-| Stufe | Auslöser | Erfasste Daten |
-| --- | --- | --- |
-| **Minimal** | Keine Einwilligung erforderlich | Nur anonyme Seitenaufrufdaten — keine Sitzungs-ID, keine persönlichen Kennungen |
-| **Vollständig** | Besucher erteilt Statistik-Einwilligung | Sitzungs-ID, UTMs, Klick-IDs (`gclid` / `msclkid` / `fbclid`), Referrer, Bildschirmgröße, Sprache, Zeitzone, Dauer, Scrolltiefe, Heatmap-Klicks |
-
-## 3. Automatisch getrackte Events
-
-Das Embed sendet folgende Events automatisch. Kein `window.inta.track`-Aufruf ist erforderlich.
-
-| Event | Auslöser | Payload-Felder |
-| --- | --- | --- |
-| `pageview` | Jeder Seitenaufruf oder SPA-Navigation | `path`, `title`, `referrer`, `device` |
-| `scroll_depth` | Bei 25%, 50%, 75%, 90%, 100% Scroll | `depth` (Prozent) |
-| `rage_click` | 3+ Klicks innerhalb 500 ms / 30 px Radius | `selector`, `id`, `cls`, `tag` |
-| `form_started` | Erstes Feldfokus innerhalb eines `<form>` | `formId`, `provider` |
-| `form_submit` | Natives Formular-Submit-Event | `formId`, `fields[]`, `fieldCount`, `action` |
-| `form_field_focus` | Benutzer wechselt zu neuem Feld (dedupliziert pro Feld pro Formular) | `formId`, `field`, `fieldType` |
-| `form_error` | HTML5-Validierungsfehler, Netzwerkfehler oder Serverfehler (4xx/5xx) | `formId`, `errorType`, `field`, `message` |
-| `video_play` | `<video>` Wiedergabe | `src`, `duration` |
-| `video_pause` | `<video>` Pause | `src`, `at` |
-| `video_50pct` | 50% des Videos angesehen | `src` |
-| `video_complete` | Video beendet | `src`, `duration` |
-| `content_copy` | Benutzer kopiert Text (Ctrl+C / Cmd+C) | `length` |
-
-## 4. Benutzerdefinierte Events
-
-Senden Sie benutzerdefinierte Events mit `window.inta.track`:
-
-```js
-window.inta.track('purchase', {
-  value: 49.99,
-  currency: 'EUR',
-  transactionId: 'order_1234',
-  data: { plan: 'pro' },
-  products: [
-    { id: 'prod_abc', name: 'Pro Plan', price: 49.99, quantity: 1 },
-  ],
-});
-```
-
-| Parameter | Typ | Beschreibung |
-| --- | --- | --- |
-| `eventName` | string | Pflichtfeld. Kleinbuchstaben, snake_case empfohlen. Max. 64 Zeichen. |
-| `options.value` | number | Geldwert (z.B. `49.99`). Wird in der Konversionsberichterstattung verwendet. |
-| `options.currency` | string | ISO-4217-Währungscode (`"EUR"`, `"USD"`, `"GBP"`). |
-| `options.transactionId` | string | Deduplizierungsschlüssel. Gleiche ID innerhalb einer Sitzung wird einmal gespeichert. |
-| `options.data` | object | Beliebige Schlüssel-Wert-Metadaten. Max. 20 Schlüssel, 500 Zeichen pro Wert. |
-| `options.products` | array | Produktliste für E-Commerce-Events. |
-
-## 5. Formularanbieter-Integrationen
-
-Drittanbieter-Formularanbieter werden automatisch über ihre nativen `postMessage`-Events erkannt. Keine zusätzliche Konfiguration erforderlich.
-
-| Anbieter | Erkennungsmechanismus |
-| --- | --- |
-| HubSpot | `window.postMessage` (`hsFormCallback`) |
-| Typeform | `window.postMessage` |
-| Calendly | `window.postMessage` |
-| Tally | `window.postMessage` |
-
-Das `provider`-Feld bei `form_started`- und `form_submit`-Events zeigt den erkannten Anbieter oder `"native"` für Standard-HTML-Formulare.
-
-## 6. Formularfehlertypen
-
-Das `errorType`-Feld bei `form_error`-Events nimmt einen von drei Werten an:
-
-| Typ | Wann ausgelöst |
-| --- | --- |
-| `validation` | HTML5-Validierung hat ein Feld abgelehnt (wird beim nativen `invalid`-Event ausgelöst) |
-| `server` | HTTP 4xx oder 5xx Antwort auf eine Formularübermittlung per fetch / XHR |
-| `network` | Fetch oder XHR ohne Antwort fehlgeschlagen (offline, DNS-Fehler usw.) |
-
-## 7. UTM- und Klick-ID-Erfassung
-
-Das Embed liest folgende Parameter aus der URL der Landingpage beim ersten Aufruf und verknüpft sie mit der Sitzung (nur vollständige Einwilligungsstufe).
-
-| Parameter | Quelle |
-| --- | --- |
-| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | URL-Abfragestring |
-| `gclid` | Google Ads |
-| `msclkid` | Microsoft Advertising |
-| `fbclid` | Meta Ads |
-
-## 8. Serverseitige Felder
-
-Die folgenden Felder werden serverseitig jedem Ereignisdatensatz vor der Speicherung hinzugefügt.
-
-| Feld | Typ | Hinweise |
-| --- | --- | --- |
-| `site_id` | UUID | Wird aus Ihrem Site-Key aufgelöst |
-| `received_at` | timestamp | UTC, serverseitig |
-| `consent_level` | `"minimal"` \| `"full"` | Vom Embed gesetzt |
-| `pathname` | string | URL-Pfad ohne Abfragestring |
-| `page_host` | string | Hostname (z.B. `app.yoursite.com`) |
-| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Aus User-Agent abgeleitet |
-| `country_code` | ISO 3166-1 alpha-2 | GeoIP-Abfrage, serverseitig |
-| `session_id` | string \| null | Nur vollständige Einwilligung |
-
-## Dashboard-Panels
-
-### Live-Ereignis-Feed
-
-Rollierender Feed der letzten 30 Minuten in Echtzeit — zum Bestätigen nach Deployments oder Einwilligungsänderungen.
-
-### Zielgruppe
-
-Sitzungsqualität, neu vs. wiederkehrend, Länderaufschlüsselung. Sitzungen aufgeteilt in **vollständige** und **abgelehnte**.
-
-### Akquise
-
-Erst-Kontakt- und First-Party-Events — **nicht von Einwilligungsentscheidungen betroffen**.
-
-### Anzeigenausgaben
-
-Ausgaben, Klicks, Impressionen und CPC — täglicher **API-Abruf** von verbundenen Plattformen.
-
-### Attribution
-
-Kanalkosten mit **Erst-Kontakt-** und **Letzt-Kontakt-**Modellen nebeneinander.
-
-### Konversionen
-
-Trichteranalyse mit genauer Absprungstelle pro Schritt.
-
-### Heatmap
-
-Klick- und Scroll-Heatmaps pro Seite.
-
-### Benutzerfluss
-
-Sankey-Diagramm der Besucherpfade — Einstieg, Zwischenseiten, Ausstieg.
-
-### Search Console
-
-Google-Search-Console-Daten direkt im Dashboard: Klicks, Impressionen, CTR, Position, Top-Suchanfragen.
-
-### Bots
-
-Crawler-Traffic automatisch getrennt und nach Kategorie aufgeteilt — **Suchwerkzeuge** und **Datenaggreggatoren**.
+### Dashboard
+- [Dashboard-Leitfaden](/docs/analytics/v1/dashboard) — Live-Event-Feed, Zielgruppe, Akquise, Anzeigenausgaben, Attribution, Konversionen, Heatmap, Benutzerfluss, Search Console, Bots

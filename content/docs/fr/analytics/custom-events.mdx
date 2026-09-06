@@ -1,0 +1,111 @@
+---
+title: Événements personnalisés
+description: Envoyer des événements personnalisés avec window.inta.track() — référence des paramètres, règles de nommage et exemples pour le suivi des conversions et du e-commerce.
+order: 11
+lastUpdated: "2026-09-06"
+---
+
+# Événements personnalisés
+
+Appelez `window.inta.track()` pour envoyer tout événement que l'embed ne déclenche pas automatiquement. Les événements personnalisés apparaissent dans le Flux d'événements en direct et le panneau Conversions aux côtés des événements automatiquement suivis.
+
+## Utilisation de base
+
+```js
+window.inta.track('signup_complete', {
+  value: 0,
+  data: { plan: 'pro', trial: true },
+});
+```
+
+Le premier argument est le nom de l'événement. Le second est un objet d'options — toutes les propriétés sont optionnelles.
+
+## Signature API complète
+
+```js
+window.inta.track(eventName, options);
+```
+
+| Paramètre | Type | Requis | Description |
+| --- | --- | --- | --- |
+| `eventName` | string | Oui | Nom de l'événement. Minuscules, snake_case recommandé. Max 64 caractères. Doit correspondre à `/^[a-zA-Z][a-zA-Z0-9_]{0,63}$/`. |
+| `options.value` | number | Non | Valeur monétaire, ex. `49.99`. Utilisée dans le panneau Conversions pour les rapports de revenus. |
+| `options.currency` | string | Non | Code ISO 4217 : `"EUR"`, `"USD"`, `"GBP"`, etc. Par défaut la devise configurée du site si omis. |
+| `options.transactionId` | string | Non | Clé de déduplication. Les événements avec le même `transactionId` dans une session ne sont stockés qu'une fois. Max 128 caractères. |
+| `options.data` | object | Non | Métadonnées clé-valeur arbitraires. Max 20 clés ; les valeurs doivent être des strings, nombres ou booléens ; max 500 caractères par valeur. |
+| `options.products` | array | Non | Liste de produits pour les événements e-commerce. Consultez [Événements e-commerce standard](/docs/analytics/v1/ecommerce-events) pour le schéma complet. |
+
+## Exemples
+
+### Suivre une inscription
+
+```js
+window.inta.track('signup_complete', {
+  data: { plan: 'pro', trial: true },
+});
+```
+
+### Suivre un achat avec revenu
+
+```js
+window.inta.track('purchase', {
+  value: 99.00,
+  currency: 'EUR',
+  transactionId: 'order_9871',
+  products: [
+    { id: 'plan_pro', name: 'Pro Plan', price: 99.00, quantity: 1 },
+  ],
+});
+```
+
+### Suivre un événement d'engagement de contenu
+
+```js
+window.inta.track('demo_watched', {
+  data: { videoId: 'intro-v2', completedPct: 80 },
+});
+```
+
+### Suivre une demande de devis
+
+```js
+window.inta.track('quote_requested', {
+  data: { industry: 'retail', companySize: '50-200' },
+});
+```
+
+## Consentement et restriction des champs
+
+Les événements personnalisés se déclenchent au niveau de consentement actif au moment de l'appel. Les champs `products` et `value` ne sont stockés que lorsque le visiteur a accordé le consentement complet (catégorie Statistiques). L'objet `data` et `eventName` sont stockés aux deux niveaux.
+
+Consultez [Niveaux de consentement & confidentialité](/docs/analytics/v1/consent-tiers).
+
+## Mise en file d'attente avant le chargement du script
+
+`window.inta.track` peut être appelé en toute sécurité avant que le script embed ait fini de se charger — l'embed installe une file d'attente sur `window.inta` lors de l'analyse de la page afin que tous les appels effectués avant que le script soit prêt soient rejoués une fois initialisé.
+
+```html
+<head>
+  <!-- Sûr à appeler immédiatement -->
+  <script>
+    window.inta = window.inta || { track: function() {
+      (window.inta._q = window.inta._q || []).push(arguments);
+    }};
+    window.inta.track('page_variant', { data: { variant: 'B' } });
+  </script>
+
+  <!-- L'embed se charge de façon asynchrone -->
+  <script
+    src="https://analytics.consentsmanagement.com/api/a"
+    data-site="VOTRE_CLÉ_DE_SITE"
+    async defer
+  ></script>
+</head>
+```
+
+## Règles de nommage des événements
+
+- Utilisez des minuscules en snake_case : `add_to_cart`, pas `AddToCart` ni `addToCart`.
+- Commencez par une lettre ; les chiffres et tirets bas sont autorisés après le premier caractère.
+- Maximum 64 caractères.
+- Évitez les collisions avec les noms d'événements automatiquement suivis (`pageview`, `scroll_depth`, `rage_click`, `form_started`, `form_submit`, `form_field_focus`, `form_error`, `video_play`, `video_pause`, `video_50pct`, `video_complete`, `content_copy`).

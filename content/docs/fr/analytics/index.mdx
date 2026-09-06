@@ -1,171 +1,33 @@
 ---
 title: Intastellar Analytics
-description: Documentation développeur pour Intastellar Analytics—installation, niveaux de consentement, événements automatiquement suivis, API d'événements personnalisés, intégrations de formulaires et champs côté serveur.
+description: Analytics respectueux de la vie privée — pages vues, interactions formulaires, rage clicks, funnel e-commerce et données SEO dans un embed conforme au consentement.
 hub_order: 20
 hub_tagline: Analytics respectueux de la vie privée — installez en une ligne, conforme au consentement dès le premier jour.
 order: 0
-lastUpdated: "2026-08-28"
+lastUpdated: "2026-09-06"
 ---
 
 # Intastellar Analytics
 
-Intastellar Analytics est une plateforme d'analytics respectueuse de la vie privée conçue pour la collecte de données avec conscience du consentement. Elle suit le comportement des visiteurs, les conversions et les interactions avec les formulaires sur deux niveaux de consentement : **minimal** (anonyme, aucune donnée personnelle) et **complet** (enrichi, lié à la session). Toutes les données restent au sein de votre organisation ; rien n'est vendu ni partagé.
+Intastellar Analytics est une plateforme d'analytics respectueuse de la vie privée conçue pour la collecte de données avec conscience du consentement. Elle suit le comportement des visiteurs, les conversions et les interactions avec les formulaires sur deux niveaux de consentement — **minimal** (anonyme) et **complet** (lié à la session) — sans envoyer de données à des tiers.
 
-## 1. Installation
+Une seule balise script suffit pour l'installation. Les pages vues, la profondeur de défilement, les rage clicks, les interactions avec les formulaires et les événements vidéo sont suivis automatiquement. Les événements personnalisés et l'API complète d'événements e-commerce vous permettent d'instrumenter n'importe quelle conversion qui compte pour vous.
 
-Ajoutez une balise script dans le `<head>` ou en fin de `<body>` de chaque page à suivre. Remplacez `YOUR_SITE_KEY` par la clé affichée dans votre tableau de bord sous **Paramètres → Analytics Script**.
+## Dans cette section
 
-```html
-<script
-  src="https://analytics.consentsmanagement.com/api/a"
-  data-site="YOUR_SITE_KEY"
-  async
-  defer
-></script>
-```
+### Démarrage
+- [Démarrage](/docs/analytics/v1/getting-started) — balise script, clé de site et vérification du premier événement
+- [Niveaux de consentement & confidentialité](/docs/analytics/v1/consent-tiers) — ce que chaque niveau collecte, comment l'embed lit l'état du consentement
+- [Dépannage](/docs/analytics/v1/troubleshooting) — événements absents, consentement qui ne bascule pas, fournisseurs de formulaires non détectés
 
-Les pages vues, les interactions avec les formulaires, la profondeur de défilement et les rage clicks sont suivis automatiquement dès ce point.
+### Référence des événements
+- [Événements automatiquement suivis](/docs/analytics/v1/auto-tracked-events) — référence complète des payloads pour tous les événements envoyés automatiquement par l'embed
+- [Événements personnalisés](/docs/analytics/v1/custom-events) — API `window.inta.track()` et référence des paramètres
+- [Événements e-commerce standard](/docs/analytics/v1/ecommerce-events) — signatures du funnel de paiement et des événements e-commerce autonomes
 
-## 2. Fonctionnement des niveaux de consentement
+### Intégrations & champs serveur
+- [Intégrations de fournisseurs de formulaires](/docs/analytics/v1/form-integrations) — détection HubSpot, Typeform, Calendly, Tally et types d'erreurs de formulaire
+- [Champs côté serveur & attribution](/docs/analytics/v1/server-side-fields) — capture UTM, ID de clic et tous les champs ajoutés côté serveur
 
-L'embed lit l'état du consentement depuis le cookie Intastellar Consent Solution (`IntastellarConsentSolution`) ou depuis `window.intaCookieConsents` si vous gérez le consentement vous-même.
-
-| Niveau | Déclencheur | Données collectées |
-| --- | --- | --- |
-| **Minimal** | Aucun consentement requis | Données de pages vues anonymes uniquement — pas d'ID de session, pas d'identifiants personnels |
-| **Complet** | Le visiteur accorde le consentement Statistiques | ID de session, UTMs, ID de clic (`gclid` / `msclkid` / `fbclid`), référent, taille d'écran, langue, fuseau horaire, durée, profondeur de défilement, clics de heatmap |
-
-## 3. Événements automatiquement suivis
-
-L'embed envoie automatiquement les événements suivants. Aucun appel à `window.inta.track` n'est nécessaire.
-
-| Événement | Déclencheur | Champs du payload |
-| --- | --- | --- |
-| `pageview` | Chaque chargement de page ou navigation SPA | `path`, `title`, `referrer`, `device` |
-| `scroll_depth` | À 25%, 50%, 75%, 90%, 100% de défilement | `depth` (pourcentage) |
-| `rage_click` | 3+ clics dans 500 ms / rayon de 30 px | `selector`, `id`, `cls`, `tag` |
-| `form_started` | Premier focus sur un champ dans un `<form>` | `formId`, `provider` |
-| `form_submit` | Événement de soumission de formulaire natif | `formId`, `fields[]`, `fieldCount`, `action` |
-| `form_field_focus` | L'utilisateur passe à un nouveau champ (dédupliqué par champ par formulaire) | `formId`, `field`, `fieldType` |
-| `form_error` | Erreur de validation HTML5, erreur réseau ou erreur serveur (4xx/5xx) | `formId`, `errorType`, `field`, `message` |
-| `video_play` | Lecture `<video>` | `src`, `duration` |
-| `video_pause` | Pause `<video>` | `src`, `at` |
-| `video_50pct` | 50% de la vidéo regardée | `src` |
-| `video_complete` | Vidéo terminée | `src`, `duration` |
-| `content_copy` | L'utilisateur copie du texte (Ctrl+C / Cmd+C) | `length` |
-
-## 4. Événements personnalisés
-
-Envoyez des événements personnalisés avec `window.inta.track` :
-
-```js
-window.inta.track('purchase', {
-  value: 49.99,
-  currency: 'EUR',
-  transactionId: 'order_1234',
-  data: { plan: 'pro' },
-  products: [
-    { id: 'prod_abc', name: 'Pro Plan', price: 49.99, quantity: 1 },
-  ],
-});
-```
-
-| Paramètre | Type | Description |
-| --- | --- | --- |
-| `eventName` | string | Requis. Minuscules, snake_case recommandé. Max 64 caractères. |
-| `options.value` | number | Valeur monétaire (ex. `49.99`). Utilisée dans les rapports de conversion. |
-| `options.currency` | string | Code de devise ISO 4217 (`"EUR"`, `"USD"`, `"GBP"`). |
-| `options.transactionId` | string | Clé de déduplication. Le même ID dans une session est stocké une seule fois. |
-| `options.data` | object | Métadonnées clé-valeur arbitraires. Max 20 clés, 500 caractères par valeur. |
-| `options.products` | array | Liste de produits pour les événements e-commerce. |
-
-## 5. Intégrations de fournisseurs de formulaires
-
-Les fournisseurs de formulaires tiers sont détectés automatiquement via leurs événements `postMessage` natifs. Aucune configuration supplémentaire n'est nécessaire.
-
-| Fournisseur | Mécanisme de détection |
-| --- | --- |
-| HubSpot | `window.postMessage` (`hsFormCallback`) |
-| Typeform | `window.postMessage` |
-| Calendly | `window.postMessage` |
-| Tally | `window.postMessage` |
-
-Le champ `provider` sur les événements `form_started` et `form_submit` indique le fournisseur détecté, ou `"native"` pour les formulaires HTML standard.
-
-## 6. Types d'erreurs de formulaire
-
-Le champ `errorType` sur les événements `form_error` prend l'une de trois valeurs :
-
-| Type | Quand il se déclenche |
-| --- | --- |
-| `validation` | La validation HTML5 a rejeté un champ (se déclenche sur l'événement natif `invalid`) |
-| `server` | Réponse HTTP 4xx ou 5xx à une soumission de formulaire fetch / XHR |
-| `network` | Fetch ou XHR échoué sans réponse (hors ligne, échec DNS, etc.) |
-
-## 7. Capture UTM et ID de clic
-
-L'embed lit les paramètres suivants depuis l'URL de la page d'atterrissage au premier chargement et les attache à la session (niveau de consentement complet uniquement).
-
-| Paramètre | Source |
-| --- | --- |
-| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | Chaîne de requête URL |
-| `gclid` | Google Ads |
-| `msclkid` | Microsoft Advertising |
-| `fbclid` | Meta Ads |
-
-## 8. Champs côté serveur
-
-Les champs suivants sont ajoutés côté serveur à chaque enregistrement d'événement avant stockage.
-
-| Champ | Type | Notes |
-| --- | --- | --- |
-| `site_id` | UUID | Résolu à partir de votre clé de site |
-| `received_at` | timestamp | UTC, côté serveur |
-| `consent_level` | `"minimal"` \| `"full"` | Défini par l'embed |
-| `pathname` | string | Chemin URL sans chaîne de requête |
-| `page_host` | string | Nom d'hôte (ex. `app.yoursite.com`) |
-| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Dérivé du user-agent |
-| `country_code` | ISO 3166-1 alpha-2 | Lookup GeoIP, côté serveur |
-| `session_id` | string \| null | Consentement complet uniquement |
-
-## Panneaux du tableau de bord
-
-### Flux d'événements en direct
-
-Feed glissant des 30 dernières minutes en temps réel — pour confirmer le fonctionnement après un déploiement ou un changement de consentement.
-
-### Audience
-
-Qualité de session, nouveaux vs récurrents, répartition par pays. Sessions divisées en **complètes** et **refusées**.
-
-### Acquisition
-
-Attribution au premier contact et first-party — **non affectée par les décisions de consentement**.
-
-### Dépenses publicitaires
-
-Dépenses, clics, impressions et CPC — **extraction quotidienne via API** des plateformes connectées.
-
-### Attribution
-
-Coût par canal avec modèles **premier contact** et **dernier contact** côte à côte.
-
-### Conversions
-
-Analyse d'entonnoir montrant exactement où les visiteurs abandonnent à chaque étape.
-
-### Heatmap
-
-Heatmaps de clics et de défilement par page.
-
-### Flux utilisateur
-
-Diagramme de Sankey des parcours visiteurs — entrées, pages intermédiaires, sorties.
-
-### Search Console
-
-Données Google Search Console dans le tableau de bord : clics, impressions, CTR, position, principales requêtes.
-
-### Robots
-
-Trafic de robots séparé automatiquement et réparti par catégorie — **outils de recherche** et **agrégateurs de données**.
+### Tableau de bord
+- [Guide du tableau de bord](/docs/analytics/v1/dashboard) — Flux d'événements en direct, Audience, Acquisition, Dépenses publicitaires, Attribution, Conversions, Heatmap, Flux utilisateur, Search Console, Robots

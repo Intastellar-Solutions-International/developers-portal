@@ -1,0 +1,53 @@
+---
+title: Serverside-felter og attribution
+description: Komplet reference for alle felter der tilføjes serversidigt til hvert event — webstedsmetadata, enhedsfelter, geo, UTM-parametre og klik-ID'er.
+order: 14
+lastUpdated: "2026-09-06"
+---
+
+# Serverside-felter og attribution
+
+Hvert event sendt til Intastellar Analytics beriges serversidigt, inden det gemmes. Nogle felter afledes fra selve forespørgslen (IP-adresse, user-agent), andre læses fra URL'en ved første indlæsning (UTM-parametre, klik-ID'er). Ingen af disse kræver yderligere kode i dit embed.
+
+## Server-tilføjede felter
+
+Disse felter tilføjes til hvert hændelsesrecord uanset samtykkeniveau.
+
+| Felt | Type | Bemærkninger |
+| --- | --- | --- |
+| `site_id` | UUID | Løst fra din `data-site`-nøgle. Bruges til at afgrænse alle forespørgsler til dit dashboard. |
+| `received_at` | timestamp | UTC-servertid, når hændelsen blev modtaget. Ikke klientsidens afsendelsestid. |
+| `consent_level` | `"minimal"` \| `"full"` | Sat af embedet og gemt som angivet. |
+| `pathname` | string | URL-sti uden forespørgselsstreng eller fragment, f.eks. `/produkter/sko`. |
+| `page_host` | string | Kun hostnavn, f.eks. `app.ditwebsted.com`. Ingen port eller protokol. |
+| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Afledt fra forespørgsels-user-agent. Den rå user-agent-streng kasseres og gemmes aldrig. |
+| `country_code` | string | ISO 3166-1 alpha-2-kode løst via GeoIP, f.eks. `"DE"`, `"US"`. IP-adressen kasseres straks efter opslag og gemmes ikke. |
+
+## Sessionsfelt (kun fuldt samtykke)
+
+| Felt | Type | Bemærkninger |
+| --- | --- | --- |
+| `session_id` | string \| null | Et server-genereret id, der grupperer hændelser fra samme besøgssession. Kun sat når `consent_level` er `"full"`. Altid `null` ved minimalt niveau. |
+
+## UTM-parametre (kun fuldt samtykke)
+
+UTM-parametre læses fra landingssidernes URL ved den første sidevisning af en session. De tilknyttes alle efterfølgende hændelser i den session.
+
+| Felt | URL-parameter | Eksempel |
+| --- | --- | --- |
+| `utm_source` | `utm_source` | `"google"`, `"nyhedsbrev"` |
+| `utm_medium` | `utm_medium` | `"cpc"`, `"email"` |
+| `utm_campaign` | `utm_campaign` | `"sommersalg-2026"` |
+| `utm_content` | `utm_content` | `"banner-a"` |
+
+## Klik-ID'er (kun fuldt samtykke)
+
+| Felt | Kilde | Annonceringsplatform |
+| --- | --- | --- |
+| `gclid` | `gclid` URL-parameter | Google Ads |
+| `msclkid` | `msclkid` URL-parameter | Microsoft Advertising / Bing Ads |
+| `fbclid` | `fbclid` URL-parameter | Meta Ads (Facebook / Instagram) |
+
+## Relation til Erhvervelsespanelet
+
+[Erhvervelsespanelet](/docs/analytics/v1/dashboard#acquisition) viser first-touch attribution som standard. Klik-ID'er føres ind i [Attributionspanelet](/docs/analytics/v1/dashboard#attribution), hvor både first-touch og last-touch-modeller sammenlignes side om side.

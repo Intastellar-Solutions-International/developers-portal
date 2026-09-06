@@ -1,0 +1,111 @@
+---
+title: Aangepaste events
+description: Aangepaste events versturen met window.inta.track() — parameterreferentie, naamgevingsregels en voorbeelden voor conversie- en e-commerce tracking.
+order: 11
+lastUpdated: "2026-09-06"
+---
+
+# Aangepaste events
+
+Roep `window.inta.track()` aan om elk event te versturen dat het embed niet automatisch verstuurt. Aangepaste events verschijnen in de Live gebeurtenisfeed en het Conversies-paneel naast automatisch bijgehouden events.
+
+## Basisgebruik
+
+```js
+window.inta.track('signup_complete', {
+  value: 0,
+  data: { plan: 'pro', trial: true },
+});
+```
+
+Het eerste argument is de eventnaam. Het tweede is een options-object — alle eigenschappen zijn optioneel.
+
+## Volledige API-handtekening
+
+```js
+window.inta.track(eventName, options);
+```
+
+| Parameter | Type | Vereist | Beschrijving |
+| --- | --- | --- | --- |
+| `eventName` | string | Ja | Eventnaam. Kleine letters, snake_case aanbevolen. Max. 64 tekens. Moet overeenkomen met `/^[a-zA-Z][a-zA-Z0-9_]{0,63}$/`. |
+| `options.value` | number | Nee | Monetaire waarde, bijv. `49.99`. Gebruikt in het Conversies-paneel voor omzetrapportage. |
+| `options.currency` | string | Nee | ISO 4217-code: `"EUR"`, `"USD"`, `"GBP"`, etc. Standaard de geconfigureerde sitevaluta als weggelaten. |
+| `options.transactionId` | string | Nee | Deduplicatiesleutel. Events met dezelfde `transactionId` binnen een sessie worden slechts eenmaal opgeslagen. Max. 128 tekens. |
+| `options.data` | object | Nee | Willekeurige sleutel-waarde-metadata. Max. 20 sleutels; waarden moeten strings, getallen of booleans zijn; max. 500 tekens per waarde. |
+| `options.products` | array | Nee | Productlijst voor e-commerce events. Zie [Standaard e-commerce events](/docs/analytics/v1/ecommerce-events) voor het volledige productobjectschema. |
+
+## Voorbeelden
+
+### Een aanmelding bijhouden
+
+```js
+window.inta.track('signup_complete', {
+  data: { plan: 'pro', trial: true },
+});
+```
+
+### Een aankoop met omzet bijhouden
+
+```js
+window.inta.track('purchase', {
+  value: 99.00,
+  currency: 'EUR',
+  transactionId: 'order_9871',
+  products: [
+    { id: 'plan_pro', name: 'Pro Plan', price: 99.00, quantity: 1 },
+  ],
+});
+```
+
+### Een inhoudsengagement event bijhouden
+
+```js
+window.inta.track('demo_watched', {
+  data: { videoId: 'intro-v2', completedPct: 80 },
+});
+```
+
+### Een offerteaanvraag bijhouden
+
+```js
+window.inta.track('quote_requested', {
+  data: { industry: 'retail', companySize: '50-200' },
+});
+```
+
+## Toestemming en veldbeperkingen
+
+Aangepaste events worden verstuurd op het toestemmingsniveau dat actief is wanneer de aanroep wordt gedaan. De velden `products` en `value` worden alleen opgeslagen wanneer de bezoeker volledige toestemming heeft verleend (Statistieken-categorie). Het `data`-object en `eventName` worden op beide niveaus opgeslagen.
+
+Zie [Toestemmingsniveaus & privacy](/docs/analytics/v1/consent-tiers).
+
+## In wachtrij plaatsen voor het script laadt
+
+`window.inta.track` is veilig om aan te roepen voordat het embed-script klaar is met laden — het embed installeert een wachtrij op `window.inta` tijdens het parsen van de pagina zodat alle aanroepen vóór de scriptgereedheid worden opnieuw afgespeeld zodra het is geïnitialiseerd.
+
+```html
+<head>
+  <!-- Veilig om direct aan te roepen -->
+  <script>
+    window.inta = window.inta || { track: function() {
+      (window.inta._q = window.inta._q || []).push(arguments);
+    }};
+    window.inta.track('page_variant', { data: { variant: 'B' } });
+  </script>
+
+  <!-- Embed laadt asynchroon -->
+  <script
+    src="https://analytics.consentsmanagement.com/api/a"
+    data-site="UW_SITESLEUTEL"
+    async defer
+  ></script>
+</head>
+```
+
+## Naamgevingsregels voor events
+
+- Gebruik kleine letters met snake_case: `add_to_cart`, niet `AddToCart` of `addToCart`.
+- Begin met een letter; cijfers en underscores zijn toegestaan na het eerste teken.
+- Maximum 64 tekens.
+- Vermijd botsingen met automatisch bijgehouden eventnamen (`pageview`, `scroll_depth`, `rage_click`, `form_started`, `form_submit`, `form_field_focus`, `form_error`, `video_play`, `video_pause`, `video_50pct`, `video_complete`, `content_copy`).
