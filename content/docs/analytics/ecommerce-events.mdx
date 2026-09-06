@@ -1,0 +1,164 @@
+---
+title: Standard E-commerce Events
+description: Reference for all standard e-commerce events supported by Intastellar Analytics — checkout funnel events and standalone events, with full intaAnalytics.track() call signatures and field definitions.
+order: 10
+lastUpdated: "2026-09-06"
+---
+
+# Standard E-commerce Events
+
+Intastellar Analytics supports two groups of e-commerce events:
+
+- **Checkout funnel events** power the Checkout Funnel visualisation in the dashboard when two or more funnel steps are registered. Each step is tracked individually as visitors move through the purchase journey.
+- **Standalone e-commerce events** are tracked and reported individually — they are not part of the funnel visualisation.
+
+Before firing any of these events, register them once in the dashboard under **Events & Tracking**. When registering, you assign each event a name and a kind — the kind determines how the event is categorised and visualised. The examples below use the kind name as the event name, which is the recommended convention.
+
+## Checkout Funnel Events
+
+Fire these events in order as visitors progress through your checkout flow.
+
+| Kind | Fire when… |
+| --- | --- |
+| `view_item` | A product detail page is rendered |
+| `add_to_cart` | A product is added to the cart |
+| `view_basket` | The cart/basket page is viewed |
+| `begin_checkout` | The visitor initiates checkout |
+| `checkout` | The checkout form is submitted |
+| `payment_info` | Payment details are entered |
+| `purchase` | Order confirmation is shown |
+
+### view_item
+
+```js
+intaAnalytics.track('view_item', {
+  products: [{ id: 'SKU-001', name: 'Blue T-Shirt', price: 29.99, category: 'Apparel', variant: 'M / Blue' }],
+  currency: 'EUR',
+});
+```
+
+### add_to_cart
+
+```js
+intaAnalytics.track('add_to_cart', {
+  products: [{ id: 'SKU-001', name: 'Blue T-Shirt', price: 29.99, quantity: 1, category: 'Apparel', variant: 'M / Blue' }],
+  currency: 'EUR',
+});
+```
+
+### view_basket
+
+No product fields are required — fire on every cart page render.
+
+```js
+intaAnalytics.track('view_basket');
+```
+
+### begin_checkout
+
+```js
+intaAnalytics.track('begin_checkout');
+```
+
+### checkout
+
+```js
+intaAnalytics.track('checkout');
+```
+
+### payment_info
+
+```js
+intaAnalytics.track('payment_info', {
+  value: 49.99,
+  currency: 'EUR',
+  data: { paymentMethod: 'credit_card' },
+});
+```
+
+### purchase
+
+```js
+intaAnalytics.track('purchase', {
+  transactionId: 'ORDER-123',
+  value: 49.99,
+  currency: 'EUR',
+  products: [
+    { id: 'SKU-001', name: 'Blue T-Shirt', price: 29.99, quantity: 1, category: 'Apparel', variant: 'M / Blue' },
+    { id: 'SKU-002', name: 'Black Jeans',  price: 19.99, quantity: 1, category: 'Apparel', variant: '32 / Black' },
+  ],
+});
+```
+
+## Standalone E-commerce Events
+
+These events are tracked and reported individually — they do not contribute to the funnel visualisation.
+
+| Kind | Fire when… |
+| --- | --- |
+| `remove_from_cart` | A product is removed from the cart |
+| `wishlist_add` | A product is saved to a wishlist |
+| `refund` | A return or refund is processed |
+| `apply_coupon` | A discount code is successfully applied |
+
+### remove_from_cart
+
+```js
+intaAnalytics.track('remove_from_cart', {
+  products: [{ id: 'SKU-001', name: 'Blue T-Shirt', price: 29.99, quantity: 1, category: 'Apparel', variant: 'M / Blue' }],
+  currency: 'EUR',
+});
+```
+
+### wishlist_add
+
+```js
+intaAnalytics.track('wishlist_add', {
+  products: [{ id: 'SKU-001', name: 'Blue T-Shirt', price: 29.99, category: 'Apparel', variant: 'M / Blue' }],
+  currency: 'EUR',
+});
+```
+
+### refund
+
+```js
+intaAnalytics.track('refund', {
+  transactionId: 'ORDER-123',
+  value: 29.99,
+  currency: 'EUR',
+  products: [{ id: 'SKU-001', name: 'Blue T-Shirt', price: 29.99, quantity: 1, category: 'Apparel' }],
+});
+```
+
+### apply_coupon
+
+```js
+intaAnalytics.track('apply_coupon', {
+  value: 10.00,
+  currency: 'EUR',
+  data: { coupon: 'SUMMER20' },
+});
+```
+
+## Field Reference
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `products` | object[] | Product list — used in `view_item`, `add_to_cart`, `remove_from_cart`, `wishlist_add`, `refund`, and `purchase` |
+| `products[].id` | string | Product SKU or database ID |
+| `products[].name` | string | Display name |
+| `products[].price` | number | Unit price |
+| `products[].quantity` | number | Defaults to `1` if omitted |
+| `products[].category` | string | Product category |
+| `products[].variant` | string | Size, colour, or other variant |
+| `value` | number | Order, refund, or discount amount |
+| `currency` | string | ISO 4217 code, e.g. `'EUR'` |
+| `transactionId` | string | Order ID — deduplicates repeat fires within a session |
+| `data` | object | Arbitrary extra fields (coupon code, payment method, etc.) |
+
+## Notes
+
+- **Event names are set in the dashboard.** The first argument to `intaAnalytics.track()` must match the name you registered under **Events & Tracking**. The examples above use the kind name as the event name — this is the recommended convention but not required.
+- **`transactionId` prevents double-counting.** On `purchase`, passing `transactionId` ensures that if the confirmation page reloads or the tag fires twice, only one purchase is recorded per session.
+- **`data` fields are queryable.** Values inside `data` are stored as-is and available in the dashboard's custom event explorer. Keys are capped at 40 characters; values at 500 characters.
+- **Consent governs field storage.** All events fire at minimal consent, but `products` and `value` are only stored when the visitor has granted `statisticCookies` consent.
