@@ -1,0 +1,45 @@
+---
+title: Intégrations de fournisseurs de formulaires
+description: Comment Intastellar Analytics détecte automatiquement les formulaires HubSpot, Typeform, Calendly et Tally, le champ provider et les trois types d'erreurs form_error.
+order: 13
+lastUpdated: "2026-09-06"
+---
+
+# Intégrations de fournisseurs de formulaires
+
+Intastellar Analytics détecte automatiquement les fournisseurs de formulaires tiers via leurs événements `postMessage` natifs. Aucune configuration supplémentaire ni SDK n'est nécessaire — intégrez le formulaire tiers comme d'habitude et l'embed analytics gère la détection.
+
+## Fournisseurs pris en charge
+
+| Fournisseur | Mécanisme de détection | Notes |
+| --- | --- | --- |
+| HubSpot | `window.postMessage` avec type `hsFormCallback` | Se déclenche sur le script Embedded Forms de HubSpot (`hs-script.js`). Inclut la progression des formulaires multi-étapes. |
+| Typeform | `window.postMessage` avec type `form-ready`, `form-submit`, `form-close` | Fonctionne pour les iframes Typeform intégrés. Submit se déclenche quand Typeform signale la réponse finale. |
+| Calendly | `window.postMessage` avec type `calendly.event_type_viewed`, `calendly.event_scheduled` | `event_scheduled` est mappé à `form_submit` dans le flux analytics. |
+| Tally | `window.postMessage` avec type `TallyFormSubmit` | Fonctionne pour les formulaires Tally intégrés. |
+
+### Le champ `provider`
+
+Les événements `form_started`, `form_submit` et `form_error` incluent tous un champ `provider` qui indique quel système a été détecté :
+
+| Valeur | Signification |
+| --- | --- |
+| `"hubspot"` | Formulaire intégré HubSpot |
+| `"typeform"` | iFrame intégré Typeform |
+| `"calendly"` | Widget intégré Calendly |
+| `"tally"` | Formulaire intégré Tally |
+| `"native"` | Élément HTML `<form>` standard |
+
+## Types d'erreurs de formulaire
+
+Le champ `errorType` sur les événements `form_error` prend l'une de trois valeurs :
+
+| Type | Quand il se déclenche | Valeur de `field` |
+| --- | --- | --- |
+| `validation` | L'événement HTML5 `invalid` se déclenche sur un champ de formulaire — la validation du navigateur ou personnalisée a rejeté la saisie | Nom du champ défaillant, ex. `"email"` |
+| `server` | La soumission fetch ou XHR du formulaire a reçu une réponse HTTP 4xx ou 5xx | `""` (l'erreur est au niveau de la requête, pas d'un champ spécifique) |
+| `network` | La fetch ou XHR du formulaire a échoué sans réponse (hors ligne, échec DNS, timeout, blocage CORS) | `""` |
+
+## Suivi manuel en repli
+
+Pour les formulaires non détectés automatiquement, utilisez [`window.inta.track()`](/docs/analytics/v1/custom-events) pour déclencher manuellement les événements `form_started`, `form_submit` et `form_error`.

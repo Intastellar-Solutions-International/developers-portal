@@ -1,0 +1,98 @@
+---
+title: Guide du tableau de bord
+description: Un guide panneau par panneau du tableau de bord Intastellar Analytics — ce que chaque panneau affiche, le niveau de consentement requis, et comment utiliser les filtres et plages de dates.
+order: 15
+lastUpdated: "2026-09-06"
+---
+
+# Guide du tableau de bord
+
+Le tableau de bord Intastellar Analytics est disponible sur [analytics.consentsmanagement.com](https://analytics.consentsmanagement.com). Connectez-vous et sélectionnez un site dans le sélecteur de site de la navigation supérieure pour voir ses panneaux.
+
+## Plage de dates et filtres
+
+Le sélecteur de plage de dates global dans la barre supérieure s'applique à tous les panneaux simultanément. La vue par défaut est les 30 derniers jours. Utilisez le bouton Comparer pour superposer la période précédente équivalente.
+
+La barre **Filtres** permet de segmenter les données par : `Chemin`, `Pays`, `Appareil`, `UTM source` / `UTM medium` / `UTM campagne`, `Nom de l'événement`.
+
+Les filtres se combinent avec la logique AND. Une vue filtrée peut être mise en signet — l'état des filtres est encodé dans l'URL.
+
+---
+
+## Flux d'événements en direct
+
+**Consentement requis :** Minimal et au-dessus
+
+Un flux en temps réel des événements entrants, mis à jour au fur et à mesure que les événements arrivent. Chaque ligne affiche le nom de l'événement, le chemin de page, le code pays, le type d'appareil et l'heure de réception (UTC).
+
+---
+
+## Audience
+
+**Consentement requis :** Minimal et au-dessus
+
+Affiche les comptages agrégés de visiteurs et le volume de pages vues. Panneaux : pages uniques, pages vues, visites, taux de rebond et durée moyenne sur le site.
+
+---
+
+## Acquisition
+
+**Consentement requis :** Consentement complet (champs UTM)
+
+Montre d'où vient votre trafic, groupé par source UTM et medium. Modèle d'attribution : **premier contact**.
+
+---
+
+## Dépenses publicitaires
+
+**Consentement requis :** Consentement complet (ID de clic)
+
+Connecte les données de clic publicitaire (`gclid`, `msclkid`, `fbclid`) aux événements de conversion. Nécessite de connecter vos comptes publicitaires via **Paramètres → Intégrations publicitaires**.
+
+---
+
+## Attribution
+
+**Consentement requis :** Consentement complet (ID de clic et champs UTM)
+
+Compare les modèles d'attribution **premier contact** et **dernier contact** côte à côte pour un événement de conversion sélectionné.
+
+---
+
+## Conversions
+
+**Consentement requis :** Minimal et au-dessus (noms d'événements uniquement) ; Consentement complet pour les revenus et données produits
+
+Liste tous les événements de conversion avec leurs comptages et, le cas échéant, le revenu total. Le **constructeur de funnel** (en haut à droite) permet d'enchaîner des événements en funnel.
+
+---
+
+## Heatmap
+
+**Consentement requis :** Consentement complet (coordonnées de clics)
+
+Superpose une heatmap de densité de clics sur un rendu en direct de n'importe quelle page de votre site. Le filtre `rage_click` met en évidence les zones avec un ratio élevé de rage clicks.
+
+---
+
+## Flux utilisateur
+
+**Consentement requis :** Consentement complet
+
+Un diagramme de style Sankey montrant les parcours les plus courants des visiteurs sur votre site.
+
+---
+
+## Search Console
+
+**Consentement requis :** Minimal et au-dessus
+
+Affiche les données de performance Google Search aux côtés de vos données de pages vues Analytics. Nécessite une propriété Google Search Console connectée via **Paramètres → Intégrations → Google Search Console**.
+
+---
+
+## Robots
+
+**Consentement requis :** Minimal et au-dessus
+
+Affiche le trafic identifié comme automatisé — crawlers, navigateurs headless et moniteurs synthétiques. Ce trafic est automatiquement exclu de tous les autres panneaux.

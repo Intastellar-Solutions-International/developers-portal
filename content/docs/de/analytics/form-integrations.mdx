@@ -1,0 +1,45 @@
+---
+title: Formularanbieter-Integrationen
+description: Wie Intastellar Analytics HubSpot, Typeform, Calendly und Tally-Formulare automatisch erkennt, das provider-Feld und die drei form_error-Typen.
+order: 13
+lastUpdated: "2026-09-06"
+---
+
+# Formularanbieter-Integrationen
+
+Intastellar Analytics erkennt Drittanbieter-Formularanbieter automatisch über ihre nativen `postMessage`-Events. Keine zusätzliche Konfiguration oder SDK ist erforderlich — binden Sie das Drittanbieter-Formular wie gewohnt ein und das Analytics-Embed übernimmt die Erkennung.
+
+## Unterstützte Anbieter
+
+| Anbieter | Erkennungsmechanismus | Hinweise |
+| --- | --- | --- |
+| HubSpot | `window.postMessage` mit Typ `hsFormCallback` | Wird auf HubSpots Embedded Forms-Script (`hs-script.js`) ausgelöst. Enthält mehrstufige Formular-Progression. |
+| Typeform | `window.postMessage` mit Typ `form-ready`, `form-submit`, `form-close` | Funktioniert für eingebettete Typeform-iFrames. Submit wird ausgelöst, wenn Typeform die finale Antwort meldet. |
+| Calendly | `window.postMessage` mit Typ `calendly.event_type_viewed`, `calendly.event_scheduled` | `event_scheduled` wird auf `form_submit` im Analytics-Stream gemappt. |
+| Tally | `window.postMessage` mit Typ `TallyFormSubmit` | Funktioniert für eingebettete Tally-Formulare. |
+
+### Das `provider`-Feld
+
+Die Events `form_started`, `form_submit` und `form_error` enthalten alle ein `provider`-Feld, das angibt, welches System erkannt wurde:
+
+| Wert | Bedeutung |
+| --- | --- |
+| `"hubspot"` | HubSpot Embedded Form |
+| `"typeform"` | Typeform eingebetteter iFrame |
+| `"calendly"` | Calendly eingebettetes Widget |
+| `"tally"` | Tally eingebettetes Formular |
+| `"native"` | Standard-HTML-`<form>`-Element |
+
+## Formularfehlertypen
+
+Das `errorType`-Feld auf `form_error`-Events nimmt einen von drei Werten an:
+
+| Typ | Wann ausgelöst | `field`-Wert |
+| --- | --- | --- |
+| `validation` | HTML5-`invalid`-Event wird auf einem Formularfeld ausgelöst — Browser- oder benutzerdefinierte Validierung hat die Eingabe abgelehnt | Name des fehlschlagenden Felds, z.B. `"email"` |
+| `server` | Das Formular-Fetch oder XHR-Einreichung erhielt eine HTTP 4xx- oder 5xx-Antwort | `""` (Fehler ist auf Anforderungsebene, nicht ein spezifisches Feld) |
+| `network` | Das Formular-Fetch oder XHR ist ohne Antwort fehlgeschlagen (offline, DNS-Fehler, Timeout, CORS-Blockierung) | `""` |
+
+## Manueller Fallback
+
+Für Formulare, die nicht automatisch erkannt werden, verwenden Sie [`window.inta.track()`](/docs/analytics/v1/custom-events), um `form_started`, `form_submit` und `form_error`-Events manuell zu senden.

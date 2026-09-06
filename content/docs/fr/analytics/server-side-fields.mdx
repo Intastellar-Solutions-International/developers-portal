@@ -1,0 +1,53 @@
+---
+title: Champs côté serveur & attribution
+description: Référence complète de tous les champs ajoutés côté serveur à chaque événement — métadonnées du site, champs d'appareil, géo, paramètres UTM et ID de clic.
+order: 14
+lastUpdated: "2026-09-06"
+---
+
+# Champs côté serveur & attribution
+
+Chaque événement envoyé à Intastellar Analytics est enrichi côté serveur avant d'être stocké. Certains champs sont dérivés de la requête elle-même (adresse IP, user-agent), d'autres sont lus depuis l'URL au premier chargement (paramètres UTM, ID de clic). Aucun de ces éléments ne nécessite de code supplémentaire dans votre embed.
+
+## Champs ajoutés côté serveur
+
+Ces champs sont ajoutés à chaque enregistrement d'événement quel que soit le niveau de consentement.
+
+| Champ | Type | Notes |
+| --- | --- | --- |
+| `site_id` | UUID | Résolu depuis votre clé `data-site`. Utilisé pour limiter toutes les requêtes à votre tableau de bord. |
+| `received_at` | timestamp | Heure UTC du serveur à la réception de l'événement. Pas l'heure d'envoi côté client. |
+| `consent_level` | `"minimal"` \| `"full"` | Défini par l'embed et stocké tel quel. |
+| `pathname` | string | Chemin URL sans chaîne de requête ni fragment, ex. `/produits/chaussures`. |
+| `page_host` | string | Nom d'hôte uniquement, ex. `app.votresite.com`. Sans port ni protocole. |
+| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Dérivé du user-agent de la requête. La chaîne user-agent brute est supprimée et jamais stockée. |
+| `country_code` | string | Code ISO 3166-1 alpha-2 résolu via GeoIP, ex. `"DE"`, `"FR"`. L'adresse IP est supprimée immédiatement après la résolution. |
+
+## Champ de session (consentement complet uniquement)
+
+| Champ | Type | Notes |
+| --- | --- | --- |
+| `session_id` | string \| null | Un identifiant généré côté serveur qui regroupe les événements d'une même session de visiteur. Uniquement défini quand `consent_level` est `"full"`. Toujours `null` au niveau minimal. |
+
+## Paramètres UTM (consentement complet uniquement)
+
+Les paramètres UTM sont lus depuis l'URL de la page d'atterrissage à la première page vue d'une session. Ils sont attachés à tous les événements suivants de cette session.
+
+| Champ | Paramètre URL | Exemple |
+| --- | --- | --- |
+| `utm_source` | `utm_source` | `"google"`, `"newsletter"` |
+| `utm_medium` | `utm_medium` | `"cpc"`, `"email"` |
+| `utm_campaign` | `utm_campaign` | `"soldes-ete-2026"` |
+| `utm_content` | `utm_content` | `"banner-a"` |
+
+## ID de clic (consentement complet uniquement)
+
+| Champ | Source | Plateforme publicitaire |
+| --- | --- | --- |
+| `gclid` | Paramètre URL `gclid` | Google Ads |
+| `msclkid` | Paramètre URL `msclkid` | Microsoft Advertising / Bing Ads |
+| `fbclid` | Paramètre URL `fbclid` | Meta Ads (Facebook / Instagram) |
+
+## Relation avec le panneau Acquisition
+
+Le [panneau Acquisition](/docs/analytics/v1/dashboard#acquisition) affiche l'attribution au premier contact par défaut. Les ID de clic alimentent le [panneau Attribution](/docs/analytics/v1/dashboard#attribution), où les modèles premier contact et dernier contact sont comparés côte à côte.

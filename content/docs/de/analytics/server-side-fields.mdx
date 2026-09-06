@@ -1,0 +1,53 @@
+---
+title: Serverseitige Felder & Attribution
+description: Vollständige Referenz für alle Felder, die serverseitig jedem Event angehängt werden — Site-Metadaten, Gerätefelder, Geo, UTM-Parameter und Klick-IDs.
+order: 14
+lastUpdated: "2026-09-06"
+---
+
+# Serverseitige Felder & Attribution
+
+Jedes an Intastellar Analytics gesendete Event wird serverseitig angereichert, bevor es gespeichert wird. Einige Felder werden aus der Anfrage abgeleitet (IP-Adresse, User-Agent), andere werden beim ersten Aufruf aus der URL gelesen (UTM-Parameter, Klick-IDs). Keines davon erfordert zusätzlichen Code in Ihrem Embed.
+
+## Serverseitig angehängte Felder
+
+Diese Felder werden unabhängig von der Einwilligungsstufe jedem Event-Datensatz hinzugefügt.
+
+| Feld | Typ | Hinweise |
+| --- | --- | --- |
+| `site_id` | UUID | Aus Ihrem `data-site`-Schlüssel aufgelöst. Wird verwendet, um alle Abfragen auf Ihr Dashboard zu begrenzen. |
+| `received_at` | timestamp | UTC-Serverzeit, wenn das Event empfangen wurde. Nicht die clientseitige Sendezeit. |
+| `consent_level` | `"minimal"` \| `"full"` | Vom Embed gesetzt und unverändert gespeichert. |
+| `pathname` | string | URL-Pfad ohne Abfragestring oder Fragment, z.B. `/produkte/schuhe`. |
+| `page_host` | string | Nur Hostname, z.B. `app.ihreseite.de`. Ohne Port oder Protokoll. |
+| `device_type` | `"desktop"` \| `"mobile"` \| `"tablet"` | Aus dem Anfrage-User-Agent abgeleitet. Der rohe User-Agent-String wird verworfen und nie gespeichert. |
+| `country_code` | string | ISO 3166-1 Alpha-2-Code über GeoIP aufgelöst, z.B. `"DE"`, `"US"`. Die für die Suche verwendete IP-Adresse wird nach der Auflösung sofort verworfen. |
+
+## Sitzungsfeld (nur vollständige Einwilligung)
+
+| Feld | Typ | Hinweise |
+| --- | --- | --- |
+| `session_id` | string \| null | Ein serverseitig generierter Bezeichner, der Events aus derselben Besuchersitzung gruppiert. Nur gesetzt, wenn `consent_level` `"full"` ist. Immer `null` bei minimaler Stufe. |
+
+## UTM-Parameter (nur vollständige Einwilligung)
+
+UTM-Parameter werden beim ersten Seitenaufruf einer Sitzung aus der Landingpage-URL gelesen. Sie werden an alle nachfolgenden Events in dieser Sitzung angehängt.
+
+| Feld | URL-Parameter | Beispiel |
+| --- | --- | --- |
+| `utm_source` | `utm_source` | `"google"`, `"newsletter"` |
+| `utm_medium` | `utm_medium` | `"cpc"`, `"email"` |
+| `utm_campaign` | `utm_campaign` | `"sommersale-2026"` |
+| `utm_content` | `utm_content` | `"banner-a"` |
+
+## Klick-IDs (nur vollständige Einwilligung)
+
+| Feld | Quelle | Werbeplattform |
+| --- | --- | --- |
+| `gclid` | `gclid` URL-Parameter | Google Ads |
+| `msclkid` | `msclkid` URL-Parameter | Microsoft Advertising / Bing Ads |
+| `fbclid` | `fbclid` URL-Parameter | Meta Ads (Facebook / Instagram) |
+
+## Relation zum Akquise-Panel
+
+Das [Akquise-Panel](/docs/analytics/v1/dashboard#acquisition) zeigt standardmäßig First-Touch-Attribution. Klick-IDs fließen in das [Attributions-Panel](/docs/analytics/v1/dashboard#attribution) ein, wo First-Touch- und Last-Touch-Modelle nebeneinander verglichen werden.

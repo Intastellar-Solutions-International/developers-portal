@@ -1,0 +1,162 @@
+---
+title: Standard-E-Commerce-Events
+description: Referenz für alle Standard-E-Commerce-Events von Intastellar Analytics — Checkout-Funnel-Events und eigenständige Events mit vollständigen intaAnalytics.track()-Signaturen und Felddefinitionen.
+order: 12
+lastUpdated: "2026-09-06"
+---
+
+# Standard-E-Commerce-Events
+
+Intastellar Analytics unterstützt zwei Gruppen von E-Commerce-Events:
+
+- **Checkout-Funnel-Events** unterstützen die Checkout-Funnel-Visualisierung im Dashboard, wenn zwei oder mehr Funnel-Schritte registriert sind. Jeder Schritt wird einzeln getrackt, wenn Besucher den Kaufprozess durchlaufen.
+- **Eigenständige E-Commerce-Events** werden einzeln getrackt und berichtet — sie sind nicht Teil der Funnel-Visualisierung.
+
+Bevor Sie eines dieser Events senden, registrieren Sie es einmalig im Dashboard unter **Events & Tracking**. Bei der Registrierung weisen Sie jedem Event einen Namen und eine Art zu — die Art bestimmt, wie das Event kategorisiert und visualisiert wird. Die folgenden Beispiele verwenden den Art-Namen als Event-Namen, was die empfohlene Konvention ist.
+
+## Checkout-Funnel-Events
+
+Senden Sie diese Events in Reihenfolge, wenn Besucher durch Ihren Checkout-Prozess fortschreiten.
+
+| Art | Senden wenn… |
+| --- | --- |
+| `view_item` | Eine Produktdetailseite wird gerendert |
+| `add_to_cart` | Ein Produkt wird in den Warenkorb gelegt |
+| `view_basket` | Die Warenkorb-/Einkaufskorbseite wird angezeigt |
+| `begin_checkout` | Der Besucher beginnt den Checkout |
+| `checkout` | Das Checkout-Formular wird abgesendet |
+| `payment_info` | Zahlungsdaten werden eingegeben |
+| `purchase` | Die Bestellbestätigung wird angezeigt |
+
+### view_item
+
+```js
+intaAnalytics.track('view_item', {
+  products: [{ id: 'SKU-001', name: 'Blaues T-Shirt', price: 29.99, category: 'Bekleidung', variant: 'M / Blau' }],
+  currency: 'EUR',
+});
+```
+
+### add_to_cart
+
+```js
+intaAnalytics.track('add_to_cart', {
+  products: [{ id: 'SKU-001', name: 'Blaues T-Shirt', price: 29.99, quantity: 1, category: 'Bekleidung', variant: 'M / Blau' }],
+  currency: 'EUR',
+});
+```
+
+### view_basket
+
+Keine Produktfelder erforderlich — bei jeder Warenkorbseiten-Darstellung senden.
+
+```js
+intaAnalytics.track('view_basket');
+```
+
+### begin_checkout
+
+```js
+intaAnalytics.track('begin_checkout');
+```
+
+### checkout
+
+```js
+intaAnalytics.track('checkout');
+```
+
+### payment_info
+
+```js
+intaAnalytics.track('payment_info', {
+  value: 49.99,
+  currency: 'EUR',
+  data: { paymentMethod: 'credit_card' },
+});
+```
+
+### purchase
+
+```js
+intaAnalytics.track('purchase', {
+  transactionId: 'ORDER-123',
+  value: 49.99,
+  currency: 'EUR',
+  products: [
+    { id: 'SKU-001', name: 'Blaues T-Shirt', price: 29.99, quantity: 1, category: 'Bekleidung', variant: 'M / Blau' },
+    { id: 'SKU-002', name: 'Schwarze Jeans',  price: 19.99, quantity: 1, category: 'Bekleidung', variant: '32 / Schwarz' },
+  ],
+});
+```
+
+## Eigenständige E-Commerce-Events
+
+| Art | Senden wenn… |
+| --- | --- |
+| `remove_from_cart` | Ein Produkt wird aus dem Warenkorb entfernt |
+| `wishlist_add` | Ein Produkt wird zu einer Wunschliste gespeichert |
+| `refund` | Eine Rückgabe oder Rückerstattung wird verarbeitet |
+| `apply_coupon` | Ein Rabattcode wird erfolgreich angewendet |
+
+### remove_from_cart
+
+```js
+intaAnalytics.track('remove_from_cart', {
+  products: [{ id: 'SKU-001', name: 'Blaues T-Shirt', price: 29.99, quantity: 1, category: 'Bekleidung', variant: 'M / Blau' }],
+  currency: 'EUR',
+});
+```
+
+### wishlist_add
+
+```js
+intaAnalytics.track('wishlist_add', {
+  products: [{ id: 'SKU-001', name: 'Blaues T-Shirt', price: 29.99, category: 'Bekleidung', variant: 'M / Blau' }],
+  currency: 'EUR',
+});
+```
+
+### refund
+
+```js
+intaAnalytics.track('refund', {
+  transactionId: 'ORDER-123',
+  value: 29.99,
+  currency: 'EUR',
+  products: [{ id: 'SKU-001', name: 'Blaues T-Shirt', price: 29.99, quantity: 1, category: 'Bekleidung' }],
+});
+```
+
+### apply_coupon
+
+```js
+intaAnalytics.track('apply_coupon', {
+  value: 10.00,
+  currency: 'EUR',
+  data: { coupon: 'SUMMER20' },
+});
+```
+
+## Feldreferenz
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `products` | object[] | Produktliste — verwendet in `view_item`, `add_to_cart`, `remove_from_cart`, `wishlist_add`, `refund` und `purchase` |
+| `products[].id` | string | Produkt-SKU oder Datenbank-ID |
+| `products[].name` | string | Anzeigename |
+| `products[].price` | number | Stückpreis |
+| `products[].quantity` | number | Standard ist `1` wenn weggelassen |
+| `products[].category` | string | Produktkategorie |
+| `products[].variant` | string | Größe, Farbe oder andere Variante |
+| `value` | number | Bestell-, Rückerstattungs- oder Rabattbetrag |
+| `currency` | string | ISO 4217-Code, z.B. `'EUR'` |
+| `transactionId` | string | Bestell-ID — dedupliziert Mehrfachauslösungen innerhalb einer Sitzung |
+| `data` | object | Beliebige Zusatzfelder (Gutscheincode, Zahlungsmethode usw.) |
+
+## Hinweise
+
+- **Event-Namen werden im Dashboard festgelegt.** Das erste Argument für `intaAnalytics.track()` muss dem registrierten Namen entsprechen.
+- **`transactionId` verhindert Doppelzählung.** Bei `purchase` stellt die Angabe von `transactionId` sicher, dass nur ein Kauf pro Sitzung aufgezeichnet wird.
+- **`data`-Felder sind abfragbar.** Werte in `data` werden gespeichert und sind im benutzerdefinierten Event-Explorer des Dashboards verfügbar.
+- **Einwilligung bestimmt die Feldspeicherung.** Alle Events werden bei minimaler Einwilligung gesendet, aber `products` und `value` werden nur gespeichert, wenn `statisticCookies`-Einwilligung vorliegt.

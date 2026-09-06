@@ -1,0 +1,98 @@
+---
+title: Dashboard-Leitfaden
+description: Eine Panel-für-Panel-Führung durch das Intastellar Analytics-Dashboard — was jedes Panel zeigt, welche Einwilligungsstufe erforderlich ist, und wie Filter und Datumsbereiche verwendet werden.
+order: 15
+lastUpdated: "2026-09-06"
+---
+
+# Dashboard-Leitfaden
+
+Das Intastellar Analytics-Dashboard ist unter [analytics.consentsmanagement.com](https://analytics.consentsmanagement.com) verfügbar. Melden Sie sich an und wählen Sie eine Site aus dem Site-Wechsler in der oberen Navigation aus, um deren Panels zu sehen.
+
+## Datumsbereich und Filter
+
+Die globale Datumsbereichsauswahl in der Leiste oben gilt für alle Panels gleichzeitig. Die Standardansicht sind die letzten 30 Tage. Verwenden Sie den Vergleich-Umschalter, um den vorherigen entsprechenden Zeitraum zu überlagern.
+
+Die **Filter**-Leiste ermöglicht die Segmentierung nach: `Pfad`, `Land`, `Gerät`, `UTM-Quelle` / `UTM-Medium` / `UTM-Kampagne`, `Event-Name`.
+
+Filter werden mit AND-Logik kombiniert. Eine gefilterte Ansicht kann als Lesezeichen gespeichert werden.
+
+---
+
+## Live-Event-Feed
+
+**Erforderliche Einwilligung:** Minimal und höher
+
+Ein Echtzeit-Stream eingehender Events. Jede Zeile zeigt Event-Name, Seitenpfad, Ländercode, Gerätetyp und Empfangszeit (UTC).
+
+---
+
+## Zielgruppe
+
+**Erforderliche Einwilligung:** Minimal und höher
+
+Zeigt aggregierte Besucherzahlen und Seitenaufruf-Volumen. Panels: eindeutige Seiten, Seitenaufrufe, Besuche, Absprungrate und durchschnittliche Zeit auf der Seite.
+
+---
+
+## Akquise
+
+**Erforderliche Einwilligung:** Vollständige Einwilligung (UTM-Felder)
+
+Zeigt, woher Ihr Traffic kommt, gruppiert nach UTM-Quelle und -Medium. Attributionsmodell: **First-Touch**.
+
+---
+
+## Anzeigenausgaben
+
+**Erforderliche Einwilligung:** Vollständige Einwilligung (Klick-IDs)
+
+Verbindet Anzeigenklick-Daten (`gclid`, `msclkid`, `fbclid`) mit Konversions-Events. Erfordert die Verbindung Ihrer Anzeigenkonten über **Einstellungen → Anzeigen-Integrationen**.
+
+---
+
+## Attribution
+
+**Erforderliche Einwilligung:** Vollständige Einwilligung (Klick-IDs und UTM-Felder)
+
+Vergleicht **First-Touch**- und **Last-Touch**-Attributionsmodelle nebeneinander für ein ausgewähltes Konversions-Event.
+
+---
+
+## Konversionen
+
+**Erforderliche Einwilligung:** Minimal und höher (nur Event-Namen); Vollständige Einwilligung für Umsatz- und Produktdaten
+
+Listet alle Konversions-Events mit Anzahl und, wo vorhanden, Gesamtumsatz auf. Der **Funnel-Builder** (oben rechts) ermöglicht das Verketten von Events zu einem Funnel.
+
+---
+
+## Heatmap
+
+**Erforderliche Einwilligung:** Vollständige Einwilligung (Klickkoordinaten)
+
+Überlagert eine Klick-Dichte-Heatmap auf einer Live-Darstellung einer beliebigen Seite Ihrer Website. Der `rage_click`-Filter hebt Bereiche mit hohem Rage-Click-Anteil hervor.
+
+---
+
+## Benutzerfluss
+
+**Erforderliche Einwilligung:** Vollständige Einwilligung
+
+Ein Sankey-Diagramm, das die häufigsten Wege zeigt, die Besucher durch Ihre Website nehmen.
+
+---
+
+## Search Console
+
+**Erforderliche Einwilligung:** Minimal und höher
+
+Zeigt Google-Search-Performance-Daten neben Ihren Analytics-Seitenaufruf-Daten. Erfordert eine verknüpfte Google Search Console-Property über **Einstellungen → Integrationen → Google Search Console**.
+
+---
+
+## Bots
+
+**Erforderliche Einwilligung:** Minimal und höher
+
+Zeigt als automatisiert identifizierten Traffic — Crawler, Headless-Browser und synthetische Monitore. Dieser Traffic wird automatisch aus allen anderen Panels ausgeschlossen.
